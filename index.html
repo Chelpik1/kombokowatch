@@ -107,7 +107,7 @@
       animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Боковая навигационная панель */
+    /* Навигация (Сайдбар на ПК) */
     .nav-rail {
       width: 92px;
       background: var(--glass-bg);
@@ -127,7 +127,6 @@
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.4);
     }
 
-    /* Кнопка профиля / аватарка в самом верху сайдбара */
     .header-profile-btn {
       width: 50px;
       height: 50px;
@@ -350,6 +349,23 @@
 
     .anime-card:hover .poster-wrap img { transform: scale(1.06); }
 
+    /* Стильный Fallback-плацхолдер для аниме без постеров (убирает 404 заглушки) */
+    .poster-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      text-align: center;
+      background: linear-gradient(135deg, #2b1f45 0%, #151122 100%);
+      color: var(--color-primary);
+      gap: 8px;
+    }
+    .poster-fallback span.material-symbols-rounded { font-size: 38px; opacity: 0.8; }
+    .poster-fallback p { font-size: 13px; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
     .card-badges {
       position: absolute;
       top: 10px;
@@ -358,6 +374,7 @@
       display: flex;
       justify-content: space-between;
       pointer-events: none;
+      z-index: 2;
     }
 
     .badge-pill {
@@ -650,6 +667,9 @@
         width: 100% !important;
         gap: 0 !important;
       }
+      .nav-rail .header-profile-btn {
+        display: none !important;
+      }
       .app-header-brand {
         justify-content: space-between;
       }
@@ -679,7 +699,7 @@
 </head>
 <body>
 
-  <!-- Навигация: аватарка/кнопка входа в самом верху сайдбара на ПК -->
+  <!-- Навигация (Сайдбар на ПК с кнопкой профиля вверху) -->
   <nav class="nav-rail">
     <div class="header-profile-btn" id="sidebarAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
       <span class="material-symbols-rounded">account_circle</span>
@@ -766,7 +786,7 @@
 
           <div class="anime-details-box">
             <div class="details-top">
-              <img id="detailsPoster" class="details-poster" src="" alt="Poster" />
+              <img id="detailsPoster" class="details-poster" src="" alt="Poster" onerror="this.style.display='none'" />
               <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
                 <div id="detailsMeta" style="font-size:12px; color:var(--color-primary); font-weight: 600;"></div>
                 <p id="detailsDesc" style="font-size:13px; line-height:1.5; color:var(--color-variant);"></p>
@@ -990,10 +1010,12 @@
           const animesData = await animesRes.json();
 
           const listItems = animesData.map(item => {
-            let poster = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+            let poster = null;
             if (item.image) {
               const rawImg = item.image.original || item.image.preview;
-              if (rawImg) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+              if (rawImg && !rawImg.includes('missing')) {
+                poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+              }
             }
             return {
               id: String(item.id),
@@ -1189,10 +1211,10 @@
         const items = Array.isArray(data) ? data : [data];
 
         state.animes = items.filter(Boolean).map(item => {
-          let poster = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          let poster = null;
           if (item.image) {
             const rawImg = item.image.original || item.image.preview || item.image.x96;
-            if (rawImg) {
+            if (rawImg && !rawImg.includes('missing')) {
               poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
             }
           }
@@ -1230,9 +1252,13 @@
         card.className = 'anime-card animate-fade';
         card.onclick = () => loadKodikPlayerForAnime(item);
 
+        const posterInner = item.poster 
+          ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>movie</span><p>${item.title}</p></div>'" />`
+          : `<div class="poster-fallback"><span class="material-symbols-rounded">movie</span><p>${item.title}</p></div>`;
+
         card.innerHTML = `
           <div class="poster-wrap">
-            <img src="${item.poster}" loading="lazy" onerror="this.src='https://shikimori.io/favicons/apple-touch-icon-180x180.png'" />
+            ${posterInner}
             <div class="card-badges">
               ${item.rating ? `<span class="badge-pill rating">★ ${item.rating}</span>` : `<span></span>`}
               <span class="badge-pill">${item.episodes} эп.</span>
@@ -1256,7 +1282,14 @@
       switchTab('watch');
       
       document.getElementById('watchTitle').textContent = item.title;
-      document.getElementById('detailsPoster').src = item.poster;
+      const posterImg = document.getElementById('detailsPoster');
+      if (item.poster) {
+        posterImg.style.display = 'block';
+        posterImg.src = item.poster;
+      } else {
+        posterImg.style.display = 'none';
+      }
+
       document.getElementById('detailsMeta').textContent = 'Загрузка информации...';
       document.getElementById('detailsDesc').textContent = 'Загрузка полного описания...';
       document.getElementById('shikiStatusContainer').style.display = 'none';
@@ -1272,7 +1305,9 @@
           let poster = item.poster;
           if (detailData.image) {
             const rawImg = detailData.image.original || detailData.image.preview;
-            if (rawImg) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+            if (rawImg && !rawImg.includes('missing')) {
+              poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+            }
           }
           detailedItem = {
             ...item,
@@ -1287,7 +1322,13 @@
       } catch (_) {}
 
       document.getElementById('watchTitle').textContent = detailedItem.title;
-      document.getElementById('detailsPoster').src = detailedItem.poster;
+      if (detailedItem.poster) {
+        posterImg.style.display = 'block';
+        posterImg.src = detailedItem.poster;
+      } else {
+        posterImg.style.display = 'none';
+      }
+
       document.getElementById('detailsMeta').textContent = [detailedItem.year, detailedItem.status, ...(detailedItem.genres || []).slice(0, 3)].filter(Boolean).join(' • ');
       document.getElementById('detailsDesc').textContent = detailedItem.description;
 
@@ -1350,7 +1391,7 @@
             let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
             if (a.image) {
               const r = a.image.preview || a.image.original;
-              if (r) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+              if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
             }
             const name = a.russian || a.name || 'Часть';
             
@@ -1376,10 +1417,10 @@
         const res = await fetch(`https://shikimori.io/api/animes/${id}`);
         const item = await res.json();
         if (item && item.id) {
-          let poster = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          let poster = null;
           if (item.image) {
             const rawImg = item.image.original || item.image.preview;
-            if (rawImg) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+            if (rawImg && !rawImg.includes('missing')) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
           }
           loadKodikPlayerForAnime({
             id: String(item.id),
@@ -1414,7 +1455,7 @@
             let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
             if (char.image) {
               const r = char.image.preview || char.image.original;
-              if (r) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+              if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
             }
             const name = char.russian || char.name || 'Герой';
 
@@ -1450,7 +1491,7 @@
           let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
           if (char.image) {
             const r = char.image.original || char.image.preview;
-            if (r) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+            if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
           }
           const name = char.russian || char.name || 'Персонаж';
           const japanese = char.japanese ? `(${char.japanese})` : '';
@@ -1591,7 +1632,8 @@
 
     function handleSearchSubmit(e) {
       e.preventDefault();
-      const raw = document.getElementById('searchInput').value.trim();
+      $raw = document.getElementById('searchInput').value.trim();
+      const raw = $raw;
       if (!raw) {
         fetchShikimoriCatalog();
         return;

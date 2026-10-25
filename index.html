@@ -7,6 +7,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>KombokoWatch — Liquid Glass</title>
 
+  <!-- Иконки и PWA теги -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+
   <!-- Google Fonts: Comfortaa -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,7 +107,7 @@
       animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Навигация */
+    /* Боковая навигационная панель */
     .nav-rail {
       width: 92px;
       background: var(--glass-bg);
@@ -113,19 +117,43 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding: 24px 0;
       position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
       z-index: 100;
+      gap: 24px;
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.4);
     }
+
+    /* Кнопка профиля / аватарка в самом верху сайдбара */
+    .header-profile-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(208, 188, 255, 0.25);
+      border: 2px solid var(--color-primary);
+      background: rgba(208, 188, 255, 0.15);
+      color: var(--color-primary);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+      flex-shrink: 0;
+    }
+    .header-profile-btn:hover {
+      transform: scale(1.08);
+      background: rgba(208, 188, 255, 0.25);
+    }
+    .header-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
 
     .nav-items {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
       width: 100%;
       align-items: center;
     }
@@ -187,27 +215,6 @@
       letter-spacing: -0.5px;
       text-shadow: 0 4px 25px rgba(208, 188, 255, 0.25);
     }
-
-    .header-profile-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(208, 188, 255, 0.25);
-      border: 2px solid var(--color-primary);
-      background: rgba(208, 188, 255, 0.15);
-      color: var(--color-primary);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
-    }
-    .header-profile-btn:hover {
-      transform: scale(1.08);
-      background: rgba(208, 188, 255, 0.25);
-    }
-    .header-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
 
     .top-bar {
       display: flex;
@@ -643,6 +650,12 @@
         width: 100% !important;
         gap: 0 !important;
       }
+      .app-header-brand {
+        justify-content: space-between;
+      }
+      .app-header-brand .header-profile-btn {
+        display: flex;
+      }
       .app-main {
         margin-left: 0 !important;
         width: 100% !important;
@@ -656,12 +669,21 @@
       .character-view-box { flex-direction: column; align-items: center; text-align: center; }
       .character-view-avatar { width: 150px; }
     }
+
+    @media (min-width: 769px) {
+      .app-header-brand .header-profile-btn {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Навигация -->
+  <!-- Навигация: аватарка/кнопка входа в самом верху сайдбара на ПК -->
   <nav class="nav-rail">
+    <div class="header-profile-btn" id="sidebarAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
+      <span class="material-symbols-rounded">account_circle</span>
+    </div>
     <div class="nav-items">
       <button class="nav-item active" id="nav-catalog" onclick="switchTab('catalog')">
         <div class="nav-pill"><span class="material-symbols-rounded">explore</span></div>
@@ -685,6 +707,7 @@
   <main class="app-main animate-fade">
     <div class="app-header-brand">
       <h1 class="brand-title-text">KombokoWatch</h1>
+      <!-- Мобильная кнопка профиля в шапке -->
       <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
         <span class="material-symbols-rounded">account_circle</span>
       </div>
@@ -820,7 +843,7 @@
   <script>
     const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
     const BACKEND_URL = 'https://komboko-adblock.onrender.com';
-    const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
+    const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zelAvBI9q7c63O9z5mWSR6k5oRo';
 
     let state = {
       animes: [],
@@ -887,17 +910,21 @@
         if (user && user.id) {
           state.currentUser = user;
           const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
-          const logoContainer = document.getElementById('headerAuthLogo');
-          logoContainer.innerHTML = `<img src="${avatar}" alt="${user.nickname}" />`;
-          logoContainer.title = `Вы вошли как ${user.nickname}. Нажмите, чтобы открыть списки (ПКМ для выхода)`;
           
-          logoContainer.oncontextmenu = (e) => {
-            e.preventDefault();
-            if (confirm('Выйти из аккаунта Shikimori?')) {
-              localStorage.removeItem('shiki_token');
-              location.reload();
+          ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+              el.innerHTML = `<img src="${avatar}" alt="${user.nickname}" />`;
+              el.title = `Вы вошли как ${user.nickname}. Нажмите, чтобы открыть списки (ПКМ для выхода)`;
+              el.oncontextmenu = (e) => {
+                e.preventDefault();
+                if (confirm('Выйти из аккаунта Shikimori?')) {
+                  localStorage.removeItem('shiki_token');
+                  location.reload();
+                }
+              };
             }
-          };
+          });
 
           fetchAllUserRates(user.id, token);
         }
@@ -1288,6 +1315,9 @@
       state.currentVariantIndex = 0;
       state.currentEpisodeNum = 1;
 
+      state.history = [detailedItem, ...state.history.filter(a => a.id !== detailedItem.id)].slice(0, 30);
+      localStorage.setItem('kodik_history', JSON.stringify(state.history));
+
       renderVoiceChips();
       renderEpisodesGrid();
       loadCurrentEpisodeVideo();
@@ -1591,6 +1621,10 @@
       } else if (tab === 'lists') {
         listsView.style.display = 'block';
         fetchUserRatesList('watching');
+      } else if (tab === 'history') {
+        catalogView.style.display = 'block';
+        document.getElementById('sectionTitle').textContent = 'История просмотра';
+        renderGrid(state.history, 'animeGrid');
       } else {
         catalogView.style.display = 'block';
         document.getElementById('sectionTitle').textContent = 'Каталог аниме';

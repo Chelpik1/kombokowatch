@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru" class="dark">
 <head>
   <meta charset="UTF-8" />
@@ -44,7 +44,6 @@
       font-family: 'Comfortaa', cursive, sans-serif;
     }
 
-    /* Изолируем шрифт иконок */
     .material-symbols-rounded {
       font-family: 'Material Symbols Rounded' !important;
       font-weight: normal;
@@ -75,7 +74,6 @@
       position: relative;
     }
 
-    /* Анимированные жидкие неоновые сферы на фоне */
     body::before, body::after {
       content: '';
       position: fixed;
@@ -88,17 +86,8 @@
       opacity: 0.35;
       animation: floatOrbs 12s ease-in-out infinite alternate;
     }
-    body::before {
-      top: -150px;
-      left: -150px;
-      background: rgba(115, 74, 186, 0.6);
-    }
-    body::after {
-      bottom: -150px;
-      right: -150px;
-      background: rgba(85, 30, 130, 0.7);
-      animation-delay: -6s;
-    }
+    body::before { top: -150px; left: -150px; background: rgba(115, 74, 186, 0.6); }
+    body::after { bottom: -150px; right: -150px; background: rgba(85, 30, 130, 0.7); animation-delay: -6s; }
 
     @keyframes floatOrbs {
       0% { transform: translateY(0px) scale(1); }
@@ -124,38 +113,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 0;
+      justify-content: center;
       position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
       z-index: 100;
-      gap: 16px;
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.4);
     }
-
-    .brand-logo {
-      width: 52px;
-      height: 52px;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(208, 188, 255, 0.25);
-      border: 1.5px solid var(--glass-border-glow);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .brand-logo:hover { transform: scale(1.08); }
-    .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
 
     .nav-items {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
       width: 100%;
       align-items: center;
     }
@@ -194,7 +164,6 @@
     }
     .nav-item.active .material-symbols-rounded { font-variation-settings: 'FILL' 1; }
 
-    /* Растягиваем контент на всю ширину экрана для ПК */
     .app-main {
       flex: 1;
       margin-left: 92px;
@@ -205,17 +174,8 @@
     .app-header-brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: space-between;
       margin-bottom: 20px;
-    }
-
-    .brand-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: var(--radius-md);
-      object-fit: cover;
-      box-shadow: 0 6px 20px rgba(208, 188, 255, 0.3);
-      border: 1.5px solid var(--glass-border-glow);
     }
 
     .brand-title-text {
@@ -227,6 +187,27 @@
       letter-spacing: -0.5px;
       text-shadow: 0 4px 25px rgba(208, 188, 255, 0.25);
     }
+
+    .header-profile-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(208, 188, 255, 0.25);
+      border: 2px solid var(--color-primary);
+      background: rgba(208, 188, 255, 0.15);
+      color: var(--color-primary);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+    }
+    .header-profile-btn:hover {
+      transform: scale(1.08);
+      background: rgba(208, 188, 255, 0.25);
+    }
+    .header-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
 
     .top-bar {
       display: flex;
@@ -309,6 +290,8 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .section-title {
@@ -317,7 +300,6 @@
       letter-spacing: -0.3px;
     }
 
-    /* Адаптивная сетка под всю ширину экрана */
     .anime-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -405,7 +387,65 @@
     .card-meta {
       font-size: 12px;
       color: var(--color-variant);
+      margin-bottom: 6px;
+    }
+
+    .card-add-wrapper {
+      position: relative;
       margin-top: auto;
+    }
+    .card-add-btn {
+      width: 100%;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--color-surface);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .card-add-btn:hover {
+      background: rgba(208, 188, 255, 0.15);
+      border-color: var(--glass-border-glow);
+      color: var(--color-primary);
+    }
+
+    .status-dropdown {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      background: rgba(24, 20, 35, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border-glow);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      overflow: hidden;
+      animation: fadeIn 0.2s ease;
+    }
+    .status-option {
+      padding: 9px 12px;
+      font-size: 11px;
+      color: var(--color-surface);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      text-align: left;
+      font-family: inherit;
+    }
+    .status-option:hover {
+      background: rgba(208, 188, 255, 0.2);
+      color: var(--color-primary);
     }
 
     .watch-layout {
@@ -492,22 +532,85 @@
       border-radius: var(--radius-lg);
       padding: 20px;
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 16px;
       border: 1px solid var(--glass-border);
       box-shadow: 0 16px 50px rgba(0,0,0,0.4);
     }
-    .details-poster { width: 135px; border-radius: var(--radius-md); object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+    .details-top { display: flex; gap: 20px; }
+    .details-poster { width: 135px; height: 195px; border-radius: var(--radius-md); object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+
+    .shiki-status-container {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .shiki-select {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border-glow);
+      color: var(--color-surface);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+    .shiki-select option { background: #18151c; color: var(--color-surface); }
+
+    .relations-section { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .relations-title { font-size: 14px; font-weight: 600; color: var(--color-primary); }
+    .relations-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+    .relation-card {
+      min-width: 110px; max-width: 110px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 6px; cursor: pointer;
+      display: flex; flex-direction: column; gap: 4px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .relation-card:hover { transform: translateY(-3px); border-color: var(--glass-border-glow); }
+    .relation-img { width: 100%; aspect-ratio: 2/2.8; object-fit: cover; border-radius: 8px; }
+    .relation-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .relation-type { font-size: 9px; color: var(--color-variant); }
+
+    .characters-section { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .characters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; }
+    .character-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 8px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .character-card:hover { transform: translateY(-4px); border-color: var(--glass-border-glow); background: rgba(255, 255, 255, 0.06); }
+    .character-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--glass-border-glow); }
+    .character-name { font-size: 11px; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; }
+
+    .character-view-box {
+      background: var(--glass-surface);
+      backdrop-filter: blur(25px);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+      display: flex; gap: 24px; align-items: start;
+    }
+    .character-view-avatar {
+      width: 200px; border-radius: var(--radius-md); object-fit: cover;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid var(--glass-border-glow); flex-shrink: 0;
+    }
+    .character-view-info { display: flex; flex-direction: column; gap: 12px; }
+    .character-view-title { font-size: 24px; font-weight: 700; color: var(--color-primary); }
+    .character-view-subtitle { font-size: 14px; color: var(--color-variant); font-style: italic; }
+    .character-view-desc { font-size: 14px; line-height: 1.6; color: var(--color-surface); white-space: pre-line; }
 
     .loader-box {
       grid-column: 1 / -1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px;
-      gap: 16px;
-      color: var(--color-variant);
-      text-align: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px; gap: 16px; color: var(--color-variant); text-align: center;
     }
     .spinner {
       width: 44px; height: 44px;
@@ -520,19 +623,38 @@
 
     @media (max-width: 768px) {
       .nav-rail {
-        top: auto; bottom: 0; left: 0; right: 0; width: 100%;
-        height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
-        padding: 8px 12px env(safe-area-inset-bottom);
-        flex-direction: row; justify-content: space-around;
-        border-right: none; border-top: 1px solid var(--glass-border);
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom)) !important;
+        padding: 6px 8px env(safe-area-inset-bottom) !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        border-right: none !important;
+        border-top: 1px solid var(--glass-border);
         box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.5);
       }
-      .brand-logo { display: none; }
-      .nav-items { flex-direction: row; justify-content: space-around; gap: 0; }
-      .app-main { margin-left: 0; width: 100%; padding: 16px 14px calc(var(--bottom-nav-height) + 28px); }
+      .nav-items {
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        width: 100% !important;
+        gap: 0 !important;
+      }
+      .app-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 16px 14px calc(var(--bottom-nav-height) + 28px) !important;
+      }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }
       .watch-layout { grid-template-columns: 1fr; }
-      .anime-details-box { flex-direction: column; }
+      .details-top { flex-direction: column; align-items: center; text-align: center; }
+      .details-poster { width: 120px; height: 170px; margin: 0 auto; }
+      .shiki-status-container { justify-content: center; }
+      .character-view-box { flex-direction: column; align-items: center; text-align: center; }
+      .character-view-avatar { width: 150px; }
     }
   </style>
 </head>
@@ -540,9 +662,6 @@
 
   <!-- Навигация -->
   <nav class="nav-rail">
-    <div class="brand-logo" onclick="switchTab('catalog')" title="KombokoWatch">
-      <img src="logo.jpg" alt="Logo" onerror="this.src='https://shikimori.io/favicons/apple-touch-icon-180x180.png'" />
-    </div>
     <div class="nav-items">
       <button class="nav-item active" id="nav-catalog" onclick="switchTab('catalog')">
         <div class="nav-pill"><span class="material-symbols-rounded">explore</span></div>
@@ -552,9 +671,9 @@
         <div class="nav-pill"><span class="material-symbols-rounded">movie</span></div>
         <span>Плеер</span>
       </button>
-      <button class="nav-item" id="nav-favorites" onclick="switchTab('favorites')">
+      <button class="nav-item" id="nav-lists" onclick="switchTab('lists')">
         <div class="nav-pill"><span class="material-symbols-rounded">bookmark</span></div>
-        <span>Закладки</span>
+        <span>Списки</span>
       </button>
       <button class="nav-item" id="nav-history" onclick="switchTab('history')">
         <div class="nav-pill"><span class="material-symbols-rounded">history</span></div>
@@ -565,8 +684,10 @@
 
   <main class="app-main animate-fade">
     <div class="app-header-brand">
-      <img src="logo.jpg" alt="Logo" class="brand-avatar" onerror="this.src='https://shikimori.io/favicons/apple-touch-icon-180x180.png'" />
       <h1 class="brand-title-text">KombokoWatch</h1>
+      <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
+        <span class="material-symbols-rounded">account_circle</span>
+      </div>
     </div>
 
     <header class="top-bar">
@@ -597,7 +718,7 @@
           <span class="material-symbols-rounded">arrow_back</span> Назад
         </button>
         <h2 class="section-title" id="watchTitle" style="flex:1; margin-left: 12px; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Тайтл</h2>
-        <button class="md-btn md-btn-tonal" onclick="toggleCurrentFavorite()">
+        <button class="md-btn md-btn-tonal" onclick="openPlayerListDropdown(event)">
           <span class="material-symbols-rounded" id="favIcon">bookmark_add</span>
         </button>
       </div>
@@ -621,10 +742,34 @@
           </div>
 
           <div class="anime-details-box">
-            <img id="detailsPoster" class="details-poster" src="" alt="Poster" />
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <div id="detailsMeta" style="font-size:12px; color:var(--color-primary); font-weight: 600;"></div>
-              <p id="detailsDesc" style="font-size:13px; line-height:1.5; color:var(--color-variant);"></p>
+            <div class="details-top">
+              <img id="detailsPoster" class="details-poster" src="" alt="Poster" />
+              <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
+                <div id="detailsMeta" style="font-size:12px; color:var(--color-primary); font-weight: 600;"></div>
+                <p id="detailsDesc" style="font-size:13px; line-height:1.5; color:var(--color-variant);"></p>
+                
+                <div class="shiki-status-container" id="shikiStatusContainer" style="display: none;">
+                  <span style="font-size:12px; color:var(--color-primary);">Статус на Shikimori:</span>
+                  <select id="shikiStatusSelect" class="shiki-select" onchange="updateUserAnimeStatus(this.value)">
+                    <option value="">Не в списке</option>
+                    <option value="watching">Смотрю</option>
+                    <option value="planned">Запланировано</option>
+                    <option value="completed">Просмотрено</option>
+                    <option value="on_hold">Отложено</option>
+                    <option value="dropped">Брошено</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="relations-section" id="relationsSection" style="display: none;">
+              <div class="relations-title">Связанные части и франшиза</div>
+              <div class="relations-list" id="relationsList"></div>
+            </div>
+
+            <div class="characters-section" id="charactersSection" style="display: none;">
+              <div class="relations-title">Главные герои</div>
+              <div class="characters-grid" id="charactersGrid"></div>
             </div>
           </div>
         </div>
@@ -641,23 +786,357 @@
         </aside>
       </div>
     </section>
+
+    <!-- Списки аниме пользователя -->
+    <section id="view-lists" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">Списки Shikimori</h2>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="listFilters">
+          <button class="md-btn md-btn-tonal" onclick="fetchUserRatesList('watching')">Смотрю</button>
+          <button class="md-btn md-btn-tonal" onclick="fetchUserRatesList('planned')">В планах</button>
+          <button class="md-btn md-btn-tonal" onclick="fetchUserRatesList('completed')">Просмотрено</button>
+          <button class="md-btn md-btn-tonal" onclick="fetchUserRatesList('dropped')">Бросил</button>
+        </div>
+      </div>
+      <div class="anime-grid" id="userListsGrid"></div>
+    </section>
+
+    <!-- Страница персонажа -->
+    <section id="view-character" style="display: none;">
+      <div class="section-header">
+        <button class="md-btn md-btn-tonal" onclick="switchTab('watch')">
+          <span class="material-symbols-rounded">arrow_back</span> К аниме
+        </button>
+        <h2 class="section-title" style="flex:1; margin-left: 12px; font-size:16px;">Информация о персонаже</h2>
+      </div>
+
+      <div id="characterContent" class="loader-box">
+        <div class="spinner"></div>
+        <span>Загружаем данные персонажа...</span>
+      </div>
+    </section>
   </main>
 
   <script>
     const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
+    const BACKEND_URL = 'https://komboko-adblock.onrender.com';
+    const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zelAvBI9q7c63O9z5mWSR6k5oRo';
 
     let state = {
       animes: [],
       currentAnimeFull: null,
       currentVariantIndex: 0,
       currentEpisodeNum: 1,
-      favorites: JSON.parse(localStorage.getItem('kodik_favs') || '[]'),
+      currentUser: null,
+      userRates: {},
       history: JSON.parse(localStorage.getItem('kodik_history') || '[]')
     };
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        try {
+          const redirectUri = window.location.origin + window.location.pathname;
+          const res = await fetch(`${BACKEND_URL}/api/shikimori_auth`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, redirect_uri: redirectUri })
+          });
+          const tokenData = await res.json();
+          if (tokenData.access_token) {
+            localStorage.setItem('shiki_token', tokenData.access_token);
+            await fetchUserProfile(tokenData.access_token);
+          }
+        } catch (err) {
+          console.error('Auth error:', err);
+        }
+      } else {
+        const savedToken = localStorage.getItem('shiki_token');
+        if (savedToken) await fetchUserProfile(savedToken);
+      }
+
       fetchShikimoriCatalog();
     });
+
+    function redirectToShikimoriLogin() {
+      const redirectUri = window.location.origin + window.location.pathname;
+      window.location.href = `https://shikimori.io/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+    }
+
+    function handleAuthLogoClick() {
+      const token = localStorage.getItem('shiki_token');
+      if (!token) {
+        redirectToShikimoriLogin();
+      } else {
+        switchTab('lists');
+        fetchUserRatesList('watching');
+      }
+    }
+
+    async function fetchUserProfile(token) {
+      try {
+        const res = await fetch('https://shikimori.io/api/users/whoami', {
+          headers: {
+            'User-Agent': 'KombokoWatchApp',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const user = await res.json();
+        if (user && user.id) {
+          state.currentUser = user;
+          const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          const logoContainer = document.getElementById('headerAuthLogo');
+          logoContainer.innerHTML = `<img src="${avatar}" alt="${user.nickname}" />`;
+          logoContainer.title = `Вы вошли как ${user.nickname}. Нажмите, чтобы открыть списки (ПКМ для выхода)`;
+          
+          logoContainer.oncontextmenu = (e) => {
+            e.preventDefault();
+            if (confirm('Выйти из аккаунта Shikimori?')) {
+              localStorage.removeItem('shiki_token');
+              location.reload();
+            }
+          };
+
+          fetchAllUserRates(user.id, token);
+        }
+      } catch (_) {
+        localStorage.removeItem('shiki_token');
+      }
+    }
+
+    async function fetchAllUserRates(userId, token) {
+      try {
+        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
+          headers: {
+            'User-Agent': 'KombokoWatchApp',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const rates = await res.json();
+        if (Array.isArray(rates)) {
+          state.userRates = {};
+          rates.forEach(r => {
+            state.userRates[r.target_id] = r;
+          });
+        }
+      } catch (_) {}
+    }
+
+    async function fetchUserRatesList(statusFilter) {
+      const grid = document.getElementById('userListsGrid');
+      const filtersBar = document.getElementById('listFilters');
+      const token = localStorage.getItem('shiki_token');
+
+      if (!token || !state.currentUser) {
+        filtersBar.style.display = 'none';
+        grid.innerHTML = `
+          <div class="loader-box" style="gap: 16px; grid-column: 1/-1;">
+            <p style="color: var(--color-surface); font-size: 15px; text-align: center;">Чтобы получить доступ к своим спискам, выполните вход в аккаунт Shikimori!</p>
+            <button class="md-btn md-btn-filled" onclick="redirectToShikimoriLogin()">Войти</button>
+          </div>
+        `;
+        return;
+      }
+
+      filtersBar.style.display = 'flex';
+      grid.innerHTML = `
+        <div class="loader-box">
+          <div class="spinner"></div>
+          <span>Загружаем список...</span>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
+          headers: {
+            'User-Agent': 'KombokoWatchApp',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const rates = await res.json();
+        
+        if (Array.isArray(rates) && rates.length > 0) {
+          const animeIds = rates.map(r => r.target_id).join(',');
+          const animesRes = await fetch(`https://shikimori.io/api/animes?ids=${animeIds}&limit=50`);
+          const animesData = await animesRes.json();
+
+          const listItems = animesData.map(item => {
+            let poster = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+            if (item.image) {
+              const rawImg = item.image.original || item.image.preview;
+              if (rawImg) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+            }
+            return {
+              id: String(item.id),
+              title: item.russian || item.name || 'Без названия',
+              year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
+              episodes: item.episodes || item.episodes_aired || 12,
+              rating: item.score && item.score !== '0.0' ? item.score : null,
+              poster,
+              description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
+              genres: (item.genres || []).map(g => g.russian),
+              status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел'
+            };
+          });
+
+          renderGrid(listItems, 'userListsGrid');
+        } else {
+          grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">В этом списке пока ничего нет.</p>`;
+        }
+      } catch (err) {
+        grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Не удалось загрузить списки.</p>`;
+      }
+    }
+
+    function handleCardAddClick(e, animeId) {
+      e.stopPropagation();
+      const token = localStorage.getItem('shiki_token');
+      if (!token) {
+        redirectToShikimoriLogin();
+        return;
+      }
+
+      document.querySelectorAll('.status-dropdown').forEach(el => el.remove());
+
+      const wrapper = e.currentTarget.parentElement;
+      const dropdown = document.createElement('div');
+      dropdown.className = 'status-dropdown';
+
+      const statuses = [
+        { key: 'watching', label: 'Смотрю' },
+        { key: 'planned', label: 'В планах' },
+        { key: 'completed', label: 'Просмотрено' },
+        { key: 'on_hold', label: 'Отложено' },
+        { key: 'dropped', label: 'Брошено' },
+        { key: '', label: 'Убрать из списка' }
+      ];
+
+      statuses.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'status-option';
+        btn.textContent = s.label;
+        btn.onclick = async (ev) => {
+          ev.stopPropagation();
+          dropdown.remove();
+          await setAnimeStatusDirect(animeId, s.key);
+        };
+        dropdown.appendChild(btn);
+      });
+
+      wrapper.appendChild(dropdown);
+
+      const closeListener = (ev) => {
+        if (!wrapper.contains(ev.target)) {
+          dropdown.remove();
+          document.removeEventListener('click', closeListener);
+        }
+      };
+      setTimeout(() => document.addEventListener('click', closeListener), 10);
+    }
+
+    function openPlayerListDropdown(e) {
+      const token = localStorage.getItem('shiki_token');
+      if (!token) {
+        redirectToShikimoriLogin();
+        return;
+      }
+      if (!state.currentAnimeFull) return;
+
+      document.querySelectorAll('.status-dropdown').forEach(el => el.remove());
+
+      const btnTarget = e.currentTarget;
+      const dropdown = document.createElement('div');
+      dropdown.className = 'status-dropdown';
+      dropdown.style.bottom = 'auto';
+      dropdown.style.top = '48px';
+      dropdown.style.right = '0';
+      dropdown.style.left = 'auto';
+      dropdown.style.width = '160px';
+
+      const statuses = [
+        { key: 'watching', label: 'Смотрю' },
+        { key: 'planned', label: 'В планах' },
+        { key: 'completed', label: 'Просмотрено' },
+        { key: 'on_hold', label: 'Отложено' },
+        { key: 'dropped', label: 'Брошено' },
+        { key: '', label: 'Убрать из списка' }
+      ];
+
+      statuses.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'status-option';
+        btn.textContent = s.label;
+        btn.onclick = async (ev) => {
+          ev.stopPropagation();
+          dropdown.remove();
+          await setAnimeStatusDirect(state.currentAnimeFull.id, s.key);
+          document.getElementById('shikiStatusSelect').value = s.key;
+        };
+        dropdown.appendChild(btn);
+      });
+
+      btnTarget.style.position = 'relative';
+      btnTarget.appendChild(dropdown);
+
+      const closeListener = (ev) => {
+        if (!btnTarget.contains(ev.target)) {
+          dropdown.remove();
+          document.removeEventListener('click', closeListener);
+        }
+      };
+      setTimeout(() => document.addEventListener('click', closeListener), 10);
+    }
+
+    async function setAnimeStatusDirect(animeId, status) {
+      const token = localStorage.getItem('shiki_token');
+      if (!token || !state.currentUser) return;
+
+      const existingRate = state.userRates[animeId];
+      try {
+        if (!status) {
+          if (existingRate) {
+            await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
+              method: 'DELETE',
+              headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
+            });
+            delete state.userRates[animeId];
+            alert('Удалено из списков Shikimori');
+          }
+          return;
+        }
+
+        if (existingRate) {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ user_rate: { status } })
+          });
+          const updated = await res.json();
+          state.userRates[animeId] = updated;
+        } else {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({
+              user_rate: { status, target_id: animeId, target_type: 'Anime', user_id: state.currentUser.id }
+            })
+          });
+          const created = await res.json();
+          state.userRates[animeId] = created;
+        }
+        alert('Статус на Shikimori успешно обновлен!');
+      } catch (err) {
+        alert('Ошибка при обновлении списка.');
+      }
+    }
+
+    async function updateUserAnimeStatus(newStatus) {
+      if (state.currentAnimeFull) {
+        await setAnimeStatusDirect(state.currentAnimeFull.id, newStatus);
+      }
+    }
 
     async function fetchShikimoriCatalog(query = '') {
       const grid = document.getElementById('animeGrid');
@@ -704,14 +1183,14 @@
           };
         });
 
-        renderGrid(state.animes);
+        renderGrid(state.animes, 'animeGrid');
       } catch (err) {
         grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Не удалось загрузить каталог с Shikimori.</p>`;
       }
     }
 
-    function renderGrid(list) {
-      const grid = document.getElementById('animeGrid');
+    function renderGrid(list, elementId = 'animeGrid') {
+      const grid = document.getElementById(elementId);
       grid.innerHTML = '';
 
       if (!list || list.length === 0) {
@@ -735,6 +1214,11 @@
           <div class="card-body">
             <h3 class="card-title">${item.title}</h3>
             <div class="card-meta">${item.year}</div>
+            <div class="card-add-wrapper">
+              <button class="card-add-btn" onclick="handleCardAddClick(event, '${item.id}')">
+                <span class="material-symbols-rounded" style="font-size:16px;">bookmark_add</span> В список
+              </button>
+            </div>
           </div>
         `;
         grid.appendChild(card);
@@ -748,6 +1232,10 @@
       document.getElementById('detailsPoster').src = item.poster;
       document.getElementById('detailsMeta').textContent = 'Загрузка информации...';
       document.getElementById('detailsDesc').textContent = 'Загрузка полного описания...';
+      document.getElementById('shikiStatusContainer').style.display = 'none';
+      
+      document.getElementById('relationsSection').style.display = 'none';
+      document.getElementById('charactersSection').style.display = 'none';
 
       let detailedItem = item;
       try {
@@ -776,6 +1264,17 @@
       document.getElementById('detailsMeta').textContent = [detailedItem.year, detailedItem.status, ...(detailedItem.genres || []).slice(0, 3)].filter(Boolean).join(' • ');
       document.getElementById('detailsDesc').textContent = detailedItem.description;
 
+      const token = localStorage.getItem('shiki_token');
+      if (token) {
+        const select = document.getElementById('shikiStatusSelect');
+        const rate = state.userRates[detailedItem.id];
+        select.value = rate ? rate.status : '';
+        document.getElementById('shikiStatusContainer').style.display = 'flex';
+      }
+
+      loadAnimeRelations(detailedItem.id);
+      loadAnimeCharacters(detailedItem.id);
+
       const apiUrl = `https://kodikapi.com/search?token=${KODIK_TOKEN}&shikimori_id=${detailedItem.id}&with_episodes=true&with_material_data=true`;
       
       let kodikResults = [];
@@ -789,12 +1288,162 @@
       state.currentVariantIndex = 0;
       state.currentEpisodeNum = 1;
 
-      state.history = [detailedItem, ...state.history.filter(a => a.id !== detailedItem.id)].slice(0, 30);
-      localStorage.setItem('kodik_history', JSON.stringify(state.history));
-
       renderVoiceChips();
       renderEpisodesGrid();
       loadCurrentEpisodeVideo();
+    }
+
+    async function loadAnimeRelations(animeId) {
+      const section = document.getElementById('relationsSection');
+      const list = document.getElementById('relationsList');
+      list.innerHTML = '';
+      section.style.display = 'none';
+
+      try {
+        const res = await fetch(`https://shikimori.io/api/animes/${animeId}/related`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const relationNames = {
+            sequel: 'Сиквел',
+            prequel: 'Приквел',
+            side: 'Спин-офф',
+            parent: 'Родитель',
+            summary: 'Итог',
+            alternative_setting: 'Альтернатива'
+          };
+
+          let html = '';
+          data.forEach(rel => {
+            if (!rel.anime) return;
+            const a = rel.anime;
+            const relType = relationNames[rel.relation] || rel.relation;
+            let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+            if (a.image) {
+              const r = a.image.preview || a.image.original;
+              if (r) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+            }
+            const name = a.russian || a.name || 'Часть';
+            
+            html += `
+              <div class="relation-card" onclick="loadRelatedAnime('${a.id}')">
+                <img class="relation-img" src="${img}" loading="lazy" />
+                <div class="relation-type">${relType}</div>
+                <div class="relation-name" title="${name}">${name}</div>
+              </div>
+            `;
+          });
+
+          if (html) {
+            list.innerHTML = html;
+            section.style.display = 'block';
+          }
+        }
+      } catch (_) {}
+    }
+
+    async function loadRelatedAnime(id) {
+      try {
+        const res = await fetch(`https://shikimori.io/api/animes/${id}`);
+        const item = await res.json();
+        if (item && item.id) {
+          let poster = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          if (item.image) {
+            const rawImg = item.image.original || item.image.preview;
+            if (rawImg) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+          }
+          loadKodikPlayerForAnime({
+            id: String(item.id),
+            title: item.russian || item.name || 'Без названия',
+            year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
+            episodes: item.episodes || item.episodes_aired || 12,
+            rating: item.score && item.score !== '0.0' ? item.score : null,
+            poster,
+            description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
+            genres: (item.genres || []).map(g => g.russian),
+            status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел'
+          });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } catch (_) {}
+    }
+
+    async function loadAnimeCharacters(animeId) {
+      const section = document.getElementById('charactersSection');
+      const grid = document.getElementById('charactersGrid');
+      grid.innerHTML = '';
+      section.style.display = 'none';
+
+      try {
+        const res = await fetch(`https://shikimori.io/api/animes/${animeId}/characters`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const mainChars = data.filter(c => c.role === 'Main').map(c => c.character).filter(Boolean);
+
+          let html = '';
+          mainChars.forEach(char => {
+            let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+            if (char.image) {
+              const r = char.image.preview || char.image.original;
+              if (r) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+            }
+            const name = char.russian || char.name || 'Герой';
+
+            html += `
+              <div class="character-card" onclick="openCharacterDetails('${char.id}')">
+                <img class="character-avatar" src="${img}" loading="lazy" />
+                <div class="character-name" title="${name}">${name}</div>
+              </div>
+            `;
+          });
+
+          if (html) {
+            grid.innerHTML = html;
+            section.style.display = 'block';
+          }
+        }
+      } catch (_) {}
+    }
+
+    async function openCharacterDetails(charId) {
+      switchTab('character');
+      const container = document.getElementById('characterContent');
+      container.className = 'loader-box';
+      container.innerHTML = `
+        <div class="spinner"></div>
+        <span>Загружаем информацию о персонаже...</span>
+      `;
+
+      try {
+        const res = await fetch(`https://shikimori.io/api/characters/${charId}`);
+        const char = await res.json();
+        if (char && char.id) {
+          let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          if (char.image) {
+            const r = char.image.original || char.image.preview;
+            if (r) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+          }
+          const name = char.russian || char.name || 'Персонаж';
+          const japanese = char.japanese ? `(${char.japanese})` : '';
+          const desc = (char.description || 'Описание персонажа отсутствует.').replace(/\[.*?\]/g, '');
+
+          container.className = '';
+          container.innerHTML = `
+            <div class="character-view-box animate-fade">
+              <img class="character-view-avatar" src="${img}" alt="${name}" />
+              <div class="character-view-info">
+                <div class="character-view-title">${name}</div>
+                <div class="character-view-subtitle">${japanese}</div>
+                <div class="character-view-desc">${desc}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          throw new Error();
+        }
+      } catch (_) {
+        container.className = 'loader-box';
+        container.innerHTML = `<p style="color: #F2B8B5;">Не удалось загрузить информацию о персонаже.</p>`;
+      }
     }
 
     function parseKodikVariants(baseItem, results) {
@@ -927,37 +1576,26 @@
 
       const catalogView = document.getElementById('view-catalog');
       const watchView = document.getElementById('view-watch');
+      const characterView = document.getElementById('view-character');
+      const listsView = document.getElementById('view-lists');
+
+      catalogView.style.display = 'none';
+      watchView.style.display = 'none';
+      characterView.style.display = 'none';
+      listsView.style.display = 'none';
 
       if (tab === 'watch') {
-        catalogView.style.display = 'none';
         watchView.style.display = 'block';
+      } else if (tab === 'character') {
+        characterView.style.display = 'block';
+      } else if (tab === 'lists') {
+        listsView.style.display = 'block';
+        fetchUserRatesList('watching');
       } else {
-        watchView.style.display = 'none';
         catalogView.style.display = 'block';
-        if (tab === 'favorites') {
-          document.getElementById('sectionTitle').textContent = 'Мои закладки';
-          renderGrid(state.favorites);
-        } else if (tab === 'history') {
-          document.getElementById('sectionTitle').textContent = 'История просмотра';
-          renderGrid(state.history);
-        } else {
-          document.getElementById('sectionTitle').textContent = 'Каталог аниме';
-          renderGrid(state.animes);
-        }
+        document.getElementById('sectionTitle').textContent = 'Каталог аниме';
+        renderGrid(state.animes, 'animeGrid');
       }
-    }
-
-    function toggleCurrentFavorite() {
-      if (!state.currentAnimeFull) return;
-      const exists = state.favorites.some(a => a.id === state.currentAnimeFull.id);
-      if (exists) {
-        state.favorites = state.favorites.filter(a => a.id !== state.currentAnimeFull.id);
-      } else {
-        state.favorites.unshift(state.currentAnimeFull);
-      }
-      localStorage.setItem('kodik_favs', JSON.stringify(state.favorites));
-      const icon = document.getElementById('favIcon');
-      icon.textContent = exists ? 'bookmark_add' : 'bookmark_added';
     }
   </script>
 </body>

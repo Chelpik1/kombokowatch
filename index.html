@@ -223,7 +223,7 @@
     }
     .brand-title-text:hover { opacity: 0.85; }
 
-    /* Модальное окно (плашка соцсетей) в корне body */
+    /* Модальное окно (плашка соцсетей и соглашение) в корне body */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -243,12 +243,14 @@
       border: 1px solid var(--glass-border-glow);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 380px;
+      max-width: 440px;
+      max-height: 85vh;
       padding: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
+      overflow-y: auto;
     }
     .modal-header {
       display: flex;
@@ -277,7 +279,7 @@
     .modal-body {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
     .social-btn {
       display: flex;
@@ -305,7 +307,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      padding-top: 14px;
+      padding-top: 10px;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
     .contact-section h4 {
@@ -326,18 +328,52 @@
       text-decoration: underline;
     }
 
+    /* Блок пользовательского соглашения в модалке */
+    .terms-box {
+      background: rgba(18, 15, 28, 0.6);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      max-height: 160px;
+      overflow-y: auto;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--color-variant);
+      text-align: left;
+    }
+    .terms-box h5 {
+      color: var(--color-primary);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .terms-box p {
+      margin-bottom: 6px;
+    }
+    .footer-brand-text {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-top: 4px;
+    }
+
     .top-bar {
       display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
+      flex-wrap: wrap;
     }
 
     .search-container {
       flex: 1;
-      min-width: 0;
+      min-width: 220px;
       display: flex;
       align-items: center;
       background: var(--glass-surface);
@@ -345,7 +381,7 @@
       -webkit-backdrop-filter: blur(20px);
       border-radius: var(--radius-full);
       padding: 6px 12px 6px 20px;
-      height: 56px;
+      height: 52px;
       gap: 12px;
       border: 1px solid var(--glass-border);
       box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
@@ -368,6 +404,68 @@
       font-size: 15px;
     }
     .search-input::placeholder { color: var(--color-variant); opacity: 0.7; }
+
+    /* Панель фильтров поиска */
+    .filters-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-select {
+      background: var(--glass-surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      color: var(--color-surface);
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .filter-select:hover, .filter-select:focus {
+      border-color: var(--glass-border-glow);
+    }
+    .filter-select option { background: #18151c; color: var(--color-surface); }
+
+    /* Панель быстрых жанров каталога (без драмы) */
+    .genres-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      width: 100%;
+      scrollbar-width: none;
+    }
+    .genres-bar::-webkit-scrollbar { display: none; }
+
+    .genre-chip {
+      padding: 7px 16px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      color: var(--color-variant);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .genre-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-surface);
+    }
+    .genre-chip.active {
+      background: rgba(208, 188, 255, 0.2);
+      border-color: var(--glass-border-glow);
+      color: var(--color-primary);
+      box-shadow: 0 0 12px rgba(208, 188, 255, 0.2);
+    }
 
     .md-btn {
       height: 44px;
@@ -426,7 +524,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 10px;
       width: 100%;
@@ -689,7 +787,7 @@
       transition: all 0.2s;
     }
     .ep-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }
-    .ep-btn.active { background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; box-shadow: 0 0 20px rgba(208, 188, 255, 0.4); }
+    .ep-btn:active { background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; }
 
     .anime-details-box {
       margin-top: 20px;
@@ -812,10 +910,10 @@
     .loader-box {
       grid-column: 1 / -1;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 60px; gap: 16px; color: var(--color-variant); text-align: center;
+      padding: 40px; gap: 16px; color: var(--color-variant); text-align: center;
     }
     .spinner {
-      width: 44px; height: 44px;
+      width: 40px; height: 40px;
       border: 3.5px solid rgba(255, 255, 255, 0.1);
       border-top-color: var(--color-primary);
       border-radius: 50%;
@@ -906,11 +1004,11 @@
     </div>
   </nav>
 
-  <!-- Модальное окно "Наши соцсети" в самом корне body -->
+  <!-- Модальное окно "Наши соцсети" и Пользовательское соглашение -->
   <div id="socialModal" class="modal-overlay" style="display: none;" onclick="closeSocialModalOnOutside(event)">
     <div class="modal-content animate-fade">
       <div class="modal-header">
-        <h3>Наши соцсети</h3>
+        <h3>Информация и соглашение</h3>
         <button class="modal-close" onclick="closeSocialModal()"><span class="material-symbols-rounded">close</span></button>
       </div>
       <div class="modal-body">
@@ -925,24 +1023,65 @@
             <span class="material-symbols-rounded" style="font-size:20px;">chat</span> Личный Telegram
           </a>
         </div>
+
+        <!-- Пользовательское соглашение -->
+        <div class="terms-box">
+          <h5>Пользовательское соглашение сайта komboko.fun</h5>
+          <p>Настоящее Пользовательское соглашение регулирует отношения между Администрацией сайта komboko.fun и Пользователем. Использование Сайта означает безоговорочное согласие со всеми условиями.</p>
+          <p><b>1. Предмет:</b> Администрация предоставляет неисключительную лицензию на просмотр Контента в личных некоммерческих целях.</p>
+          <p><b>3. Правообладателям:</b> Все материалы предназначены для ознакомления. При нарушении прав направляйте претензии на <b>chebik2010@mail.ru</b>. Доступ ограничивается в течение 24–72 часов.</p>
+          <p><b>4. Правила:</b> Запрещено использовать ботов, парсеры, размещать спам или обходить ограничения.</p>
+        </div>
+
+        <div class="footer-brand-text">
+          Komboko 2026
+        </div>
       </div>
     </div>
   </div>
 
   <main class="app-main animate-fade">
     <div class="app-header-brand">
-      <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети">KombokoWatch</h1>
+      <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</h1>
       <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
         <span class="material-symbols-rounded">account_circle</span>
       </div>
     </div>
 
+    <!-- Поиск и расширенные фильтры -->
     <header class="top-bar">
-      <form class="search-container" onsubmit="handleSearchSubmit(event)">
-        <span class="material-symbols-rounded">search</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Название аниме или Shikimori ID..." />
+      <form class="search-row" onsubmit="handleSearchSubmit(event)">
+        <div class="search-container">
+          <span class="material-symbols-rounded">search</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Название аниме или Shikimori ID..." />
+        </div>
         <button type="submit" class="md-btn md-btn-filled">Найти</button>
       </form>
+
+      <div class="filters-row">
+        <select id="filterType" class="filter-select" onchange="resetAndFetchCatalog()">
+          <option value="">Все типы</option>
+          <option value="tv">ТВ-сериал</option>
+          <option value="movie">Фильм</option>
+          <option value="ova">OVA</option>
+          <option value="ona">ONA</option>
+        </select>
+        <select id="filterYear" class="filter-select" onchange="resetAndFetchCatalog()">
+          <option value="">Все годы</option>
+          <!-- Года генерируются динамически от 2026 до 1970 -->
+        </select>
+        <select id="filterStatus" class="filter-select" onchange="resetAndFetchCatalog()">
+          <option value="">Все статусы</option>
+          <option value="ongoing">Онгоинг</option>
+          <option value="released">Завершен</option>
+          <option value="anons">Анонсировано</option>
+        </select>
+        <select id="filterOrder" class="filter-select" onchange="resetAndFetchCatalog()">
+          <option value="popularity">По популярности</option>
+          <option value="ranked">По рейтингу</option>
+          <option value="aired_on">По новизне</option>
+        </select>
+      </div>
     </header>
 
     <!-- Каталог -->
@@ -950,11 +1089,26 @@
       <div class="section-header">
         <h2 class="section-title" id="sectionTitle">Каталог аниме</h2>
       </div>
-      <div class="anime-grid" id="animeGrid">
-        <div class="loader-box">
-          <div class="spinner"></div>
-          <span>Загрузка каталога с Shikimori...</span>
-        </div>
+
+      <!-- Быстрый выбор жанров (без драмы) -->
+      <div class="genres-bar" id="genresBar">
+        <button class="genre-chip active" onclick="filterByGenre('', this)">Все</button>
+        <button class="genre-chip" onclick="filterByGenre('романтика', this)">Романтика</button>
+        <button class="genre-chip" onclick="filterByGenre('комедия', this)">Комедия</button>
+        <button class="genre-chip" onclick="filterByGenre('экшен', this)">Экшен</button>
+        <button class="genre-chip" onclick="filterByGenre('фантастика', this)">Фантастика</button>
+        <button class="genre-chip" onclick="filterByGenre('фэнтези', this)">Фэнтези</button>
+        <button class="genre-chip" onclick="filterByGenre('повседневность', this)">Повседневность</button>
+        <button class="genre-chip" onclick="filterByGenre('приключения', this)">Приключения</button>
+        <button class="genre-chip" onclick="filterByGenre('триллер', this)">Триллер</button>
+      </div>
+
+      <div class="anime-grid" id="animeGrid"></div>
+      
+      <!-- Индикатор подгрузки бесконечного скролла -->
+      <div id="infiniteLoader" class="loader-box" style="display: none;">
+        <div class="spinner"></div>
+        <span>Загружаем еще порцию аниме...</span>
       </div>
     </section>
 
@@ -972,7 +1126,7 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Переключатель источников: Кодик vs Английский плеер -->
+          <!-- Переключатель источников: Кодик vs Мега (прокси бэкенда) -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">
               <span class="material-symbols-rounded" style="font-size:16px">play_circle</span> Кодик (Русская озвучка)
@@ -1094,10 +1248,58 @@
       currentSource: 'kodik',
       currentUser: null,
       userRates: {},
-      history: JSON.parse(localStorage.getItem('kodik_history') || '[]')
+      history: JSON.parse(localStorage.getItem('kodik_history') || '[]'),
+      selectedGenre: '',
+      genresMap: {
+        'романтика': 22,
+        'комедия': 4,
+        'экшен': 1,
+        'боевик': 1,
+        'фантастика': 24,
+        'фэнтези': 10,
+        'повседневность': 36,
+        'приключения': 2,
+        'триллер': 41,
+        'ужасы': 14,
+        'детектив': 7,
+        'мистика': 12
+      },
+      page: 1,
+      limit: 24,
+      isLoading: false,
+      hasMore: true,
+      currentQuery: '',
+      currentTab: 'catalog'
     };
 
     window.addEventListener('DOMContentLoaded', async () => {
+      // Заполняем выпадающий список годов от 2026 до 1970
+      const yearSelect = document.getElementById('filterYear');
+      for (let y = 2026; y >= 1970; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+      }
+
+      await initGenresMap();
+
+      // Настройка бесконечного скролла
+      window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500) {
+          if (!state.isLoading && state.hasMore && document.getElementById('view-catalog').style.display !== 'none') {
+            fetchShikimoriCatalog(false);
+          }
+        }
+      });
+
+      // Обработка прямых ссылок с ID (/12345)
+      const path = window.location.pathname.replace(/^\/+/, '');
+      if (/^\d+$/.test(path)) {
+        await loadAnimeByIdOnStart(path);
+        return;
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       if (code) {
@@ -1122,8 +1324,68 @@
         if (savedToken) await fetchUserProfile(savedToken);
       }
 
-      fetchShikimoriCatalog();
+      // Восстановление сессии при обновлении страницы
+      const savedSession = localStorage.getItem('komboko_session');
+      if (savedSession) {
+        try {
+          const session = JSON.parse(savedSession);
+          if (session.currentTab === 'watch' && session.currentAnimeFull) {
+            state.currentAnimeFull = session.currentAnimeFull;
+            state.currentEpisodeNum = session.currentEpisodeNum || 1;
+            state.currentVariantIndex = session.currentVariantIndex || 0;
+            state.currentSource = session.currentSource || 'kodik';
+            
+            switchTab('watch', false);
+            document.getElementById('watchTitle').textContent = session.currentAnimeFull.title;
+            renderDetailsPoster(session.currentAnimeFull.poster, session.currentAnimeFull.title);
+            renderVoiceChips();
+            renderEpisodesGrid();
+            loadCurrentEpisodeVideo();
+            return;
+          }
+        } catch(e) {}
+      }
+
+      fetchShikimoriCatalog(true);
     });
+
+    async function loadAnimeByIdOnStart(id) {
+      try {
+        const res = await fetch(`https://shikimori.io/api/animes/${id}`);
+        const item = await res.json();
+        if (item && item.id) {
+          loadKodikPlayerForAnime(parseAnimeItem(item));
+        } else {
+          fetchShikimoriCatalog(true);
+        }
+      } catch(e) {
+        fetchShikimoriCatalog(true);
+      }
+    }
+
+    function saveSessionState() {
+      localStorage.setItem('komboko_session', JSON.stringify({
+        currentTab: state.currentTab,
+        currentAnimeFull: state.currentAnimeFull,
+        currentEpisodeNum: state.currentEpisodeNum,
+        currentVariantIndex: state.currentVariantIndex,
+        currentSource: state.currentSource
+      }));
+    }
+
+    async function initGenresMap() {
+      try {
+        const res = await fetch('https://shikimori.io/api/genres');
+        const genres = await res.json();
+        if (Array.isArray(genres)) {
+          genres.forEach(g => {
+            if (g.russian && g.id) {
+              state.genresMap[g.russian.toLowerCase().trim()] = g.id;
+            }
+          });
+        }
+      } catch (e) {}
+    }
 
     function openSocialModal() {
       document.getElementById('socialModal').style.display = 'flex';
@@ -1243,34 +1505,36 @@
           const animesRes = await fetch(`https://shikimori.io/api/animes?ids=${animeIds}&limit=50`);
           const animesData = await animesRes.json();
 
-          const listItems = animesData.map(item => {
-            let poster = null;
-            if (item.image) {
-              const rawImg = item.image.original || item.image.preview;
-              if (rawImg && !rawImg.includes('missing')) {
-                poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
-              }
-            }
-            return {
-              id: String(item.id),
-              title: item.russian || item.name || 'Без названия',
-              year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
-              episodes: item.episodes || item.episodes_aired || 12,
-              rating: item.score && item.score !== '0.0' ? item.score : null,
-              poster,
-              description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
-              genres: (item.genres || []).map(g => g.russian),
-              status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел'
-            };
-          });
-
-          renderGrid(listItems, 'userListsGrid');
+          const listItems = animesData.map(item => parseAnimeItem(item));
+          renderGrid(listItems, 'userListsGrid', false);
         } else {
           grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">В этом списке пока ничего нет.</p>`;
         }
       } catch (err) {
         grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Не удалось загрузить списки.</p>`;
       }
+    }
+
+    function parseAnimeItem(item) {
+      let poster = null;
+      if (item.image) {
+        const rawImg = item.image.original || item.image.preview || item.image.x96;
+        if (rawImg && !rawImg.includes('missing')) {
+          poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+        }
+      }
+      return {
+        id: String(item.id),
+        title: item.russian || item.name || 'Без названия',
+        year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
+        episodes: item.episodes || item.episodes_aired || 12,
+        rating: item.score && item.score !== '0.0' ? item.score : null,
+        poster,
+        description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
+        genres: (item.genres || []).map(g => g.russian || g.name),
+        kind: item.kind || '',
+        status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел'
+      };
     }
 
     function handleCardAddClick(e, animeId) {
@@ -1421,95 +1685,132 @@
       }
     }
 
-    async function fetchShikimoriCatalog(query = '') {
+    function resetAndFetchCatalog() {
+      state.page = 1;
+      state.animes = [];
+      state.hasMore = true;
+      fetchShikimoriCatalog(true);
+    }
+
+    async function fetchShikimoriCatalog(reset = true, query = '') {
+      if (state.isLoading || !state.hasMore) return;
+      state.isLoading = true;
+
+      if (reset) {
+        state.page = 1;
+        state.animes = [];
+        state.hasMore = true;
+        if (query !== '') state.currentQuery = query;
+      }
+
       const grid = document.getElementById('animeGrid');
-      grid.innerHTML = `
-        <div class="loader-box">
-          <div class="spinner"></div>
-          <span>Загружаем баннеры и описания...</span>
-        </div>
-      `;
+      const loader = document.getElementById('infiniteLoader');
+
+      if (state.page === 1) {
+        grid.innerHTML = `
+          <div class="loader-box">
+            <div class="spinner"></div>
+            <span>Загружаем каталог с Shikimori...</span>
+          </div>
+        `;
+      } else {
+        loader.style.display = 'flex';
+      }
+
+      const typeVal = document.getElementById('filterType').value;
+      const yearVal = document.getElementById('filterYear').value;
+      const statusVal = document.getElementById('filterStatus').value;
+      const orderVal = document.getElementById('filterOrder').value || 'popularity';
+      const genreKey = state.selectedGenre.toLowerCase().trim();
+      const genreId = state.genresMap[genreKey] || '';
 
       try {
-        let url = 'https://shikimori.io/api/animes?limit=36&order=popularity';
-        if (query) {
-          if (/^\d+$/.test(query)) {
-            url = `https://shikimori.io/api/animes/${query}`;
-          } else {
-            url = `https://shikimori.io/api/animes?search=${encodeURIComponent(query)}&limit=36`;
+        let url = '';
+        if (state.currentQuery && /^\d+$/.test(state.currentQuery)) {
+          url = `https://shikimori.io/api/animes/${state.currentQuery}`;
+        } else {
+          url = `https://shikimori.io/api/animes?limit=${state.limit}&page=${state.page}&order=${orderVal}`;
+          if (state.currentQuery) {
+            url += `&search=${encodeURIComponent(state.currentQuery)}`;
           }
+          if (typeVal) url += `&kind=${typeVal}`;
+          if (yearVal) url += `&season=${yearVal}`;
+          if (statusVal) url += `&status=${statusVal}`;
+          if (genreId) url += `&genre=${genreId}`;
         }
 
         const res = await fetch(url);
         const data = await res.json();
         const items = Array.isArray(data) ? data : [data];
 
-        state.animes = items.filter(Boolean).map(item => {
-          let poster = null;
-          if (item.image) {
-            const rawImg = item.image.original || item.image.preview || item.image.x96;
-            if (rawImg && !rawImg.includes('missing')) {
-              poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
-            }
-          }
+        const newItems = items.filter(Boolean).map(item => parseAnimeItem(item));
 
-          return {
-            id: String(item.id),
-            title: item.russian || item.name || 'Без названия',
-            year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
-            episodes: item.episodes || item.episodes_aired || 12,
-            rating: item.score && item.score !== '0.0' ? item.score : null,
-            poster,
-            description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
-            genres: (item.genres || []).map(g => g.russian),
-            status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел'
-          };
-        });
+        if (newItems.length < state.limit || /^\d+$/.test(state.currentQuery)) {
+          state.hasMore = false;
+        }
 
-        renderGrid(state.animes, 'animeGrid');
+        if (state.page === 1) {
+          state.animes = newItems;
+        } else {
+          state.animes = [...state.animes, ...newItems];
+        }
+
+        state.page++;
+        renderGrid(state.animes, 'animeGrid', true);
       } catch (err) {
-        grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Не удалось загрузить каталог с Shikimori.</p>`;
+        if (state.page === 1) {
+          grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Ничего не найдено по вашему запросу.</p>`;
+        }
+      } finally {
+        state.isLoading = false;
+        loader.style.display = 'none';
       }
     }
 
-    function renderGrid(list, elementId = 'animeGrid') {
+    function filterByGenre(genre, btnElement) {
+      document.querySelectorAll('.genre-chip').forEach(b => b.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      state.selectedGenre = genre;
+      resetAndFetchCatalog();
+    }
+
+    function renderGrid(list, elementId = 'animeGrid', append = false) {
       const grid = document.getElementById(elementId);
-      grid.innerHTML = '';
+      if (!append) grid.innerHTML = '';
 
       if (!list || list.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">Ничего не найдено.</p>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">Ничего не найдено по заданным фильтрам.</p>`;
         return;
       }
 
+      let html = '';
       list.forEach(item => {
-        const card = document.createElement('article');
-        card.className = 'anime-card animate-fade';
-        card.onclick = () => loadKodikPlayerForAnime(item);
-
         const posterInner = item.poster 
           ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>movie</span><p>${item.title}</p></div>'" />`
           : `<div class="poster-fallback"><span class="material-symbols-rounded">movie</span><p>${item.title}</p></div>`;
 
-        card.innerHTML = `
-          <div class="poster-wrap">
-            ${posterInner}
-            <div class="card-badges">
-              ${item.rating ? `<span class="badge-pill rating">★ ${item.rating}</span>` : `<span></span>`}
-              <span class="badge-pill">${item.episodes} эп.</span>
+        html += `
+          <article class="anime-card animate-fade" onclick='loadKodikPlayerForAnime(${JSON.stringify(item)})'>
+            <div class="poster-wrap">
+              ${posterInner}
+              <div class="card-badges">
+                ${item.rating ? `<span class="badge-pill rating">★ ${item.rating}</span>` : `<span></span>`}
+                <span class="badge-pill">${item.episodes} эп.</span>
+              </div>
             </div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">${item.title}</h3>
-            <div class="card-meta">${item.year}</div>
-            <div class="card-add-wrapper">
-              <button class="card-add-btn" onclick="handleCardAddClick(event, '${item.id}')">
-                <span class="material-symbols-rounded" style="font-size:16px;">bookmark_add</span> В список
-              </button>
+            <div class="card-body">
+              <h3 class="card-title">${item.title}</h3>
+              <div class="card-meta">${item.year} • ${(item.kind || 'ТВ').toUpperCase()}</div>
+              <div class="card-add-wrapper">
+                <button class="card-add-btn" onclick="handleCardAddClick(event, '${item.id}')">
+                  <span class="material-symbols-rounded" style="font-size:16px;">bookmark_add</span> В список
+                </button>
+              </div>
             </div>
-          </div>
+          </article>
         `;
-        grid.appendChild(card);
       });
+      grid.innerHTML = html;
     }
 
     function renderDetailsPoster(posterUrl, title) {
@@ -1538,9 +1839,9 @@
     }
 
     async function loadKodikPlayerForAnime(item) {
-      switchTab('watch');
+      switchTab('watch', false);
+      window.history.pushState({}, '', '/' + item.id);
       
-      // При открытии нового аниме по умолчанию включаем Кодик
       state.currentSource = 'kodik';
       PLAYER_SOURCES.forEach(s => {
         const btn = document.getElementById(`btnSource-${s}`);
@@ -1564,22 +1865,7 @@
         const detailRes = await fetch(`https://shikimori.io/api/animes/${item.id}`);
         const detailData = await detailRes.json();
         if (detailData && detailData.id) {
-          let poster = item.poster;
-          if (detailData.image) {
-            const rawImg = detailData.image.original || detailData.image.preview;
-            if (rawImg && !rawImg.includes('missing')) {
-              poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
-            }
-          }
-          detailedItem = {
-            ...item,
-            title: detailData.russian || detailData.name || item.title,
-            poster,
-            description: (detailData.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
-            genres: (detailData.genres || []).map(g => g.russian),
-            status: detailData.status === 'ongoing' ? 'Онгоинг' : 'Вышел',
-            year: detailData.aired_on ? detailData.aired_on.slice(0, 4) : item.year
-          };
+          detailedItem = parseAnimeItem(detailData);
         }
       } catch (_) {}
 
@@ -1615,6 +1901,8 @@
 
       state.history = [detailedItem, ...state.history.filter(a => a.id !== detailedItem.id)].slice(0, 30);
       localStorage.setItem('kodik_history', JSON.stringify(state.history));
+
+      saveSessionState();
 
       renderVoiceChips();
       renderEpisodesGrid();
@@ -1653,7 +1941,7 @@
             const name = a.russian || a.name || 'Часть';
             
             html += `
-              <div class="relation-card" onclick="loadRelatedAnime('${a.id}')">
+              <div class="relation-card" onclick='loadRelatedAnime(${JSON.stringify(parseAnimeItem(a))})'>
                 <img class="relation-img" src="${img}" loading="lazy" />
                 <div class="relation-type">${relType}</div>
                 <div class="relation-name" title="${name}">${name}</div>
@@ -1669,30 +1957,9 @@
       } catch (_) {}
     }
 
-    async function loadRelatedAnime(id) {
-      try {
-        const res = await fetch(`https://shikimori.io/api/animes/${id}`);
-        const item = await res.json();
-        if (item && item.id) {
-          let poster = null;
-          if (item.image) {
-            const rawImg = item.image.original || item.image.preview;
-            if (rawImg && !rawImg.includes('missing')) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
-          }
-          loadKodikPlayerForAnime({
-            id: String(item.id),
-            title: item.russian || item.name || 'Без названия',
-            year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
-            episodes: item.episodes || item.episodes_aired || 12,
-            rating: item.score && item.score !== '0.0' ? item.score : null,
-            poster,
-            description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
-            genres: (item.genres || []).map(g => g.russian),
-            status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел'
-          });
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      } catch (_) {}
+    async function loadRelatedAnime(item) {
+      loadKodikPlayerForAnime(item);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function loadAnimeCharacters(animeId) {
@@ -1775,7 +2042,7 @@
     }
 
     function parseKodikVariants(baseItem, results) {
-      const variants = [];
+      let variants = [];
       for (const r of results) {
         const translation = r.translation || { id: 0, title: 'Оригинал', type: 'voice' };
         const episodes = {};
@@ -1801,6 +2068,29 @@
           });
         }
       }
+
+      // ЖЕСТКИЙ ФИЛЬТР РЕКЛАМЫ
+      let cleanVariants = variants.filter(v => {
+        const text = ((v.translation.title || '') + ' ' + (v.default_link || '') + ' ' + JSON.stringify(v.episodes)).toUpperCase();
+        if (text.includes('MP2') || text.includes('MV_T') || text.includes('MP_2') || text.includes('MV-T')) {
+          return false;
+        }
+        return true;
+      });
+
+      if (cleanVariants.length > 0) {
+        variants = cleanVariants;
+      }
+
+      variants.sort((a, b) => {
+        const tA = ((a.translation.title || '') + ' ' + (a.default_link || '')).toUpperCase();
+        const tB = ((b.translation.title || '') + ' ' + (b.default_link || '')).toUpperCase();
+        const isRockA = tA.includes('ROCK');
+        const isRockB = tB.includes('ROCK');
+        if (isRockA && !isRockB) return -1;
+        if (!isRockA && isRockB) return 1;
+        return 0;
+      });
 
       if (variants.length === 0) {
         const episodes = {};
@@ -1829,6 +2119,7 @@
         btn.textContent = v.translation.title;
         btn.onclick = () => {
           state.currentVariantIndex = idx;
+          saveSessionState();
           renderVoiceChips();
           renderEpisodesGrid();
           loadCurrentEpisodeVideo();
@@ -1848,11 +2139,21 @@
       epNumbers.forEach((epStr) => {
         const epNum = Number(epStr);
         const btn = document.createElement('button');
-        btn.className = `ep-btn ${epNum === state.currentEpisodeNum ? 'active' : ''}`;
+        // Без статической подсветки, чтобы не вводить в заблуждение
+        btn.className = 'ep-btn';
         btn.textContent = epNum;
         btn.onclick = () => {
           state.currentEpisodeNum = epNum;
-          renderEpisodesGrid();
+          saveSessionState();
+          
+          // Визуальный эффект клика
+          document.querySelectorAll('.ep-btn').forEach(b => {
+            b.style.background = '';
+            b.style.color = '';
+          });
+          btn.style.background = 'var(--color-primary)';
+          btn.style.color = 'var(--color-on-primary)';
+
           loadCurrentEpisodeVideo();
         };
         grid.appendChild(btn);
@@ -1869,26 +2170,33 @@
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
       if (state.currentSource === 'english') {
-        // Стабильный англоязычный эндпоинт по MAL ID
-        const url = `https://ani.megaplay.su/mal/${malId}/${epNum}/dub`;
-        openLink.href = url;
-        iframe.src = url;
+        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}`;
+        openLink.href = proxyUrl;
+        iframe.src = proxyUrl;
+        saveSessionState();
         return;
       }
 
-      // Стандартный плеер Kodik (РФ)
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       if (!variant) return;
 
-      const rawLink = variant.episodes[String(epNum)] || variant.default_link;
-      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
+      let rawLink = variant.episodes[String(epNum)] || variant.default_link;
+      let cleanUrl = rawLink.startsWith('//`') ? `https:${rawLink}` : rawLink;
+      if (rawLink.startsWith('//')) cleanUrl = `https:${rawLink}`;
 
       cleanUrl = cleanUrl
         .replace('kodik.info', 'kodikplayer.com')
         .replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
 
+      if (cleanUrl.includes('episode=')) {
+        cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
+      } else {
+        cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
+      }
+
       openLink.href = cleanUrl;
       iframe.src = cleanUrl;
+      saveSessionState();
     }
 
     function stepEpisode(delta) {
@@ -1897,6 +2205,7 @@
       const target = state.currentEpisodeNum + delta;
       if (variant && variant.episodes[String(target)]) {
         state.currentEpisodeNum = target;
+        saveSessionState();
         renderEpisodesGrid();
         loadCurrentEpisodeVideo();
       }
@@ -1905,14 +2214,19 @@
     function handleSearchSubmit(e) {
       e.preventDefault();
       const raw = document.getElementById('searchInput').value.trim();
-      if (!raw) {
-        fetchShikimoriCatalog();
-        return;
-      }
-      fetchShikimoriCatalog(raw);
+      state.currentQuery = raw;
+      resetAndFetchCatalog();
     }
 
-    function switchTab(tab) {
+    function switchTab(tab, save = true) {
+      state.currentTab = tab;
+      if (save) {
+        if (tab === 'catalog') {
+          window.history.pushState({}, '', '/');
+        }
+        saveSessionState();
+      }
+
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       const navBtn = document.getElementById(`nav-${tab}`);
       if (navBtn) navBtn.classList.add('active');
@@ -1937,11 +2251,10 @@
       } else if (tab === 'history') {
         catalogView.style.display = 'block';
         document.getElementById('sectionTitle').textContent = 'История просмотра';
-        renderGrid(state.history, 'animeGrid');
+        renderGrid(state.history, 'animeGrid', false);
       } else {
         catalogView.style.display = 'block';
         document.getElementById('sectionTitle').textContent = 'Каталог аниме';
-        renderGrid(state.animes, 'animeGrid');
       }
     }
   </script>

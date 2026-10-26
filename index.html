@@ -406,13 +406,13 @@
     /* Стили для панели выбора источника плеера */
     .player-source-bar {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .player-source-bar .md-btn {
-      height: 40px;
-      padding: 0 16px;
+      height: 42px;
+      padding: 0 18px;
       font-size: 13px;
     }
     .player-source-bar .md-btn.active {
@@ -972,25 +972,26 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Переключатель плееров: Kodik (РФ) + 3 варианта английских плееров -->
+          <!-- Только 2 плеера: Кодик и Английская озвучка -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">
               <span class="material-symbols-rounded" style="font-size:18px">play_circle</span> Основная озвучка (Кодик)
             </button>
             <button id="btnSource-megaplay_dub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay_dub')">
-              <span class="material-symbols-rounded" style="font-size:18px">language</span> MegaPlay (ENG Dub)
-            </button>
-            <button id="btnSource-megaplay_sub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay_sub')">
-              <span class="material-symbols-rounded" style="font-size:18px">subtitles</span> MegaPlay (ENG Sub)
-            </button>
-            <button id="btnSource-vidlink_dub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidlink_dub')">
-              <span class="material-symbols-rounded" style="font-size:18px">public</span> VidLink (ENG Dub)
+              <span class="material-symbols-rounded" style="font-size:18px">language</span> Английская озвучка
             </button>
           </div>
 
           <div class="player-card">
             <div class="video-stage">
-              <iframe id="kodikIframe" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
+              <!-- sandbox блокирует редиректы и всплывающую рекламу -->
+              <iframe 
+                id="kodikIframe" 
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" 
+                referrerpolicy="origin"
+                allowfullscreen 
+                allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
+              </iframe>
             </div>
             <div class="player-toolbar">
               <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; min-width:0;">
@@ -1085,7 +1086,7 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['kodik', 'megaplay_dub', 'megaplay_sub', 'vidlink_dub'];
+    const PLAYER_SOURCES = ['kodik', 'megaplay_dub'];
 
     let state = {
       animes: [],
@@ -1871,20 +1872,6 @@
 
       if (state.currentSource === 'megaplay_dub') {
         const url = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
-        openLink.href = url;
-        iframe.src = url;
-        return;
-      }
-
-      if (state.currentSource === 'megaplay_sub') {
-        const url = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/sub`;
-        openLink.href = url;
-        iframe.src = url;
-        return;
-      }
-
-      if (state.currentSource === 'vidlink_dub') {
-        const url = `https://vidlink.pro/anime/${malId}/${epNum}/dub`;
         openLink.href = url;
         iframe.src = url;
         return;

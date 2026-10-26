@@ -512,23 +512,24 @@
       border-color: var(--color-primary);
     }
 
-    /* Стили для панели выбора источника плеера */
+    /* Компактные кнопки выбора источников плеера (RU, AniBoom, CVH, Mega, VidSrc, EmbedSu) */
     .player-source-bar {
       display: flex;
-      gap: 10px;
+      gap: 6px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .player-source-bar .md-btn {
-      height: 42px;
-      padding: 0 18px;
-      font-size: 13px;
+      height: 36px;
+      padding: 0 12px;
+      font-size: 11px;
+      border-radius: var(--radius-sm);
     }
     .player-source-bar .md-btn.active {
-      background: rgba(208, 188, 255, 0.22) !important;
+      background: rgba(208, 188, 255, 0.25) !important;
       border-color: var(--glass-border-glow) !important;
       color: var(--color-primary) !important;
-      box-shadow: 0 0 16px rgba(208, 188, 255, 0.25);
+      box-shadow: 0 0 14px rgba(208, 188, 255, 0.2);
     }
 
     .section-header {
@@ -595,10 +596,10 @@
 
     .anime-card:hover .poster-wrap img { transform: scale(1.06); }
 
-    /* Блюр и минималистичный оверлей 18+ */
+    /* Блюр и минималистичный оверлей 18+ для хентая */
     .poster-wrap.nsfw-card img {
-      filter: blur(18px) brightness(0.55) !important;
-      -webkit-filter: blur(18px) brightness(0.55) !important;
+      filter: blur(16px) brightness(0.55) !important;
+      -webkit-filter: blur(16px) brightness(0.55) !important;
       transform: scale(1.14) !important;
     }
     .nsfw-overlay {
@@ -1050,8 +1051,8 @@
 
   <!-- Модальное окно предупреждения 18+ -->
   <div id="ageModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='ageModal') confirmAgeModal(false)">
-    <div class="modal-content animate-fade" style="max-width: 400px; text-align: center; align-items: center;">
-      <span class="material-symbols-rounded" style="font-size: 40px; color: var(--color-primary);">visibility_off</span>
+    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center;">
+      <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">visibility_off</span>
       <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);">Ограничение 18+</h3>
       <p style="font-size: 13.5px; line-height: 1.55; color: var(--color-surface);">
         Данный контент предназначен для лиц старше 18 лет. Нажимая продолжить, вы подтверждаете что вам есть 18
@@ -1190,17 +1191,14 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Переключатель источников: Кодик vs Мега (прокси бэкенда) -->
+          <!-- Панель компактных кнопок плееров: Кодик, AniBoom, CVH, Mega, VidSrc, EmbedSu -->
           <div class="player-source-bar">
-            <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">
-              <span class="material-symbols-rounded" style="font-size:16px">play_circle</span> Кодик (Русская озвучка)
-            </button>
-            <button id="btnSource-mega" class="md-btn md-btn-tonal" onclick="switchPlayerSource('mega')">
-              <span class="material-symbols-rounded" style="font-size:16px">bolt</span> Мега (Без рекламы)
-            </button>
-            <button id="btnSource-english" class="md-btn md-btn-tonal" onclick="switchPlayerSource('english')">
-              <span class="material-symbols-rounded" style="font-size:16px">language</span> Английская озвучка (ENG Dub)
-            </button>
+            <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">Кодик (RU)</button>
+            <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">AniBoom</button>
+            <button id="btnSource-cvh" class="md-btn md-btn-tonal" onclick="switchPlayerSource('cvh')">CVH</button>
+            <button id="btnSource-mega" class="md-btn md-btn-tonal" onclick="switchPlayerSource('mega')">Mega (EN)</button>
+            <button id="btnSource-vidsrc" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidsrc')">VidSrc</button>
+            <button id="btnSource-embedsu" class="md-btn md-btn-tonal" onclick="switchPlayerSource('embedsu')">EmbedSu</button>
           </div>
 
           <div class="player-card">
@@ -1305,15 +1303,14 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['kodik', 'mega', 'english'];
+    const PLAYER_SOURCES = ['kodik', 'aniboom', 'cvh', 'mega', 'vidsrc', 'embedsu'];
 
     let state = {
       animes: [],
       itemsRegistry: {},
-      nsfwIdSet: new Set(),
       confirmedNsfwIds: new Set(),
       pendingNsfwItem: null,
-      lastCatalogMode: 'catalog', // 'catalog' | 'history' | 'lists'
+      lastCatalogMode: 'catalog',
       lastScrollY: 0,
       currentAnimeFull: null,
       currentVariantIndex: 0,
@@ -1577,17 +1574,8 @@
         
         if (Array.isArray(rates) && rates.length > 0) {
           const animeIds = rates.map(r => r.target_id).join(',');
-          const [animesRes, nsfwRes] = await Promise.all([
-            fetch(`https://shikimori.io/api/animes?ids=${animeIds}&limit=50&censored=false`),
-            fetch(`https://shikimori.io/api/animes?ids=${animeIds}&limit=50&censored=false&rating=rx,r_plus`).catch(() => null)
-          ]);
+          const animesRes = await fetch(`https://shikimori.io/api/animes?ids=${animeIds}&limit=50&censored=false`);
           const animesData = await animesRes.json();
-          if (nsfwRes && nsfwRes.ok) {
-            const nsfwData = await nsfwRes.json();
-            if (Array.isArray(nsfwData)) {
-              nsfwData.forEach(x => { if (x && x.id) state.nsfwIdSet.add(String(x.id)); });
-            }
-          }
 
           const listItems = animesData.map(item => parseAnimeItem(item));
           renderGrid(listItems, 'userListsGrid', false);
@@ -1597,45 +1585,6 @@
       } catch (err) {
         grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Не удалось загрузить списки.</p>`;
       }
-    }
-
-    // Проверка на 18+ (работает и по ID из фильтра rx,r_plus, и по полному объекту с жанрами)
-    function checkIsAdultItem(item) {
-      if (!item) return false;
-      const idStr = String(item.id || '');
-      if (state.nsfwIdSet.has(idStr) || item.isNsfw) return true;
-
-      const r = String(item.rating || '').toLowerCase();
-      if (r === 'rx' || r === 'r_plus' || r === 'r+') {
-        state.nsfwIdSet.add(idStr);
-        return true;
-      }
-
-      const rawGenres = item.genres || [];
-      for (const g of rawGenres) {
-        if (typeof g === 'string') {
-          const gl = g.toLowerCase();
-          if (gl.includes('хентай') || gl.includes('hentai') || gl.includes('эротик') || gl.includes('erotica')) {
-            state.nsfwIdSet.add(idStr);
-            return true;
-          }
-        } else if (g) {
-          const gName = String(g.name || '').toLowerCase();
-          const gRus = String(g.russian || '').toLowerCase();
-          if (
-            gName.includes('hentai') ||
-            gRus.includes('хентай') ||
-            gName.includes('erotica') ||
-            gRus.includes('эротика') ||
-            g.id === 12 ||
-            g.id === 539
-          ) {
-            state.nsfwIdSet.add(idStr);
-            return true;
-          }
-        }
-      }
-      return false;
     }
 
     function parseAnimeItem(item) {
@@ -1648,7 +1597,12 @@
       }
 
       const rawGenres = item.genres || [];
-      const isNsfw = checkIsAdultItem(item);
+      const hasHentaiGenre = rawGenres.some(g => {
+        const gName = String(g.name || '').toLowerCase();
+        const gRus = String(g.russian || '').toLowerCase();
+        return gName === 'hentai' || gRus === 'хентай' || g.id === 12 || g.id === 539;
+      });
+      const isNsfw = Boolean(item.rating === 'rx' || hasHentaiGenre);
 
       return {
         id: String(item.id),
@@ -1817,14 +1771,9 @@
       state.page = 1;
       state.animes = [];
       state.hasMore = true;
-      state.lastCatalogMode = 'catalog';
-      document.getElementById('sectionTitle').textContent = state.currentQuery
-        ? `Поиск: ${state.currentQuery}`
-        : 'Каталог аниме';
       fetchShikimoriCatalog(true);
     }
 
-    // Полный сброс в начальный каталог при клике на кнопку «Каталог» в меню
     function resetToMainCatalog() {
       document.getElementById('searchInput').value = '';
       document.getElementById('filterType').value = '';
@@ -1841,14 +1790,13 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Возврат по кнопке «← Назад» из тайтла (сохраняет поиск и позицию!)
     function goBackFromWatch() {
       if (state.lastCatalogMode === 'lists') {
         switchTab('lists');
       } else if (state.lastCatalogMode === 'history') {
         switchTab('history');
       } else {
-        switchTab('catalog');
+        switchTab('catalog', false);
         if (state.animes.length === 0) {
           fetchShikimoriCatalog(true);
         } else {
@@ -1891,43 +1839,28 @@
       const genreId = state.genresMap[genreKey] || '';
 
       try {
-        let baseUrl = `https://shikimori.io/api/animes?limit=${state.limit}&page=${state.page}&order=${orderVal}&censored=false`;
+        let url = `https://shikimori.io/api/animes?limit=${state.limit}&page=${state.page}&order=${orderVal}&censored=false`;
         const isSingleIdSearch = state.currentQuery && /^\d+$/.test(state.currentQuery);
 
         if (state.currentQuery) {
           if (isSingleIdSearch) {
-            baseUrl = `https://shikimori.io/api/animes/${state.currentQuery}`;
+            url = `https://shikimori.io/api/animes/${state.currentQuery}`;
           } else {
-            baseUrl += `&search=${encodeURIComponent(state.currentQuery)}`;
+            url += `&search=${encodeURIComponent(state.currentQuery)}`;
           }
         }
         if (!isSingleIdSearch) {
-          if (typeVal) baseUrl += `&kind=${typeVal}`;
-          if (yearVal) baseUrl += `&season=${yearVal}`;
-          if (statusVal) baseUrl += `&status=${statusVal}`;
-          if (genreId) baseUrl += `&genre=${genreId}`;
+          if (typeVal) url += `&kind=${typeVal}`;
+          if (yearVal) url += `&season=${yearVal}`;
+          if (statusVal) url += `&status=${statusVal}`;
+          if (genreId) url += `&genre=${genreId}`;
         }
 
-        // Параллельно запрашиваем полный список и список только 18+ (rx, r_plus) для этой же выборки,
-        // так как в кратком ответе /api/animes Shikimori не присылает поле rating и genres!
-        const [res, nsfwRes] = await Promise.all([
-          fetch(baseUrl),
-          !isSingleIdSearch ? fetch(`${baseUrl}&rating=rx,r_plus`).catch(() => null) : Promise.resolve(null)
-        ]);
-
+        const res = await fetch(url);
         if (!res.ok) throw new Error('API Error');
         const data = await res.json();
-
-        if (nsfwRes && nsfwRes.ok) {
-          const nsfwData = await nsfwRes.json();
-          if (Array.isArray(nsfwData)) {
-            nsfwData.forEach(nItem => {
-              if (nItem && nItem.id) state.nsfwIdSet.add(String(nItem.id));
-            });
-          }
-        }
-
         const items = Array.isArray(data) ? data : (data && data.id ? [data] : []);
+
         const newItems = items.filter(Boolean).map(item => parseAnimeItem(item));
 
         if (newItems.length < state.limit || isSingleIdSearch) {
@@ -1968,25 +1901,7 @@
         state.lastScrollY = window.scrollY;
       }
 
-      // Если мы еще не уверены на 100% в рейтинге карточки, быстро проверяем полный объект тайтла
-      if (!item.isNsfw && !state.nsfwIdSet.has(idStr) && (!item.genres || item.genres.length === 0)) {
-        try {
-          const detailRes = await fetch(`https://shikimori.io/api/animes/${idStr}`);
-          if (detailRes.ok) {
-            const detailData = await detailRes.json();
-            if (detailData && detailData.id) {
-              item = parseAnimeItem(detailData);
-              state.itemsRegistry[idStr] = item;
-              state.animes = state.animes.map(a => a.id === idStr ? item : a);
-              if (item.isNsfw) {
-                renderGrid(state.animes, 'animeGrid', false);
-              }
-            }
-          }
-        } catch (_) {}
-      }
-
-      if ((item.isNsfw || state.nsfwIdSet.has(idStr)) && !state.confirmedNsfwIds.has(idStr)) {
+      if (item.isNsfw && !state.confirmedNsfwIds.has(idStr)) {
         state.pendingNsfwItem = item;
         document.getElementById('ageModal').style.display = 'flex';
       } else {
@@ -2006,7 +1921,10 @@
 
     function renderGrid(list, elementId = 'animeGrid', append = false) {
       const grid = document.getElementById(elementId);
-      if (!append) grid.innerHTML = '';
+      if (!append) {
+        grid.innerHTML = '';
+        if (elementId === 'animeGrid') state.itemsRegistry = {};
+      }
 
       if (!list || list.length === 0) {
         grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">Ничего не найдено по заданным фильтрам.</p>`;
@@ -2015,9 +1933,6 @@
 
       let html = '';
       list.forEach(item => {
-        if (state.nsfwIdSet.has(String(item.id))) {
-          item.isNsfw = true;
-        }
         state.itemsRegistry[String(item.id)] = item;
 
         const nsfwOverlayHtml = item.isNsfw ? `
@@ -2053,7 +1968,7 @@
           </article>
         `;
       });
-      grid.innerHTML = html;
+      grid.innerHTML += html;
     }
 
     function renderDetailsPoster(posterUrl, title) {
@@ -2124,15 +2039,6 @@
         if (detailData && detailData.id) {
           detailedItem = parseAnimeItem(detailData);
           state.itemsRegistry[detailedItem.id] = detailedItem;
-          state.animes = state.animes.map(a => a.id === detailedItem.id ? detailedItem : a);
-
-          // Если при загрузке полного описания выяснилось, что тайтл 18+, а юзер еще не подтверждал:
-          if (detailedItem.isNsfw && !state.confirmedNsfwIds.has(String(detailedItem.id))) {
-            state.pendingNsfwItem = detailedItem;
-            goBackFromWatch();
-            document.getElementById('ageModal').style.display = 'flex';
-            return;
-          }
         }
       } catch (_) {}
 
@@ -2431,10 +2337,44 @@
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      if (state.currentSource === 'english' || state.currentSource === 'mega') {
-        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&id=${malId}&ep=${epNum}&episode=${epNum}&source=${state.currentSource}`;
-        openLink.href = proxyUrl;
-        iframe.src = proxyUrl;
+      if (state.currentSource === 'mega') {
+        const megaUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&id=${malId}&ep=${epNum}&episode=${epNum}&source=mega`;
+        openLink.href = megaUrl;
+        iframe.src = megaUrl;
+        saveSessionState();
+        return;
+      }
+
+      if (state.currentSource === 'aniboom') {
+        // Запасной плеер AniBoom (популярный русскоязычный парсер)
+        const aniboomUrl = `https://aniboom.one/embed/${malId}?episode=${epNum}`;
+        openLink.href = aniboomUrl;
+        iframe.src = aniboomUrl;
+        saveSessionState();
+        return;
+      }
+
+      if (state.currentSource === 'cvh') {
+        // Запасной плеер CVH
+        const cvhUrl = `https://cvh.su/embed/${malId}/${epNum}`;
+        openLink.href = cvhUrl;
+        iframe.src = cvhUrl;
+        saveSessionState();
+        return;
+      }
+
+      if (state.currentSource === 'vidsrc') {
+        const vidsrcUrl = `https://vidsrc.to/embed/tv/${malId}/1/${epNum}`;
+        openLink.href = vidsrcUrl;
+        iframe.src = vidsrcUrl;
+        saveSessionState();
+        return;
+      }
+
+      if (state.currentSource === 'embedsu') {
+        const embedsuUrl = `https://embed.su/embed/tv/${malId}/${1}/${epNum}`;
+        openLink.href = embedsuUrl;
+        iframe.src = embedsuUrl;
         saveSessionState();
         return;
       }

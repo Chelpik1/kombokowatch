@@ -972,7 +972,7 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Только 2 плеера: Кодик и Английская озвучка -->
+          <!-- Переключатель плееров: Кодик и Английская озвучка -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">
               <span class="material-symbols-rounded" style="font-size:18px">play_circle</span> Основная озвучка (Кодик)
@@ -984,10 +984,9 @@
 
           <div class="player-card">
             <div class="video-stage">
-              <!-- sandbox блокирует редиректы и всплывающую рекламу -->
+              <!-- Сэндбокс убран полностью, чтобы плеер MegaPlay не ругался -->
               <iframe 
                 id="kodikIframe" 
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" 
                 referrerpolicy="origin"
                 allowfullscreen 
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
@@ -1861,7 +1860,7 @@
       });
     }
 
-    function loadCurrentEpisodeVideo() {
+    async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
 
       const epNum = state.currentEpisodeNum || 1;
@@ -1871,9 +1870,23 @@
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
       if (state.currentSource === 'megaplay_dub') {
-        const url = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
-        openLink.href = url;
-        iframe.src = url;
+        iframe.src = 'about:blank';
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/english_player?mal_id=${malId}&ep=${epNum}`);
+          const data = await res.json();
+          if (data && data.success && data.url) {
+            openLink.href = data.url;
+            iframe.src = data.url;
+          } else {
+            const fallbackUrl = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
+            openLink.href = fallbackUrl;
+            iframe.src = fallbackUrl;
+          }
+        } catch (err) {
+          const fallbackUrl = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
+          openLink.href = fallbackUrl;
+          iframe.src = fallbackUrl;
+        }
         return;
       }
 

@@ -1119,9 +1119,14 @@
           <span class="material-symbols-rounded">arrow_back</span> Назад
         </button>
         <h2 class="section-title" id="watchTitle" style="flex:1; min-width:0; margin-left: 12px; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Тайтл</h2>
-        <button class="md-btn md-btn-tonal" onclick="openPlayerListDropdown(event)">
-          <span class="material-symbols-rounded" id="favIcon">bookmark_add</span>
-        </button>
+        <div style="display:flex; gap:8px;">
+          <button class="md-btn md-btn-tonal" onclick="shareCurrentAnime()" title="Поделиться">
+            <span class="material-symbols-rounded" style="font-size:18px">share</span>
+          </button>
+          <button class="md-btn md-btn-tonal" onclick="openPlayerListDropdown(event)">
+            <span class="material-symbols-rounded" id="favIcon">bookmark_add</span>
+          </button>
+        </div>
       </div>
 
       <div class="watch-layout">
@@ -1293,10 +1298,10 @@
         }
       });
 
-      // Обработка прямых ссылок с ID (/12345)
-      const path = window.location.pathname.replace(/^\/+/, '');
-      if (/^\d+$/.test(path)) {
-        await loadAnimeByIdOnStart(path);
+      // Хеш-роутинг (#/12345) для предотвращения 404 на GitHub Pages
+      const hash = window.location.hash.replace(/^#\/?/, '');
+      if (/^\d+$/.test(hash)) {
+        await loadAnimeByIdOnStart(hash);
         return;
       }
 
@@ -1725,19 +1730,18 @@
       const genreId = state.genresMap[genreKey] || '';
 
       try {
-        let url = '';
-        if (state.currentQuery && /^\d+$/.test(state.currentQuery)) {
-          url = `https://shikimori.io/api/animes/${state.currentQuery}`;
-        } else {
-          url = `https://shikimori.io/api/animes?limit=${state.limit}&page=${state.page}&order=${orderVal}`;
-          if (state.currentQuery) {
+        let url = `https://shikimori.io/api/animes?limit=${state.limit}&page=${state.page}&order=${orderVal}`;
+        if (state.currentQuery) {
+          if (/^\d+$/.test(state.currentQuery)) {
+            url = `https://shikimori.io/api/animes/${state.currentQuery}`;
+          } else {
             url += `&search=${encodeURIComponent(state.currentQuery)}`;
           }
-          if (typeVal) url += `&kind=${typeVal}`;
-          if (yearVal) url += `&season=${yearVal}`;
-          if (statusVal) url += `&status=${statusVal}`;
-          if (genreId) url += `&genre=${genreId}`;
         }
+        if (typeVal) url += `&kind=${typeVal}`;
+        if (yearVal) url += `&season=${yearVal}`;
+        if (statusVal) url += `&status=${statusVal}`;
+        if (genreId) url += `&genre=${genreId}`;
 
         const res = await fetch(url);
         const data = await res.json();
@@ -1838,9 +1842,22 @@
       loadCurrentEpisodeVideo();
     }
 
+    function shareCurrentAnime() {
+      if (!state.currentAnimeFull) return;
+      const url = window.location.href;
+      const title = state.currentAnimeFull.title;
+      if (navigator.share) {
+        navigator.share({ title, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          alert('Ссылка скопирована в буфер обмена!');
+        });
+      }
+    }
+
     async function loadKodikPlayerForAnime(item) {
       switchTab('watch', false);
-      window.history.pushState({}, '', '/' + item.id);
+      window.location.hash = '#/' + item.id;
       
       state.currentSource = 'kodik';
       PLAYER_SOURCES.forEach(s => {
@@ -2139,14 +2156,12 @@
       epNumbers.forEach((epStr) => {
         const epNum = Number(epStr);
         const btn = document.createElement('button');
-        // Без статической подсветки, чтобы не вводить в заблуждение
         btn.className = 'ep-btn';
         btn.textContent = epNum;
         btn.onclick = () => {
           state.currentEpisodeNum = epNum;
           saveSessionState();
           
-          // Визуальный эффект клика
           document.querySelectorAll('.ep-btn').forEach(b => {
             b.style.background = '';
             b.style.color = '';
@@ -2181,8 +2196,7 @@
       if (!variant) return;
 
       let rawLink = variant.episodes[String(epNum)] || variant.default_link;
-      let cleanUrl = rawLink.startsWith('//`') ? `https:${rawLink}` : rawLink;
-      if (rawLink.startsWith('//')) cleanUrl = `https:${rawLink}`;
+      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
 
       cleanUrl = cleanUrl
         .replace('kodik.info', 'kodikplayer.com')
@@ -2222,7 +2236,7 @@
       state.currentTab = tab;
       if (save) {
         if (tab === 'catalog') {
-          window.history.pushState({}, '', '/');
+          window.location.hash = '#/';
         }
         saveSessionState();
       }

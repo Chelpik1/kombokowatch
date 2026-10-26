@@ -19,6 +19,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Material Symbols Font -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+  <!-- HLS.js для проигрывания AniBoom потоков -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
     :root {
@@ -223,7 +225,7 @@
     }
     .brand-title-text:hover { opacity: 0.85; }
 
-    /* Модальные окна в корне body */
+    /* Модальные окна */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -512,7 +514,7 @@
       border-color: var(--color-primary);
     }
 
-    /* Компактные кнопки выбора источников плеера (RU, AniBoom) */
+    /* Кнопки плееров: Кодик и AniBoom */
     .player-source-bar {
       display: flex;
       gap: 8px;
@@ -1191,7 +1193,7 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Компактные кнопки переключения источников (Кодик + AniBoom) -->
+          <!-- Кнопки выбора плееров: Кодик и AniBoom -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">Кодик (RU)</button>
             <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">AniBoom</button>
@@ -1205,6 +1207,12 @@
                 allowfullscreen 
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
               </iframe>
+              <video 
+                id="hlsVideoPlayer" 
+                controls 
+                autoplay 
+                style="width: 100%; height: 100%; display: none; background: #000;">
+              </video>
             </div>
             <div class="player-toolbar">
               <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; min-width:0;">
@@ -2330,16 +2338,43 @@
       const epNum = state.currentEpisodeNum || 1;
       const malId = state.currentAnimeFull.id;
       const iframe = document.getElementById('kodikIframe');
+      const videoPlayer = document.getElementById('hlsVideoPlayer');
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
       if (state.currentSource === 'aniboom') {
-        // Интеграция Aniboom по документации AnimeParsers (запрос через бэкенд-прокси для получения потока/ссылки embed)
-        const aniboomApiUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&id=${malId}&ep=${epNum}&episode=${epNum}&source=aniboom`;
-        openLink.href = aniboomApiUrl;
-        iframe.src = aniboomApiUrl;
+        iframe.style.display = 'none';
+        videoPlayer.style.display = 'block';
+
+        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}&source=aniboom`;
+        openLink.href = proxyUrl;
+
+        try {
+          const res = await fetch(proxyUrl);
+          const data = await res.json();
+          if (data && data.url) {
+            if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+              videoPlayer.src = data.url;
+            } else if (Hls.isSupported()) {
+              if (window.hlsInstance) window.hlsInstance.destroy();
+              const hls = new Hls();
+              window.hlsInstance = hls;
+              hls.loadSource(data.url);
+              hls.attachMedia(videoPlayer);
+            }
+          }
+        } catch (_) {}
+
         saveSessionState();
         return;
+      }
+
+      // Обычный Кодик
+      iframe.style.display = 'block';
+      videoPlayer.style.display = 'none';
+      if (window.hlsInstance) {
+        window.hlsInstance.destroy();
+        window.hlsInstance = null;
       }
 
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];

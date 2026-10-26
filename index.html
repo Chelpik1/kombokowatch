@@ -406,14 +406,14 @@
     /* Стили для панели выбора источника плеера */
     .player-source-bar {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .player-source-bar .md-btn {
-      height: 38px;
-      padding: 0 14px;
-      font-size: 12px;
+      height: 42px;
+      padding: 0 18px;
+      font-size: 13px;
     }
     .player-source-bar .md-btn.active {
       background: rgba(208, 188, 255, 0.22) !important;
@@ -972,25 +972,18 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Панель переключения плееров с поддержкой динамического снятия sandbox -->
+          <!-- Переключатель источников: Кодик vs Английский плеер -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">
-              <span class="material-symbols-rounded" style="font-size:16px">play_circle</span> Кодик (РФ)
+              <span class="material-symbols-rounded" style="font-size:16px">play_circle</span> Кодик (Русская озвучка)
             </button>
-            <button id="btnSource-vidsrc" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidsrc')">
-              <span class="material-symbols-rounded" style="font-size:16px">language</span> VidSrc (ENG)
-            </button>
-            <button id="btnSource-autoembed" class="md-btn md-btn-tonal" onclick="switchPlayerSource('autoembed')">
-              <span class="material-symbols-rounded" style="font-size:16px">public</span> AutoEmbed (ENG)
-            </button>
-            <button id="btnSource-vidsrc_cc" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidsrc_cc')">
-              <span class="material-symbols-rounded" style="font-size:16px">bolt</span> VidSrc.cc (ENG)
+            <button id="btnSource-english" class="md-btn md-btn-tonal" onclick="switchPlayerSource('english')">
+              <span class="material-symbols-rounded" style="font-size:16px">language</span> Английская озвучка (ENG Dub)
             </button>
           </div>
 
           <div class="player-card">
             <div class="video-stage">
-              <!-- Изначально без жесткого sandbox, чтобы английские плееры не выдавали ошибку -->
               <iframe 
                 id="kodikIframe" 
                 referrerpolicy="origin"
@@ -1091,7 +1084,7 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['kodik', 'vidsrc', 'autoembed', 'vidsrc_cc'];
+    const PLAYER_SOURCES = ['kodik', 'english'];
 
     let state = {
       animes: [],
@@ -1875,37 +1868,27 @@
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      let url = '';
-
-      if (state.currentSource === 'vidsrc') {
-        iframe.removeAttribute('sandbox'); // Динамически убираем sandbox для VidSrc
-        url = `https://vidsrc.me/embed/anime?mal=${malId}&ep=${epNum}`;
-      } else if (state.currentSource === 'autoembed') {
-        iframe.removeAttribute('sandbox');
-        url = `https://autoembed.cc/embed/anime/${malId}/${epNum}`;
-      } else if (state.currentSource === 'vidsrc_cc') {
-        iframe.removeAttribute('sandbox');
-        url = `https://vidsrc.cc/v2/embed/anime/${malId}/${epNum}`;
-      } else {
-        // Стандартный Кодик (РФ)
-        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-        const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
-        if (!variant) return;
-
-        const rawLink = variant.episodes[String(epNum)] || variant.default_link;
-        let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-
-        cleanUrl = cleanUrl
-          .replace('kodik.info', 'kodikplayer.com')
-          .replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
-
-        openLink.href = cleanUrl;
-        iframe.src = cleanUrl;
+      if (state.currentSource === 'english') {
+        // Стабильный англоязычный эндпоинт по MAL ID
+        const url = `https://ani.megaplay.su/mal/${malId}/${epNum}/dub`;
+        openLink.href = url;
+        iframe.src = url;
         return;
       }
 
-      openLink.href = url;
-      iframe.src = url;
+      // Стандартный плеер Kodik (РФ)
+      const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
+      if (!variant) return;
+
+      const rawLink = variant.episodes[String(epNum)] || variant.default_link;
+      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
+
+      cleanUrl = cleanUrl
+        .replace('kodik.info', 'kodikplayer.com')
+        .replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
+
+      openLink.href = cleanUrl;
+      iframe.src = cleanUrl;
     }
 
     function stepEpisode(delta) {

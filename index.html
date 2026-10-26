@@ -984,9 +984,10 @@
 
           <div class="player-card">
             <div class="video-stage">
-              <!-- Сэндбокс убран полностью, чтобы плеер MegaPlay не ругался -->
+              <!-- Возвращена безопасная песочница sandbox для блокировки рекламных окон и редиректов -->
               <iframe 
                 id="kodikIframe" 
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 referrerpolicy="origin"
                 allowfullscreen 
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
@@ -1870,23 +1871,9 @@
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
       if (state.currentSource === 'megaplay_dub') {
-        iframe.src = 'about:blank';
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/english_player?mal_id=${malId}&ep=${epNum}`);
-          const data = await res.json();
-          if (data && data.success && data.url) {
-            openLink.href = data.url;
-            iframe.src = data.url;
-          } else {
-            const fallbackUrl = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
-            openLink.href = fallbackUrl;
-            iframe.src = fallbackUrl;
-          }
-        } catch (err) {
-          const fallbackUrl = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
-          openLink.href = fallbackUrl;
-          iframe.src = fallbackUrl;
-        }
+        const url = `https://embed.su/embed/anime/${malId}/${epNum}`;
+        openLink.href = url;
+        iframe.src = url;
         return;
       }
 

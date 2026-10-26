@@ -1298,7 +1298,7 @@
         }
       });
 
-      // Хеш-роутинг (#/12345) для предотвращения 404 на GitHub Pages
+      // Обработка хеш-роутинга (#/12345)
       const hash = window.location.hash.replace(/^#\/?/, '');
       if (/^\d+$/.test(hash)) {
         await loadAnimeByIdOnStart(hash);
@@ -2185,7 +2185,7 @@
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
       if (state.currentSource === 'english') {
-        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}`;
+        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&id=${malId}&ep=${epNum}&episode=${epNum}`;
         openLink.href = proxyUrl;
         iframe.src = proxyUrl;
         saveSessionState();

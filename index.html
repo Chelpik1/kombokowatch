@@ -512,17 +512,17 @@
       border-color: var(--color-primary);
     }
 
-    /* Компактные кнопки выбора источников плеера (RU, AniBoom, CVH, Mega, VidSrc, EmbedSu) */
+    /* Компактные кнопки выбора источников плеера (RU, AniBoom) */
     .player-source-bar {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .player-source-bar .md-btn {
-      height: 36px;
-      padding: 0 12px;
-      font-size: 11px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 12px;
       border-radius: var(--radius-sm);
     }
     .player-source-bar .md-btn.active {
@@ -1191,14 +1191,10 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Панель компактных кнопок плееров: Кодик, AniBoom, CVH, Mega, VidSrc, EmbedSu -->
+          <!-- Компактные кнопки переключения источников (Кодик + AniBoom) -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">Кодик (RU)</button>
             <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">AniBoom</button>
-            <button id="btnSource-cvh" class="md-btn md-btn-tonal" onclick="switchPlayerSource('cvh')">CVH</button>
-            <button id="btnSource-mega" class="md-btn md-btn-tonal" onclick="switchPlayerSource('mega')">Mega (EN)</button>
-            <button id="btnSource-vidsrc" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidsrc')">VidSrc</button>
-            <button id="btnSource-embedsu" class="md-btn md-btn-tonal" onclick="switchPlayerSource('embedsu')">EmbedSu</button>
           </div>
 
           <div class="player-card">
@@ -1303,7 +1299,7 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['kodik', 'aniboom', 'cvh', 'mega', 'vidsrc', 'embedsu'];
+    const PLAYER_SOURCES = ['kodik', 'aniboom'];
 
     let state = {
       animes: [],
@@ -2328,7 +2324,7 @@
       });
     }
 
-    function loadCurrentEpisodeVideo() {
+    async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
 
       const epNum = state.currentEpisodeNum || 1;
@@ -2337,44 +2333,11 @@
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      if (state.currentSource === 'mega') {
-        const megaUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&id=${malId}&ep=${epNum}&episode=${epNum}&source=mega`;
-        openLink.href = megaUrl;
-        iframe.src = megaUrl;
-        saveSessionState();
-        return;
-      }
-
       if (state.currentSource === 'aniboom') {
-        // Запасной плеер AniBoom (популярный русскоязычный парсер)
-        const aniboomUrl = `https://aniboom.one/embed/${malId}?episode=${epNum}`;
-        openLink.href = aniboomUrl;
-        iframe.src = aniboomUrl;
-        saveSessionState();
-        return;
-      }
-
-      if (state.currentSource === 'cvh') {
-        // Запасной плеер CVH
-        const cvhUrl = `https://cvh.su/embed/${malId}/${epNum}`;
-        openLink.href = cvhUrl;
-        iframe.src = cvhUrl;
-        saveSessionState();
-        return;
-      }
-
-      if (state.currentSource === 'vidsrc') {
-        const vidsrcUrl = `https://vidsrc.to/embed/tv/${malId}/1/${epNum}`;
-        openLink.href = vidsrcUrl;
-        iframe.src = vidsrcUrl;
-        saveSessionState();
-        return;
-      }
-
-      if (state.currentSource === 'embedsu') {
-        const embedsuUrl = `https://embed.su/embed/tv/${malId}/${1}/${epNum}`;
-        openLink.href = embedsuUrl;
-        iframe.src = embedsuUrl;
+        // Интеграция Aniboom по документации AnimeParsers (запрос через бэкенд-прокси для получения потока/ссылки embed)
+        const aniboomApiUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&id=${malId}&ep=${epNum}&episode=${epNum}&source=aniboom`;
+        openLink.href = aniboomApiUrl;
+        iframe.src = aniboomApiUrl;
         saveSessionState();
         return;
       }

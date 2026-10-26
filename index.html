@@ -403,6 +403,25 @@
     }
     .md-btn-tonal:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--glass-border-glow); }
 
+    /* Стили для панели выбора источника плеера */
+    .player-source-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .player-source-bar .md-btn {
+      height: 40px;
+      padding: 0 16px;
+      font-size: 13px;
+    }
+    .player-source-bar .md-btn.active {
+      background: rgba(208, 188, 255, 0.22) !important;
+      border-color: var(--glass-border-glow) !important;
+      color: var(--color-primary) !important;
+      box-shadow: 0 0 16px rgba(208, 188, 255, 0.25);
+    }
+
     .section-header {
       display: flex;
       align-items: center;
@@ -953,6 +972,22 @@
 
       <div class="watch-layout">
         <div>
+          <!-- Переключатель плееров: Kodik (РФ) + 3 варианта английских плееров -->
+          <div class="player-source-bar">
+            <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">
+              <span class="material-symbols-rounded" style="font-size:18px">play_circle</span> Основная озвучка (Кодик)
+            </button>
+            <button id="btnSource-megaplay_dub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay_dub')">
+              <span class="material-symbols-rounded" style="font-size:18px">language</span> MegaPlay (ENG Dub)
+            </button>
+            <button id="btnSource-megaplay_sub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay_sub')">
+              <span class="material-symbols-rounded" style="font-size:18px">subtitles</span> MegaPlay (ENG Sub)
+            </button>
+            <button id="btnSource-vidlink_dub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidlink_dub')">
+              <span class="material-symbols-rounded" style="font-size:18px">public</span> VidLink (ENG Dub)
+            </button>
+          </div>
+
           <div class="player-card">
             <div class="video-stage">
               <iframe id="kodikIframe" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
@@ -1003,7 +1038,7 @@
         </div>
 
         <aside class="sidebar-panel">
-          <div>
+          <div id="voiceSection">
             <div style="font-size:13px; font-weight:600; color:var(--color-variant); margin-bottom:10px;">Озвучка (<span id="voicesCount">0</span>)</div>
             <div class="voice-list" id="voiceList"></div>
           </div>
@@ -1050,11 +1085,14 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
+    const PLAYER_SOURCES = ['kodik', 'megaplay_dub', 'megaplay_sub', 'vidlink_dub'];
+
     let state = {
       animes: [],
       currentAnimeFull: null,
       currentVariantIndex: 0,
       currentEpisodeNum: 1,
+      currentSource: 'kodik',
       currentUser: null,
       userRates: {},
       history: JSON.parse(localStorage.getItem('kodik_history') || '[]')
@@ -1484,9 +1522,34 @@
       }
     }
 
+    function switchPlayerSource(source) {
+      state.currentSource = source;
+
+      PLAYER_SOURCES.forEach(s => {
+        const btn = document.getElementById(`btnSource-${s}`);
+        if (btn) btn.classList.toggle('active', s === source);
+      });
+
+      const voiceSection = document.getElementById('voiceSection');
+      if (voiceSection) {
+        voiceSection.style.display = (source === 'kodik') ? 'block' : 'none';
+      }
+
+      loadCurrentEpisodeVideo();
+    }
+
     async function loadKodikPlayerForAnime(item) {
       switchTab('watch');
       
+      // При открытии нового аниме по умолчанию включаем Kodik
+      state.currentSource = 'kodik';
+      PLAYER_SOURCES.forEach(s => {
+        const btn = document.getElementById(`btnSource-${s}`);
+        if (btn) btn.classList.toggle('active', s === 'kodik');
+      });
+      const voiceSection = document.getElementById('voiceSection');
+      if (voiceSection) voiceSection.style.display = 'block';
+
       document.getElementById('watchTitle').textContent = item.title;
       renderDetailsPoster(item.poster, item.title);
 
@@ -1798,10 +1861,39 @@
     }
 
     function loadCurrentEpisodeVideo() {
+      if (!state.currentAnimeFull) return;
+
+      const epNum = state.currentEpisodeNum || 1;
+      const malId = state.currentAnimeFull.id;
+      const iframe = document.getElementById('kodikIframe');
+      const openLink = document.getElementById('openInNewTab');
+      document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
+
+      if (state.currentSource === 'megaplay_dub') {
+        const url = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/dub`;
+        openLink.href = url;
+        iframe.src = url;
+        return;
+      }
+
+      if (state.currentSource === 'megaplay_sub') {
+        const url = `https://megaplay.buzz/stream/mal/${malId}/${epNum}/sub`;
+        openLink.href = url;
+        iframe.src = url;
+        return;
+      }
+
+      if (state.currentSource === 'vidlink_dub') {
+        const url = `https://vidlink.pro/anime/${malId}/${epNum}/dub`;
+        openLink.href = url;
+        iframe.src = url;
+        return;
+      }
+
+      // Стандартный плеер Kodik
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       if (!variant) return;
 
-      const epNum = state.currentEpisodeNum;
       const rawLink = variant.episodes[String(epNum)] || variant.default_link;
       let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
 
@@ -1809,16 +1901,15 @@
         .replace('kodik.info', 'kodikplayer.com')
         .replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
 
-      document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
-      document.getElementById('openInNewTab').href = cleanUrl;
-      document.getElementById('kodikIframe').src = cleanUrl;
+      openLink.href = cleanUrl;
+      iframe.src = cleanUrl;
     }
 
     function stepEpisode(delta) {
       if (!state.currentAnimeFull) return;
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       const target = state.currentEpisodeNum + delta;
-      if (variant.episodes[String(target)]) {
+      if (variant && variant.episodes[String(target)]) {
         state.currentEpisodeNum = target;
         renderEpisodesGrid();
         loadCurrentEpisodeVideo();

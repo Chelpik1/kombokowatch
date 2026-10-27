@@ -131,8 +131,8 @@
     }
 
     .header-profile-btn {
-      width: 42px;
-      height: 42px;
+      width: 35px;
+      height: 35px;
       border-radius: var(--radius-md);
       overflow: hidden;
       display: flex;
@@ -242,12 +242,12 @@
       gap: 2px;
     }
     .lang-btn {
-      padding: 4px 8px;
-      border-radius: 10px;
+      padding: 3px 7px;
+      border-radius: 8px;
       border: none;
       background: transparent;
       color: var(--color-variant);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -1888,7 +1888,7 @@
       return {
         id: String(item.id),
         titleRu: item.russian || item.name || 'Без названия',
-        titleEn: item.english || item.name || item.russian || 'Untitled',
+        titleEn: (Array.isArray(item.english) ? item.english[0] : (item.english || item.name || item.russian || 'Untitled')),
         year,
         episodes: item.episodes || item.episodesAired || item.episodes_aired || 12,
         rating: item.score && Number(item.score) > 0 ? item.score : null,
@@ -2250,7 +2250,7 @@
 
     function renderDetailsPoster(posterUrl, title) {
       const wrap = document.getElementById('detailsPosterWrap');
-      const safeTitle = (title || '').replace(/'/g, '').replace(/"/g, '&quot;');
+      const safeTitle = String(title || '').replace(/'/g, '').replace(/"/g, '&quot;');
       if (posterUrl && !posterUrl.includes('missing')) {
         wrap.innerHTML = `<img class="details-poster" src="${posterUrl}" alt="Poster" onerror="this.parentElement.innerHTML='<div class=\\'details-poster-fallback\\'><span class=\\'material-symbols-rounded\\'>movie</span><p>${safeTitle}</p></div>'" />`;
       } else {
@@ -2337,7 +2337,7 @@
       state.currentEpisodeNum = 1;
       state.currentVariantIndex = 0;
 
-      await updateWatchDetailsLanguage();
+
 
       const token = localStorage.getItem('shiki_token');
       if (token) {
@@ -2369,6 +2369,7 @@
       renderVoiceChips();
       renderEpisodesGrid();
       loadCurrentEpisodeVideo();
+      updateWatchDetailsLanguage();
     }
 
     function renderRelationsList(data) {
@@ -2665,6 +2666,11 @@
       watchView.style.display = 'none';
       characterView.style.display = 'none';
       listsView.style.display = 'none';
+      // Фильтры и жанры должны быть видны ТОЛЬКО в основном каталоге
+      const topBar = document.querySelector('.top-bar');
+      const genresBar = document.getElementById('genresBar');
+      if (topBar) topBar.style.display = (tab === 'catalog') ? 'flex' : 'none';
+      if (genresBar) genresBar.style.display = (tab === 'catalog') ? 'flex' : 'none';
 
       if (tab === 'watch') watchView.style.display = 'block';
       else if (tab === 'character') characterView.style.display = 'block';

@@ -258,7 +258,7 @@
       box-shadow: 0 0 8px rgba(208, 188, 255, 0.2);
     }
 
-    /* Модальные окна в корне body */
+    /* Модальные окна */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -363,7 +363,6 @@
       text-decoration: underline;
     }
 
-    /* Блок пользовательского соглашения в модалке */
     .terms-box {
       background: rgba(18, 15, 28, 0.6);
       border: 1px solid var(--glass-border);
@@ -440,7 +439,6 @@
     }
     .search-input::placeholder { color: var(--color-variant); opacity: 0.7; }
 
-    /* Панель фильтров поиска */
     .filters-row {
       display: flex;
       gap: 10px;
@@ -466,7 +464,6 @@
     }
     .filter-select option { background: #18151c; color: var(--color-surface); }
 
-    /* Панель быстрых жанров каталога */
     .genres-bar {
       display: flex;
       gap: 8px;
@@ -520,7 +517,6 @@
       transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       flex-shrink: 0;
     }
-
     .md-btn:hover { transform: scale(1.04); }
     .md-btn:active { transform: scale(0.96); }
 
@@ -529,7 +525,6 @@
       color: var(--color-on-primary);
       box-shadow: 0 6px 20px rgba(208, 188, 255, 0.35);
     }
-
     .md-btn-tonal {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--glass-border);
@@ -547,7 +542,7 @@
       border-color: var(--color-primary);
     }
 
-    /* Кнопки выбора источников плеера */
+    /* Панель выбора зарубежных и локальных плееров */
     .player-source-bar {
       display: flex;
       gap: 8px;
@@ -633,7 +628,6 @@
       box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     .anime-card:hover {
       transform: translateY(-8px) scale(1.02);
       border-color: var(--glass-border-glow);
@@ -647,17 +641,14 @@
       background: rgba(0, 0, 0, 0.4);
       overflow: hidden;
     }
-
     .poster-wrap img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     .anime-card:hover .poster-wrap img { transform: scale(1.06); }
 
-    /* Жесткий блюр и оверлей 18+ для хентая и откровенного контента */
     .poster-wrap.nsfw-card img {
       filter: blur(24px) brightness(0.38) !important;
       -webkit-filter: blur(24px) brightness(0.38) !important;
@@ -676,10 +667,7 @@
       pointer-events: none;
       color: #ffffff;
     }
-    .nsfw-overlay .material-symbols-rounded {
-      font-size: 34px;
-      opacity: 0.95;
-    }
+    .nsfw-overlay .material-symbols-rounded { font-size: 34px; opacity: 0.95; }
     .nsfw-overlay-text {
       font-size: 12px;
       font-weight: 700;
@@ -716,7 +704,6 @@
       pointer-events: none;
       z-index: 4;
     }
-
     .badge-pill {
       padding: 5px 10px;
       border-radius: var(--radius-sm);
@@ -737,7 +724,6 @@
       gap: 6px;
       flex: 1;
     }
-
     .card-title {
       font-size: 14px;
       font-weight: 600;
@@ -747,17 +733,13 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
     .card-meta {
       font-size: 12px;
       color: var(--color-variant);
       margin-bottom: 6px;
     }
 
-    .card-add-wrapper {
-      position: relative;
-      margin-top: auto;
-    }
+    .card-add-wrapper { position: relative; margin-top: auto; }
     .card-add-btn {
       width: 100%;
       height: 34px;
@@ -838,7 +820,6 @@
       background: #000;
       position: relative;
     }
-
     .video-stage iframe { width: 100%; height: 100%; border: none; display: block; }
 
     .player-toolbar {
@@ -920,24 +901,13 @@
       box-shadow: 0 8px 25px rgba(0,0,0,0.4);
       background: rgba(0,0,0,0.3);
     }
-    .details-poster { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      display: block;
-    }
+    .details-poster { width: 100%; height: 100%; object-fit: cover; display: block; }
     .details-poster-fallback {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-      text-align: center;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 12px; text-align: center;
       background: linear-gradient(135deg, #2b1f45 0%, #151122 100%);
-      color: var(--color-primary);
-      gap: 6px;
+      color: var(--color-primary); gap: 6px;
     }
     .details-poster-fallback span.material-symbols-rounded { font-size: 28px; opacity: 0.8; }
     .details-poster-fallback p { font-size: 11px; font-weight: 700; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1010,7 +980,6 @@
     }
     .character-view-info { display: flex; flex-direction: column; gap: 12px; min-width: 0; flex: 1; }
     .character-view-title { font-size: 24px; font-weight: 700; color: var(--color-primary); }
-    .character-view-subtitle { font-size: 14px; color: var(--color-variant); font-style: italic; }
     .character-view-desc { font-size: 14px; line-height: 1.6; color: var(--color-surface); white-space: pre-line; word-break: break-word; }
 
     .loader-box {
@@ -1049,15 +1018,9 @@
         width: 100% !important;
         gap: 0 !important;
       }
-      .nav-rail .header-profile-btn {
-        display: none !important;
-      }
-      .app-header-brand {
-        justify-content: space-between;
-      }
-      .app-header-brand .header-profile-btn {
-        display: flex;
-      }
+      .nav-rail .header-profile-btn { display: none !important; }
+      .app-header-brand { justify-content: space-between; }
+      .app-header-brand .header-profile-btn { display: flex; }
       .app-main {
         margin-left: 0 !important;
         width: 100% !important;
@@ -1077,15 +1040,13 @@
     }
 
     @media (min-width: 769px) {
-      .app-header-brand .header-profile-btn {
-        display: none;
-      }
+      .app-header-brand .header-profile-btn { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Навигация (Сайдбар на ПК / Нижнее меню на телефоне) -->
+  <!-- Навигация -->
   <nav class="nav-rail">
     <div class="header-profile-btn" id="sidebarAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
       <span class="material-symbols-rounded">account_circle</span>
@@ -1110,7 +1071,7 @@
     </div>
   </nav>
 
-  <!-- Модальное окно предупреждения 18+ -->
+  <!-- Предупреждение 18+ -->
   <div id="ageModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='ageModal') confirmAgeModal(false)">
     <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center;">
       <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">visibility_off</span>
@@ -1125,7 +1086,7 @@
     </div>
   </div>
 
-  <!-- Модальное окно "Наши соцсети" и Пользовательское соглашение -->
+  <!-- Соцсети и соглашение -->
   <div id="socialModal" class="modal-overlay" style="display: none;" onclick="closeSocialModalOnOutside(event)">
     <div class="modal-content animate-fade">
       <div class="modal-header">
@@ -1136,7 +1097,6 @@
         <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="social-btn">
           <span class="material-symbols-rounded" style="font-size:20px;">send</span> <span data-i18n="tgChannel">Telegram канал</span>
         </a>
-        
         <div class="contact-section">
           <h4 data-i18n="contactUs">Связаться с нами</h4>
           <a href="mailto:chebik2010@mail.ru" class="contact-email">chebik2010@mail.ru</a>
@@ -1144,15 +1104,11 @@
             <span class="material-symbols-rounded" style="font-size:20px;">chat</span> <span data-i18n="personalTg">Личный Telegram</span>
           </a>
         </div>
-
         <div class="terms-box" data-i18n="termsText">
           <h5>Пользовательское соглашение сайта komboko.fun</h5>
           <p>Настоящее Пользовательское соглашение регулирует отношения между Администрацией сайта komboko.fun и Пользователем. Использование Сайта означает безоговорочное согласие со всеми условиями.</p>
         </div>
-
-        <div class="footer-brand-text">
-          Komboko 2026
-        </div>
+        <div class="footer-brand-text">Komboko 2026</div>
       </div>
     </div>
   </div>
@@ -1160,7 +1116,6 @@
   <main class="app-main animate-fade">
     <div class="app-header-brand">
       <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</h1>
-      
       <div class="header-right-tools">
         <div class="lang-switcher">
           <button id="langRu" class="lang-btn active" onclick="setLanguage('ru')">RU</button>
@@ -1172,7 +1127,7 @@
       </div>
     </div>
 
-    <!-- Поиск и расширенные фильтры -->
+    <!-- Поиск и фильтры -->
     <header class="top-bar">
       <form class="search-row" onsubmit="handleSearchSubmit(event)">
         <div class="search-container">
@@ -1213,7 +1168,6 @@
         <h2 class="section-title" id="sectionTitle" data-i18n="catalogTitle">Каталог аниме</h2>
       </div>
 
-      <!-- Быстрый выбор жанров -->
       <div class="genres-bar" id="genresBar">
         <button class="genre-chip active" onclick="filterByGenre('', this)" data-i18n="genreAll">Все</button>
         <button class="genre-chip" onclick="filterByGenre('романтика', this)" data-i18n="genreRomance">Романтика</button>
@@ -1228,7 +1182,6 @@
 
       <div class="anime-grid" id="animeGrid"></div>
       
-      <!-- Индикатор подгрузки бесконечного скролла -->
       <div id="infiniteLoader" class="loader-box" style="display: none;">
         <div class="spinner"></div>
         <span data-i18n="loadingMore">Загружаем еще порцию аниме...</span>
@@ -1254,11 +1207,12 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Кнопки выбора плееров: Кодик, AniBoom и MegaPlay -->
+          <!-- Кнопки выбора плееров: Kodik, MegaPlay, 2Embed, VidSrc -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">Кодик (RU)</button>
-            <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">AniBoom</button>
-            <button id="btnSource-megaplay" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay')">MegaPlay (Sub/Dub)</button>
+            <button id="btnSource-megaplay" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay')">MegaPlay</button>
+            <button id="btnSource-2embed" class="md-btn md-btn-tonal" onclick="switchPlayerSource('2embed')">2Embed</button>
+            <button id="btnSource-vidsrc" class="md-btn md-btn-tonal" onclick="switchPlayerSource('vidsrc')">VidSrc</button>
 
             <div class="megaplay-lang-switch" id="megaplayLangSwitch">
               <button id="btnMegaSub" class="megaplay-lang-btn active" onclick="setMegaPlayLang('sub')">SUB</button>
@@ -1333,7 +1287,7 @@
       </div>
     </section>
 
-    <!-- Списки аниме пользователя -->
+    <!-- Списки -->
     <section id="view-lists" style="display: none;">
       <div class="section-header">
         <h2 class="section-title" data-i18n="listsTitle">Списки Shikimori</h2>
@@ -1355,7 +1309,6 @@
         </button>
         <h2 class="section-title" style="flex:1; min-width:0; margin-left: 12px; font-size:16px;" data-i18n="charInfoTitle">Информация о персонаже</h2>
       </div>
-
       <div id="characterContent" class="loader-box">
         <div class="spinner"></div>
         <span data-i18n="loadingChar">Загружаем информацию о персонаже...</span>
@@ -1368,7 +1321,7 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['kodik', 'aniboom', 'megaplay'];
+    const PLAYER_SOURCES = ['kodik', 'megaplay', '2embed', 'vidsrc'];
 
     const ADULT_GENRE_IDS = new Set([12, 539, 49]);
 
@@ -1832,6 +1785,7 @@
 
       return {
         id: String(item.id),
+        malId: item.malId || item.id,
         titleRu: item.russian || item.name || 'Без названия',
         titleEn: item.english || item.name || item.russian || 'Untitled',
         year,
@@ -1852,6 +1806,7 @@
         query($page: Int, $limit: Int, $order: OrderEnum, $kind: AnimeKindString, $season: SeasonString, $status: AnimeStatusString, $genre: String, $search: String, $ids: String) {
           animes(page: $page, limit: $limit, order: $order, kind: $kind, season: $season, status: $status, genre: $genre, search: $search, ids: $ids, censored: false) {
             id
+            malId
             name
             english
             russian
@@ -2227,7 +2182,7 @@
 
       const megaSwitch = document.getElementById('megaplayLangSwitch');
       if (megaSwitch) {
-        megaSwitch.style.display = (source === 'megaplay') ? 'flex' : 'none';
+        megaSwitch.style.display = (source === 'megaplay' || source === 'vidsrc') ? 'flex' : 'none';
       }
 
       loadCurrentEpisodeVideo();
@@ -2505,7 +2460,14 @@
         btn.onclick = () => {
           state.currentEpisodeNum = epNum;
           saveSessionState();
-          renderEpisodesGrid();
+          
+          document.querySelectorAll('.ep-btn').forEach(b => {
+            b.style.background = '';
+            b.style.color = '';
+          });
+          btn.style.background = 'var(--color-primary)';
+          btn.style.color = 'var(--color-on-primary)';
+
           loadCurrentEpisodeVideo();
         };
         grid.appendChild(btn);
@@ -2516,31 +2478,41 @@
       if (!state.currentAnimeFull) return;
 
       const epNum = state.currentEpisodeNum || 1;
-      const shikiId = state.currentAnimeFull.id;
+      const targetMalId = state.currentAnimeFull.malId || state.currentAnimeFull.id;
       const iframe = document.getElementById('kodikIframe');
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      // 1. Плеер MegaPlay по рабочему формату /stream/s-2/{shikiId}/{epNum}/{lang}
+      // 1. Официальный эндпоинт MegaPlay с поддержкой MAL ID: megaplay.buzz/stream/mal/{id}/{ep}/{lang}
       if (state.currentSource === 'megaplay') {
         const lang = state.megaplayLang || 'sub';
-        const megaUrl = `https://megaplays.se/stream/s-2/${shikiId}/${epNum}/${lang}`;
-        openLink.href = megaUrl;
-        iframe.src = megaUrl;
+        const streamUrl = `https://megaplay.buzz/stream/mal/${targetMalId}/${epNum}/${lang}`;
+        openLink.href = streamUrl;
+        iframe.src = streamUrl;
         saveSessionState();
         return;
       }
 
-      // 2. Плеер AniBoom через прокси
-      if (state.currentSource === 'aniboom') {
-        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${shikiId}&ep=${epNum}&source=aniboom`;
-        openLink.href = proxyUrl;
-        iframe.src = proxyUrl;
+      // 2. 2Embed: один из самых стабильных зарубежных плееров
+      if (state.currentSource === '2embed') {
+        const streamUrl = `https://www.2embed.cc/embedmal/${targetMalId}`;
+        openLink.href = streamUrl;
+        iframe.src = streamUrl;
         saveSessionState();
         return;
       }
 
-      // 3. Кодик
+      // 3. VidSrc / AniSrc
+      if (state.currentSource === 'vidsrc') {
+        const lang = state.megaplayLang || 'sub';
+        const streamUrl = `https://vidsrc.cc/v2/embed/anime/${targetMalId}/${epNum}/${lang}`;
+        openLink.href = streamUrl;
+        iframe.src = streamUrl;
+        saveSessionState();
+        return;
+      }
+
+      // 4. Основной плеер Kodik (RU)
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       if (!variant) return;
 
@@ -2607,3 +2579,4 @@
   </script>
 </body>
 </html>
+

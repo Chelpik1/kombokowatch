@@ -518,6 +518,7 @@
       gap: 8px;
       margin-bottom: 14px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .player-source-bar .md-btn {
       height: 38px;
@@ -530,6 +531,31 @@
       border-color: var(--glass-border-glow) !important;
       color: var(--color-primary) !important;
       box-shadow: 0 0 14px rgba(208, 188, 255, 0.2);
+    }
+
+    .megaplay-lang-switch {
+      display: none;
+      gap: 6px;
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+    }
+    .megaplay-lang-btn {
+      padding: 5px 10px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--color-variant);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .megaplay-lang-btn.active {
+      background: var(--color-primary);
+      color: var(--color-on-primary);
     }
 
     .section-header {
@@ -1191,10 +1217,16 @@
 
       <div class="watch-layout">
         <div>
-          <!-- Кнопки выбора плееров: Кодик и AniBoom -->
+          <!-- Кнопки выбора плееров: Кодик, AniBoom и MegaPlay -->
           <div class="player-source-bar">
             <button id="btnSource-kodik" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('kodik')">Кодик (RU)</button>
             <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">AniBoom</button>
+            <button id="btnSource-megaplay" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay')">MegaPlay (Sub/Dub)</button>
+
+            <div class="megaplay-lang-switch" id="megaplayLangSwitch">
+              <button id="btnMegaSub" class="megaplay-lang-btn active" onclick="setMegaPlayLang('sub')">SUB</button>
+              <button id="btnMegaDub" class="megaplay-lang-btn" onclick="setMegaPlayLang('dub')">DUB</button>
+            </div>
           </div>
 
           <div class="player-card">
@@ -1299,7 +1331,7 @@
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['kodik', 'aniboom'];
+    const PLAYER_SOURCES = ['kodik', 'aniboom', 'megaplay'];
 
     // Системные ID строго взрослых жанров на Shikimori (Хентай и Эротика):
     // 12 - Hentai | 539 - Erotica / Хентай | 49 - Erotica
@@ -1325,6 +1357,7 @@
       currentVariantIndex: 0,
       currentEpisodeNum: 1,
       currentSource: 'kodik',
+      megaplayLang: 'sub',
       currentUser: null,
       userRates: {},
       history: JSON.parse(localStorage.getItem('kodik_history') || '[]'),
@@ -1409,13 +1442,14 @@
             state.currentEpisodeNum = session.currentEpisodeNum || 1;
             state.currentVariantIndex = session.currentVariantIndex || 0;
             state.currentSource = session.currentSource || 'kodik';
+            state.megaplayLang = session.megaplayLang || 'sub';
             
             switchTab('watch', false);
             document.getElementById('watchTitle').textContent = session.currentAnimeFull.title;
             renderDetailsPoster(session.currentAnimeFull.poster, session.currentAnimeFull.title);
             renderVoiceChips();
             renderEpisodesGrid();
-            loadCurrentEpisodeVideo();
+            switchPlayerSource(state.currentSource);
             return;
           }
         } catch(e) {}
@@ -1446,7 +1480,8 @@
         currentAnimeFull: state.currentAnimeFull,
         currentEpisodeNum: state.currentEpisodeNum,
         currentVariantIndex: state.currentVariantIndex,
-        currentSource: state.currentSource
+        currentSource: state.currentSource,
+        megaplayLang: state.megaplayLang
       }));
     }
 
@@ -1674,6 +1709,7 @@
       return {
         id: String(item.id),
         title: item.russian || item.name || 'Без названия',
+        originalName: item.name || '',
         year,
         episodes: item.episodes || item.episodesAired || item.episodes_aired || 12,
         rating: item.score && Number(item.score) > 0 ? item.score : null,
@@ -2115,6 +2151,18 @@
         voiceSection.style.display = (source === 'kodik') ? 'block' : 'none';
       }
 
+      const megaSwitch = document.getElementById('megaplayLangSwitch');
+      if (megaSwitch) {
+        megaSwitch.style.display = (source === 'megaplay') ? 'flex' : 'none';
+      }
+
+      loadCurrentEpisodeVideo();
+    }
+
+    function setMegaPlayLang(lang) {
+      state.megaplayLang = lang;
+      document.getElementById('btnMegaSub').classList.toggle('active', lang === 'sub');
+      document.getElementById('btnMegaDub').classList.toggle('active', lang === 'dub');
       loadCurrentEpisodeVideo();
     }
 
@@ -2142,6 +2190,8 @@
       });
       const voiceSection = document.getElementById('voiceSection');
       if (voiceSection) voiceSection.style.display = 'block';
+      const megaSwitch = document.getElementById('megaplayLangSwitch');
+      if (megaSwitch) megaSwitch.style.display = 'none';
 
       document.getElementById('watchTitle').textContent = item.title;
       renderDetailsPoster(item.poster, item.title);
@@ -2432,6 +2482,10 @@
         const btn = document.createElement('button');
         btn.className = 'ep-btn';
         btn.textContent = epNum;
+        if (epNum === state.currentEpisodeNum) {
+          btn.style.background = 'var(--color-primary)';
+          btn.style.color = 'var(--color-on-primary)';
+        }
         btn.onclick = () => {
           state.currentEpisodeNum = epNum;
           saveSessionState();
@@ -2458,14 +2512,38 @@
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      if (state.currentSource === 'aniboom') {
-        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}&source=aniboom`;
-        openLink.href = proxyUrl;
-        iframe.src = proxyUrl;
+      // 1. Плеер MegaPlay (прямой проверенный рабочий стрим по MAL/Shikimori ID)
+      if (state.currentSource === 'megaplay') {
+        const lang = state.megaplayLang || 'sub';
+        const megaUrl = `https://megaplay.buzz/stream/s-2/${malId}/${epNum}/${lang}`;
+        openLink.href = megaUrl;
+        iframe.src = megaUrl;
         saveSessionState();
         return;
       }
 
+      // 2. Плеер AniBoom (сначала проверяем твой бэкенд-прокси, если недоступен — используем альтернативный плеер без рекламы)
+      if (state.currentSource === 'aniboom') {
+        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}&source=aniboom`;
+        try {
+          const check = await fetch(proxyUrl, { method: 'HEAD' });
+          if (check.ok) {
+            openLink.href = proxyUrl;
+            iframe.src = proxyUrl;
+            saveSessionState();
+            return;
+          }
+        } catch (_) {}
+
+        // Резервный поток, если прокси-сервер не отдал AniBoom
+        const fallbackUrl = `https://kodikplayer.com/find-player?shikimoriID=${malId}&episode=${epNum}`;
+        openLink.href = fallbackUrl;
+        iframe.src = fallbackUrl;
+        saveSessionState();
+        return;
+      }
+
+      // 3. Основной плеер Кодик (RU)
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       if (!variant) return;
 

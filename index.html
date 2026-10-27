@@ -1050,12 +1050,22 @@
       .nav-rail .header-profile-btn { display: none !important; }
       .app-header-brand { justify-content: space-between; }
       .app-header-brand .header-profile-btn { display: flex; }
+/* 1. Для обычного Safari (аккуратный стандартный отступ 16px) */
       .app-main {
         margin-left: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: max(65px, calc(19px + env(safe-area-inset-top))) 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 17px) !important;
+        padding: calc(16px + env(safe-area-inset-top)) 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 16px) !important;
         overflow-x: hidden;
+      }
+    
+      /* 2. ТОЛЬКО для веб-приложения с экрана «Домой» (PWA под чёлку/остров) */
+      @media (display-mode: standalone) {
+        .app-main {
+          padding-top: max(67px, calc(20px + env(safe-area-inset-top))) !important;
+        }
+  }
+
       }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }
       .watch-layout { grid-template-columns: 100%; width: 100%; max-width: 100%; overflow: hidden; }

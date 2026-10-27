@@ -131,8 +131,8 @@
     }
 
     .header-profile-btn {
-      width: 35px;
-      height: 35px;
+      width: 45px;
+      height: 45px;
       border-radius: var(--radius-md);
       overflow: hidden;
       display: flex;
@@ -223,6 +223,28 @@
       transition: opacity 0.2s;
     }
     .brand-title-text:hover { opacity: 0.85; }
+    
+    .brand-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .brand-subtitle {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-variant);
+      opacity: 0.75;
+      letter-spacing: 0.2px;
+      padding-left: 2px;
+    }
 
     .header-right-tools {
       display: flex;
@@ -233,30 +255,35 @@
 
     /* Вертикальный переключатель языков */
     .lang-switcher {
-      display: flex;
+      display: inline-flex;
       flex-direction: column;
       background: var(--glass-surface);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-sm);
       padding: 2px;
-      gap: 2px;
+      gap: 1px;
+      flex-shrink: 0;
     }
+    
     .lang-btn {
-      padding: 3px 7px;
-      border-radius: 8px;
+      padding: 2px 5px;
+      border-radius: 6px;
       border: none;
       background: transparent;
       color: var(--color-variant);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       cursor: pointer;
+      line-height: 1;
       transition: all 0.2s;
     }
+    
     .lang-btn.active {
       background: rgba(208, 188, 255, 0.25);
       color: var(--color-primary);
-      box-shadow: 0 0 8px rgba(208, 188, 255, 0.2);
+      box-shadow: 0 0 6px rgba(208, 188, 255, 0.2);
     }
+
 
     /* Модальные окна */
     .modal-overlay {
@@ -1025,7 +1052,7 @@
         margin-left: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: 16px 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 16px) !important;
+        padding: max(56px, calc(16px + env(safe-area-inset-top))) 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 16px) !important;
         overflow-x: hidden;
       }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }
@@ -1118,18 +1145,25 @@
   </div>
 
   <main class="app-main animate-fade">
-    <div class="app-header-brand">
-      <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</h1>
-      <div class="header-right-tools">
+  <div class="app-header-brand">
+    <div class="brand-group">
+      <div class="brand-row">
+        <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</h1>
         <div class="lang-switcher">
           <button id="langRu" class="lang-btn active" onclick="setLanguage('ru')">RU</button>
           <button id="langEn" class="lang-btn" onclick="setLanguage('en')">EN</button>
         </div>
-        <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
-          <span class="material-symbols-rounded">account_circle</span>
-        </div>
+      </div>
+      <div class="brand-subtitle" data-i18n="brandSubtitle">онлайн-кинотеатр</div>
+    </div>
+  
+    <div class="header-right-tools">
+      <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
+        <span class="material-symbols-rounded">account_circle</span>
       </div>
     </div>
+  </div>
+
 
     <!-- Поиск и фильтры -->
     <header class="top-bar">

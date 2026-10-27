@@ -131,8 +131,8 @@
     }
 
     .header-profile-btn {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: var(--radius-md);
       overflow: hidden;
       display: flex;
@@ -197,7 +197,7 @@
     .app-main {
       flex: 1;
       margin-left: 92px;
-      padding: 24px 36px 56px;
+      padding: 24px 28px 56px;
       width: calc(100% - 92px);
       max-width: 100%;
       overflow-x: hidden;
@@ -208,11 +208,11 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
-      gap: 12px;
+      gap: 8px;
     }
 
     .brand-title-text {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       background: linear-gradient(135deg, #ffffff 0%, #D0BCFF 100%);
       -webkit-background-clip: text;
@@ -231,21 +231,23 @@
       flex-shrink: 0;
     }
 
+    /* Вертикальный переключатель языков */
     .lang-switcher {
       display: flex;
+      flex-direction: column;
       background: var(--glass-surface);
       border: 1px solid var(--glass-border);
-      border-radius: var(--radius-full);
-      padding: 3px;
+      border-radius: var(--radius-sm);
+      padding: 2px;
       gap: 2px;
     }
     .lang-btn {
-      padding: 6px 12px;
-      border-radius: var(--radius-full);
+      padding: 4px 8px;
+      border-radius: 10px;
       border: none;
       background: transparent;
       color: var(--color-variant);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -253,7 +255,7 @@
     .lang-btn.active {
       background: rgba(208, 188, 255, 0.25);
       color: var(--color-primary);
-      box-shadow: 0 0 10px rgba(208, 188, 255, 0.2);
+      box-shadow: 0 0 8px rgba(208, 188, 255, 0.2);
     }
 
     /* Модальные окна в корне body */
@@ -1438,7 +1440,9 @@
         backToAnime: 'К аниме',
         charInfoTitle: 'Информация о персонаже',
         loadingChar: 'Загружаем информацию о персонаже...',
-        addToList: 'В список'
+        addToList: 'В список',
+        authRequired: 'Чтобы получить доступ к своим спискам, выполните вход в аккаунт Shikimori!',
+        loginBtn: 'Войти'
       },
       en: {
         navCatalog: 'Catalog',
@@ -1499,7 +1503,9 @@
         backToAnime: 'To Anime',
         charInfoTitle: 'Character Info',
         loadingChar: 'Loading character info...',
-        addToList: 'Add to list'
+        addToList: 'Add to list',
+        authRequired: 'Please log in with your Shikimori account to access your lists!',
+        loginBtn: 'Login'
       }
     };
 
@@ -1526,6 +1532,9 @@
 
       if (state.animes.length > 0) {
         renderGrid(state.animes, 'animeGrid', false);
+      }
+      if (document.getElementById('view-lists').style.display !== 'none') {
+        fetchUserRatesList('watching');
       }
     }
 
@@ -1642,7 +1651,7 @@
 
     async function loadAnimeByIdOnStart(id) {
       try {
-        const res = await fetch(`https://shikimori.one/api/animes/${id}`);
+        const res = await fetch(`https://shikimori.io/api/animes/${id}`);
         const item = await res.json();
         if (item && item.id) {
           const parsed = parseAnimeItem(item);
@@ -1669,7 +1678,7 @@
 
     async function initGenresMap() {
       try {
-        const res = await fetch('https://shikimori.one/api/genres');
+        const res = await fetch('https://shikimori.io/api/genres');
         const genres = await res.json();
         if (Array.isArray(genres)) {
           genres.forEach(g => {
@@ -1697,7 +1706,7 @@
 
     function redirectToShikimoriLogin() {
       const redirectUri = window.location.origin + window.location.pathname;
-      window.location.href = `https://shikimori.one/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+      window.location.href = `https://shikimori.io/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
     }
 
     function handleAuthLogoClick() {
@@ -1708,13 +1717,13 @@
 
     async function fetchUserProfile(token) {
       try {
-        const res = await fetch('https://shikimori.one/api/users/whoami', {
+        const res = await fetch('https://shikimori.io/api/users/whoami', {
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
         });
         const user = await res.json();
         if (user && user.id) {
           state.currentUser = user;
-          const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
+          const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
           ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.innerHTML = `<img src="${avatar}" alt="${user.nickname}" />`;
@@ -1726,7 +1735,7 @@
 
     async function fetchAllUserRates(userId, token) {
       try {
-        const res = await fetch(`https://shikimori.one/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
+        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
         });
         const rates = await res.json();
@@ -1744,7 +1753,13 @@
 
       if (!token || !state.currentUser) {
         filtersBar.style.display = 'none';
-        grid.innerHTML = `<div class="loader-box" style="grid-column: 1/-1;"><p style="color:var(--color-surface);">Авторизуйтесь через Shikimori!</p></div>`;
+        const t = i18nData[currentLang];
+        grid.innerHTML = `
+          <div class="loader-box" style="gap: 16px; grid-column: 1/-1;">
+            <p style="color: var(--color-surface); font-size: 15px; text-align: center;">${t.authRequired}</p>
+            <button class="md-btn md-btn-filled" onclick="redirectToShikimoriLogin()">${t.loginBtn}</button>
+          </div>
+        `;
         return;
       }
 
@@ -1752,7 +1767,7 @@
       grid.innerHTML = `<div class="loader-box"><div class="spinner"></div></div>`;
 
       try {
-        const res = await fetch(`https://shikimori.one/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
+        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
         });
         const rates = await res.json();
@@ -1805,7 +1820,7 @@
         poster = item.poster.originalUrl || item.poster.mainUrl;
       } else if (item.image) {
         const rawImg = item.image.original || item.image.preview || item.image.x96;
-        if (rawImg && !rawImg.includes('missing')) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.one${rawImg}`;
+        if (rawImg && !rawImg.includes('missing')) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
       }
 
       let year = '2024';
@@ -1817,7 +1832,6 @@
 
       return {
         id: String(item.id),
-        malId: item.malId || item.id,
         titleRu: item.russian || item.name || 'Без названия',
         titleEn: item.english || item.name || item.russian || 'Untitled',
         year,
@@ -1838,7 +1852,6 @@
         query($page: Int, $limit: Int, $order: OrderEnum, $kind: AnimeKindString, $season: SeasonString, $status: AnimeStatusString, $genre: String, $search: String, $ids: String) {
           animes(page: $page, limit: $limit, order: $order, kind: $kind, season: $season, status: $status, genre: $genre, search: $search, ids: $ids, censored: false) {
             id
-            malId
             name
             english
             russian
@@ -1864,7 +1877,7 @@
       if (search) variables.search = search;
       if (ids) variables.ids = String(ids);
 
-      const endpoints = ['https://shikimori.one/api/graphql', 'https://shikimori.io/api/graphql'];
+      const endpoints = ['https://shikimori.io/api/graphql', 'https://shikimori.one/api/graphql'];
 
       for (const ep of endpoints) {
         try {
@@ -1971,7 +1984,7 @@
       try {
         if (!status) {
           if (existingRate) {
-            await fetch(`https://shikimori.one/api/v2/user_rates/${existingRate.id}`, {
+            await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
               method: 'DELETE',
               headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
             });
@@ -1982,14 +1995,14 @@
         }
 
         if (existingRate) {
-          const res = await fetch(`https://shikimori.one/api/v2/user_rates/${existingRate.id}`, {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status } })
           });
           state.userRates[animeId] = await res.json();
         } else {
-          const res = await fetch(`https://shikimori.one/api/v2/user_rates`, {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status, target_id: animeId, target_type: 'Anime', user_id: state.currentUser.id } })
@@ -2265,7 +2278,7 @@
 
       let detailedItem = item;
       try {
-        const detailRes = await fetch(`https://shikimori.one/api/animes/${item.id}`);
+        const detailRes = await fetch(`https://shikimori.io/api/animes/${item.id}`);
         const detailData = await detailRes.json();
         if (detailData && detailData.id) {
           detailedItem = parseAnimeItem(detailData);
@@ -2322,7 +2335,7 @@
       section.style.display = 'none';
 
       try {
-        const res = await fetch(`https://shikimori.one/api/animes/${animeId}/related`);
+        const res = await fetch(`https://shikimori.io/api/animes/${animeId}/related`);
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           let html = '';
@@ -2330,7 +2343,7 @@
             if (!rel.anime) return;
             const a = parseAnimeItem(rel.anime);
             state.itemsRegistry[a.id] = a;
-            let img = a.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
+            let img = a.poster || 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
             const name = currentLang === 'en' ? a.titleEn : a.titleRu;
             
             html += `
@@ -2358,16 +2371,16 @@
       section.style.display = 'none';
 
       try {
-        const res = await fetch(`https://shikimori.one/api/animes/${animeId}/characters`);
+        const res = await fetch(`https://shikimori.io/api/animes/${animeId}/characters`);
         const data = await res.json();
         if (Array.isArray(data)) {
           const mainChars = data.filter(c => c.role === 'Main').map(c => c.character).filter(Boolean);
           let html = '';
           mainChars.forEach(char => {
-            let img = 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
+            let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
             if (char.image) {
               const r = char.image.preview || char.image.original;
-              if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.one${r}`;
+              if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
             }
             const name = char.russian || char.name || 'Герой';
             html += `
@@ -2389,13 +2402,13 @@
       container.innerHTML = `<div class="spinner"></div>`;
 
       try {
-        const res = await fetch(`https://shikimori.one/api/characters/${charId}`);
+        const res = await fetch(`https://shikimori.io/api/characters/${charId}`);
         const char = await res.json();
         if (char && char.id) {
-          let img = 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
+          let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
           if (char.image) {
             const r = char.image.original || char.image.preview;
-            if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.one${r}`;
+            if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
           }
           const name = char.russian || char.name || 'Персонаж';
           const desc = (char.description || 'Описание отсутствует.').replace(/\[.*?\]/g, '');
@@ -2503,24 +2516,24 @@
       if (!state.currentAnimeFull) return;
 
       const epNum = state.currentEpisodeNum || 1;
-      const targetMalId = state.currentAnimeFull.malId || state.currentAnimeFull.id;
+      const shikiId = state.currentAnimeFull.id;
       const iframe = document.getElementById('kodikIframe');
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      // 1. Мегаплей с правильным форматом под MAL ID: /stream/mal/{targetMalId}/{epNum}/{lang}
+      // 1. Плеер MegaPlay по рабочему формату /stream/s-2/{shikiId}/{epNum}/{lang}
       if (state.currentSource === 'megaplay') {
         const lang = state.megaplayLang || 'sub';
-        const megaUrl = `https://megaplays.se/stream/mal/${targetMalId}/${epNum}/${lang}`;
+        const megaUrl = `https://megaplays.se/stream/s-2/${shikiId}/${epNum}/${lang}`;
         openLink.href = megaUrl;
         iframe.src = megaUrl;
         saveSessionState();
         return;
       }
 
-      // 2. AniBoom через прокси
+      // 2. Плеер AniBoom через прокси
       if (state.currentSource === 'aniboom') {
-        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${targetMalId}&ep=${epNum}&source=aniboom`;
+        const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${shikiId}&ep=${epNum}&source=aniboom`;
         openLink.href = proxyUrl;
         iframe.src = proxyUrl;
         saveSessionState();

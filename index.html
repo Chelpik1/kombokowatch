@@ -19,8 +19,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Material Symbols Font -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
-  <!-- HLS.js для проигрывания AniBoom потоков -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
     :root {
@@ -225,7 +223,7 @@
     }
     .brand-title-text:hover { opacity: 0.85; }
 
-    /* Модальные окна */
+    /* Модальные окна в корне body */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -433,7 +431,7 @@
     }
     .filter-select option { background: #18151c; color: var(--color-surface); }
 
-    /* Панель быстрых жанров каталога (без драмы) */
+    /* Панель быстрых жанров каталога */
     .genres-bar {
       display: flex;
       gap: 8px;
@@ -514,7 +512,7 @@
       border-color: var(--color-primary);
     }
 
-    /* Кнопки плееров: Кодик и AniBoom */
+    /* Кнопки выбора источников плеера */
     .player-source-bar {
       display: flex;
       gap: 8px;
@@ -598,11 +596,11 @@
 
     .anime-card:hover .poster-wrap img { transform: scale(1.06); }
 
-    /* Блюр и минималистичный оверлей 18+ для хентая */
+    /* Жесткий блюр и оверлей 18+ для хентая и откровенного контента */
     .poster-wrap.nsfw-card img {
-      filter: blur(16px) brightness(0.55) !important;
-      -webkit-filter: blur(16px) brightness(0.55) !important;
-      transform: scale(1.14) !important;
+      filter: blur(24px) brightness(0.38) !important;
+      -webkit-filter: blur(24px) brightness(0.38) !important;
+      transform: scale(1.18) !important;
     }
     .nsfw-overlay {
       position: absolute;
@@ -613,22 +611,22 @@
       justify-content: center;
       gap: 6px;
       z-index: 3;
-      background: rgba(10, 8, 18, 0.35);
+      background: rgba(8, 6, 15, 0.58);
       pointer-events: none;
       color: #ffffff;
     }
     .nsfw-overlay .material-symbols-rounded {
-      font-size: 32px;
-      opacity: 0.92;
+      font-size: 34px;
+      opacity: 0.95;
     }
     .nsfw-overlay-text {
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.5px;
-      padding: 4px 11px;
+      padding: 4px 12px;
       border-radius: var(--radius-full);
-      background: rgba(18, 14, 28, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(18, 14, 28, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.35);
     }
 
     .poster-fallback {
@@ -1152,7 +1150,7 @@
         <h2 class="section-title" id="sectionTitle">Каталог аниме</h2>
       </div>
 
-      <!-- Быстрый выбор жанров (без драмы) -->
+      <!-- Быстрый выбор жанров -->
       <div class="genres-bar" id="genresBar">
         <button class="genre-chip active" onclick="filterByGenre('', this)">Все</button>
         <button class="genre-chip" onclick="filterByGenre('романтика', this)">Романтика</button>
@@ -1207,12 +1205,6 @@
                 allowfullscreen 
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
               </iframe>
-              <video 
-                id="hlsVideoPlayer" 
-                controls 
-                autoplay 
-                style="width: 100%; height: 100%; display: none; background: #000;">
-              </video>
             </div>
             <div class="player-toolbar">
               <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; min-width:0;">
@@ -1309,6 +1301,19 @@
 
     const PLAYER_SOURCES = ['kodik', 'aniboom'];
 
+    // Системные ID строго взрослых жанров на Shikimori (Хентай и Эротика):
+    // 12 - Hentai | 539 - Erotica / Хентай | 49 - Erotica
+    const ADULT_GENRE_IDS = new Set([12, 539, 49]);
+
+    // Словарь откровенных 18+ стоп-слов (без общих слов про кровь/убийства, чтобы не задевать Тетрадь смерти, Атаку титанов и др.)
+    const ADULT_KEYWORDS = [
+      'хентай', 'hentai', 'эротик', 'erotica',
+      'совокуплен', 'совращен', 'похот', 'разврат', 'инцест',
+      'сексуальн', 'трах', 'изнасилован', 'шлюх', 'проститут',
+      'оргия', 'оргии', 'мастурбац', 'фелляц', 'минет', 'девственниц',
+      'расчленен', 'клубничк', 'порно'
+    ];
+
     let state = {
       animes: [],
       itemsRegistry: {},
@@ -1347,7 +1352,6 @@
     };
 
     window.addEventListener('DOMContentLoaded', async () => {
-      // Заполняем выпадающий список годов от 2026 до 1970
       const yearSelect = document.getElementById('filterYear');
       for (let y = 2026; y >= 1970; y--) {
         const opt = document.createElement('option');
@@ -1358,7 +1362,6 @@
 
       await initGenresMap();
 
-      // Настройка бесконечного скролла
       window.addEventListener('scroll', () => {
         if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500) {
           if (!state.isLoading && state.hasMore && document.getElementById('view-catalog').style.display !== 'none' && state.currentTab === 'catalog') {
@@ -1367,7 +1370,6 @@
         }
       });
 
-      // Обработка хеш-роутинга (#/12345)
       const hash = window.location.hash.replace(/^#\/?/, '');
       if (/^\d+$/.test(hash)) {
         await loadAnimeByIdOnStart(hash);
@@ -1398,7 +1400,6 @@
         if (savedToken) await fetchUserProfile(savedToken);
       }
 
-      // Восстановление сессии при обновлении страницы
       const savedSession = localStorage.getItem('komboko_session');
       if (savedSession) {
         try {
@@ -1425,7 +1426,7 @@
 
     async function loadAnimeByIdOnStart(id) {
       try {
-        const res = await fetch(`https://shikimori.io/api/animes/${id}`);
+        const res = await fetch(`https://shikimori.one/api/animes/${id}`);
         const item = await res.json();
         if (item && item.id) {
           const parsed = parseAnimeItem(item);
@@ -1451,12 +1452,16 @@
 
     async function initGenresMap() {
       try {
-        const res = await fetch('https://shikimori.io/api/genres');
+        const res = await fetch('https://shikimori.one/api/genres');
         const genres = await res.json();
         if (Array.isArray(genres)) {
           genres.forEach(g => {
             if (g.russian && g.id) {
-              state.genresMap[g.russian.toLowerCase().trim()] = g.id;
+              const rLow = g.russian.toLowerCase().trim();
+              state.genresMap[rLow] = g.id;
+              if (rLow.includes('хентай') || rLow.includes('эротик')) {
+                ADULT_GENRE_IDS.add(Number(g.id));
+              }
             }
           });
         }
@@ -1477,7 +1482,7 @@
 
     function redirectToShikimoriLogin() {
       const redirectUri = window.location.origin + window.location.pathname;
-      window.location.href = `https://shikimori.io/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+      window.location.href = `https://shikimori.one/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
     }
 
     function handleAuthLogoClick() {
@@ -1492,7 +1497,7 @@
 
     async function fetchUserProfile(token) {
       try {
-        const res = await fetch('https://shikimori.io/api/users/whoami', {
+        const res = await fetch('https://shikimori.one/api/users/whoami', {
           headers: {
             'User-Agent': 'KombokoWatchApp',
             'Authorization': `Bearer ${token}`
@@ -1501,7 +1506,7 @@
         const user = await res.json();
         if (user && user.id) {
           state.currentUser = user;
-          const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
           
           ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
             const el = document.getElementById(id);
@@ -1527,7 +1532,7 @@
 
     async function fetchAllUserRates(userId, token) {
       try {
-        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
+        const res = await fetch(`https://shikimori.one/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
           headers: {
             'User-Agent': 'KombokoWatchApp',
             'Authorization': `Bearer ${token}`
@@ -1568,7 +1573,7 @@
       `;
 
       try {
-        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
+        const res = await fetch(`https://shikimori.one/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
           headers: {
             'User-Agent': 'KombokoWatchApp',
             'Authorization': `Bearer ${token}`
@@ -1578,10 +1583,8 @@
         
         if (Array.isArray(rates) && rates.length > 0) {
           const animeIds = rates.map(r => r.target_id).join(',');
-          const animesRes = await fetch(`https://shikimori.io/api/animes?ids=${animeIds}&limit=50&censored=false`);
-          const animesData = await animesRes.json();
-
-          const listItems = animesData.map(item => parseAnimeItem(item));
+          const gItems = await fetchGraphQLAnimes({ ids: animeIds, limit: 50 });
+          const listItems = gItems.map(item => parseAnimeItem(item));
           renderGrid(listItems, 'userListsGrid', false);
         } else {
           grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">В этом списке пока ничего нет.</p>`;
@@ -1591,29 +1594,90 @@
       }
     }
 
-    function parseAnimeItem(item) {
-      let poster = null;
-      if (item.image) {
-        const rawImg = item.image.original || item.image.preview || item.image.x96;
-        if (rawImg && !rawImg.includes('missing')) {
-          poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
+    // Точная проверка 18+ (только rx, r_plus, жанры Хентай/Эротика и откровенные ключевые слова — без обычного рейтинга R)
+    function checkIsAdultItem(item) {
+      if (!item) return false;
+      if (item.isNsfw === true) return true;
+
+      // 1. Возрастной рейтинг: только rx (хентай) и r_plus (обнаженка). Обычный 'r' (Тетрадь смерти, Атака титанов) НЕ трогаем!
+      const r = String(item.rating || item.ageRating || '').toLowerCase().trim();
+      if (['rx', 'r_plus', 'r+', 'nc-17', 'r18'].includes(r)) {
+        return true;
+      }
+
+      // 2. Проверка по ID и названиям жанров (только Хентай и Эротика)
+      const rawGenres = item.genres || [];
+      for (const g of rawGenres) {
+        if (!g) continue;
+        if (typeof g === 'object') {
+          const gId = Number(g.id);
+          if (!isNaN(gId) && ADULT_GENRE_IDS.has(gId)) {
+            return true;
+          }
+          const gName = String(g.name || '').toLowerCase();
+          const gRus = String(g.russian || '').toLowerCase();
+          if (
+            gName.includes('hentai') || gRus.includes('хентай') ||
+            gName.includes('erotica') || gRus.includes('эротик')
+          ) {
+            return true;
+          }
+        } else if (typeof g === 'string') {
+          const gl = g.toLowerCase();
+          if (
+            gl.includes('хентай') || gl.includes('hentai') ||
+            gl.includes('эротик') || gl.includes('erotica')
+          ) {
+            return true;
+          }
         }
       }
 
+      // 3. Проверка по откровенным стоп-словам в названии и описании
+      const fullText = [
+        item.russian || '',
+        item.title || '',
+        item.name || '',
+        item.description || ''
+      ].join(' ').toLowerCase();
+
+      for (const kw of ADULT_KEYWORDS) {
+        if (fullText.includes(kw)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function parseAnimeItem(item) {
+      let poster = null;
+      if (item.poster && (item.poster.originalUrl || item.poster.mainUrl)) {
+        poster = item.poster.originalUrl || item.poster.mainUrl;
+      } else if (item.image) {
+        const rawImg = item.image.original || item.image.preview || item.image.x96;
+        if (rawImg && !rawImg.includes('missing')) {
+          poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.one${rawImg}`;
+        }
+      }
+
+      let year = '2024';
+      if (item.airedOn && item.airedOn.year) {
+        year = String(item.airedOn.year);
+      } else if (item.aired_on) {
+        year = item.aired_on.slice(0, 4);
+      }
+
       const rawGenres = item.genres || [];
-      const hasHentaiGenre = rawGenres.some(g => {
-        const gName = String(g.name || '').toLowerCase();
-        const gRus = String(g.russian || '').toLowerCase();
-        return gName === 'hentai' || gRus === 'хентай' || g.id === 12 || g.id === 539;
-      });
-      const isNsfw = Boolean(item.rating === 'rx' || hasHentaiGenre);
+      const isNsfw = checkIsAdultItem(item);
 
       return {
         id: String(item.id),
         title: item.russian || item.name || 'Без названия',
-        year: item.aired_on ? item.aired_on.slice(0, 4) : '2024',
-        episodes: item.episodes || item.episodes_aired || 12,
-        rating: item.score && item.score !== '0.0' ? item.score : null,
+        year,
+        episodes: item.episodes || item.episodesAired || item.episodes_aired || 12,
+        rating: item.score && Number(item.score) > 0 ? item.score : null,
+        ageRating: item.rating || '',
         poster,
         description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
         genres: rawGenres.map(g => typeof g === 'string' ? g : (g.russian || g.name)),
@@ -1621,6 +1685,62 @@
         status: item.status === 'ongoing' ? 'Онгоинг' : 'Вышел',
         isNsfw
       };
+    }
+
+    // Официальный GraphQL-запрос к Shikimori: за 1 раз получает полные данные (включая rating, genres с ID и description) для всех 24 карточек
+    async function fetchGraphQLAnimes({ page = 1, limit = 24, order = 'popularity', kind = '', season = '', status = '', genre = '', search = '', ids = '' }) {
+      const query = `
+        query($page: Int, $limit: Int, $order: OrderEnum, $kind: AnimeKindString, $season: SeasonString, $status: AnimeStatusString, $genre: String, $search: String, $ids: String) {
+          animes(page: $page, limit: $limit, order: $order, kind: $kind, season: $season, status: $status, genre: $genre, search: $search, ids: $ids, censored: false) {
+            id
+            name
+            russian
+            rating
+            score
+            kind
+            status
+            episodes
+            episodesAired
+            airedOn { year }
+            poster { originalUrl mainUrl }
+            genres { id name russian }
+            description
+          }
+        }
+      `;
+
+      const variables = { page, limit, order };
+      if (kind) variables.kind = kind;
+      if (season) variables.season = String(season);
+      if (status) variables.status = status;
+      if (genre) variables.genre = String(genre);
+      if (search) variables.search = search;
+      if (ids) variables.ids = String(ids);
+
+      const endpoints = [
+        'https://shikimori.one/api/graphql',
+        'https://shikimori.io/api/graphql'
+      ];
+
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ query, variables })
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.data && Array.isArray(json.data.animes)) {
+              return json.data.animes;
+            }
+          }
+        } catch (_) {}
+      }
+      throw new Error('GraphQL request failed');
     }
 
     function handleCardAddClick(e, animeId) {
@@ -1730,7 +1850,7 @@
       try {
         if (!status) {
           if (existingRate) {
-            await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
+            await fetch(`https://shikimori.one/api/v2/user_rates/${existingRate.id}`, {
               method: 'DELETE',
               headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
             });
@@ -1741,7 +1861,7 @@
         }
 
         if (existingRate) {
-          const res = await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
+          const res = await fetch(`https://shikimori.one/api/v2/user_rates/${existingRate.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status } })
@@ -1749,7 +1869,7 @@
           const updated = await res.json();
           state.userRates[animeId] = updated;
         } else {
-          const res = await fetch(`https://shikimori.io/api/v2/user_rates`, {
+          const res = await fetch(`https://shikimori.one/api/v2/user_rates`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({
@@ -1843,29 +1963,25 @@
       const genreId = state.genresMap[genreKey] || '';
 
       try {
-        let url = `https://shikimori.io/api/animes?limit=${state.limit}&page=${state.page}&order=${orderVal}&censored=false`;
         const isSingleIdSearch = state.currentQuery && /^\d+$/.test(state.currentQuery);
+        let rawItems = [];
 
-        if (state.currentQuery) {
-          if (isSingleIdSearch) {
-            url = `https://shikimori.io/api/animes/${state.currentQuery}`;
-          } else {
-            url += `&search=${encodeURIComponent(state.currentQuery)}`;
-          }
+        if (isSingleIdSearch) {
+          rawItems = await fetchGraphQLAnimes({ ids: state.currentQuery, limit: 1 });
+        } else {
+          rawItems = await fetchGraphQLAnimes({
+            page: state.page,
+            limit: state.limit,
+            order: orderVal,
+            kind: typeVal,
+            season: yearVal,
+            status: statusVal,
+            genre: genreId,
+            search: state.currentQuery
+          });
         }
-        if (!isSingleIdSearch) {
-          if (typeVal) url += `&kind=${typeVal}`;
-          if (yearVal) url += `&season=${yearVal}`;
-          if (statusVal) url += `&status=${statusVal}`;
-          if (genreId) url += `&genre=${genreId}`;
-        }
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('API Error');
-        const data = await res.json();
-        const items = Array.isArray(data) ? data : (data && data.id ? [data] : []);
-
-        const newItems = items.filter(Boolean).map(item => parseAnimeItem(item));
+        const newItems = rawItems.filter(Boolean).map(item => parseAnimeItem(item));
 
         if (newItems.length < state.limit || isSingleIdSearch) {
           state.hasMore = false;
@@ -1937,6 +2053,7 @@
 
       let html = '';
       list.forEach(item => {
+        item.isNsfw = checkIsAdultItem(item);
         state.itemsRegistry[String(item.id)] = item;
 
         const nsfwOverlayHtml = item.isNsfw ? `
@@ -2038,7 +2155,7 @@
 
       let detailedItem = item;
       try {
-        const detailRes = await fetch(`https://shikimori.io/api/animes/${item.id}`);
+        const detailRes = await fetch(`https://shikimori.one/api/animes/${item.id}`);
         const detailData = await detailRes.json();
         if (detailData && detailData.id) {
           detailedItem = parseAnimeItem(detailData);
@@ -2093,7 +2210,7 @@
       section.style.display = 'none';
 
       try {
-        const res = await fetch(`https://shikimori.io/api/animes/${animeId}/related`);
+        const res = await fetch(`https://shikimori.one/api/animes/${animeId}/related`);
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           const relationNames = {
@@ -2111,7 +2228,7 @@
             const a = parseAnimeItem(rel.anime);
             state.itemsRegistry[a.id] = a;
             const relType = relationNames[rel.relation] || rel.relation;
-            let img = a.poster || 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+            let img = a.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
             const name = a.title || 'Часть';
             
             html += `
@@ -2143,17 +2260,17 @@
       section.style.display = 'none';
 
       try {
-        const res = await fetch(`https://shikimori.io/api/animes/${animeId}/characters`);
+        const res = await fetch(`https://shikimori.one/api/animes/${animeId}/characters`);
         const data = await res.json();
         if (Array.isArray(data)) {
           const mainChars = data.filter(c => c.role === 'Main').map(c => c.character).filter(Boolean);
 
           let html = '';
           mainChars.forEach(char => {
-            let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+            let img = 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
             if (char.image) {
               const r = char.image.preview || char.image.original;
-              if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+              if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.one${r}`;
             }
             const name = char.russian || char.name || 'Герой';
 
@@ -2183,13 +2300,13 @@
       `;
 
       try {
-        const res = await fetch(`https://shikimori.io/api/characters/${charId}`);
+        const res = await fetch(`https://shikimori.one/api/characters/${charId}`);
         const char = await res.json();
         if (char && char.id) {
-          let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          let img = 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
           if (char.image) {
             const r = char.image.original || char.image.preview;
-            if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+            if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.one${r}`;
           }
           const name = char.russian || char.name || 'Персонаж';
           const japanese = char.japanese ? `(${char.japanese})` : '';
@@ -2338,43 +2455,15 @@
       const epNum = state.currentEpisodeNum || 1;
       const malId = state.currentAnimeFull.id;
       const iframe = document.getElementById('kodikIframe');
-      const videoPlayer = document.getElementById('hlsVideoPlayer');
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
       if (state.currentSource === 'aniboom') {
-        iframe.style.display = 'none';
-        videoPlayer.style.display = 'block';
-
         const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}&source=aniboom`;
         openLink.href = proxyUrl;
-
-        try {
-          const res = await fetch(proxyUrl);
-          const data = await res.json();
-          if (data && data.url) {
-            if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-              videoPlayer.src = data.url;
-            } else if (Hls.isSupported()) {
-              if (window.hlsInstance) window.hlsInstance.destroy();
-              const hls = new Hls();
-              window.hlsInstance = hls;
-              hls.loadSource(data.url);
-              hls.attachMedia(videoPlayer);
-            }
-          }
-        } catch (_) {}
-
+        iframe.src = proxyUrl;
         saveSessionState();
         return;
-      }
-
-      // Обычный Кодик
-      iframe.style.display = 'block';
-      videoPlayer.style.display = 'none';
-      if (window.hlsInstance) {
-        window.hlsInstance.destroy();
-        window.hlsInstance = null;
       }
 
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
@@ -2414,6 +2503,7 @@
       e.preventDefault();
       const raw = document.getElementById('searchInput').value.trim();
       state.currentQuery = raw;
+      document.getElementById('filterType').value = '';
       switchTab('catalog');
       resetAndFetchCatalog();
     }

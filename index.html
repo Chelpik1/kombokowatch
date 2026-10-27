@@ -1629,18 +1629,15 @@
       }
     }
 
-    // Точная проверка 18+ (только rx, r_plus, жанры Хентай/Эротика и откровенные ключевые слова — без обычного рейтинга R)
     function checkIsAdultItem(item) {
       if (!item) return false;
       if (item.isNsfw === true) return true;
 
-      // 1. Возрастной рейтинг: только rx (хентай) и r_plus (обнаженка). Обычный 'r' (Тетрадь смерти, Атака титанов) НЕ трогаем!
       const r = String(item.rating || item.ageRating || '').toLowerCase().trim();
       if (['rx', 'r_plus', 'r+', 'nc-17', 'r18'].includes(r)) {
         return true;
       }
 
-      // 2. Проверка по ID и названиям жанров (только Хентай и Эротика)
       const rawGenres = item.genres || [];
       for (const g of rawGenres) {
         if (!g) continue;
@@ -1668,7 +1665,6 @@
         }
       }
 
-      // 3. Проверка по откровенным стоп-словам в названии и описании
       const fullText = [
         item.russian || '',
         item.title || '',
@@ -1723,7 +1719,6 @@
       };
     }
 
-    // Официальный GraphQL-запрос к Shikimori: за 1 раз получает полные данные (включая rating, genres с ID и description) для всех 24 карточек
     async function fetchGraphQLAnimes({ page = 1, limit = 24, order = 'popularity', kind = '', season = '', status = '', genre = '', search = '', ids = '' }) {
       const query = `
         query($page: Int, $limit: Int, $order: OrderEnum, $kind: AnimeKindString, $season: SeasonString, $status: AnimeStatusString, $genre: String, $search: String, $ids: String) {
@@ -2512,33 +2507,21 @@
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `Серия ${epNum}`;
 
-      // 1. Плеер MegaPlay (прямой проверенный рабочий стрим по MAL/Shikimori ID)
+      // 1. Плеер MegaPlay с правильным форматом URL под MAL ID: /stream/mal/{malId}/{ep}/{lang}
       if (state.currentSource === 'megaplay') {
         const lang = state.megaplayLang || 'sub';
-        const megaUrl = `https://megaplay.buzz/stream/s-2/${malId}/${epNum}/${lang}`;
+        const megaUrl = `https://megaplays.se/stream/mal/${malId}/${epNum}/${lang}`;
         openLink.href = megaUrl;
         iframe.src = megaUrl;
         saveSessionState();
         return;
       }
 
-      // 2. Плеер AniBoom (сначала проверяем твой бэкенд-прокси, если недоступен — используем альтернативный плеер без рекламы)
+      // 2. Плеер AniBoom через бэкенд-прокси с фоллбэком
       if (state.currentSource === 'aniboom') {
         const proxyUrl = `${BACKEND_URL}/api/proxy_player?mal_id=${malId}&ep=${epNum}&source=aniboom`;
-        try {
-          const check = await fetch(proxyUrl, { method: 'HEAD' });
-          if (check.ok) {
-            openLink.href = proxyUrl;
-            iframe.src = proxyUrl;
-            saveSessionState();
-            return;
-          }
-        } catch (_) {}
-
-        // Резервный поток, если прокси-сервер не отдал AniBoom
-        const fallbackUrl = `https://kodikplayer.com/find-player?shikimoriID=${malId}&episode=${epNum}`;
-        openLink.href = fallbackUrl;
-        iframe.src = fallbackUrl;
+        openLink.href = proxyUrl;
+        iframe.src = proxyUrl;
         saveSessionState();
         return;
       }
@@ -2548,7 +2531,7 @@
       if (!variant) return;
 
       let rawLink = variant.episodes[String(epNum)] || variant.default_link;
-      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
+      let cleanUrl = rawLink.startsWith('//`') ? `https:${rawLink}` : rawLink;
 
       cleanUrl = cleanUrl
         .replace('kodik.info', 'kodikplayer.com')

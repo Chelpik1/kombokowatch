@@ -227,7 +227,7 @@
     .brand-group {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
       min-width: 0;
     }
     
@@ -238,10 +238,10 @@
     }
     
     .brand-subtitle {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
       color: var(--color-variant);
-      opacity: 0.75;
+      opacity: 0.7;
       letter-spacing: 0.2px;
       padding-left: 2px;
     }
@@ -259,19 +259,19 @@
       flex-direction: column;
       background: var(--glass-surface);
       border: 1px solid var(--glass-border);
-      border-radius: var(--radius-sm);
+      border-radius: 8px;
       padding: 2px;
-      gap: 1px;
+      gap: 2px;
       flex-shrink: 0;
     }
     
     .lang-btn {
-      padding: 2px 5px;
+      padding: 5px 8px;
       border-radius: 6px;
       border: none;
       background: transparent;
       color: var(--color-variant);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       line-height: 1;
@@ -281,7 +281,7 @@
     .lang-btn.active {
       background: rgba(208, 188, 255, 0.25);
       color: var(--color-primary);
-      box-shadow: 0 0 6px rgba(208, 188, 255, 0.2);
+      box-shadow: 0 0 8px rgba(208, 188, 255, 0.2);
     }
 
 
@@ -1052,7 +1052,7 @@
         margin-left: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: max(56px, calc(16px + env(safe-area-inset-top))) 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 16px) !important;
+        padding: max(60px, calc(18px + env(safe-area-inset-top))) 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 16px) !important;
         overflow-x: hidden;
       }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }

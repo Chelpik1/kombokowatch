@@ -1529,6 +1529,16 @@
   </main>
 
   <script>
+
+    // Надежное хранение для обхода ограничений PWA на iOS
+    function safeGet(key) {
+      return localStorage.getItem(key) || sessionStorage.getItem(key);
+    }
+    function safeSet(key, value) {
+      try { localStorage.setItem(key, value); } catch(e) {}
+      try { sessionStorage.setItem(key, value); } catch(e) {}
+    }
+    
     const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
@@ -1888,8 +1898,11 @@
           console.error('Auth error:', err);
         }
       } else {
-        const savedToken = localStorage.getItem('shiki_token');
-        if (savedToken) await fetchUserProfile(savedToken);
+          const savedToken = safeGet('shiki_token');
+          if (savedToken) {
+            safeSet('shiki_token', savedToken);
+            await fetchUserProfile(savedToken);
+          }
       }
 
       const hash = window.location.hash.replace(/^#\/?/, '');
@@ -1939,14 +1952,15 @@
     }
 
     function saveSessionState() {
-      localStorage.setItem('komboko_session', JSON.stringify({
+      const data = JSON.stringify({
         currentTab: state.currentTab,
         currentAnimeFull: state.currentAnimeFull,
         currentEpisodeNum: state.currentEpisodeNum,
         currentVariantIndex: state.currentVariantIndex,
         currentSource: state.currentSource,
         megaplayLang: state.megaplayLang
-      }));
+      });
+      safeSet('komboko_session', data);
     }
 
     // Отрисовка блока «Продолжить просмотр» с фразой по-братски
@@ -2133,7 +2147,7 @@
       } catch (_) { localStorage.removeItem('shiki_token'); }
     }
 
-    async function fetchAllUserRates(userId, token) {
+async function fetchAllUserRates(userId, token) {
       try {
         const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
@@ -2141,7 +2155,49 @@
         const rates = await res.json();
         if (Array.isArray(rates)) {
           state.userRates = {};
-          rates.forEach(r => { state.userRates[r.target_id] = r; });
+          const watchingRates = [];
+          
+          rates.forEach(r => { 
+            state.userRates[r.target_id] = r; 
+            if (r.status === 'watching' && r.target_id) {
+              watchingRates.push(r);
+            }
+          });
+
+          // Двусторонний синхрон: подтягиваем прогресс из Шикимори локально
+          if (watchingRates.length > 0) {
+            // Сортируем по времени последнего обновления
+            watchingRates.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
+            
+            watchingRates.forEach(r => {
+              const progressKey = `komboko_progress_${r.target_id}`;
+              const localData = JSON.parse(localStorage.getItem(progressKey) || '{}');
+              // Если в облаке Шикимори серия больше или локально пусто — обновляем
+              if (!localData.episode || r.episodes > localData.episode) {
+                localStorage.setItem(progressKey, JSON.stringify({ episode: r.episodes }));
+              }
+            });
+
+            // Проверяем, есть ли эти тайтлы в локальной истории. Если нет (PWA сбросил кеш) — подгружаем
+            const missingIds = watchingRates
+              .map(r => String(r.target_id))
+              .filter(id => !state.history.some(h => String(h.id) === id));
+
+            if (missingIds.length > 0) {
+              try {
+                const gItems = await fetchGraphQLAnimes({ ids: missingIds.join(','), limit: 50 });
+                const parsedItems = gItems.map(item => parseAnimeItem(item));
+                
+                parsedItems.forEach(item => {
+                  if (!state.history.some(h => String(h.id) === String(item.id))) {
+                    state.history.push(item);
+                  }
+                });
+                localStorage.setItem('kodik_history', JSON.stringify(state.history));
+                renderContinueWatchingBlock();
+              } catch (e) {}
+            }
+          }
         }
       } catch (_) {}
     }

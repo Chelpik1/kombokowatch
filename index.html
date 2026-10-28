@@ -204,7 +204,49 @@
       z-index: 100;
       gap: 24px;
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.4);
+    } 
+
+        /* Стили для таблеточного переключателя Аниме / Манга */
+    .catalog-switch-container {
+      display: flex;
+      background: var(--glass-surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      padding: 4px;
+      margin-bottom: 20px;
+      width: 100%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
+    .catalog-switch-tab {
+      flex: 1;
+      height: 42px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      color: var(--color-variant);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .catalog-switch-tab:hover {
+      color: var(--color-surface);
+    }
+    .catalog-switch-tab.active {
+      background: linear-gradient(135deg, rgba(208, 188, 255, 0.25) 0%, rgba(179, 157, 219, 0.2) 100%);
+      color: var(--color-primary);
+      border: 1px solid var(--glass-border-glow);
+      box-shadow: 0 4px 15px rgba(208, 188, 255, 0.15);
+      font-weight: 700;
+    }
+
 
     .header-profile-btn {
       width: 45px;
@@ -1434,9 +1476,9 @@
       </div>
     </header>
 
-<!-- Каталог -->
+    <!-- Каталог -->
     <section id="view-catalog">
-      <!-- Блок «Продолжить просмотр» теперь сверху -->
+      <!-- Блок «Продолжить просмотр» -->
       <div id="continueWatchSection" style="display: none; margin-bottom: 24px;">
         <div class="section-header" style="margin-bottom: 12px;">
           <h2 class="section-title" style="font-size: 18px;" data-i18n="continueTitle">Продолжить просмотр</h2>
@@ -1454,10 +1496,16 @@
         </div>
       </div>
 
-      <!-- Затем идет заголовок каталога -->
-      <div class="section-header">
-        <h2 class="section-title" id="sectionTitle" data-i18n="catalogTitle">Каталог аниме</h2>
+      <!-- Таблеточный переключатель Аниме / Манга -->
+      <div class="catalog-switch-container">
+        <button id="switchTabAnime" class="catalog-switch-tab active" onclick="switchCatalogTab('anime')">
+          <span class="material-symbols-rounded" style="font-size: 18px;">movie</span> Аниме
+        </button>
+        <button id="switchTabManga" class="catalog-switch-tab" onclick="switchCatalogTab('manga')">
+          <span class="material-symbols-rounded" style="font-size: 18px;">auto_stories</span> Манга
+        </button>
       </div>
+
       
       <!-- ... дальше идут жанры и грид аниме ... -->
       <div class="genres-bar" id="genresBar">
@@ -2013,6 +2061,253 @@
       renderContinueWatchingBlock();
       fetchShikimoriCatalog(true);
     });
+
+        let currentCatalogMode = 'anime'; // 'anime' или 'manga'
+
+    function switchCatalogTab(mode) {
+      currentCatalogMode = mode;
+      
+      const btnAnime = document.getElementById('switchTabAnime');
+      const btnManga = document.getElementById('switchTabManga');
+      const filtersRow = document.querySelector('.filters-row');
+      const genresBar = document.getElementById('genresBar');
+
+      btnAnime.classList.toggle('active', mode === 'anime');
+      btnManga.classList.toggle('active', mode === 'manga');
+
+      if (mode === 'anime') {
+        if (filtersRow) filtersRow.style.display = 'flex';
+        if (genresBar) genresBar.style.display = 'flex';
+        resetAndFetchCatalog();
+      } else {
+        // Режим Манги
+        if (filtersRow) filtersRow.style.display = 'none';
+        if (genresBar) genresBar.style.display = 'none';
+        fetchMangaCatalog(true);
+      }
+    }
+
+    // === MANGADEX API CLIENT ===
+    const MANGADEX_API = 'https://api.mangadex.org';
+
+    // Поиск и загрузка каталога манги (с упором на русский язык 'ru')
+    async function fetchMangaCatalog(reset = true, query = '') {
+      if (state.isLoading || (!reset && !state.hasMore)) return;
+      state.isLoading = true;
+
+      if (reset) {
+        state.page = 1;
+        state.animes = []; // Переиспользуем массив сетки под мангу
+        state.hasMore = true;
+        if (query !== '') state.currentQuery = query;
+      }
+
+      const grid = document.getElementById('animeGrid');
+      const loader = document.getElementById('infiniteLoader');
+      const t = i18nData[currentLang];
+
+      if (state.page === 1) {
+        grid.innerHTML = `<div class="loader-box"><div class="spinner"></div><span>Загружаем мангу с MangaDex...</span></div>`;
+      } else {
+        loader.style.display = 'flex';
+      }
+
+      try {
+        const offset = (state.page - 1) * state.limit;
+        let url = `${MANGADEX_API}/manga?limit=${state.limit}&offset=${offset}&includes[]=cover_art&availableTranslatedLanguage[]=ru&order[followedCount]=desc`;
+        
+        if (state.currentQuery) {
+          url += `&title=${encodeURIComponent(state.currentQuery)}`;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data && Array.isArray(data.data)) {
+          const parsedManga = data.data.map(manga => {
+            const attr = manga.attributes;
+            const titleObj = attr.title;
+            const titleRu = titleObj.ru || titleObj.en || Object.values(titleObj)[0] || 'Без названия';
+            
+            // Находим обложку (cover_art)
+            let coverFileName = '';
+            const rel = manga.relationships.find(r => r.type === 'cover_art');
+            if (rel && rel.attributes && rel.attributes.fileName) {
+              coverFileName = rel.attributes.fileName;
+            }
+            const poster = coverFileName ? `https://uploads.mangadex.org/covers/${manga.id}/${coverFileName}.256.jpg` : '';
+
+            // Описание
+            const descObj = attr.description;
+            const desc = (descObj.ru || descObj.en || 'Описание отсутствует.').replace(/\[.*?\]/g, '');
+
+            return {
+              id: manga.id,
+              titleRu,
+              titleEn: titleObj.en || titleRu,
+              year: attr.year || '2024',
+              episodes: attr.lastChapter || '?', // Вместо серий у манги главы
+              rating: null,
+              poster,
+              description: desc,
+              isManga: true,
+              isNsfw: attr.contentRating === 'nsfw' || attr.contentRating === 'erotica'
+            };
+          });
+
+          if (parsedManga.length < state.limit) state.hasMore = false;
+
+          if (state.page === 1) state.animes = parsedManga;
+          else state.animes = [...state.animes, ...parsedManga];
+
+          state.page++;
+          renderMangaGrid(state.animes);
+        }
+      } catch (err) {
+        if (state.page === 1) grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Ошибка загрузки манги</p>`;
+      } finally {
+        state.isLoading = false;
+        loader.style.display = 'none';
+      }
+    }
+
+    // Рендер карточек манги в общую сетку
+    function renderMangaGrid(list) {
+      const grid = document.getElementById('animeGrid');
+      const t = i18nData[currentLang];
+      grid.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">${t.emptyText}</p>`;
+        return;
+      }
+
+      let html = '';
+      list.forEach(item => {
+        state.itemsRegistry[String(item.id)] = item;
+        const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
+        const safeTitle = (displayTitle || '').replace(/'/g, '').replace(/"/g, '&quot;');
+        
+        const posterInner = item.poster 
+          ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>auto_stories</span><p>${safeTitle}</p></div>'" />`
+          : `<div class="poster-fallback"><span class="material-symbols-rounded">auto_stories</span><p>${safeTitle}</p></div>`;
+
+        html += `
+          <article class="anime-card animate-fade" onclick="loadMangaChapters('${item.id}')">
+            <div class="poster-wrap">
+              ${posterInner}
+              <div class="card-badges">
+                <span class="badge-pill">Манга</span>
+                <span class="badge-pill">гл. ${item.episodes}</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">${displayTitle}</h3>
+              <div class="card-meta">${item.year} • MangaDex</div>
+            </div>
+          </article>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    // Загрузка списка глав для выбранной манги
+    async function loadMangaChapters(mangaId) {
+      const item = state.itemsRegistry[mangaId];
+      if (!item) return;
+
+      switchTab('watch', false); // Переиспользуем экран плеера под читалку
+      document.getElementById('watchTitle').textContent = item.titleRu;
+      renderDetailsPoster(item.poster, item.titleRu);
+      document.getElementById('detailsDesc').textContent = item.description;
+      document.getElementById('detailsMeta').textContent = `Манга • ${item.year} • Главы на русском`;
+
+      // Скрываем видеоплеер, показываем читалку
+      const videoStage = document.querySelector('.video-stage');
+      const playerToolbar = document.querySelector('.player-toolbar');
+      const playerSourceBar = document.querySelector('.player-source-bar');
+      const voiceSection = document.getElementById('voiceSection');
+      
+      if (playerSourceBar) playerSourceBar.style.display = 'none';
+      if (voiceSection) voiceSection.style.display = 'none';
+      
+      videoStage.innerHTML = `
+        <div id="mangaReaderContainer" style="width:100%; height:100%; overflow-y:auto; background:#120f1c; padding: 20px; display:flex; flex-direction:column; align-items:center; gap: 10px;">
+          <div class="spinner" style="margin-top: 40px;"></div>
+          <p style="color: var(--color-variant); font-size: 13px;">Загружаем список глав...</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`${MANGADEX_API}/manga/${mangaId}/feed?translatedLanguage[]=ru&order[chapter]=asc&limit=100`);
+        const data = await res.json();
+
+        if (data && Array.isArray(data.data)) {
+          const chapters = data.data.map(ch => ({
+            id: ch.id,
+            chapter: ch.attributes.chapter || '1',
+            title: ch.attributes.title || ''
+          }));
+
+          renderMangaReaderInterface(chapters, item.titleRu);
+        } else {
+          document.getElementById('mangaReaderContainer').innerHTML = `<p style="color:#F2B8B5; padding: 40px;">Глав на русском языке пока нет.</p>`;
+        }
+      } catch (err) {
+        document.getElementById('mangaReaderContainer').innerHTML = `<p style="color:#F2B8B5; padding: 40px;">Ошибка загрузки глав</p>`;
+      }
+    }
+
+    // Отрисовка интерфейса читалки (выбор глав и вертикальная лента страниц)
+    function renderMangaReaderInterface(chapters, mangaTitle) {
+      const container = document.getElementById('mangaReaderContainer');
+      container.innerHTML = `
+        <div style="display:flex; width:100%; justify-content:space-between; align-items:center; margin-bottom:10px; background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:12px; border:1px solid var(--glass-border);">
+          <span style="font-size:13px; font-weight:600; color:var(--color-primary);" id="currentChapterLabel">Глава ${chapters[0]?.chapter || 1}</span>
+          <select id="mangaChapterSelect" class="filter-select" style="max-width: 200px;" onchange="loadMangaChapterPages(this.value)">
+            ${chapters.map(ch => `<option value="${ch.id}">Глава ${ch.chapter} ${ch.title ? '- ' + ch.title : ''}</option>`).join('')}
+          </select>
+        </div>
+        <div id="mangaPagesScroll" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:4px; min-height:400px;">
+        </div>
+      `;
+
+      if (chapters.length > 0) {
+        loadMangaChapterPages(chapters[0].id);
+      }
+    }
+
+    // Загрузка страниц конкретной главы с серверов MangaDex @home
+    async function loadMangaChapterPages(chapterId) {
+      const pagesContainer = document.getElementById('mangaPagesScroll');
+      pagesContainer.innerHTML = `<div class="spinner" style="margin-top: 40px;"></div><p style="color:var(--color-variant); font-size:13px; margin-top:10px;">Загружаем страницы...</p>`;
+
+      try {
+        const res = await fetch(`${MANGADEX_API}/at-home/server/${chapterId}`);
+        const data = await res.json();
+
+        if (data && data.baseUrl && data.chapter) {
+          const baseUrl = data.baseUrl;
+          const hash = data.chapter.hash;
+          const pages = data.chapter.data; // Массив файлов страниц
+
+          pagesContainer.innerHTML = '';
+          pages.forEach((fileName, index) => {
+            // MangaDex отдает страницы в высоком качестве через /data/ или в сжатом через /data-saver/
+            const pageUrl = `${baseUrl}/data/${hash}/${fileName}`;
+            const img = document.createElement('img');
+            img.src = pageUrl;
+            img.loading = 'lazy';
+            img.style.cssText = 'width: 100%; max-width: 800px; height: auto; display: block; border-radius: 4px; background: #000;';
+            pagesContainer.appendChild(img);
+          });
+        }
+      } catch (err) {
+        pagesContainer.innerHTML = `<p style="color:#F2B8B5; padding: 40px;">Не удалось загрузить страницы главы.</p>`;
+      }
+    }
+
+
 
     async function loadAnimeByIdOnStart(id) {
       try {

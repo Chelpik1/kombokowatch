@@ -148,9 +148,9 @@
     }
 
     .tg-header-btn {
-      width: 45px;
-      height: 45px;
-      border-radius: var(--radius-md);
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1182,6 +1182,46 @@
     </div>
   </div>
 
+  <!-- Рандомные промо-модалки с мгновенным переходом и закрытием -->
+  <div id="promoModal-1" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-1') closePromoModal(1)">
+    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center;">
+      <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">campaign</span>
+      <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);">KombokoWatch</h3>
+      <p style="font-size: 13.5px; line-height: 1.55; color: var(--color-surface); margin: 8px 0 14px;">
+        Чтобы следить за развитием проекта, подпишитесь на наш телеграм канал!
+      </p>
+      <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="social-btn" style="width: 100%; margin-top: 0;" onclick="closePromoModal(1)">
+        <span class="material-symbols-rounded" style="font-size:20px;">send</span> Перейти в тгк
+      </a>
+    </div>
+  </div>
+
+  <div id="promoModal-2" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-2') closePromoModal(2)">
+    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center;">
+      <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">vpn_lock</span>
+      <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);">Свободный интернет</h3>
+      <p style="font-size: 13.5px; line-height: 1.55; color: var(--color-surface); margin: 8px 0 14px;">
+        Устали от блокировок? Пользуйтесь проверенными методами обхода!
+      </p>
+      <a href="https://t.me/cisvpn_bot?start=ref93gFgX3A" target="_blank" class="social-btn" style="width: 100%; margin-top: 0;" onclick="closePromoModal(2)">
+        <span class="material-symbols-rounded" style="font-size:20px;">shield</span> Перейти к свободному интернету
+      </a>
+    </div>
+  </div>
+
+  <div id="promoModal-3" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-3') closePromoModal(3)">
+    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center;">
+      <span class="material-symbols-rounded" style="font-size: 38px; color: #FFD54F;">stars</span>
+      <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);">Telegram Stars</h3>
+      <p style="font-size: 13.5px; line-height: 1.55; color: var(--color-surface); margin: 8px 0 14px;">
+        Давно искал где купить звезды в телеграм подешевле? Считай что нашел
+      </p>
+      <a href="https://t.me/cisstarsapp?start=ref=1493850172" target="_blank" class="social-btn" style="width: 100%; margin-top: 0;" onclick="closePromoModal(3)">
+        <span class="material-symbols-rounded" style="font-size:20px;">star</span> Дешевые звезды
+      </a>
+    </div>
+  </div>
+
   <main class="app-main animate-fade">
     <div class="app-header-brand">
       <div class="brand-group">
@@ -1414,6 +1454,15 @@
 
     const i18nData = {
       ru: {
+        promoTgTitle: 'KombokoWatch',
+        promoTgDesc: 'Чтобы следить за развитием проекта, подпишитесь на наш телеграм канал!',
+        promoTgBtn: 'Перейти в тгк',
+        promoVpnTitle: 'Свободный интернет',
+        promoVpnDesc: 'Устали от блокировок? Пользуйтесь проверенными методами обхода!',
+        promoVpnBtn: 'Перейти к свободному интернету',
+        promoStarsTitle: 'Telegram Stars',
+        promoStarsDesc: 'Давно искал где купить звезды в телеграм по дешевле? Считай что нашел',
+        promoStarsBtn: 'Дешевые звезды',
         brandSubtitle: 'онлайн-кинотеатр',
         navCatalog: 'Каталог',
         navPlayer: 'Плеер',
@@ -1486,6 +1535,15 @@
         searchPrefix: 'Поиск:'
       },
       en: {
+        promoTgTitle: 'KombokoWatch',
+        promoTgDesc: 'To follow the project development, subscribe to our Telegram channel!',
+        promoTgBtn: 'Go to Telegram',
+        promoVpnTitle: 'Free Internet',
+        promoVpnDesc: 'Tired of blocking? Use proven bypass methods!',
+        promoVpnBtn: 'Get Free Internet',
+        promoStarsTitle: 'Telegram Stars',
+        promoStarsDesc: 'Looking for cheaper Telegram Stars? Consider it found',
+        promoStarsBtn: 'Cheap Stars',
         brandSubtitle: 'online cinema',
         navCatalog: 'Catalog',
         navPlayer: 'Player',
@@ -1657,6 +1715,7 @@
       itemsRegistry: {},
       confirmedNsfwIds: new Set(),
       pendingNsfwItem: null,
+      animeClickCounter: 0,
       lastCatalogMode: 'catalog',
       lastScrollY: 0,
       currentAnimeFull: null,
@@ -1817,6 +1876,26 @@
     }
     function closeSocialModalOnOutside(e) {
       if (e.target.id === 'infoModal') closeSocialModal();
+    }
+
+    // Функция показа рандомного промо (каждые 2-3 тайтла или при первом открытии)
+    function triggerRandomPromo() {
+      state.animeClickCounter++;
+      const targetStep = Math.random() < 0.5 ? 2 : 3;
+      
+      if (state.animeClickCounter === 1 || state.animeClickCounter % targetStep === 0) {
+        const randomWindowId = Math.floor(Math.random() * 3) + 1;
+        setTimeout(() => {
+          const modal = document.getElementById(`promoModal-${randomWindowId}`);
+          if (modal) modal.style.display = 'flex';
+        }, 500);
+      }
+    }
+
+    // Мгновенное закрытие модалки с перенаправлением на тайтл
+    function closePromoModal(id) {
+      const modal = document.getElementById(`promoModal-${id}`);
+      if (modal) modal.style.display = 'none';
     }
 
     function redirectToShikimoriLogin() {
@@ -2244,7 +2323,7 @@
       resetAndFetchCatalog();
     }
 
-    async function handleCardClick(animeId) {
+async function handleCardClick(animeId) {
       const idStr = String(animeId);
       let item = state.itemsRegistry[idStr];
       if (!item) return;
@@ -2257,7 +2336,8 @@
         state.pendingNsfwItem = item;
         document.getElementById('ageModal').style.display = 'flex';
       } else {
-        loadKodikPlayerForAnime(item);
+        loadKodikPlayerForAnime(item); // Сначала открывается тайтл
+        triggerRandomPromo();           // Затем срабатывает рандомная реклама
       }
     }
 
@@ -2268,6 +2348,7 @@
       if (proceed && target) {
         state.confirmedNsfwIds.add(String(target.id));
         loadKodikPlayerForAnime(target);
+        triggerRandomPromo();
       }
     }
 

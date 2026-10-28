@@ -2720,6 +2720,12 @@ async function handleCardClick(animeId) {
       state.history = [detailedItem, ...state.history.filter(a => a.id !== detailedItem.id)].slice(0, 30);
       localStorage.setItem('kodik_history', JSON.stringify(state.history));
 
+      // >>> ВОТ СЮДА ВПИСЫВАЕМ СОХРАНЕНИЕ ПРОГРЕССА <<<
+      const progressKey = `komboko_progress_${detailedItem.id}`;
+      localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
+      updateShikimoriProgress(detailedItem.id, state.currentEpisodeNum);
+      // ===============================================
+
 
       saveSessionState();
 
@@ -2945,7 +2951,7 @@ async function handleCardClick(animeId) {
       });
     }
 
-    async function loadCurrentEpisodeVideo() {
+async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
 
       const t = i18nData[currentLang];
@@ -2955,10 +2961,10 @@ async function handleCardClick(animeId) {
       const openLink = document.getElementById('openInNewTab');
       document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
 
-      // Сохраняем прогресс серии
-      const progressKey = `komboko_progress_${item.id}`;
+      // Сохраняем прогресс серии (исправили item.id на state.currentAnimeFull.id)
+      const progressKey = `komboko_progress_${targetId}`;
       localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
-      updateShikimoriProgress(item.id, state.currentEpisodeNum);
+      updateShikimoriProgress(targetId, state.currentEpisodeNum);
 
       // 1. Рабочий MegaPlay
       if (state.currentSource === 'megaplay') {
@@ -2985,7 +2991,7 @@ async function handleCardClick(animeId) {
       iframe.src = cleanUrl;
       saveSessionState();
     }
-
+    
     function stepEpisode(delta) {
       if (!state.currentAnimeFull) return;
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];

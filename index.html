@@ -2091,13 +2091,13 @@
     const MANGADEX_API = 'https://api.mangadex.org';
 
     // Поиск и загрузка каталога манги (с упором на русский язык 'ru')
-    async function fetchMangaCatalog(reset = true, query = '') {
+        async function fetchMangaCatalog(reset = true, query = '') {
       if (state.isLoading || (!reset && !state.hasMore)) return;
       state.isLoading = true;
 
       if (reset) {
         state.page = 1;
-        state.animes = []; // Переиспользуем массив сетки под мангу
+        state.animes = [];
         state.hasMore = true;
         if (query !== '') state.currentQuery = query;
       }
@@ -2114,15 +2114,21 @@
 
       try {
         const offset = (state.page - 1) * state.limit;
-        let url = `${MANGADEX_API}/manga?limit=${state.limit}&offset=${offset}&includes[]=cover_art&availableTranslatedLanguage[]=ru&order[followedCount]=desc`;
+        // Используем прямой стабильный эндпоинт MangaDex с лимитом и сортировкой
+        let apiUrl = `https://api.mangadex.org/manga?limit=${state.limit}&offset=${offset}&includes[]=cover_art&availableTranslatedLanguage[]=ru&order[followedCount]=desc`;
         
         if (state.currentQuery) {
-          url += `&title=${encodeURIComponent(state.currentQuery)}`;
+          apiUrl += `&title=${encodeURIComponent(state.currentQuery)}`;
         }
 
-        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-
+        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(apiUrl)}`);
         const data = await res.json();
+
+        // Проверяем, что мы всё еще находимся в режиме манги (защита от случайных свайпов и гонки запросов)
+        if (currentCatalogMode !== 'manga') {
+          state.isLoading = false;
+          return;
+        }
 
         if (data && Array.isArray(data.data)) {
           const parsedManga = data.data.map(manga => {
@@ -2130,7 +2136,6 @@
             const titleObj = attr.title;
             const titleRu = titleObj.ru || titleObj.en || Object.values(titleObj)[0] || 'Без названия';
             
-            // Находим обложку (cover_art)
             let coverFileName = '';
             const rel = manga.relationships.find(r => r.type === 'cover_art');
             if (rel && rel.attributes && rel.attributes.fileName) {
@@ -2138,7 +2143,6 @@
             }
             const poster = coverFileName ? `https://uploads.mangadex.org/covers/${manga.id}/${coverFileName}.256.jpg` : '';
 
-            // Описание
             const descObj = attr.description;
             const desc = (descObj.ru || descObj.en || 'Описание отсутствует.').replace(/\[.*?\]/g, '');
 
@@ -2147,7 +2151,7 @@
               titleRu,
               titleEn: titleObj.en || titleRu,
               year: attr.year || '2024',
-              episodes: attr.lastChapter || '?', // Вместо серий у манги главы
+              episodes: attr.lastChapter || '?',
               rating: null,
               poster,
               description: desc,
@@ -2163,9 +2167,11 @@
 
           state.page++;
           renderMangaGrid(state.animes);
+        } else {
+          if (state.page === 1) grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">Манга не найдена</p>`;
         }
       } catch (err) {
-        if (state.page === 1) grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Ошибка загрузки манги</p>`;
+        if (state.page === 1) grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Ошибка соединения с MangaDex</p>`;
       } finally {
         state.isLoading = false;
         loader.style.display = 'none';

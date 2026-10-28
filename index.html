@@ -1949,8 +1949,8 @@
       window.addEventListener('scroll', () => {
         if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500) {
           if (!state.isLoading && state.hasMore && document.getElementById('view-catalog').style.display !== 'none' && state.currentTab === 'catalog') {
-            fetchShikimoriCatalog(false);
             renderContinueWatchingBlock();
+            fetchShikimoriCatalog(false);
           }
         }
       });

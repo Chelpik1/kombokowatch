@@ -2666,10 +2666,6 @@ async function handleCardClick(animeId) {
       const megaSwitch = document.getElementById('megaplayLangSwitch');
       if (megaSwitch) megaSwitch.style.display = 'none';
 
-      // Сохраняем прогресс серии
-      const progressKey = `komboko_progress_${item.id}`;
-      localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
-      updateShikimoriProgress(item.id, state.currentEpisodeNum);
 
       const t = i18nData[currentLang];
       const activeTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
@@ -2723,6 +2719,11 @@ async function handleCardClick(animeId) {
 
       state.history = [detailedItem, ...state.history.filter(a => a.id !== detailedItem.id)].slice(0, 30);
       localStorage.setItem('kodik_history', JSON.stringify(state.history));
+
+            // Сохраняем прогресс серии
+      const progressKey = `komboko_progress_${item.id}`;
+      localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
+      updateShikimoriProgress(item.id, state.currentEpisodeNum);
 
       saveSessionState();
 

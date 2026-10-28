@@ -2120,7 +2120,8 @@
           url += `&title=${encodeURIComponent(state.currentQuery)}`;
         }
 
-        const res = await fetch(url);
+        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+
         const data = await res.json();
 
         if (data && Array.isArray(data.data)) {

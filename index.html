@@ -1956,17 +1956,24 @@
 
     // Функция показа рандомного промо (каждые 2-3 тайтла или при первом открытии)
     function triggerRandomPromo() {
-      state.animeClickCounter++;
-      const targetStep = Math.random() < 0.5 ? 2 : 3;
-      
-      if (state.animeClickCounter === 1 || state.animeClickCounter % targetStep === 0) {
-        const randomWindowId = Math.floor(Math.random() * 3) + 1;
-        setTimeout(() => {
-          const modal = document.getElementById(`promoModal-${randomWindowId}`);
-          if (modal) modal.style.display = 'flex';
-        }, 500);
-      }
-    }
+          // Если юзер с премиумом — не показываем рекламу вообще
+          if (state.isUserPremium) return;
+    
+          state.animeClickCounter++;
+          const targetStep = Math.random() < 0.5 ? 2 : 3;
+          
+          if (state.animeClickCounter === 1 || state.animeClickCounter % targetStep === 0) {
+            // Делаем массив с «весами»: ID 1 (ТГК) встречается чаще (например, 3 раза), а остальные по 1 разу.
+            // Итого шансы: ТГК — 50%, VPN — 25%, Звезды — 25%.
+            const weightedPool = [1, 1, 1, 2, 3];
+            const randomWindowId = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+    
+            setTimeout(() => {
+              const modal = document.getElementById(`promoModal-${randomWindowId}`);
+              if (modal) modal.style.display = 'flex';
+            }, 500);
+          }
+        }
 
     // Мгновенное закрытие модалки с перенаправлением на тайтл
     function closePromoModal(id) {

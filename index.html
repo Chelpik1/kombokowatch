@@ -146,6 +146,32 @@
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
       flex-shrink: 0;
     }
+
+    .tg-header-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(208, 188, 255, 0.15);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-surface);
+      color: var(--color-primary);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .tg-header-btn:hover {
+      transform: scale(1.08);
+      background: rgba(208, 188, 255, 0.2);
+      border-color: var(--glass-border-glow);
+    }
+    .tg-header-btn .material-symbols-rounded {
+      font-size: 20px;
+    }
+    
     .header-profile-btn:hover {
       transform: scale(1.08);
       background: rgba(208, 188, 255, 0.25);
@@ -1157,24 +1183,28 @@
   </div>
 
   <main class="app-main animate-fade">
-  <div class="app-header-brand">
-    <div class="brand-group">
-      <div class="brand-row">
-        <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</h1>
-        <div class="lang-switcher">
-          <button id="langRu" class="lang-btn active" onclick="setLanguage('ru')">RU</button>
-          <button id="langEn" class="lang-btn" onclick="setLanguage('en')">EN</button>
+    <div class="app-header-brand">
+      <div class="brand-group">
+        <div class="brand-row">
+          <h1 class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</h1>
+          <div class="lang-switcher">
+            <button id="langRu" class="lang-btn active" onclick="setLanguage('ru')">RU</button>
+            <button id="langEn" class="lang-btn" onclick="setLanguage('en')">EN</button>
+          </div>
+        </div>
+        <div class="brand-subtitle" data-i18n="brandSubtitle">онлайн-кинотеатр</div>
+      </div>
+    
+      <div class="header-right-tools">
+        <!-- Кнопка Telegram-канала -->
+        <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram канал">
+          <span class="material-symbols-rounded">send</span>
+        </a>
+        <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
+          <span class="material-symbols-rounded">account_circle</span>
         </div>
       </div>
-      <div class="brand-subtitle" data-i18n="brandSubtitle">онлайн-кинотеатр</div>
     </div>
-  
-    <div class="header-right-tools">
-      <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
-        <span class="material-symbols-rounded">account_circle</span>
-      </div>
-    </div>
-  </div>
 
 
     <!-- Поиск и фильтры -->

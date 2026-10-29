@@ -2325,13 +2325,21 @@
       }
 
       // Рабочие внешние ссылки на агрегаторы
-      const qEncoded = encodeURIComponent(item.titleRu || displayTitle);
-      const enEncoded = encodeURIComponent(item.originalName || item.titleEn || displayTitle);
+// Надежные ссылки на внешние каталоги:
+      const titleRu = item.titleRu || displayTitle;
+      const titleEn = item.originalName || item.titleEn || displayTitle;
+      const qRu = encodeURIComponent(titleRu);
+      const qEn = encodeURIComponent(titleEn);
 
-      document.getElementById('extLinkMangaDex').href = `https://mangadex.org/title?q=${enEncoded}`;
-      document.getElementById('extLinkMangaLib').href = `https://mangalib.me/ru/manga-list?name=${qEncoded}`;
-      document.getElementById('extLinkSenkuro').href = `https://senkuro.com/manga?query=${qEncoded}`;
-
+      // MangaDex: прямой поиск по каталогу
+      document.getElementById('extLinkMangaDex').href = `https://mangadex.org/titles?q=${qEn}`;
+      
+      // MangaLib: прямой переход через адрес каталога с поисковым параметром name (и резерв через прямой поиск)
+      document.getElementById('extLinkMangaLib').href = `https://mangalib.org/ru/manga-list?name=${qRu}`;
+      
+      // Senkuro: так как их веб-каталог сбрасывает url-параметры, даем гарантированный переход прямо в карточку тайтла
+      document.getElementById('extLinkSenkuro').href = `https://ya.ru/search/?text=site%3Asenkuro.com+${qRu}`;
+      
       updateMangaSourceUI();
       await loadMangaChaptersForActiveSource();
     }

@@ -20,6 +20,9 @@
   <!-- Material Symbols Font -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
 
+  <!-- HLS.js для воспроизведения чистых m3u8 потоков Kodik без рекламы -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <style>
     :root {
       --glass-bg: rgba(18, 15, 28, 0.65);
@@ -870,7 +873,6 @@
       background: #000;
       position: relative;
     }
-    .video-stage iframe { width: 100%; height: 100%; border: none; display: block; }
 
     .player-toolbar {
       padding: 14px 20px;
@@ -1094,7 +1096,6 @@
       min-height: 250px;
     }
 
-    /* Блок детального описания манги */
     .manga-info-banner {
       padding: 16px 18px;
       background: rgba(15, 12, 24, 0.85);
@@ -1128,7 +1129,6 @@
       word-break: break-word;
     }
 
-    /* Полноэкранный режим читалки манги */
     body.manga-fs-active {
       overflow: hidden !important;
     }
@@ -1476,13 +1476,34 @@
           </div>
 
           <div class="player-card">
-            <div class="video-stage">
+            <div class="video-stage" style="position: relative; background: #000; overflow: hidden;">
+              <!-- 1. Наш чистый HTML5-видеоплеер без рекламы -->
+              <video 
+                id="kombokoCustomVideo" 
+                playsinline 
+                controls 
+                style="width: 100%; height: 100%; display: none; object-fit: contain; background: #000;">
+              </video>
+
+              <!-- 2. Резервный iframe (для MegaPlay или при сбоях извлечения) -->
               <iframe 
                 id="kodikIframe" 
                 referrerpolicy="origin"
                 allowfullscreen 
-                allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
+                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                style="width: 100%; height: 100%; border: none; display: block;">
               </iframe>
+
+              <!-- Лоадер расшифровки потока -->
+              <div id="videoStreamLoader" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.7); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 5;">
+                <div class="spinner"></div>
+                <span style="font-size: 13px; color: var(--color-primary); font-weight: 600;">Получаем чистый поток...</span>
+              </div>
+
+              <!-- Кнопка пропуска опенинга (85с) -->
+              <button id="skipOpBtn" style="display: none; position: absolute; bottom: 60px; right: 16px; background: rgba(56, 30, 114, 0.9); color: #fff; border: 1.5px solid var(--color-primary); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                Пропустить опенинг ⏩
+              </button>
             </div>
             <div class="player-toolbar">
               <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; min-width:0;">
@@ -1542,7 +1563,7 @@
       </div>
     </section>
 
-    <!-- Экран читалки манги (с описанием, кнопкой на весь экран и быстрыми ссылками) -->
+    <!-- Экран читалки манги -->
     <section id="view-manga-reader">
       <div class="section-header">
         <button class="md-btn md-btn-tonal" onclick="goBackFromMangaReader()">
@@ -1552,7 +1573,6 @@
       </div>
 
       <div class="manga-reader-card">
-        <!-- Блок подробного описания тайтла манги -->
         <div class="manga-info-banner" id="mangaInfoBanner">
           <img id="mangaBannerPoster" class="manga-info-poster" src="" alt="Cover" />
           <div class="manga-info-content">
@@ -1578,11 +1598,9 @@
             </div>
             
             <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-              <!-- Кнопка на весь экран -->
               <button class="md-btn md-btn-tonal" style="height:32px; padding:0 10px; font-size:11px;" onclick="toggleMangaFullscreen()" title="На весь экран">
                 <span class="material-symbols-rounded" id="fsIcon" style="font-size:16px;">fullscreen</span>
               </button>
-              <!-- Ссылки на внешние агрегаторы -->
               <a id="extLinkMangaDex" href="#" target="_blank" class="md-btn md-btn-tonal" style="height:32px; padding:0 10px; font-size:11px; color:#F43F5E; border-color:rgba(244,63,94,0.3);">
                 MangaDex ↗
               </a>
@@ -1617,7 +1635,7 @@
       <div class="anime-grid" id="userListsGrid"></div>
     </section>
 
-    <!-- История (Объединенная Аниме + Манга с кнопкой очистки) -->
+    <!-- История -->
     <section id="view-history" style="display: none;">
       <div class="section-header">
         <h2 class="section-title" data-i18n="navHistory">История</h2>
@@ -1651,6 +1669,7 @@
     }
     
     const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
+    // Актуальный адрес твоего бэкенда на Render
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
@@ -1963,11 +1982,30 @@
       currentTab: 'catalog'
     };
 
-    let currentCatalogMode = 'anime'; // 'anime' или 'manga'
+    let currentCatalogMode = 'anime';
     let activeFetchId = 0;
+    let currentHlsInstance = null;
 
     window.addEventListener('DOMContentLoaded', async () => {
       setLanguage(currentLang);
+
+      // Инициализация кнопки пропуска опенинга
+      const skipBtn = document.getElementById('skipOpBtn');
+      const videoEl = document.getElementById('kombokoCustomVideo');
+      if (skipBtn && videoEl) {
+        skipBtn.addEventListener('click', () => {
+          videoEl.currentTime += 85;
+          skipBtn.style.display = 'none';
+        });
+
+        videoEl.addEventListener('timeupdate', () => {
+          if (videoEl.currentTime > 20 && videoEl.currentTime < 130) {
+            skipBtn.style.display = 'block';
+          } else {
+            skipBtn.style.display = 'none';
+          }
+        });
+      }
 
       const yearSelect = document.getElementById('filterYear');
       for (let y = 2026; y >= 1970; y--) {
@@ -2082,7 +2120,6 @@
       }
     }
 
-    // === КАТАЛОГ МАНГИ (SHIKIMORI GRAPHQL С ОПИСАНИЕМ) ===
     async function fetchGraphQLMangas({ page = 1, limit = 24, order = 'popularity', search = '' }) {
       const query = `
         query($page: Int, $limit: Int, $order: OrderEnum, $search: String) {
@@ -2223,7 +2260,6 @@
       grid.innerHTML = html;
     }
 
-    // === ЧИТАЛКА МАНГИ + ССЫЛКИ MANGADEX, MANGALIB И SENKURO ===
     let mangaReaderState = {
       shikiItem: null,
       source: 'remanga',
@@ -2295,7 +2331,6 @@
       const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
       document.getElementById('mangaReaderTitle').textContent = displayTitle;
 
-      // Отрисовываем баннер с описанием манги
       const bannerPoster = document.getElementById('mangaBannerPoster');
       if (item.poster) {
         bannerPoster.src = item.poster;
@@ -2308,7 +2343,6 @@
       const descEl = document.getElementById('mangaBannerDesc');
       descEl.textContent = item.description && item.description !== 'Описание отсутствует.' ? item.description : 'Загружаем полное описание...';
 
-      // Если описание отсутствовало или неполное — подтягиваем детали напрямую с API Shikimori
       if (!item.description || item.description === 'Описание отсутствует.') {
         fetch(`https://shikimori.io/api/mangas/${shikiId}`)
           .then(r => r.json())
@@ -2324,20 +2358,13 @@
           .catch(() => { descEl.textContent = 'Описание отсутствует.'; });
       }
 
-      // Рабочие внешние ссылки на агрегаторы
-// Надежные ссылки на внешние каталоги:
       const titleRu = item.titleRu || displayTitle;
       const titleEn = item.originalName || item.titleEn || displayTitle;
       const qRu = encodeURIComponent(titleRu);
       const qEn = encodeURIComponent(titleEn);
 
-      // MangaDex: прямой поиск по каталогу
       document.getElementById('extLinkMangaDex').href = `https://mangadex.org/titles?q=${qEn}`;
-      
-      // MangaLib: прямой переход через адрес каталога с поисковым параметром name (и резерв через прямой поиск)
       document.getElementById('extLinkMangaLib').href = `https://mangalib.org/ru/manga-list?name=${qRu}`;
-      
-      // Senkuro: так как их веб-каталог сбрасывает url-параметры, даем гарантированный переход прямо в карточку тайтла
       document.getElementById('extLinkSenkuro').href = `https://ya.ru/search/?text=site%3Asenkuro.com+${qRu}`;
       
       updateMangaSourceUI();
@@ -2503,7 +2530,6 @@
       return [];
     }
 
-    // MangaDex без прокси — напрямую в официальный открытый API
     async function fetchMangaDexChaptersList(item, lang, myToken) {
       const firstWord = (item.titleRu || '').split(/[\s:—–-]+/)[0];
       const candidates = [item.originalName, item.titleEn, item.titleRu, firstWord].filter(Boolean);
@@ -2606,7 +2632,6 @@
             }
           }
         } else {
-          // Прямой запрос к MangaDex без прокси
           const atHomeUrl = `https://api.mangadex.org/at-home/server/${ch.id}`;
           const res = await fetchWithTimeout(atHomeUrl, 6000);
           const data = res.ok ? await res.json() : null;
@@ -2657,7 +2682,6 @@
       }
     }
 
-    // === КАТАЛОГ АНИМЕ (SHIKIMORI) ===
     async function loadAnimeByIdOnStart(id) {
       try {
         const res = await fetch(`https://shikimori.io/api/animes/${id}`);
@@ -3736,6 +3760,7 @@
       });
     }
 
+    // Воспроизведение через чистый HLS поток без рекламы Kodik
     async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
 
@@ -3743,14 +3768,33 @@
       const epNum = state.currentEpisodeNum || 1;
       const targetId = state.currentAnimeFull.id;
       const iframe = document.getElementById('kodikIframe');
+      const video = document.getElementById('kombokoCustomVideo');
+      const loader = document.getElementById('videoStreamLoader');
       const openLink = document.getElementById('openInNewTab');
+      const skipBtn = document.getElementById('skipOpBtn');
+
+      if (skipBtn) skipBtn.style.display = 'none';
       document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
 
       const progressKey = `komboko_progress_${targetId}`;
       localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
       updateShikimoriProgress(targetId, state.currentEpisodeNum);
 
+      // Останавливаем предыдущий поток
+      if (currentHlsInstance) {
+        currentHlsInstance.destroy();
+        currentHlsInstance = null;
+      }
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+
+      // Если выбран MegaPlay — крутим через iframe
       if (state.currentSource === 'megaplay') {
+        video.style.display = 'none';
+        iframe.style.display = 'block';
+        if (loader) loader.style.display = 'none';
+
         const lang = state.megaplayLang || 'sub';
         const streamUrl = `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${lang}`;
         openLink.href = streamUrl;
@@ -3759,6 +3803,7 @@
         return;
       }
 
+      // Извлечение чистого m3u8 потока Kodik через Render бэкенд
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       if (!variant) return;
 
@@ -3770,8 +3815,50 @@
       else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
 
       openLink.href = cleanUrl;
-      iframe.src = cleanUrl;
       saveSessionState();
+
+      if (loader) loader.style.display = 'flex';
+
+      try {
+        const streamResp = await fetch(`${BACKEND_URL}/api/get-stream?link=${encodeURIComponent(cleanUrl)}`);
+        const streamData = await streamResp.json();
+
+        if (streamData && streamData.success && streamData.stream) {
+          const directM3u8Url = streamData.stream;
+
+          iframe.style.display = 'none';
+          iframe.src = 'about:blank';
+          video.style.display = 'block';
+          if (loader) loader.style.display = 'none';
+
+          if (Hls.isSupported()) {
+            currentHlsInstance = new Hls({
+              enableWorker: true,
+              lowLatencyMode: true
+            });
+            currentHlsInstance.loadSource(directM3u8Url);
+            currentHlsInstance.attachMedia(video);
+            currentHlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+              video.play().catch(() => {});
+            });
+          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Нативный запуск для Safari на iOS
+            video.src = directM3u8Url;
+            video.addEventListener('loadedmetadata', () => {
+              video.play().catch(() => {});
+            }, { once: true });
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn('Не удалось загрузить чистый поток, откат на iframe:', err);
+      }
+
+      // Запасной откат на обычный iframe, если стрим не расшифровался
+      if (loader) loader.style.display = 'none';
+      video.style.display = 'none';
+      iframe.style.display = 'block';
+      iframe.src = cleanUrl;
     }
     
     function stepEpisode(delta) {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>KombokoWatch -- онлайн-кинотеатр</title>
+  <title>KombokoWatch — онлайн-кинотеатр</title>
 
   <!-- Иконки и PWA теги -->
   <link rel="icon" type="image/x-icon" href="./favicon.ico">
@@ -110,7 +110,6 @@
       animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Стили для карточки продолжения просмотра */
     #continueWatchCard {
       flex-direction: row;
       align-items: center;
@@ -163,29 +162,13 @@
     }
 
     @media (max-width: 768px) {
-      #continueWatchCard {
-        padding: 10px;
-        gap: 10px;
-      }
-      .continue-poster-wrap {
-        width: 55px;
-        height: 78px;
-      }
-      .continue-title {
-        font-size: 13px;
-      }
-      .continue-subtitle {
-        font-size: 11px;
-        -webkit-line-clamp: 2;
-      }
-      .continue-btn {
-        padding: 0 10px;
-        font-size: 11px;
-        height: 32px;
-      }
+      #continueWatchCard { padding: 10px; gap: 10px; }
+      .continue-poster-wrap { width: 55px; height: 78px; }
+      .continue-title { font-size: 13px; }
+      .continue-subtitle { font-size: 11px; -webkit-line-clamp: 2; }
+      .continue-btn { padding: 0 10px; font-size: 11px; height: 32px; }
     }
 
-    /* Навигация (Сайдбар на ПК) */
     .nav-rail {
       width: 92px;
       background: var(--glass-bg);
@@ -205,7 +188,6 @@
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.4);
     } 
 
-    /* Стили для таблеточного переключателя Аниме / Манга */
     .catalog-switch-container {
       display: flex;
       background: var(--glass-surface);
@@ -235,9 +217,7 @@
       justify-content: center;
       gap: 8px;
     }
-    .catalog-switch-tab:hover {
-      color: var(--color-surface);
-    }
+    .catalog-switch-tab:hover { color: var(--color-surface); }
     .catalog-switch-tab.active {
       background: linear-gradient(135deg, rgba(208, 188, 255, 0.25) 0%, rgba(179, 157, 219, 0.2) 100%);
       color: var(--color-primary);
@@ -284,24 +264,12 @@
       background: rgba(208, 188, 255, 0.2);
       border-color: var(--glass-border-glow);
     }
-    .tg-header-btn .material-symbols-rounded {
-      font-size: 20px;
-    }
+    .tg-header-btn .material-symbols-rounded { font-size: 20px; }
     
-    .header-profile-btn:hover {
-      transform: scale(1.08);
-      background: rgba(208, 188, 255, 0.25);
-    }
+    .header-profile-btn:hover { transform: scale(1.08); background: rgba(208, 188, 255, 0.25); }
     .header-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
 
-    .nav-items {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-      align-items: center;
-    }
-
+    .nav-items { display: flex; flex-direction: column; gap: 16px; width: 100%; align-items: center; }
     .nav-item {
       display: flex;
       flex-direction: column;
@@ -315,7 +283,6 @@
       font-size: 11px;
       transition: color 0.2s;
     }
-
     .nav-pill {
       width: 60px;
       height: 36px;
@@ -325,10 +292,8 @@
       justify-content: center;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     .nav-item:hover { color: var(--color-surface); }
     .nav-item:hover .nav-pill { background: rgba(255, 255, 255, 0.05); }
-
     .nav-item.active { color: var(--color-primary); }
     .nav-item.active .nav-pill {
       background: rgba(208, 188, 255, 0.2);
@@ -352,7 +317,6 @@
       margin-bottom: 20px;
       gap: 8px;
     }
-
     .brand-title-text {
       font-size: 26px;
       font-weight: 700;
@@ -365,20 +329,8 @@
       transition: opacity 0.2s;
     }
     .brand-title-text:hover { opacity: 0.85; }
-    
-    .brand-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      min-width: 0;
-    }
-    
-    .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
+    .brand-group { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+    .brand-row { display: flex; align-items: center; gap: 10px; }
     .brand-subtitle {
       font-size: 10px;
       font-weight: 500;
@@ -390,14 +342,8 @@
       line-height: 1;
     }
 
-    .header-right-tools {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    .header-right-tools { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-    /* Вертикальный переключатель языков */
     .lang-switcher {
       display: inline-flex;
       flex-direction: column;
@@ -408,7 +354,6 @@
       gap: 2px;
       flex-shrink: 0;
     }
-    
     .lang-btn {
       padding: 5px 8px;
       border-radius: 6px;
@@ -421,14 +366,12 @@
       line-height: 1;
       transition: all 0.2s;
     }
-    
     .lang-btn.active {
       background: rgba(208, 188, 255, 0.25);
       color: var(--color-primary);
       box-shadow: 0 0 8px rgba(208, 188, 255, 0.2);
     }
 
-    /* Модальные окна */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -457,16 +400,8 @@
       gap: 16px;
       overflow-y: auto;
     }
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .modal-header h3 {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--color-primary);
-    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; }
+    .modal-header h3 { font-size: 18px; font-weight: 700; color: var(--color-primary); }
     .modal-close {
       background: rgba(255,255,255,0.05);
       border: 1px solid var(--glass-border);
@@ -477,38 +412,24 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .modal-close:hover {
-      background: rgba(208, 188, 255, 0.2);
-      color: var(--color-primary);
-    }
-    .modal-body {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .modal-close:hover { background: rgba(208, 188, 255, 0.2); color: var(--color-primary); }
+    .modal-body { display: flex; flex-direction: column; gap: 14px; }
 
     .promo-close-btn {
       position: absolute;
-      top: 14px;
-      right: 14px;
+      top: 14px; right: 14px;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--glass-border);
       color: var(--color-surface);
-      width: 34px;
-      height: 34px;
+      width: 34px; height: 34px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
       z-index: 5;
     }
-    .promo-close-btn:hover {
-      background: rgba(208, 188, 255, 0.2);
-      color: var(--color-primary);
-      border-color: var(--glass-border-glow);
-    }
+    .promo-close-btn:hover { background: rgba(208, 188, 255, 0.2); color: var(--color-primary); border-color: var(--glass-border-glow); }
+
     .social-btn {
       display: flex;
       align-items: center;
@@ -538,11 +459,7 @@
       padding-top: 10px;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
-    .contact-section h4 {
-      font-size: 13px;
-      color: var(--color-variant);
-      font-weight: 600;
-    }
+    .contact-section h4 { font-size: 13px; color: var(--color-variant); font-weight: 600; }
     .contact-email {
       font-size: 14px;
       color: var(--color-primary);
@@ -551,10 +468,7 @@
       padding: 2px 0;
       transition: opacity 0.2s;
     }
-    .contact-email:hover {
-      opacity: 0.8;
-      text-decoration: underline;
-    }
+    .contact-email:hover { opacity: 0.8; text-decoration: underline; }
 
     .terms-box {
       background: rgba(18, 15, 28, 0.6);
@@ -568,36 +482,10 @@
       color: var(--color-variant);
       text-align: left;
     }
-    .terms-box h5 {
-      color: var(--color-primary);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-    .terms-box p {
-      margin-bottom: 6px;
-    }
-    .footer-brand-text {
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--color-primary);
-      margin-top: 4px;
-    }
+    .footer-brand-text { text-align: center; font-size: 12px; font-weight: 600; color: var(--color-primary); margin-top: 4px; }
 
-    .top-bar {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
+    .top-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    .search-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .search-container {
       flex: 1;
       min-width: 220px;
@@ -614,13 +502,11 @@
       box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     .search-container:focus-within {
       border-color: var(--color-primary);
       box-shadow: 0 10px 40px rgba(208, 188, 255, 0.2), inset 0 0 0 1.5px rgba(208, 188, 255, 0.3);
       transform: translateY(-2px);
     }
-
     .search-input {
       flex: 1;
       min-width: 0;
@@ -631,14 +517,7 @@
       font-size: 15px;
     }
     .search-input::placeholder { color: var(--color-variant); opacity: 0.7; }
-
-    .filters-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
+    .filters-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .filter-select {
       background: var(--glass-surface);
       backdrop-filter: blur(12px);
@@ -652,9 +531,7 @@
       font-family: inherit;
       transition: border-color 0.2s;
     }
-    .filter-select:hover, .filter-select:focus {
-      border-color: var(--glass-border-glow);
-    }
+    .filter-select:hover, .filter-select:focus { border-color: var(--glass-border-glow); }
     .filter-select option { background: #18151c; color: var(--color-surface); }
 
     .genres-bar {
@@ -667,7 +544,6 @@
       scrollbar-width: none;
     }
     .genres-bar::-webkit-scrollbar { display: none; }
-
     .genre-chip {
       padding: 7px 16px;
       border-radius: var(--radius-full);
@@ -681,10 +557,7 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
-    .genre-chip:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--color-surface);
-    }
+    .genre-chip:hover { background: rgba(255, 255, 255, 0.08); color: var(--color-surface); }
     .genre-chip.active {
       background: rgba(208, 188, 255, 0.2);
       border-color: var(--glass-border-glow);
@@ -712,7 +585,6 @@
     }
     .md-btn:hover { transform: scale(1.04); }
     .md-btn:active { transform: scale(0.96); }
-
     .md-btn-filled {
       background: linear-gradient(135deg, #D0BCFF 0%, #b39ddb 100%);
       color: var(--color-on-primary);
@@ -724,18 +596,12 @@
       color: var(--color-surface);
     }
     .md-btn-tonal:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--glass-border-glow); }
-
     .md-btn-outlined {
       background: transparent;
       border: 1.5px solid var(--glass-border-glow);
       color: var(--color-surface);
     }
-    .md-btn-outlined:hover {
-      background: rgba(208, 188, 255, 0.12);
-      border-color: var(--color-primary);
-    }
 
-    /* Панель выбора плееров */
     .player-source-bar {
       display: flex;
       gap: 8px;
@@ -776,10 +642,7 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .megaplay-lang-btn.active {
-      background: var(--color-primary);
-      color: var(--color-on-primary);
-    }
+    .megaplay-lang-btn.active { background: var(--color-primary); color: var(--color-on-primary); }
 
     .section-header {
       display: flex;
@@ -791,7 +654,6 @@
       width: 100%;
       min-width: 0;
     }
-
     .section-title {
       font-size: 22px;
       font-weight: 600;
@@ -807,7 +669,6 @@
       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 20px;
     }
-
     .anime-card {
       background: var(--glass-surface);
       backdrop-filter: blur(20px);
@@ -841,7 +702,6 @@
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .anime-card:hover .poster-wrap img { transform: scale(1.06); }
-
     .poster-wrap.nsfw-card img {
       filter: blur(24px) brightness(0.38) !important;
       -webkit-filter: blur(24px) brightness(0.38) !important;
@@ -889,9 +749,7 @@
 
     .card-badges {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      right: 10px;
+      top: 10px; left: 10px; right: 10px;
       display: flex;
       justify-content: space-between;
       pointer-events: none;
@@ -931,7 +789,6 @@
       color: var(--color-variant);
       margin-bottom: 6px;
     }
-
     .card-add-wrapper { position: relative; margin-top: auto; }
     .card-add-btn {
       width: 100%;
@@ -1189,7 +1046,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Изолированная читалка манги */
+    /* Экран читалки манги */
     #view-manga-reader {
       display: none;
       width: 100%;
@@ -1218,23 +1075,96 @@
     }
     .manga-scroll-viewport {
       width: 100%;
-      max-height: 82vh;
+      max-height: 80vh;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 14px 8px;
+      gap: 6px;
+      padding: 16px 10px;
       background: #06050a;
     }
     .manga-scroll-viewport img {
       width: 100%;
-      max-width: 760px;
+      max-width: 740px;
       height: auto;
       border-radius: 4px;
       display: block;
       background: #141122;
-      min-height: 220px;
+      min-height: 250px;
+    }
+
+    /* Блок детального описания манги */
+    .manga-info-banner {
+      padding: 16px 18px;
+      background: rgba(15, 12, 24, 0.85);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      gap: 16px;
+      align-items: start;
+    }
+    .manga-info-poster {
+      width: 84px;
+      height: 120px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--glass-border-glow);
+    }
+    .manga-info-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+    .manga-info-desc {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--color-variant);
+      max-height: 80px;
+      overflow-y: auto;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    /* Полноэкранный режим читалки манги */
+    body.manga-fs-active {
+      overflow: hidden !important;
+    }
+    body.manga-fs-active .nav-rail,
+    body.manga-fs-active .app-header-brand,
+    body.manga-fs-active .top-bar,
+    body.manga-fs-active #view-manga-reader > .section-header,
+    body.manga-fs-active .manga-info-banner {
+      display: none !important;
+    }
+    body.manga-fs-active .app-main {
+      padding: 0 !important;
+      margin: 0 !important;
+      max-width: 100vw !important;
+      width: 100vw !important;
+    }
+    body.manga-fs-active #view-manga-reader {
+      max-width: 100vw !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      margin: 0 !important;
+    }
+    body.manga-fs-active .manga-reader-card {
+      border-radius: 0 !important;
+      border: none !important;
+      height: 100dvh !important;
+    }
+    body.manga-fs-active .manga-scroll-viewport {
+      max-height: calc(100dvh - 86px) !important;
+      padding: 0 !important;
+      gap: 0 !important;
+    }
+    body.manga-fs-active .manga-scroll-viewport img {
+      max-width: 100% !important;
+      width: 100% !important;
+      border-radius: 0 !important;
     }
 
     @media (max-width: 768px) {
@@ -1270,9 +1200,7 @@
         overflow-x: hidden;
       }
       @media (display-mode: standalone) {
-        .app-main {
-          padding-top: max(67px, calc(20px + env(safe-area-inset-top))) !important;
-        }
+        .app-main { padding-top: max(67px, calc(20px + env(safe-area-inset-top))) !important; }
       }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }
       .watch-layout { grid-template-columns: 100%; width: 100%; max-width: 100%; overflow: hidden; }
@@ -1363,7 +1291,7 @@
     </div>
   </div>
 
-  <!-- Рандомные промо-модалки с крестиком и пометкой «реклама» -->
+  <!-- Промо-модалки -->
   <div id="promoModal-1" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-1') closePromoModal(1)">
     <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
       <button class="promo-close-btn" onclick="closePromoModal(1)"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
@@ -1467,7 +1395,7 @@
       </div>
     </header>
 
-    <!-- Каталог (и История) -->
+    <!-- Каталог -->
     <section id="view-catalog">
       <!-- Блок «Продолжить просмотр» -->
       <div id="continueWatchSection" style="display: none; margin-bottom: 24px;">
@@ -1488,7 +1416,7 @@
       </div>
 
       <!-- Таблеточный переключатель Аниме / Манга -->
-      <div class="catalog-switch-container" id="catalogSwitchBox">
+      <div class="catalog-switch-container">
         <button id="switchTabAnime" class="catalog-switch-tab active" onclick="switchCatalogTab('anime')">
           <span class="material-symbols-rounded" style="font-size: 18px;">movie</span> Аниме
         </button>
@@ -1497,12 +1425,7 @@
         </button>
       </div>
 
-      <!-- Заголовок для Истории / Поиска -->
-      <div class="section-header" id="catalogHeaderBox" style="display: none;">
-        <h2 class="section-title" id="sectionTitle">История</h2>
-      </div>
-
-      <!-- Жанры (ТОЛЬКО для аниме) -->
+      <!-- Жанры -->
       <div class="genres-bar" id="genresBar">
         <button class="genre-chip active" onclick="filterByGenre('', this)" data-i18n="genreAll">Все</button>
         <button class="genre-chip" onclick="filterByGenre('романтика', this)" data-i18n="genreRomance">Романтика</button>
@@ -1519,11 +1442,11 @@
       
       <div id="infiniteLoader" class="loader-box" style="display: none;">
         <div class="spinner"></div>
-        <span data-i18n="loadingMore">Загружаем еще порцию аниме...</span>
+        <span data-i18n="loadingMore">Загружаем еще порцию...</span>
       </div>
     </section>
 
-    <!-- Плеер -->
+    <!-- Плеер аниме -->
     <section id="view-watch" style="display: none;">
       <div class="section-header">
         <button class="md-btn md-btn-tonal" onclick="goBackFromWatch()">
@@ -1619,7 +1542,7 @@
       </div>
     </section>
 
-    <!-- Изолированный экран чтения манги (ReManga RU + MangaDex RU/EN) -->
+    <!-- Экран читалки манги (с описанием, кнопкой на весь экран и быстрыми ссылками) -->
     <section id="view-manga-reader">
       <div class="section-header">
         <button class="md-btn md-btn-tonal" onclick="goBackFromMangaReader()">
@@ -1629,31 +1552,58 @@
       </div>
 
       <div class="manga-reader-card">
+        <!-- Блок подробного описания тайтла манги -->
+        <div class="manga-info-banner" id="mangaInfoBanner">
+          <img id="mangaBannerPoster" class="manga-info-poster" src="" alt="Cover" />
+          <div class="manga-info-content">
+            <div id="mangaBannerMeta" style="font-size:12px; color:var(--color-primary); font-weight:600;"></div>
+            <p id="mangaBannerDesc" class="manga-info-desc">Загрузка описания...</p>
+          </div>
+        </div>
+
         <div class="manga-reader-toolbar">
-          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-            <button class="md-btn md-btn-tonal" style="height:36px; padding:0 12px; font-size:12px;" onclick="stepMangaChapter(-1)">Пред.</button>
-            <select id="mangaChapterSelect" class="filter-select" style="max-width:210px; height:36px; padding:0 10px; font-size:12px;" onchange="selectMangaChapterByIndex(Number(this.value))">
+          <div style="display:flex; align-items:center; gap:6px; width:100%; flex-wrap:nowrap;">
+            <button class="md-btn md-btn-tonal" style="height:36px; padding:0 10px; font-size:12px;" onclick="stepMangaChapter(-1)">Пред.</button>
+            <select id="mangaChapterSelect" class="filter-select" style="flex:1; min-width:0; height:36px; padding:0 10px; font-size:12px;" onchange="selectMangaChapterByIndex(Number(this.value))">
               <option>Поиск глав...</option>
             </select>
-            <button class="md-btn md-btn-tonal" style="height:36px; padding:0 12px; font-size:12px;" onclick="stepMangaChapter(1)">След.</button>
+            <button class="md-btn md-btn-tonal" style="height:36px; padding:0 10px; font-size:12px;" onclick="stepMangaChapter(1)">След.</button>
           </div>
 
-          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:6px; flex-wrap:wrap; margin-top:6px;">
             <div style="display:flex; gap:4px; background:rgba(255,255,255,0.05); padding:3px; border-radius:10px; border:1px solid var(--glass-border);">
-              <button id="mangaSrc-remanga" class="megaplay-lang-btn active" onclick="switchMangaSource('remanga')">ReManga (RU)</button>
-              <button id="mangaSrc-mangadex_ru" class="megaplay-lang-btn" onclick="switchMangaSource('mangadex_ru')">MangaDex (RU)</button>
-              <button id="mangaSrc-mangadex_en" class="megaplay-lang-btn" onclick="switchMangaSource('mangadex_en')">MangaDex (EN)</button>
+              <button id="mangaSrc-remanga" class="megaplay-lang-btn active" onclick="switchMangaSource('remanga')">ReManga</button>
+              <button id="mangaSrc-mangadex_ru" class="megaplay-lang-btn" onclick="switchMangaSource('mangadex_ru')">MangaDex RU</button>
+              <button id="mangaSrc-mangadex_en" class="megaplay-lang-btn" onclick="switchMangaSource('mangadex_en')">MangaDex EN</button>
+            </div>
+            
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <!-- Кнопка на весь экран -->
+              <button class="md-btn md-btn-tonal" style="height:32px; padding:0 10px; font-size:11px;" onclick="toggleMangaFullscreen()" title="На весь экран">
+                <span class="material-symbols-rounded" id="fsIcon" style="font-size:16px;">fullscreen</span>
+              </button>
+              <!-- Ссылки на внешние агрегаторы -->
+              <a id="extLinkMangaDex" href="#" target="_blank" class="md-btn md-btn-tonal" style="height:32px; padding:0 10px; font-size:11px; color:#F43F5E; border-color:rgba(244,63,94,0.3);">
+                MangaDex ↗
+              </a>
+              <a id="extLinkMangaLib" href="#" target="_blank" class="md-btn md-btn-tonal" style="height:32px; padding:0 10px; font-size:11px; color:#A78BFA; border-color:rgba(167,139,250,0.3);">
+                MangaLib ↗
+              </a>
+              <a id="extLinkSenkuro" href="#" target="_blank" class="md-btn md-btn-tonal" style="height:32px; padding:0 10px; font-size:11px; color:#38BDF8; border-color:rgba(56,189,248,0.3);">
+                Senkuro ↗
+              </a>
             </div>
           </div>
         </div>
+
         <div id="mangaPagesScroll" class="manga-scroll-viewport">
           <div class="spinner" style="margin-top:60px;"></div>
-          <p style="color:var(--color-variant); font-size:13px; margin-top:10px;">Загружаем главы...</p>
+          <p style="color:var(--color-variant); font-size:13px; margin-top:10px;">Загружаем главу...</p>
         </div>
       </div>
     </section>
 
-    <!-- Списки -->
+    <!-- Списки Shikimori -->
     <section id="view-lists" style="display: none;">
       <div class="section-header">
         <h2 class="section-title" data-i18n="listsTitle">Списки Shikimori</h2>
@@ -1665,6 +1615,15 @@
         </div>
       </div>
       <div class="anime-grid" id="userListsGrid"></div>
+    </section>
+
+    <!-- История (Объединенная Аниме + Манга с кнопкой очистки) -->
+    <section id="view-history" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title" data-i18n="navHistory">История</h2>
+        <button class="md-btn md-btn-tonal" onclick="clearAllHistory()">Очистить историю</button>
+      </div>
+      <div class="anime-grid" id="historyGrid"></div>
     </section>
 
     <!-- Страница персонажа -->
@@ -1697,7 +1656,6 @@
 
     const PLAYER_SOURCES = ['kodik', 'megaplay'];
     const ADULT_GENRE_IDS = new Set([12, 539, 49]);
-
     const ADULT_KEYWORDS = [
       'хентай', 'hentai', 'эротик', 'erotica',
       'совокуплен', 'совращен', 'похот', 'разврат', 'инцест',
@@ -1758,7 +1716,7 @@
         genreSlice: 'Повседневность',
         genreAdventure: 'Приключения',
         genreThriller: 'Триллер',
-        loadingMore: 'Загружаем еще порцию аниме...',
+        loadingMore: 'Загружаем еще порцию...',
         backBtn: 'Назад',
         epPrev: 'Пред.',
         epNext: 'След.',
@@ -1841,7 +1799,7 @@
         genreSlice: 'Slice of Life',
         genreAdventure: 'Adventure',
         genreThriller: 'Thriller',
-        loadingMore: 'Loading more anime...',
+        loadingMore: 'Loading more...',
         backBtn: 'Back',
         epPrev: 'Prev',
         epNext: 'Next',
@@ -1953,8 +1911,7 @@
         if (currentCatalogMode === 'manga') renderMangaGrid(state.animes);
         else renderGrid(state.animes, 'animeGrid', false);
       } else if (state.currentTab === 'history') {
-        document.getElementById('sectionTitle').textContent = i18nData[lang].navHistory;
-        renderGrid(state.history, 'animeGrid', false);
+        renderHistoryTab();
       }
 
       if (document.getElementById('view-lists').style.display !== 'none') {
@@ -1986,6 +1943,7 @@
       currentUser: null,
       userRates: {},
       history: JSON.parse(localStorage.getItem('kodik_history') || '[]'),
+      mangaHistory: JSON.parse(localStorage.getItem('komboko_manga_history') || '[]'),
       selectedGenre: '',
       genresMap: {
         'романтика': 22, 'romance': 22,
@@ -2071,7 +2029,7 @@
       if (savedSession) {
         try {
           const session = JSON.parse(savedSession);
-          if (session.currentTab === 'watch' && session.currentAnimeFull && !session.currentAnimeFull.isManga) {
+          if (session.currentTab === 'watch' && session.currentAnimeFull) {
             state.currentAnimeFull = session.currentAnimeFull;
             state.currentEpisodeNum = session.currentEpisodeNum || 1;
             state.currentVariantIndex = session.currentVariantIndex || 0;
@@ -2117,13 +2075,14 @@
         fetchShikimoriCatalog(true);
       } else {
         if (filtersRow) filtersRow.style.display = 'none';
-        if (genresBar) genresBar.style.display = 'none'; // Вырезаны жанры из манги
+        if (genresBar) genresBar.style.display = 'none';
+        state.selectedGenre = '';
         if (searchInput) searchInput.placeholder = currentLang === 'en' ? 'Search manga...' : 'Название манги...';
         fetchMangaCatalog(true);
       }
     }
 
-    // === КАТАЛОГ МАНГИ (SHIKIMORI GRAPHQL) ===
+    // === КАТАЛОГ МАНГИ (SHIKIMORI GRAPHQL С ОПИСАНИЕМ) ===
     async function fetchGraphQLMangas({ page = 1, limit = 24, order = 'popularity', search = '' }) {
       const query = `
         query($page: Int, $limit: Int, $order: OrderEnum, $search: String) {
@@ -2198,6 +2157,7 @@
             ...base,
             originalName: item.name || base.titleEn,
             chapters: item.chapters || '?',
+            description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
             isManga: true
           };
         });
@@ -2233,21 +2193,12 @@
 
       let html = '';
       list.forEach(item => {
-        item.isNsfw = checkIsAdultItem(item);
         state.itemsRegistry[String(item.id)] = item;
-
-        const nsfwOverlayHtml = item.isNsfw ? `
-          <div class="nsfw-overlay">
-            <span class="material-symbols-rounded">visibility_off</span>
-            <span class="nsfw-overlay-text">18+</span>
-          </div>
-        ` : '';
-
         const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
         const safeTitle = (displayTitle || '').replace(/'/g, '').replace(/"/g, '&quot;');
         
         const posterInner = item.poster 
-          ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>auto_stories</span><p>${safeTitle}</p></div>'" />${nsfwOverlayHtml}`
+          ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>auto_stories</span><p>${safeTitle}</p></div>'" />`
           : `<div class="poster-fallback"><span class="material-symbols-rounded">auto_stories</span><p>${safeTitle}</p></div>`;
 
         const kindMap = { manga: 'Манга', manhwa: 'Манхва', manhua: 'Маньхуа', light_novel: 'Ранобэ', novel: 'Новелла', one_shot: 'Ваншот' };
@@ -2255,7 +2206,7 @@
 
         html += `
           <article class="anime-card animate-fade" onclick="openMangaReader('${item.id}')">
-            <div class="poster-wrap ${item.isNsfw ? 'nsfw-card' : ''}">
+            <div class="poster-wrap">
               ${posterInner}
               <div class="card-badges">
                 ${item.rating ? `<span class="badge-pill rating">★ ${item.rating}</span>` : `<span class="badge-pill">${kindLabel}</span>`}
@@ -2272,17 +2223,22 @@
       grid.innerHTML = html;
     }
 
-    // === ЧИТАЛКА МАНГИ (ТОЧНАЯ ЛОГИКА ИЗ ПРИЛОЖЕНИЯ REMANGA + MANGADEX) ===
+    // === ЧИТАЛКА МАНГИ + ССЫЛКИ MANGADEX, MANGALIB И SENKURO ===
     let mangaReaderState = {
       shikiItem: null,
-      source: 'remanga', // 'remanga' | 'mangadex_ru' | 'mangadex_en'
+      source: 'remanga',
       chapters: [],
       currentChapterIndex: 0
     };
-    let mangaReqToken = 0; // Токен отмены старых зависших запросов!
+    let mangaReqToken = 0;
 
-    // Быстрый fetch с жестким таймаутом 6 секунд на каждый прокси, чтобы никогда не висело 3 минуты
-    async function fetchWithTimeout(url, timeoutMs = 6500) {
+    function toggleMangaFullscreen() {
+      const isFs = document.body.classList.toggle('manga-fs-active');
+      const icon = document.getElementById('fsIcon');
+      if (icon) icon.textContent = isFs ? 'fullscreen_exit' : 'fullscreen';
+    }
+
+    async function fetchWithTimeout(url, timeoutMs = 6000) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -2304,7 +2260,7 @@
 
       for (const buildProxy of proxies) {
         try {
-          const res = await fetchWithTimeout(buildProxy(targetUrl), 6500);
+          const res = await fetchWithTimeout(buildProxy(targetUrl), 6000);
           if (res.ok) {
             const text = await res.text();
             if (text && text.trim().startsWith('{')) {
@@ -2313,7 +2269,7 @@
           }
         } catch (_) {}
       }
-      throw new Error('Не удалось достучаться до API источника');
+      throw new Error('Не удалось получить данные с сервера источника');
     }
 
     async function openMangaReader(shikiId) {
@@ -2324,10 +2280,9 @@
         state.lastScrollY = window.scrollY;
       }
 
-      // Сохраняем в общую историю
       item.isManga = true;
-      state.history = [item, ...state.history.filter(a => String(a.id) !== String(item.id))].slice(0, 30);
-      localStorage.setItem('kodik_history', JSON.stringify(state.history));
+      state.mangaHistory = [item, ...state.mangaHistory.filter(m => String(m.id) !== String(item.id))].slice(0, 30);
+      localStorage.setItem('komboko_manga_history', JSON.stringify(state.mangaHistory));
 
       switchTab('manga-reader', false);
       triggerRandomPromo();
@@ -2335,17 +2290,55 @@
       mangaReaderState.shikiItem = item;
       mangaReaderState.chapters = [];
       mangaReaderState.currentChapterIndex = 0;
-      mangaReaderState.source = 'remanga'; // По умолчанию сразу русская ReManga как в приложении
+      mangaReaderState.source = 'remanga';
 
       const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
       document.getElementById('mangaReaderTitle').textContent = displayTitle;
+
+      // Отрисовываем баннер с описанием манги
+      const bannerPoster = document.getElementById('mangaBannerPoster');
+      if (item.poster) {
+        bannerPoster.src = item.poster;
+        bannerPoster.style.display = 'block';
+      } else {
+        bannerPoster.style.display = 'none';
+      }
+      document.getElementById('mangaBannerMeta').textContent = `${item.year || ''} • Рейтинг: ★ ${item.rating || '—'} • Глав: ${item.chapters || '?'}`;
+      
+      const descEl = document.getElementById('mangaBannerDesc');
+      descEl.textContent = item.description && item.description !== 'Описание отсутствует.' ? item.description : 'Загружаем полное описание...';
+
+      // Если описание отсутствовало или неполное — подтягиваем детали напрямую с API Shikimori
+      if (!item.description || item.description === 'Описание отсутствует.') {
+        fetch(`https://shikimori.io/api/mangas/${shikiId}`)
+          .then(r => r.json())
+          .then(detail => {
+            if (detail?.description) {
+              const cleanDesc = detail.description.replace(/\[.*?\]/g, '');
+              item.description = cleanDesc;
+              descEl.textContent = cleanDesc;
+            } else {
+              descEl.textContent = 'Описание отсутствует.';
+            }
+          })
+          .catch(() => { descEl.textContent = 'Описание отсутствует.'; });
+      }
+
+      // Рабочие внешние ссылки на агрегаторы
+      const qEncoded = encodeURIComponent(item.titleRu || displayTitle);
+      const enEncoded = encodeURIComponent(item.originalName || item.titleEn || displayTitle);
+
+      document.getElementById('extLinkMangaDex').href = `https://mangadex.org/title?q=${enEncoded}`;
+      document.getElementById('extLinkMangaLib').href = `https://mangalib.me/ru/manga-list?name=${qEncoded}`;
+      document.getElementById('extLinkSenkuro').href = `https://senkuro.com/manga?query=${qEncoded}`;
 
       updateMangaSourceUI();
       await loadMangaChaptersForActiveSource();
     }
 
     function goBackFromMangaReader() {
-      mangaReqToken++; // Отменяем любые текущие загрузки манги
+      document.body.classList.remove('manga-fs-active');
+      mangaReqToken++;
       if (state.lastCatalogMode === 'history') {
         switchTab('history');
       } else {
@@ -2364,6 +2357,7 @@
     }
 
     async function switchMangaSource(newSource) {
+      if (mangaReaderState.source === newSource) return;
       mangaReaderState.source = newSource;
       updateMangaSourceUI();
       await loadMangaChaptersForActiveSource();
@@ -2376,7 +2370,7 @@
       const select = document.getElementById('mangaChapterSelect');
 
       mangaReaderState.chapters = [];
-      select.innerHTML = `<option>Загрузка...</option>`;
+      select.innerHTML = `<option>Поиск глав...</option>`;
       const srcName = mangaReaderState.source === 'remanga' ? 'ReManga (RU)' : (mangaReaderState.source === 'mangadex_ru' ? 'MangaDex (RU)' : 'MangaDex (EN)');
       pagesBox.innerHTML = `
         <div class="spinner" style="margin-top:60px;"></div>
@@ -2389,7 +2383,6 @@
           if (myToken !== mangaReqToken) return;
 
           if (chs.length === 0) {
-            // Если на ReManga пусто, один раз пробуем MangaDex RU (только если юзер всё ещё на ReManga)
             pagesBox.innerHTML = `<p style="color:var(--color-variant); padding:40px; text-align:center;">На ReManga глав не найдено. Проверяем MangaDex (RU)...</p>`;
             mangaReaderState.source = 'mangadex_ru';
             updateMangaSourceUI();
@@ -2399,9 +2392,8 @@
               applyLoadedChapters(dexChs, myToken);
               return;
             }
-            throw new Error('Главы на русском не найдены ни на ReManga, ни на MangaDex. Попробуйте вкладку MangaDex (EN).');
+            throw new Error('Главы не найдены. Воспользуйтесь кнопками MangaDex, MangaLib или Senkuro выше.');
           }
-
           applyLoadedChapters(chs, myToken);
         } else {
           const lang = mangaReaderState.source === 'mangadex_ru' ? 'ru' : 'en';
@@ -2409,7 +2401,7 @@
           if (myToken !== mangaReqToken) return;
 
           if (dexChs.length === 0) {
-            throw new Error(`На MangaDex (${lang.toUpperCase()}) доступных глав не найдено. Переключите источник выше.`);
+            throw new Error(`На MangaDex (${lang.toUpperCase()}) глав не найдено. Воспользуйтесь MangaLib.`);
           }
           applyLoadedChapters(dexChs, myToken);
         }
@@ -2419,7 +2411,7 @@
         pagesBox.innerHTML = `
           <div style="padding:40px 20px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px;">
             <span class="material-symbols-rounded" style="font-size:42px; color:#F2B8B5;">menu_book</span>
-            <p style="color:#F2B8B5; font-size:14px; max-width:420px; line-height:1.5;">${err.message || 'Ошибка подключения к источнику'}</p>
+            <p style="color:#F2B8B5; font-size:14px; max-width:420px; line-height:1.5;">${err.message || 'Ошибка подключения'}</p>
           </div>
         `;
       }
@@ -2436,15 +2428,17 @@
       selectMangaChapterByIndex(0);
     }
 
-    // Точная реализация RemangaClient.kt из архива
     async function fetchRemangaChaptersList(item, myToken) {
-      const candidates = [item.titleRu, item.originalName, item.titleEn].filter(Boolean);
+      const rawRu = (item.titleRu || '').trim();
+      const firstWordRu = rawRu.split(/[\s:—–-]+/)[0];
+      const candidates = [rawRu, firstWordRu, item.originalName, item.titleEn].filter(Boolean);
       let foundTitleObj = null;
 
       for (const q of candidates) {
         if (myToken !== mangaReqToken) return [];
+        if (!q || q.length < 2) continue;
         try {
-          const searchUrl = `https://api.remanga.org/api/search/?query=${encodeURIComponent(q.trim())}&count=10`;
+          const searchUrl = `https://api.remanga.org/api/search/?query=${encodeURIComponent(q)}&count=10`;
           const json = await fetchMangaApiJson(searchUrl);
           const content = json && Array.isArray(json.content) ? json.content : [];
           if (content.length > 0) {
@@ -2456,7 +2450,6 @@
 
       if (!foundTitleObj) return [];
 
-      // Получаем branch_id (либо через /api/titles/{dir}/, либо напрямую по id как в RemangaClient.kt)
       const branchCandidates = [];
       if (foundTitleObj.dir) {
         try {
@@ -2472,7 +2465,7 @@
       for (const bId of branchCandidates) {
         if (myToken !== mangaReqToken) return [];
         try {
-          const chUrl = `https://api.remanga.org/api/titles/chapters/?branch_id=${bId}&count=200&ordering=-index`;
+          const chUrl = `https://api.remanga.org/api/titles/chapters/?branch_id=${bId}&count=300&ordering=index`;
           const chJson = await fetchMangaApiJson(chUrl);
           const arr = chJson && Array.isArray(chJson.content) ? chJson.content : [];
           if (arr.length > 0) {
@@ -2502,52 +2495,63 @@
       return [];
     }
 
-    // Точная реализация MangaDexClient.kt из архива
+    // MangaDex без прокси — напрямую в официальный открытый API
     async function fetchMangaDexChaptersList(item, lang, myToken) {
-      const candidates = [item.originalName, item.titleEn, item.titleRu].filter(Boolean);
+      const firstWord = (item.titleRu || '').split(/[\s:—–-]+/)[0];
+      const candidates = [item.originalName, item.titleEn, item.titleRu, firstWord].filter(Boolean);
       let mdMangaId = null;
 
       for (const q of candidates) {
         if (myToken !== mangaReqToken) return [];
+        if (!q || q.length < 2) continue;
         try {
-          const url = `https://api.mangadex.org/manga?title=${encodeURIComponent(q.trim())}&limit=10&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica`;
-          const json = await fetchMangaApiJson(url);
-          if (json && Array.isArray(json.data) && json.data.length > 0) {
-            mdMangaId = json.data[0].id;
-            break;
+          const url = `https://api.mangadex.org/manga?title=${encodeURIComponent(q.trim())}&limit=5&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica`;
+          const res = await fetchWithTimeout(url, 5000);
+          if (res.ok) {
+            const json = await res.json();
+            if (json?.data?.length > 0) {
+              mdMangaId = json.data[0].id;
+              break;
+            }
           }
         } catch (_) {}
       }
 
       if (!mdMangaId) return [];
 
-      const feedUrl = `https://api.mangadex.org/manga/${mdMangaId}/feed?limit=200&order[chapter]=asc&includeExternalUrl=0&translatedLanguage[]=${lang}`;
-      const feedJson = await fetchMangaApiJson(feedUrl);
-      const dataArr = feedJson && Array.isArray(feedJson.data) ? feedJson.data : [];
+      try {
+        const feedUrl = `https://api.mangadex.org/manga/${mdMangaId}/feed?limit=250&order[chapter]=asc&includeExternalUrl=0&translatedLanguage[]=${lang}`;
+        const feedRes = await fetchWithTimeout(feedUrl, 6000);
+        if (!feedRes.ok) return [];
+        const feedJson = await feedRes.json();
+        const dataArr = feedJson?.data || [];
 
-      const seen = new Set();
-      const chapters = [];
-      for (const ch of dataArr) {
-        const attr = ch.attributes || {};
-        const pages = Number(attr.pages || 0);
-        const ext = attr.externalUrl;
-        if (pages <= 0 || ext) continue;
+        const seen = new Set();
+        const chapters = [];
+        for (const ch of dataArr) {
+          const attr = ch.attributes || {};
+          const pages = Number(attr.pages || 0);
+          const ext = attr.externalUrl;
+          if (pages <= 0 || ext) continue;
 
-        const chNum = String(attr.chapter || '1');
-        if (seen.has(chNum)) continue;
-        seen.add(chNum);
+          const chNum = String(attr.chapter || '1');
+          if (seen.has(chNum)) continue;
+          seen.add(chNum);
 
-        const title = String(attr.title || '').trim();
-        chapters.push({
-          id: ch.id,
-          chapter: chNum,
-          displayTitle: `Глава ${chNum}${title ? ': ' + title : ''}`,
-          source: 'mangadex'
-        });
+          const title = String(attr.title || '').trim();
+          chapters.push({
+            id: ch.id,
+            chapter: chNum,
+            displayTitle: `Глава ${chNum}${title ? ': ' + title : ''}`,
+            source: 'mangadex'
+          });
+        }
+
+        chapters.sort((a, b) => (parseFloat(a.chapter) || 9999) - (parseFloat(b.chapter) || 9999));
+        return chapters;
+      } catch (_) {
+        return [];
       }
-
-      chapters.sort((a, b) => (parseFloat(a.chapter) || 9999) - (parseFloat(b.chapter) || 9999));
-      return chapters;
     }
 
     function stepMangaChapter(delta) {
@@ -2566,8 +2570,8 @@
       const select = document.getElementById('mangaChapterSelect');
       if (select) select.value = String(index);
 
-             const pagesContainer = document.getElementById('mangaPagesScroll');
-      pagesContainer.innerHTML = `<div class="spinner" style="margin-top:60px;"></div><p style="color:var(--color-variant); font-size:13px; margin-top:10px;">Загружаем страницы (${ch.displayTitle})...</p>`;
+      const pagesContainer = document.getElementById('mangaPagesScroll');
+      pagesContainer.innerHTML = `<div class="spinner" style="margin-top:60px;"></div><p style="color:var(--color-variant); font-size:13px; margin-top:10px;">Загружаем страницы главы ${ch.displayTitle}...</p>`;
 
       try {
         let pageUrls = [];
@@ -2594,8 +2598,10 @@
             }
           }
         } else {
+          // Прямой запрос к MangaDex без прокси
           const atHomeUrl = `https://api.mangadex.org/at-home/server/${ch.id}`;
-          const data = await fetchMangaApiJson(atHomeUrl);
+          const res = await fetchWithTimeout(atHomeUrl, 6000);
+          const data = res.ok ? await res.json() : null;
           if (myToken !== mangaReqToken) return;
 
           if (data && data.baseUrl && data.chapter) {
@@ -2610,45 +2616,40 @@
         }
 
         if (myToken !== mangaReqToken) return;
-        if (pageUrls.length === 0) {
-          throw new Error('Страницы этой главы пусты или платные на источнике. Выберите другую главу или смените источник выше.');
-        }
+        if (pageUrls.length === 0) throw new Error('Страницы главы не найдены.');
 
         pagesContainer.innerHTML = `<div style="font-size:12px; color:var(--color-variant); margin-bottom:8px;">${ch.displayTitle} • Страниц: ${pageUrls.length}</div>`;
         pagesContainer.scrollTop = 0;
 
         pageUrls.forEach((rawUrl, idx) => {
           const fullUrl = rawUrl.startsWith('http') ? rawUrl : `https://remanga.org${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
-          const proxiedImg = `https://wsrv.nl/?url=${encodeURIComponent(fullUrl)}`;
           const img = document.createElement('img');
-          img.src = proxiedImg;
+          img.referrerPolicy = 'no-referrer';
+          img.src = fullUrl;
           img.loading = 'lazy';
           img.alt = `Стр. ${idx + 1}`;
           img.onerror = function() {
-            if (this.src !== fullUrl) {
-              this.referrerPolicy = 'no-referrer';
-              this.src = fullUrl;
-            }
+            const fallbackProxy = `https://wsrv.nl/?url=${encodeURIComponent(fullUrl)}`;
+            if (this.src !== fallbackProxy) this.src = fallbackProxy;
           };
           pagesContainer.appendChild(img);
         });
 
-        // Кнопка перехода к следующей главе в конце ленты
         if (index < mangaReaderState.chapters.length - 1) {
           const nextBtn = document.createElement('button');
           nextBtn.className = 'md-btn md-btn-filled';
           nextBtn.style.cssText = 'margin: 20px auto; width: 90%; max-width: 400px;';
-          nextBtn.innerHTML = `<span>Следующая: ${mangaReaderState.chapters[index + 1].displayTitle}</span> <span class="material-symbols-rounded">arrow_forward</span>`;
+          nextBtn.innerHTML = `<span>Следующая глава</span> <span class="material-symbols-rounded">arrow_forward</span>`;
           nextBtn.onclick = () => stepMangaChapter(1);
           pagesContainer.appendChild(nextBtn);
         }
       } catch (err) {
         if (myToken !== mangaReqToken) return;
-        pagesContainer.innerHTML = `<p style="color:#F2B8B5; padding:40px 20px; text-align:center;">${err.message || 'Не удалось загрузить страницы главы.'}</p>`;
+        pagesContainer.innerHTML = `<p style="color:#F2B8B5; padding:40px 20px; text-align:center;">${err.message || 'Ошибка загрузки страниц.'}</p>`;
       }
     }
 
-    // === АНИМЕ КАТАЛОГ, ПЛЕЕР, СПИСКИ И СИНХРОНИЗАЦИЯ ===
+    // === КАТАЛОГ АНИМЕ (SHIKIMORI) ===
     async function loadAnimeByIdOnStart(id) {
       try {
         const res = await fetch(`https://shikimori.io/api/animes/${id}`);
@@ -2677,7 +2678,6 @@
       safeSet('komboko_session', data);
     }
 
-    // Отрисовка блока «Продолжить просмотр» (только для аниме)
     function renderContinueWatchingBlock() {
       const section = document.getElementById('continueWatchSection');
       if (!section) return;
@@ -2701,15 +2701,8 @@
         if (savedData && savedData.episode) savedEp = Number(savedData.episode);
       } catch(e) {}
 
-      // Если есть прогресс из Shikimori userRates и он больше — берем его
-      const shikiRate = state.userRates[lastItem.id];
-      if (shikiRate && Number(shikiRate.episodes) > savedEp) {
-        savedEp = Number(shikiRate.episodes);
-      }
-
       const maxEp = Number(lastItem.episodes) || 12;
       if (savedEp > maxEp) savedEp = maxEp;
-      if (savedEp < 1) savedEp = 1;
 
       state.lastResumeItem = lastItem;
       state.lastResumeEpisode = savedEp;
@@ -2724,7 +2717,7 @@
 
       const posterWrap = document.getElementById('continuePosterWrap');
       if (lastItem.poster && !lastItem.poster.includes('missing')) {
-        posterWrap.innerHTML = `<img src="${lastItem.poster}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--color-primary);\\'><span class=\\'material-symbols-rounded\\'>movie</span></div>'" />`;
+        posterWrap.innerHTML = `<img src="${lastItem.poster}" style="width:100%; height:100%; object-fit:cover;" />`;
       } else {
         posterWrap.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--color-primary);"><span class="material-symbols-rounded">movie</span></div>`;
       }
@@ -2737,13 +2730,15 @@
       const item = state.lastResumeItem;
       const targetEp = state.lastResumeEpisode || 1;
 
-      loadKodikPlayerForAnime(item, targetEp);
+      loadKodikPlayerForAnime(item).then(() => {
+        state.currentEpisodeNum = targetEp;
+        saveSessionState();
+        renderEpisodesGrid();
+        loadCurrentEpisodeVideo();
+      });
     }
 
-    // Синхронизация серий с Shikimori (НЕ захламляет списки при простом открытии карточки!)
-    // Если forceCreate === true (юзер сам переключил серию), создаст или обновит запись.
-    // Если forceCreate === false, обновит серию ТОЛЬКО если тайтл УЖЕ есть в списке юзера.
-    async function updateShikimoriProgress(animeId, episodeNum, forceCreate = false) {
+    async function updateShikimoriProgress(animeId, episodeNum) {
       const token = safeGet('shiki_token');
       if (!token || !state.currentUser) return;
 
@@ -2755,22 +2750,16 @@
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { episodes: episodeNum } })
           });
-          if (res.ok) state.userRates[animeId] = await res.json();
-        } else if (forceCreate) {
+          state.userRates[animeId] = await res.json();
+        } else {
           const res = await fetch(`https://shikimori.io/api/v2/user_rates`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status: 'watching', episodes: episodeNum, target_id: animeId, target_type: 'Anime', user_id: state.currentUser.id } })
           });
-          if (res.ok) {
-            state.userRates[animeId] = await res.json();
-            const select = document.getElementById('shikiStatusSelect');
-            if (select) select.value = 'watching';
-          }
+          state.userRates[animeId] = await res.json();
         }
-      } catch (e) {
-        console.error('Failed to sync progress with Shikimori', e);
-      }
+      } catch (e) {}
     }
 
     async function initGenresMap() {
@@ -2779,7 +2768,7 @@
         const genres = await res.json();
         if (Array.isArray(genres)) {
           genres.forEach(g => {
-            if (g.russian && g.id && (g.kind === 'anime' || !g.kind)) {
+            if (g.russian && g.id) {
               const rLow = g.russian.toLowerCase().trim();
               state.genresMap[rLow] = g.id;
               if (rLow.includes('хентай') || rLow.includes('эротик')) {
@@ -2791,15 +2780,9 @@
       } catch (e) {}
     }
 
-    function openSocialModal() {
-      document.getElementById('infoModal').style.display = 'flex';
-    }
-    function closeSocialModal() {
-      document.getElementById('infoModal').style.display = 'none';
-    }
-    function closeSocialModalOnOutside(e) {
-      if (e.target.id === 'infoModal') closeSocialModal();
-    }
+    function openSocialModal() { document.getElementById('infoModal').style.display = 'flex'; }
+    function closeSocialModal() { document.getElementById('infoModal').style.display = 'none'; }
+    function closeSocialModalOnOutside(e) { if (e.target.id === 'infoModal') closeSocialModal(); }
 
     function triggerRandomPromo() {
       if (state.isUserPremium) return;
@@ -2849,20 +2832,16 @@
                 e.preventDefault();
                 if (confirm('Выйти из аккаунта Shikimori?')) {
                   localStorage.removeItem('shiki_token');
-                  sessionStorage.removeItem('shiki_token');
                   location.reload();
                 }
               };
             }
           });
-          await fetchAllUserRates(user.id, token);
+          fetchAllUserRates(user.id, token);
         }
-      } catch (_) {
-        localStorage.removeItem('shiki_token');
-      }
+      } catch (_) { localStorage.removeItem('shiki_token'); }
     }
 
-    // Двусторонняя синхронизация истории и продолжения просмотра между устройствами
     async function fetchAllUserRates(userId, token) {
       try {
         const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
@@ -2882,43 +2861,32 @@
 
           if (watchingRates.length > 0) {
             watchingRates.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
-            
             watchingRates.forEach(r => {
               const progressKey = `komboko_progress_${r.target_id}`;
               const localData = JSON.parse(localStorage.getItem(progressKey) || '{}');
-              if (!localData.episode || Number(r.episodes) > Number(localData.episode)) {
-                localStorage.setItem(progressKey, JSON.stringify({ episode: Math.max(1, Number(r.episodes) || 1) }));
+              if (!localData.episode || r.episodes > localData.episode) {
+                localStorage.setItem(progressKey, JSON.stringify({ episode: r.episodes }));
               }
             });
 
-            // Подтягиваем тайтлы из облака Shikimori в историю на новом устройстве
-            const topWatchingIds = watchingRates.slice(0, 20).map(r => String(r.target_id));
-            const missingIds = topWatchingIds.filter(id => !state.history.some(h => String(h.id) === id));
+            const missingIds = watchingRates
+              .map(r => String(r.target_id))
+              .filter(id => !state.history.some(h => String(h.id) === id));
 
             if (missingIds.length > 0) {
               try {
-                const gItems = await fetchGraphQLAnimes({ ids: missingIds.join(','), limit: 20 });
-                const parsedMap = {};
-                gItems.forEach(item => {
-                  const p = parseAnimeItem(item);
-                  parsedMap[String(p.id)] = p;
+                const gItems = await fetchGraphQLAnimes({ ids: missingIds.join(','), limit: 50 });
+                const parsedItems = gItems.map(item => parseAnimeItem(item));
+                
+                parsedItems.forEach(item => {
+                  if (!state.history.some(h => String(h.id) === String(item.id))) {
+                    state.history.push(item);
+                  }
                 });
-
-                // Вставляем самый свежий тайтл из Шикимори в начало, если локальная история пуста
-                const cloudItems = topWatchingIds.map(id => parsedMap[id]).filter(Boolean);
-                if (state.history.length === 0 && cloudItems.length > 0) {
-                  state.history = cloudItems;
-                } else {
-                  cloudItems.forEach(ci => {
-                    if (!state.history.some(h => String(h.id) === String(ci.id))) {
-                      state.history.push(ci);
-                    }
-                  });
-                }
-                localStorage.setItem('kodik_history', JSON.stringify(state.history.slice(0, 30)));
+                localStorage.setItem('kodik_history', JSON.stringify(state.history));
+                renderContinueWatchingBlock();
               } catch (e) {}
             }
-            renderContinueWatchingBlock();
           }
         }
       } catch (_) {}
@@ -2995,15 +2963,10 @@
     function parseAnimeItem(item) {
       let poster = null;
       if (item.poster && (item.poster.originalUrl || item.poster.mainUrl)) {
-        const cand = item.poster.mainUrl || item.poster.originalUrl;
-        if (cand && !cand.includes('missing') && !cand.includes('404')) {
-          poster = cand.startsWith('http') ? cand : `https://shikimori.io${cand}`;
-        }
+        poster = item.poster.originalUrl || item.poster.mainUrl;
       } else if (item.image) {
         const rawImg = item.image.original || item.image.preview || item.image.x96;
-        if (rawImg && !rawImg.includes('missing') && !rawImg.includes('404')) {
-          poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
-        }
+        if (rawImg && !rawImg.includes('missing')) poster = rawImg.startsWith('http') ? rawImg : `https://shikimori.io${rawImg}`;
       }
 
       let year = '2024';
@@ -3037,8 +3000,7 @@
         kind: item.kind || '',
         statusRu,
         statusEn,
-        isNsfw,
-        isManga: Boolean(item.isManga)
+        isNsfw
       };
     }
 
@@ -3183,14 +3145,14 @@
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status } })
           });
-          if (res.ok) state.userRates[animeId] = await res.json();
+          state.userRates[animeId] = await res.json();
         } else {
           const res = await fetch(`https://shikimori.io/api/v2/user_rates`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status, target_id: animeId, target_type: 'Anime', user_id: state.currentUser.id } })
           });
-          if (res.ok) state.userRates[animeId] = await res.json();
+          state.userRates[animeId] = await res.json();
         }
       } catch (err) {}
     }
@@ -3326,11 +3288,6 @@
       let item = state.itemsRegistry[idStr];
       if (!item) return;
 
-      if (item.isManga) {
-        openMangaReader(idStr);
-        return;
-      }
-
       if (state.currentTab === 'catalog' || state.currentTab === 'history') {
         state.lastScrollY = window.scrollY;
       }
@@ -3350,8 +3307,7 @@
       state.pendingNsfwItem = null;
       if (proceed && target) {
         state.confirmedNsfwIds.add(String(target.id));
-        if (target.isManga) openMangaReader(target.id);
-        else loadKodikPlayerForAnime(target);
+        loadKodikPlayerForAnime(target);
         triggerRandomPromo();
       }
     }
@@ -3361,7 +3317,7 @@
       const t = i18nData[currentLang];
       if (!append) {
         grid.innerHTML = '';
-        if (elementId === 'animeGrid' && state.currentTab === 'catalog') state.itemsRegistry = {};
+        if (elementId === 'animeGrid') state.itemsRegistry = {};
       }
 
       if (!list || list.length === 0) {
@@ -3384,24 +3340,19 @@
 
         const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
         const safeTitle = (displayTitle || '').replace(/'/g, '').replace(/"/g, '&quot;');
-        const fallbackIcon = isMangaItem ? 'auto_stories' : 'movie';
-        const posterInner = (item.poster && !item.poster.includes('missing') && !item.poster.includes('404'))
-          ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>${fallbackIcon}</span><p>${safeTitle}</p></div>'" />${nsfwOverlayHtml}`
-          : `<div class="poster-fallback"><span class="material-symbols-rounded">${item.isNsfw ? 'visibility_off' : fallbackIcon}</span><p>${item.isNsfw ? '18+ • ' + safeTitle : safeTitle}</p></div>`;
+        const posterInner = item.poster 
+          ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>${isMangaItem ? 'auto_stories' : 'movie'}</span><p>${safeTitle}</p></div>'" />${nsfwOverlayHtml}`
+          : `<div class="poster-fallback"><span class="material-symbols-rounded">${item.isNsfw ? 'visibility_off' : (isMangaItem ? 'auto_stories' : 'movie')}</span><p>${item.isNsfw ? '18+ • ' + safeTitle : safeTitle}</p></div>`;
 
-        const rightBadge = isMangaItem
-          ? `<span class="badge-pill">${item.chapters && item.chapters !== '?' && item.chapters !== 0 ? item.chapters + ' гл.' : 'Манга'}</span>`
-          : `<span class="badge-pill">${item.episodes || 12} ${t.epShort}</span>`;
-
-        const clickAction = isMangaItem ? `openMangaReader('${item.id}')` : `handleCardClick('${item.id}')`;
+        const clickHandler = isMangaItem ? `openMangaReader('${item.id}')` : `handleCardClick('${item.id}')`;
 
         html += `
-          <article class="anime-card animate-fade" onclick="${clickAction}">
+          <article class="anime-card animate-fade" onclick="${clickHandler}">
             <div class="poster-wrap ${item.isNsfw ? 'nsfw-card' : ''}">
               ${posterInner}
               <div class="card-badges">
                 ${item.rating ? `<span class="badge-pill rating">★ ${item.rating}</span>` : `<span class="badge-pill">${isMangaItem ? 'Манга' : 'Аниме'}</span>`}
-                ${rightBadge}
+                <span class="badge-pill">${isMangaItem ? (item.chapters !== '?' ? item.chapters + ' гл.' : 'Манга') : item.episodes + ' ' + t.epShort}</span>
               </div>
             </div>
             <div class="card-body">
@@ -3421,10 +3372,24 @@
       grid.innerHTML += html;
     }
 
+    function renderHistoryTab() {
+      const combined = [...(state.history || []), ...(state.mangaHistory || [])];
+      renderGrid(combined, 'historyGrid', false);
+    }
+
+    function clearAllHistory() {
+      state.history = [];
+      state.mangaHistory = [];
+      localStorage.removeItem('kodik_history');
+      localStorage.removeItem('komboko_manga_history');
+      renderHistoryTab();
+      renderContinueWatchingBlock();
+    }
+
     function renderDetailsPoster(posterUrl, title) {
       const wrap = document.getElementById('detailsPosterWrap');
       const safeTitle = String(title || '').replace(/'/g, '').replace(/"/g, '&quot;');
-      if (posterUrl && !posterUrl.includes('missing') && !posterUrl.includes('404')) {
+      if (posterUrl && !posterUrl.includes('missing')) {
         wrap.innerHTML = `<img class="details-poster" src="${posterUrl}" alt="Poster" onerror="this.parentElement.innerHTML='<div class=\\'details-poster-fallback\\'><span class=\\'material-symbols-rounded\\'>movie</span><p>${safeTitle}</p></div>'" />`;
       } else {
         wrap.innerHTML = `<div class="details-poster-fallback"><span class="material-symbols-rounded">movie</span><p>${safeTitle}</p></div>`;
@@ -3470,7 +3435,7 @@
       }
     }
 
-    async function loadKodikPlayerForAnime(item, initialEpisode = null) {
+    async function loadKodikPlayerForAnime(item) {
       switchTab('watch', false);
       window.location.hash = '#/' + item.id;
       
@@ -3502,26 +3467,12 @@
         const detailData = await detailRes.json();
         if (detailData && detailData.id) {
           detailedItem = parseAnimeItem(detailData);
-          if (!detailedItem.poster && item.poster) detailedItem.poster = item.poster;
           state.itemsRegistry[detailedItem.id] = detailedItem;
         }
       } catch (_) {}
 
-      // Восстанавливаем сохраненную серию, если она была
-      let startEp = initialEpisode || 1;
-      if (!initialEpisode) {
-        try {
-          const savedProg = JSON.parse(localStorage.getItem(`komboko_progress_${detailedItem.id}`) || '{}');
-          if (savedProg.episode) startEp = Number(savedProg.episode);
-        } catch (_) {}
-        const shikiRate = state.userRates[detailedItem.id];
-        if (shikiRate && Number(shikiRate.episodes) > startEp) {
-          startEp = Number(shikiRate.episodes);
-        }
-      }
-
       state.currentAnimeFull = detailedItem;
-      state.currentEpisodeNum = Math.max(1, startEp);
+      state.currentEpisodeNum = 1;
       state.currentVariantIndex = 0;
 
       const token = safeGet('shiki_token');
@@ -3546,18 +3497,18 @@
 
       state.currentAnimeFull = parseKodikVariants(detailedItem, kodikResults);
 
-      // Сохраняем в локальную историю, но НЕ отправляем POST в Shikimori (чтобы не захламлять списки!)
-      state.history = [detailedItem, ...state.history.filter(a => String(a.id) !== String(detailedItem.id))].slice(0, 30);
+      state.history = [detailedItem, ...state.history.filter(a => a.id !== detailedItem.id)].slice(0, 30);
       localStorage.setItem('kodik_history', JSON.stringify(state.history));
 
       const progressKey = `komboko_progress_${detailedItem.id}`;
       localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
+      updateShikimoriProgress(detailedItem.id, state.currentEpisodeNum);
 
       saveSessionState();
 
       renderVoiceChips();
       renderEpisodesGrid();
-      loadCurrentEpisodeVideo(false);
+      loadCurrentEpisodeVideo();
       updateWatchDetailsLanguage();
     }
 
@@ -3738,7 +3689,7 @@
           saveSessionState();
           renderVoiceChips();
           renderEpisodesGrid();
-          loadCurrentEpisodeVideo(false);
+          loadCurrentEpisodeVideo();
         };
         container.appendChild(btn);
       });
@@ -3771,14 +3722,13 @@
           btn.style.background = 'var(--color-primary)';
           btn.style.color = 'var(--color-on-primary)';
 
-          // Передаем true, так как юзер целенаправленно выбрал серию для просмотра
-          loadCurrentEpisodeVideo(true);
+          loadCurrentEpisodeVideo();
         };
         grid.appendChild(btn);
       });
     }
 
-    async function loadCurrentEpisodeVideo(syncWithShiki = false) {
+    async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
 
       const t = i18nData[currentLang];
@@ -3790,14 +3740,11 @@
 
       const progressKey = `komboko_progress_${targetId}`;
       localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
-
-      if (syncWithShiki) {
-        updateShikimoriProgress(targetId, state.currentEpisodeNum, false);
-      }
+      updateShikimoriProgress(targetId, state.currentEpisodeNum);
 
       if (state.currentSource === 'megaplay') {
         const lang = state.megaplayLang || 'sub';
-        const streamUrl = `https://megaplay.buzz/stream/mal/${targetId}/${epNum}/${lang}`;
+        const streamUrl = `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${lang}`;
         openLink.href = streamUrl;
         iframe.src = streamUrl;
         saveSessionState();
@@ -3827,7 +3774,7 @@
         state.currentEpisodeNum = target;
         saveSessionState();
         renderEpisodesGrid();
-        loadCurrentEpisodeVideo(true);
+        loadCurrentEpisodeVideo();
       }
     }
 
@@ -3855,62 +3802,42 @@
 
       const catalogView = document.getElementById('view-catalog');
       const watchView = document.getElementById('view-watch');
-      const mangaReaderView = document.getElementById('view-manga-reader');
       const characterView = document.getElementById('view-character');
       const listsView = document.getElementById('view-lists');
+      const historyView = document.getElementById('view-history');
+      const mangaReaderView = document.getElementById('view-manga-reader');
 
       catalogView.style.display = 'none';
       watchView.style.display = 'none';
-      mangaReaderView.style.display = 'none';
       characterView.style.display = 'none';
       listsView.style.display = 'none';
+      historyView.style.display = 'none';
+      mangaReaderView.style.display = 'none';
 
       const topBar = document.querySelector('.top-bar');
       const genresBar = document.getElementById('genresBar');
-      const catalogSwitchBox = document.getElementById('catalogSwitchBox');
-      const catalogHeaderBox = document.getElementById('catalogHeaderBox');
-      const continueSection = document.getElementById('continueWatchSection');
-
       if (topBar) topBar.style.display = (tab === 'catalog') ? 'flex' : 'none';
       if (genresBar) genresBar.style.display = (tab === 'catalog' && currentCatalogMode === 'anime') ? 'flex' : 'none';
-      if (catalogSwitchBox) catalogSwitchBox.style.display = (tab === 'catalog') ? 'flex' : 'none';
 
-      if (tab === 'watch') {
-        watchView.style.display = 'block';
-      } else if (tab === 'manga-reader') {
-        mangaReaderView.style.display = 'block';
-      } else if (tab === 'character') {
-        characterView.style.display = 'block';
-      } else if (tab === 'lists') {
-        state.lastCatalogMode = 'lists';
-        listsView.style.display = 'block';
-        fetchUserRatesList('watching');
-      } else if (tab === 'history') {
-        state.lastCatalogMode = 'history';
-        catalogView.style.display = 'block';
-        if (continueSection) continueSection.style.display = 'none';
-        if (catalogHeaderBox) {
-          catalogHeaderBox.style.display = 'flex';
-          document.getElementById('sectionTitle').textContent = t.navHistory;
-        }
-        renderGrid(state.history, 'animeGrid', false);
-      } else {
-        state.lastCatalogMode = 'catalog';
-        catalogView.style.display = 'block';
-        if (catalogHeaderBox) {
-          if (state.currentQuery) {
-            catalogHeaderBox.style.display = 'flex';
-            document.getElementById('sectionTitle').textContent = `${t.searchPrefix} ${state.currentQuery}`;
-          } else {
-            catalogHeaderBox.style.display = 'none';
-          }
-        }
-        renderContinueWatchingBlock();
+      if (tab === 'watch') watchView.style.display = 'block';
+      else if (tab === 'manga-reader') mangaReaderView.style.display = 'block';
+      else if (tab === 'character') characterView.style.display = 'block';
+      else if (tab === 'lists') { 
+        state.lastCatalogMode = 'lists'; 
+        listsView.style.display = 'block'; 
+        fetchUserRatesList('watching'); 
+      }
+      else if (tab === 'history') { 
+        state.lastCatalogMode = 'history'; 
+        historyView.style.display = 'block'; 
+        renderHistoryTab(); 
+      }
+      else { 
+        state.lastCatalogMode = 'catalog'; 
+        catalogView.style.display = 'block'; 
       }
     }
   </script>
   <script data-goatcounter="https://c4ebuk.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
-
-

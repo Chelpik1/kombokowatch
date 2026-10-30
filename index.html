@@ -827,7 +827,7 @@
       border-radius: var(--radius-md);
       display: flex;
       flex-direction: column;
-      z-index: 50;
+      z-index: 9999;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
       overflow: hidden;
       animation: fadeIn 0.2s ease;
@@ -2006,7 +2006,7 @@
     }
     
     const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
-    const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev/';
+    const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
     const PLAYER_SOURCES = ['exo', 'kodik', 'megaplay'];
@@ -2800,8 +2800,7 @@
     async function fetchProxyJson(targetUrl) {
       const proxies = [
         u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
       ];
 
       for (const buildProxy of proxies) {

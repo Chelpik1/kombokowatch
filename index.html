@@ -4443,194 +4443,195 @@
       });
     }
 
-function attachHlsStreamToExo(streamUrl, startTime = 0, onErrorFallback = null) {
-      const video = document.getElementById('kombokoCustomVideo');
-      const loader = document.getElementById('videoStreamLoader');
-      if (!video) return;
-
-      if (currentHlsInstance) {
-        currentHlsInstance.destroy();
-        currentHlsInstance = null;
-      }
-
-      if (Hls.isSupported()) {
-        const hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: false,
-          xhrSetup: function(xhr) {
-            xhr.withCredentials = false;
+    function attachHlsStreamToExo(streamUrl, startTime = 0, onErrorFallback = null) {
+          const video = document.getElementById('kombokoCustomVideo');
+          const loader = document.getElementById('videoStreamLoader');
+          if (!video) return;
+    
+          if (currentHlsInstance) {
+            currentHlsInstance.destroy();
+            currentHlsInstance = null;
           }
-        });
-        hls.loadSource(streamUrl);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          if (loader) loader.style.display = 'none';
-          if (startTime > 0) video.currentTime = startTime;
-          video.play().catch(() => {});
-        });
-        hls.on(Hls.Events.ERROR, (ev, data) => {
-          if (data.fatal) {
-            hls.destroy();
-            if (onErrorFallback) onErrorFallback();
-          }
-        });
-        currentHlsInstance = hls;
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = streamUrl;
-        video.addEventListener('loadedmetadata', () => {
-          if (loader) loader.style.display = 'none';
-          if (startTime > 0) video.currentTime = startTime;
-          video.play().catch(() => {});
-        }, { once: true });
-        video.addEventListener('error', () => {
-          if (onErrorFallback) onErrorFallback();
-        }, { once: true });
-      }
-    }
-
-    async function loadCurrentEpisodeVideo() {
-      if (!state.currentAnimeFull) return;
-
-      const t = i18nData[currentLang];
-      const epNum = state.currentEpisodeNum || 1;
-      const targetId = state.currentAnimeFull.id;
-      const activeTitle = currentLang === 'en'
-        ? (state.currentAnimeFull.titleEn || state.currentAnimeFull.titleRu)
-        : state.currentAnimeFull.titleRu;
-
-      const exoWrap = document.getElementById('exoPlayerWrap');
-      const iframe = document.getElementById('kodikIframe');
-      const video = document.getElementById('kombokoCustomVideo');
-      const loader = document.getElementById('videoStreamLoader');
-      const loaderText = document.getElementById('videoLoaderText');
-      const openLink = document.getElementById('openInNewTab');
-      const exoBadge = document.getElementById('exoEpBadge');
-      const qSelect = document.getElementById('exoQualitySelect');
-      const skipOpBtn = document.getElementById('skipOpBtn');
-
-      document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
-      if (exoBadge) exoBadge.textContent = `${activeTitle} • ${t.epWord} ${epNum}`;
-
-      const progressKey = `komboko_progress_${targetId}`;
-      localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
-      updateShikimoriProgress(targetId, state.currentEpisodeNum);
-
-      if (currentHlsInstance) {
-        currentHlsInstance.destroy();
-        currentHlsInstance = null;
-      }
-      if (video) {
-        video.pause();
-        video.removeAttribute('src');
-      }
-
-      // 1. Источник MegaPlay
-      if (state.currentSource === 'megaplay') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
-        const lang = state.megaplayLang || 'sub';
-        const streamUrl = `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${lang}`;
-        openLink.href = streamUrl;
-        iframe.src = streamUrl;
-        saveSessionState();
-        return;
-      }
-
-      const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
-      if (!variant) return;
-
-      let rawLink = variant.episodes[String(epNum)] || variant.default_link;
-      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-      cleanUrl = cleanUrl
-        .replace('kodik.info', 'kodikplayer.com')
-        .replace('cloud.kodik-storage.com', 'kodikplayer.com');
-      if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
-      else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
-
-      openLink.href = cleanUrl;
-      saveSessionState();
-
-      // 2. Обычный плеер Kodik (Embed Iframe)
-      if (state.currentSource === 'kodik') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
-        iframe.src = cleanUrl;
-        return;
-      }
-
-      // 3. Кастомный плеер Komboko (в стиле ExoPlayer)
-      iframe.style.display = 'none';
-      iframe.src = 'about:blank';
-      if (exoWrap) exoWrap.style.display = 'flex';
-      if (loader) loader.style.display = 'flex';
-      if (loaderText) loaderText.innerHTML = 'Подключаем прямой поток без рекламы...';
-
-      const translationId = variant.translation_id || '';
-      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
-
-      function showStreamUnavailableNotice(reason = 'Сервер потока недоступен с текущего IP') {
-        if (!loader || !loaderText) return;
-        loader.style.display = 'flex';
-        loaderText.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <span>${reason}</span>
-            <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
-              Включить резервный плеер Kodik
-            </button>
-          </div>
-        `;
-      }
-
-      try {
-        // Увеличен таймаут до 12 секунд, чтобы воркер успевал распарсить скрипт и /ftor
-        const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
-        const streamData = await streamResp.json();
-
-        if (streamData && streamData.success && streamData.stream) {
-          state.currentQualities = streamData.qualities || {};
-
-          // Настраиваем кнопку пропуска опенинга по реальным таймкодам из Kodik
-          if (skipOpBtn) {
-            if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
-              const [opStart, opEnd] = streamData.skip_segments[0];
-              skipOpBtn.onclick = () => {
-                if (video) video.currentTime = opEnd;
-                showExoOverlayTemporarily();
-              };
-              skipOpBtn.textContent = `Пропустить опенинг ⏩`;
-            } else {
-              skipOpBtn.onclick = () => seekExoBy(85);
-              skipOpBtn.textContent = `Пропустить опенинг +85с ⏩`;
-            }
-          }
-
-          if (qSelect && Object.keys(state.currentQualities).length > 0) {
-            qSelect.innerHTML = Object.keys(state.currentQualities)
-              .sort((a, b) => parseInt(b) - parseInt(a))
-              .map(q => `<option value="${q}" ${state.currentQualities[q] === streamData.stream ? 'selected' : ''}>${q}</option>`)
-              .join('');
-          }
-
-          // Пробуем запустить прямой поток; если браузер блокирует манифест — пробуем через /api/playlist.m3u8 прокси воркера
-          attachHlsStreamToExo(streamData.stream, 0, () => {
-            const proxiedM3u8 = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(streamData.stream)}`;
-            attachHlsStreamToExo(proxiedM3u8, 0, () => {
-              showStreamUnavailableNotice();
+    
+          if (Hls.isSupported()) {
+            const hls = new Hls({
+              enableWorker: true,
+              lowLatencyMode: false,
+              xhrSetup: function(xhr) {
+                xhr.withCredentials = false;
+              }
             });
-          });
-          return;
-        } else if (streamData && streamData.error) {
-          showStreamUnavailableNotice(streamData.error);
-          return;
+            hls.loadSource(streamUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              if (loader) loader.style.display = 'none';
+              if (startTime > 0) video.currentTime = startTime;
+              video.play().catch(() => {});
+            });
+            hls.on(Hls.Events.ERROR, (ev, data) => {
+              if (data.fatal) {
+                hls.destroy();
+                if (onErrorFallback) onErrorFallback();
+              }
+            });
+            currentHlsInstance = hls;
+          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = streamUrl;
+            video.addEventListener('loadedmetadata', () => {
+              if (loader) loader.style.display = 'none';
+              if (startTime > 0) video.currentTime = startTime;
+              video.play().catch(() => {});
+            }, { once: true });
+            video.addEventListener('error', () => {
+              if (onErrorFallback) onErrorFallback();
+            }, { once: true });
+          }
         }
-      } catch (err) {
-        console.warn('Не удалось получить прямой HLS поток:', err);
-      }
-
-      showStreamUnavailableNotice();
-    }
+    
+        async function loadCurrentEpisodeVideo() {
+          if (!state.currentAnimeFull) return;
+    
+          const t = i18nData[currentLang];
+          const epNum = state.currentEpisodeNum || 1;
+          const targetId = state.currentAnimeFull.id;
+          const activeTitle = currentLang === 'en'
+            ? (state.currentAnimeFull.titleEn || state.currentAnimeFull.titleRu)
+            : state.currentAnimeFull.titleRu;
+    
+          const exoWrap = document.getElementById('exoPlayerWrap');
+          const iframe = document.getElementById('kodikIframe');
+          const video = document.getElementById('kombokoCustomVideo');
+          const loader = document.getElementById('videoStreamLoader');
+          const loaderText = document.getElementById('videoLoaderText');
+          const openLink = document.getElementById('openInNewTab');
+          const exoBadge = document.getElementById('exoEpBadge');
+          const qSelect = document.getElementById('exoQualitySelect');
+          const skipOpBtn = document.getElementById('skipOpBtn');
+    
+          document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
+          if (exoBadge) exoBadge.textContent = `${activeTitle} • ${t.epWord} ${epNum}`;
+    
+          const progressKey = `komboko_progress_${targetId}`;
+          localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
+          updateShikimoriProgress(targetId, state.currentEpisodeNum);
+    
+          if (currentHlsInstance) {
+            currentHlsInstance.destroy();
+            currentHlsInstance = null;
+          }
+          if (video) {
+            video.pause();
+            video.removeAttribute('src');
+          }
+    
+          // 1. Источник MegaPlay
+          if (state.currentSource === 'megaplay') {
+            if (exoWrap) exoWrap.style.display = 'none';
+            if (loader) loader.style.display = 'none';
+            iframe.style.display = 'block';
+            const lang = state.megaplayLang || 'sub';
+            const streamUrl = `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${lang}`;
+            openLink.href = streamUrl;
+            iframe.src = streamUrl;
+            saveSessionState();
+            return;
+          }
+    
+          const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
+          if (!variant) return;
+    
+          let rawLink = variant.episodes[String(epNum)] || variant.default_link;
+          let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
+          cleanUrl = cleanUrl
+            .replace('kodik.info', 'kodikplayer.com')
+            .replace('cloud.kodik-storage.com', 'kodikplayer.com');
+          if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
+          else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
+    
+          openLink.href = cleanUrl;
+          saveSessionState();
+    
+          // 2. Обычный плеер Kodik (Embed Iframe)
+          if (state.currentSource === 'kodik') {
+            if (exoWrap) exoWrap.style.display = 'none';
+            if (loader) loader.style.display = 'none';
+            iframe.style.display = 'block';
+            iframe.src = cleanUrl;
+            return;
+          }
+    
+          // 3. Кастомный плеер Komboko (в стиле ExoPlayer)
+          iframe.style.display = 'none';
+          iframe.src = 'about:blank';
+          if (exoWrap) exoWrap.style.display = 'flex';
+          if (loader) loader.style.display = 'flex';
+          if (loaderText) loaderText.innerHTML = 'Подключаем прямой поток без рекламы...';
+    
+          const translationId = variant.translation_id || '';
+          const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
+    
+          function showStreamUnavailableNotice(reason = 'Сервер потока недоступен с текущего IP') {
+            if (!loader || !loaderText) return;
+            loader.style.display = 'flex';
+            loaderText.innerHTML = `
+              <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                <span>${reason}</span>
+                <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
+                  Включить резервный плеер Kodik
+                </button>
+              </div>
+            `;
+          }
+    
+          try {
+            // Увеличен таймаут до 12 секунд, чтобы воркер успевал распарсить скрипт и /ftor
+            const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
+            const streamData = await streamResp.json();
+    
+            if (streamData && streamData.success && streamData.stream) {
+              state.currentQualities = streamData.qualities || {};
+    
+              // Настраиваем кнопку пропуска опенинга по реальным таймкодам из Kodik
+              if (skipOpBtn) {
+                if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
+                  const [opStart, opEnd] = streamData.skip_segments[0];
+                  skipOpBtn.onclick = () => {
+                    if (video) video.currentTime = opEnd;
+                    showExoOverlayTemporarily();
+                  };
+                  skipOpBtn.textContent = `Пропустить опенинг ⏩`;
+                } else {
+                  skipOpBtn.onclick = () => seekExoBy(85);
+                  skipOpBtn.textContent = `Пропустить опенинг +85с ⏩`;
+                }
+              }
+    
+              if (qSelect && Object.keys(state.currentQualities).length > 0) {
+                qSelect.innerHTML = Object.keys(state.currentQualities)
+                  .sort((a, b) => parseInt(b) - parseInt(a))
+                  .map(q => `<option value="${q}" ${state.currentQualities[q] === streamData.stream ? 'selected' : ''}>${q}</option>`)
+                  .join('');
+              }
+    
+              // Пробуем запустить прямой поток; если браузер блокирует манифест — пробуем через /api/playlist.m3u8 прокси воркера
+              attachHlsStreamToExo(streamData.stream, 0, () => {
+                const proxiedM3u8 = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(streamData.stream)}`;
+                attachHlsStreamToExo(proxiedM3u8, 0, () => {
+                  showStreamUnavailableNotice();
+                });
+              });
+              return;
+            } else if (streamData && streamData.error) {
+              showStreamUnavailableNotice(streamData.error);
+              return;
+            }
+          } catch (err) {
+            console.warn('Не удалось получить прямой HLS поток:', err);
+          }
+    
+          showStreamUnavailableNotice();
+        }
+    
       function showStreamUnavailableNotice() {
         if (!loader || !loaderText) return;
         loader.style.display = 'flex';

@@ -3271,7 +3271,7 @@
       const item = state.lastResumeItem;
       const targetEp = state.lastResumeEpisode || 1;
 
-      loadKodikPlayerForAnime(item).then(() => {
+      PlayerForAnime(item).then(() => {
         state.currentEpisodeNum = targetEp;
         saveSessionState();
         renderEpisodesGrid();
@@ -3837,7 +3837,7 @@
         state.pendingNsfwItem = item;
         document.getElementById('ageModal').style.display = 'flex';
       } else {
-        loadKodikPlayerForAnime(item);
+        PlayerForAnime(item);
         triggerRandomPromo();
       }
     }
@@ -3848,7 +3848,7 @@
       state.pendingNsfwItem = null;
       if (proceed && target) {
         state.confirmedNsfwIds.add(String(target.id));
-        loadKodikPlayerForAnime(target);
+        PlayerForAnime(target);
         triggerRandomPromo();
       }
     }
@@ -4037,22 +4037,15 @@
       }
 
       // Надёжная подгрузка всех озвучек Kodik (напрямую + через резервные прокси)
-      const apiUrl = `https://kodikapi.com/search?token=${KODIK_TOKEN}&shikimori_id=${detailedItem.id}&with_episodes=true&with_material_data=true`;
+// СТАЛО (быстро и без блокировок через твой воркер):
       let kodikResults = [];
       try {
-        const res = await fetchWithTimeout(apiUrl, 4500);
+        const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${detailedItem.id}`, 6000);
         if (res.ok) {
           const data = await res.json();
           if (data && Array.isArray(data.results)) kodikResults = data.results;
         }
       } catch (_) {}
-
-      if (kodikResults.length === 0) {
-        try {
-          const data = await fetchProxyJson(apiUrl);
-          if (data && Array.isArray(data.results)) kodikResults = data.results;
-        } catch (_) {}
-      }
 
       state.currentAnimeFull = parseKodikVariants(detailedItem, kodikResults);
 
@@ -4536,7 +4529,9 @@
 
       let rawLink = variant.episodes[String(epNum)] || variant.default_link;
       let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-      cleanUrl = cleanUrl.replace('kodik.info', 'kodikplayer.com').replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
+      if (!cleanUrl.includes('find-player')) {
+        cleanUrl = cleanUrl.replace('kodik.info', 'kodikplayer.com').replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
+      }
       if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
       else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
 

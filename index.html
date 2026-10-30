@@ -634,6 +634,7 @@
       padding: 3px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--glass-border);
+      align-items: center;
     }
     .megaplay-lang-btn {
       padding: 5px 10px;
@@ -657,6 +658,8 @@
       gap: 10px;
       width: 100%;
       min-width: 0;
+      position: relative;
+      z-index: 50;
     }
     .section-title {
       font-size: 22px;
@@ -816,35 +819,43 @@
       color: var(--color-primary);
     }
 
+    /* Глобальный портальный выпадающий список (никогда не перекрывается соседними кнопками и iframe) */
     .status-dropdown {
-      position: absolute;
-      bottom: 40px;
-      left: 0;
-      right: 0;
-      background: rgba(24, 20, 35, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border-glow);
+      position: fixed;
+      width: 185px;
+      background: rgba(22, 18, 34, 0.98);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1.5px solid var(--glass-border-glow);
       border-radius: var(--radius-md);
       display: flex;
       flex-direction: column;
       z-index: 999999;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(208, 188, 255, 0.15);
       overflow: hidden;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.18s ease;
     }
     .status-option {
-      padding: 9px 12px;
-      font-size: 11px;
+      padding: 11px 14px;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--color-surface);
       cursor: pointer;
       background: transparent;
       border: none;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       text-align: left;
       font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s, color 0.15s;
     }
-    .status-option:hover {
-      background: rgba(208, 188, 255, 0.2);
+    .status-option:last-child {
+      border-bottom: none;
+    }
+    .status-option:hover, .status-option.active-status {
+      background: rgba(208, 188, 255, 0.22);
       color: var(--color-primary);
     }
 
@@ -941,6 +952,10 @@
       font-weight: 700;
       outline: none;
       cursor: pointer;
+    }
+    .exo-quality-select option {
+      background: #18151c;
+      color: var(--color-surface);
     }
     .exo-center-controls {
       display: flex;
@@ -1101,7 +1116,7 @@
       box-shadow: 0 16px 50px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
-      z-index: 80;
+      z-index: 40;
       gap: 18px;
       width: 100%;
     }
@@ -1763,7 +1778,7 @@
           <button class="md-btn md-btn-tonal" onclick="shareCurrentAnime()" title="Поделиться">
             <span class="material-symbols-rounded" style="font-size:18px">share</span>
           </button>
-          <button class="md-btn md-btn-tonal" onclick="openPlayerListDropdown(event)">
+          <button class="md-btn md-btn-tonal" id="playerBookmarkBtn" onclick="openPlayerListDropdown(event)">
             <span class="material-symbols-rounded" id="favIcon">bookmark_add</span>
           </button>
         </div>
@@ -1781,6 +1796,7 @@
             <div class="megaplay-lang-switch" id="megaplayLangSwitch">
               <button id="btnMegaSub" class="megaplay-lang-btn active" onclick="setMegaPlayLang('sub')">SUB</button>
               <button id="btnMegaDub" class="megaplay-lang-btn" onclick="setMegaPlayLang('dub')">DUB</button>
+              <button id="btnMegaMirror" class="megaplay-lang-btn" onclick="toggleMegaPlayMirror()" title="Сменить сервер Sub/Dub">Сервер 1</button>
             </div>
           </div>
 
@@ -1804,7 +1820,6 @@
                     <div style="display:flex; gap:8px; align-items:center;">
                       <select id="exoQualitySelect" class="exo-quality-select" onchange="changeExoQuality(this.value)" onclick="event.stopPropagation()">
                         <option value="720p">720p HD</option>
-                        <option value="1080p">1080p FHD</option>
                         <option value="480p">480p</option>
                         <option value="360p">360p</option>
                       </select>
@@ -1850,8 +1865,8 @@
               </iframe>
 
               <!-- Лоадер расшифровки потока -->
-              <div id="videoStreamLoader" style="display: none; position: absolute; inset: 0; background: rgba(8, 6, 15, 0.82); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
-                <div class="spinner"></div>
+              <div id="videoStreamLoader" style="display: none; position: absolute; inset: 0; background: rgba(8, 6, 15, 0.86); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
+                <div class="spinner" id="videoLoaderSpinner"></div>
                 <span id="videoLoaderText" style="font-size: 13px; color: var(--color-primary); font-weight: 600; text-align:center; padding: 0 16px;">Подключаем прямой поток без рекламы...</span>
               </div>
             </div>
@@ -2005,8 +2020,16 @@
       try { localStorage.setItem(key, value); } catch(e) {}
       try { sessionStorage.setItem(key, value); } catch(e) {}
     }
-    
-    const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
+
+    // Ротация актуальных токенов Kodik (рабочие токены из приложения + резервные)
+    const KODIK_TOKENS = [
+      '56a768d08f43091901c44b54fe970049',
+      '41dd95f84c21719b09d6c71182237a25',
+      '77b567ec164db6ca9162d2f3dc4948c3',
+      '447d179e875efe44217f20d1ee2146be'
+    ];
+    let activeKodikToken = KODIK_TOKENS[0];
+
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
@@ -2313,6 +2336,7 @@
       currentSource: 'exo',
       currentQualities: {},
       megaplayLang: 'sub',
+      megaplayMirror: 1,
       currentUser: null,
       userRates: {},
       history: JSON.parse(localStorage.getItem('kodik_history') || '[]'),
@@ -2339,6 +2363,7 @@
     let currentCatalogMode = 'anime';
     let activeFetchId = 0;
     let currentHlsInstance = null;
+    let currentBlobManifestUrl = null;
     let exoHideTimer = null;
 
     // === УПРАВЛЕНИЕ КАСТОМНЫМ ПЛЕЕРОМ EXOPLAYER ===
@@ -2412,7 +2437,7 @@
       if (!url) return;
       const video = document.getElementById('kombokoCustomVideo');
       const savedTime = video ? video.currentTime : 0;
-      HlsStreamToExo(url, savedTime);
+      playStreamWithFallbacks(url, savedTime);
     }
 
     function initExoPlayerControls() {
@@ -2458,7 +2483,7 @@
         });
       }
 
-      // Жесты: одиночный тап (показать/скрыть оверлей), двойной тап по краям (±10 сек), удержание (2x скорость)
+      // Жесты: одиночный тап, двойной тап по краям (±10 сек), удержание (2x скорость)
       let lastTapTime = 0;
       let holdTimer = null;
       let isHolding2x = false;
@@ -2527,6 +2552,7 @@
       await initGenresMap();
 
       window.addEventListener('scroll', () => {
+        closeAllStatusDropdowns();
         if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500) {
           if (!state.isLoading && state.hasMore && document.getElementById('view-catalog').style.display !== 'none' && state.currentTab === 'catalog') {
             if (currentCatalogMode === 'manga') {
@@ -2537,9 +2563,11 @@
             renderContinueWatchingBlock();
           }
         }
-      });
+      }, { passive: true });
 
-      const urlParams = new URLSearchParams(window.location.search);
+      window.addEventListener('resize', closeAllStatusDropdowns);
+
+const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       if (code) {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -2582,9 +2610,11 @@
             state.currentVariantIndex = session.currentVariantIndex || 0;
             state.currentSource = PLAYER_SOURCES.includes(session.currentSource) ? session.currentSource : 'exo';
             state.megaplayLang = session.megaplayLang || 'sub';
-            
+            state.megaplayMirror = session.megaplayMirror || 1;
+
             switchTab('watch', false);
             await updateWatchDetailsLanguage();
+            updateFavIconState();
             renderVoiceChips();
             renderEpisodesGrid();
             loadAnimeRelations(state.currentAnimeFull.id);
@@ -2598,10 +2628,105 @@
       fetchShikimoriCatalog(true);
     });
 
+    // === ФИКС НАЛОЖЕНИЯ СПИСКОВ (ПОРТАЛЬНЫЙ DROPDOWN ПОВЕРХ ВСЕХ ЭЛЕМЕНТОВ) ===
+    function closeAllStatusDropdowns() {
+      document.querySelectorAll('.status-dropdown').forEach(el => el.remove());
+      if (window._activeDropdownCleanup) {
+        document.removeEventListener('click', window._activeDropdownCleanup);
+        window._activeDropdownCleanup = null;
+      }
+    }
+
+    function updateFavIconState() {
+      const favIcon = document.getElementById('favIcon');
+      if (!favIcon || !state.currentAnimeFull) return;
+      const hasRate = Boolean(state.userRates && state.userRates[state.currentAnimeFull.id]);
+      favIcon.textContent = hasRate ? 'bookmark_added' : 'bookmark_add';
+      favIcon.classList.toggle('filled', hasRate);
+    }
+
+    function openStatusDropdownPortal(triggerEl, animeId, onAfterSelect = null) {
+      const token = safeGet('shiki_token');
+      if (!token) {
+        redirectToShikimoriLogin();
+        return;
+      }
+
+      closeAllStatusDropdowns();
+
+      const dropdown = document.createElement('div');
+      dropdown.className = 'status-dropdown';
+
+      const currentRate = state.userRates ? state.userRates[animeId] : null;
+      const currentStatusKey = currentRate ? currentRate.status : '';
+
+      getTranslatedStatuses().forEach(s => {
+        const btn = document.createElement('button');
+        const isCurrent = Boolean(s.key && s.key === currentStatusKey);
+        btn.className = 'status-option' + (isCurrent ? ' active-status' : '');
+        btn.innerHTML = `
+          <span>${s.label}</span>
+          ${isCurrent ? '<span class="material-symbols-rounded" style="font-size:16px;">check</span>' : ''}
+        `;
+        btn.onclick = async (ev) => {
+          ev.stopPropagation();
+          closeAllStatusDropdowns();
+          await setAnimeStatusDirect(animeId, s.key);
+          updateFavIconState();
+          if (onAfterSelect) onAfterSelect(s.key);
+        };
+        dropdown.appendChild(btn);
+      });
+
+      document.body.appendChild(dropdown);
+
+      // Вычисляем точные координаты кнопки на экране, чтобы меню никогда не перекрывалось соседними блоками
+      const rect = triggerEl.getBoundingClientRect();
+      const dropWidth = 185;
+      const dropHeight = dropdown.offsetHeight || 240;
+
+      let left = rect.right - dropWidth;
+      if (left < 10) left = 10;
+      if (left + dropWidth > window.innerWidth - 10) {
+        left = window.innerWidth - dropWidth - 10;
+      }
+
+      let top = rect.bottom + 8;
+      if (top + dropHeight > window.innerHeight - 14 && rect.top > dropHeight + 14) {
+        top = rect.top - dropHeight - 8;
+      }
+
+      dropdown.style.left = `${Math.round(left)}px`;
+      dropdown.style.top = `${Math.round(top)}px`;
+
+      const closeListener = (ev) => {
+        if (!dropdown.contains(ev.target) && !triggerEl.contains(ev.target)) {
+          closeAllStatusDropdowns();
+        }
+      };
+      window._activeDropdownCleanup = closeListener;
+      setTimeout(() => document.addEventListener('click', closeListener), 15);
+    }
+
+    function handleCardAddClick(e, animeId) {
+      e.stopPropagation();
+      openStatusDropdownPortal(e.currentTarget, animeId);
+    }
+
+    function openPlayerListDropdown(e) {
+      e.stopPropagation();
+      if (!state.currentAnimeFull) return;
+      openStatusDropdownPortal(e.currentTarget, state.currentAnimeFull.id, (selectedKey) => {
+        const selectEl = document.getElementById('shikiStatusSelect');
+        if (selectEl) selectEl.value = selectedKey;
+      });
+    }
+
+    // === КАТАЛОГ МАНГИ И АНИМЕ ===
     function switchCatalogTab(mode) {
       if (currentCatalogMode === mode && state.animes.length > 0) return;
       currentCatalogMode = mode;
-      
+
       activeFetchId++;
       state.isLoading = false;
       state.page = 1;
@@ -2744,8 +2869,8 @@
         state.itemsRegistry[String(item.id)] = item;
         const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
         const safeTitle = (displayTitle || '').replace(/'/g, '').replace(/"/g, '&quot;');
-        
-        const posterInner = item.poster 
+
+        const posterInner = item.poster
           ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>auto_stories</span><p>${safeTitle}</p></div>'" />`
           : `<div class="poster-fallback"><span class="material-symbols-rounded">auto_stories</span><p>${safeTitle}</p></div>`;
 
@@ -2785,11 +2910,11 @@
       if (icon) icon.textContent = isFs ? 'fullscreen_exit' : 'fullscreen';
     }
 
-    async function fetchWithTimeout(url, timeoutMs = 6000) {
+    async function fetchWithTimeout(url, timeoutMs = 8000, options = {}) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(url, { ...options, signal: controller.signal });
         clearTimeout(timer);
         return res;
       } catch (e) {
@@ -2798,24 +2923,30 @@
       }
     }
 
-    async function fetchProxyJson(targetUrl) {
+    async function fetchProxyText(targetUrl, timeoutMs = 8000) {
       const proxies = [
         u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`
       ];
-
       for (const buildProxy of proxies) {
         try {
-          const res = await fetchWithTimeout(buildProxy(targetUrl), 6000);
+          const res = await fetchWithTimeout(buildProxy(targetUrl), timeoutMs);
           if (res.ok) {
             const text = await res.text();
-            if (text && (text.trim().startsWith('{') || text.trim().startsWith('['))) {
-              return JSON.parse(text);
-            }
+            if (text && text.trim().length > 0) return text;
           }
         } catch (_) {}
       }
-      throw new Error('Не удалось получить данные с сервера источника');
+      throw new Error('Не удалось получить данные через прокси');
+    }
+
+    async function fetchProxyJson(targetUrl) {
+      const text = await fetchProxyText(targetUrl, 7000);
+      if (text && (text.trim().startsWith('{') || text.trim().startsWith('['))) {
+        return JSON.parse(text);
+      }
+      throw new Error('Некорректный JSON от прокси');
     }
 
     async function openMangaReader(shikiId) {
@@ -2849,7 +2980,7 @@
         bannerPoster.style.display = 'none';
       }
       document.getElementById('mangaBannerMeta').textContent = `${item.year || ''} • Рейтинг: ★ ${item.rating || '--'} • Глав: ${item.chapters || '?'}`;
-      
+
       const descEl = document.getElementById('mangaBannerDesc');
       descEl.textContent = item.description && item.description !== 'Описание отсутствует.' ? item.description : 'Загружаем полное описание...';
 
@@ -2876,7 +3007,7 @@
       document.getElementById('extLinkMangaDex').href = `https://mangadex.org/titles?q=${qEn}`;
       document.getElementById('extLinkMangaLib').href = `https://mangalib.org/ru/manga-list?name=${qRu}`;
       document.getElementById('extLinkSenkuro').href = `https://ya.ru/search/?text=site%3Asenkuro.com+${qRu}`;
-      
+
       updateMangaSourceUI();
       await loadMangaChaptersForActiveSource();
     }
@@ -3214,7 +3345,8 @@
         currentEpisodeNum: state.currentEpisodeNum,
         currentVariantIndex: state.currentVariantIndex,
         currentSource: state.currentSource,
-        megaplayLang: state.megaplayLang
+        megaplayLang: state.megaplayLang,
+        megaplayMirror: state.megaplayMirror
       });
       safeSet('komboko_session', data);
     }
@@ -3251,9 +3383,9 @@
       const title = currentLang === 'en' ? (lastItem.titleEn || lastItem.titleRu) : lastItem.titleRu;
       document.getElementById('continueTitleText').textContent = title;
       document.getElementById('continueMeta').textContent = `${lastItem.year || ''} • ${(lastItem.kind || 'TV').toUpperCase()}`;
-      
-      document.getElementById('continueSubtitleText').textContent = currentLang === 'en' 
-        ? `You stopped at episode ${savedEp} of "${title}". Want to continue?` 
+
+      document.getElementById('continueSubtitleText').textContent = currentLang === 'en'
+        ? `You stopped at episode ${savedEp} of "${title}". Want to continue?`
         : `Ты остановился на ${savedEp}-й серии аниме «${title}». Хочешь продолжить?`;
 
       const posterWrap = document.getElementById('continuePosterWrap');
@@ -3300,6 +3432,7 @@
           });
           state.userRates[animeId] = await res.json();
         }
+        updateFavIconState();
       } catch (e) {}
     }
 
@@ -3392,13 +3525,15 @@
         if (Array.isArray(rates)) {
           state.userRates = {};
           const watchingRates = [];
-          
-          rates.forEach(r => { 
-            state.userRates[r.target_id] = r; 
+
+          rates.forEach(r => {
+            state.userRates[r.target_id] = r;
             if (r.status === 'watching' && r.target_id) {
               watchingRates.push(r);
             }
           });
+
+          updateFavIconState();
 
           if (watchingRates.length > 0) {
             watchingRates.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
@@ -3418,7 +3553,7 @@
               try {
                 const gItems = await fetchGraphQLAnimes({ ids: missingIds.join(','), limit: 50 });
                 const parsedItems = gItems.map(item => parseAnimeItem(item));
-                
+
                 parsedItems.forEach(item => {
                   if (!state.history.some(h => String(h.id) === String(item.id))) {
                     state.history.push(item);
@@ -3458,7 +3593,7 @@
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
         });
         const rates = await res.json();
-        
+
         if (Array.isArray(rates) && rates.length > 0) {
           const animeIds = rates.map(r => r.target_id).join(',');
           const gItems = await fetchGraphQLAnimes({ ids: animeIds, limit: 50 });
@@ -3471,8 +3606,8 @@
         grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Error</p>`;
       }
     }
-    
-        function checkIsAdultItem(item) {
+
+    function checkIsAdultItem(item) {
       if (!item) return false;
       if (item.isNsfw === true) return true;
 
@@ -3529,6 +3664,7 @@
         id: String(item.id),
         titleRu: item.russian || item.name || 'Без названия',
         titleEn: (Array.isArray(item.english) ? item.english[0] : (item.english || item.name || item.russian || 'Untitled')),
+        originalName: item.name || '',
         year,
         episodes: item.episodes || item.episodesAired || item.episodes_aired || 12,
         rating: item.score && Number(item.score) > 0 ? item.score : null,
@@ -3602,67 +3738,6 @@
       ];
     }
 
-    function handleCardAddClick(e, animeId) {
-      e.stopPropagation();
-      const token = safeGet('shiki_token');
-      if (!token) { redirectToShikimoriLogin(); return; }
-
-      document.querySelectorAll('.status-dropdown').forEach(el => el.remove());
-      const wrapper = e.currentTarget.parentElement;
-      const dropdown = document.createElement('div');
-      dropdown.className = 'status-dropdown';
-
-      getTranslatedStatuses().forEach(s => {
-        const btn = document.createElement('button');
-        btn.className = 'status-option';
-        btn.textContent = s.label;
-        btn.onclick = async (ev) => {
-          ev.stopPropagation();
-          dropdown.remove();
-          await setAnimeStatusDirect(animeId, s.key);
-        };
-        dropdown.appendChild(btn);
-      });
-
-      wrapper.appendChild(dropdown);
-      const closeListener = (ev) => {
-        if (!wrapper.contains(ev.target)) { dropdown.remove(); document.removeEventListener('click', closeListener); }
-      };
-      setTimeout(() => document.addEventListener('click', closeListener), 10);
-    }
-
-    function openPlayerListDropdown(e) {
-      const token = safeGet('shiki_token');
-      if (!token) { redirectToShikimoriLogin(); return; }
-      if (!state.currentAnimeFull) return;
-
-      document.querySelectorAll('.status-dropdown').forEach(el => el.remove());
-      const btnTarget = e.currentTarget;
-      const dropdown = document.createElement('div');
-      dropdown.className = 'status-dropdown';
-      dropdown.style.bottom = 'auto'; dropdown.style.top = '48px'; dropdown.style.right = '0'; dropdown.style.left = 'auto'; dropdown.style.width = '160px';
-
-      getTranslatedStatuses().forEach(s => {
-        const btn = document.createElement('button');
-        btn.className = 'status-option';
-        btn.textContent = s.label;
-        btn.onclick = async (ev) => {
-          ev.stopPropagation();
-          dropdown.remove();
-          await setAnimeStatusDirect(state.currentAnimeFull.id, s.key);
-          document.getElementById('shikiStatusSelect').value = s.key;
-        };
-        dropdown.appendChild(btn);
-      });
-
-      btnTarget.style.position = 'relative';
-      btnTarget.appendChild(dropdown);
-      const closeListener = (ev) => {
-        if (!btnTarget.contains(ev.target)) { dropdown.remove(); document.removeEventListener('click', closeListener); }
-      };
-      setTimeout(() => document.addEventListener('click', closeListener), 10);
-    }
-
     async function setAnimeStatusDirect(animeId, status) {
       const token = safeGet('shiki_token');
       if (!token || !state.currentUser) return;
@@ -3677,6 +3752,7 @@
             });
             delete state.userRates[animeId];
           }
+          updateFavIconState();
           return;
         }
 
@@ -3695,6 +3771,7 @@
           });
           state.userRates[animeId] = await res.json();
         }
+        updateFavIconState();
       } catch (err) {}
     }
 
@@ -3732,6 +3809,7 @@
     }
 
     function goBackFromWatch() {
+      closeAllStatusDropdowns();
       if (state.lastCatalogMode === 'lists') switchTab('lists');
       else if (state.lastCatalogMode === 'history') switchTab('history');
       else {
@@ -3881,7 +3959,7 @@
 
         const displayTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
         const safeTitle = (displayTitle || '').replace(/'/g, '').replace(/"/g, '&quot;');
-        const posterInner = item.poster 
+        const posterInner = item.poster
           ? `<img src="${item.poster}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'poster-fallback\\'><span class=\\'material-symbols-rounded\\'>${isMangaItem ? 'auto_stories' : 'movie'}</span><p>${safeTitle}</p></div>'" />${nsfwOverlayHtml}`
           : `<div class="poster-fallback"><span class="material-symbols-rounded">${item.isNsfw ? 'visibility_off' : (isMangaItem ? 'auto_stories' : 'movie')}</span><p>${item.isNsfw ? '18+ • ' + safeTitle : safeTitle}</p></div>`;
 
@@ -3937,6 +4015,7 @@
       }
     }
 
+    // === ПЕРЕКЛЮЧЕНИЕ ИСТОЧНИКОВ И ФИКС MEGAPLAY (3 РАБОЧИХ ЗЕРКАЛА SUB/DUB) ===
     function switchPlayerSource(source) {
       state.currentSource = source;
 
@@ -3965,6 +4044,27 @@
       loadCurrentEpisodeVideo();
     }
 
+    function toggleMegaPlayMirror() {
+      state.megaplayMirror = ((state.megaplayMirror || 1) % 3) + 1;
+      const mirrorBtn = document.getElementById('btnMegaMirror');
+      if (mirrorBtn) mirrorBtn.textContent = `Сервер ${state.megaplayMirror}`;
+      loadCurrentEpisodeVideo();
+    }
+
+    function buildMegaPlayUrl(targetId, epNum, lang, mirrorIndex) {
+      const isDub = lang === 'dub';
+      // Сервер 1: VidSrc Anime (принимает напрямую MAL / Shikimori ID)
+      if (mirrorIndex === 1) {
+        return `https://vidsrc.icu/embed/anime/${targetId}/${epNum}/${isDub ? 1 : 0}`;
+      }
+      // Сервер 2: VidLink Anime (принимает MAL / Shikimori ID + sub/dub)
+      if (mirrorIndex === 2) {
+        return `https://vidlink.pro/anime/${targetId}/${epNum}/${isDub ? 'dub' : 'sub'}?fallback=true`;
+      }
+      // Сервер 3: MegaPlay S-2 / Mal Embed
+      return `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${isDub ? 'dub' : 'sub'}&autonext=1`;
+    }
+
     function shareCurrentAnime() {
       if (!state.currentAnimeFull) return;
       const url = window.location.href;
@@ -3976,10 +4076,67 @@
       }
     }
 
+    // === ПОИСК ОЗВУЧЕК KODIK С РОТАЦИЕЙ ТОКЕНОВ И FALLBACK ===
+    async function searchKodikWithRotation(shikimoriId, titleRu = '', titleEn = '') {
+      // 1. Попытка через наш бэкенд
+      try {
+        const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${encodeURIComponent(shikimoriId)}`, 4500);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.results) && data.results.length > 0) {
+            return data.results;
+          }
+        }
+      } catch (_) {}
+
+      // 2. Прямой запрос к kodikapi.com с перебором рабочих токенов по shikimori_id
+      for (const token of KODIK_TOKENS) {
+        const apiUrl = `https://kodikapi.com/search?token=${token}&shikimori_id=${encodeURIComponent(shikimoriId)}&with_episodes=true&with_material_data=true&limit=100`;
+        try {
+          const res = await fetchWithTimeout(apiUrl, 4500);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.results) && data.results.length > 0) {
+              activeKodikToken = token;
+              return data.results;
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 3. Поиск по названию, если по shikimori_id пусто
+      const candidateTitles = [titleRu, titleEn].filter(t => t && t.length > 1);
+      for (const searchTitle of candidateTitles) {
+        for (const token of KODIK_TOKENS.slice(0, 2)) {
+          const apiUrl = `https://kodikapi.com/search?token=${token}&title=${encodeURIComponent(searchTitle)}&with_episodes=true&limit=50`;
+          try {
+            const res = await fetchWithTimeout(apiUrl, 4500);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.results) && data.results.length > 0) {
+                activeKodikToken = token;
+                return data.results;
+              }
+            }
+          } catch (_) {}
+        }
+      }
+
+      // 4. Резерв через CORS прокси
+      try {
+        const fallbackUrl = `https://kodikapi.com/search?token=${activeKodikToken}&shikimori_id=${encodeURIComponent(shikimoriId)}&with_episodes=true&with_material_data=true`;
+        const data = await fetchProxyJson(fallbackUrl);
+        if (data && Array.isArray(data.results)) return data.results;
+      } catch (_) {}
+
+      return [];
+    }
+
     async function loadKodikPlayerForAnime(item) {
+      closeAllStatusDropdowns();
       switchTab('watch', false);
       window.location.hash = '#/' + item.id;
-      
+
       state.currentSource = 'exo';
       PLAYER_SOURCES.forEach(s => {
         const btn = document.getElementById(`btnSource-${s}`);
@@ -3998,11 +4155,10 @@
       document.getElementById('detailsMeta').textContent = t.loadingText;
       document.getElementById('detailsDesc').textContent = t.loadingText;
       document.getElementById('shikiStatusContainer').style.display = 'none';
-      
+
       document.getElementById('relationsSection').style.display = 'none';
       document.getElementById('charactersSection').style.display = 'none';
 
-      // Сразу запускаем параллельную загрузку связанных тайтлов и карточек персонажей
       loadAnimeRelations(item.id);
       loadAnimeCharacters(item.id);
 
@@ -4027,6 +4183,7 @@
       state.currentAnimeFull = detailedItem;
       state.currentEpisodeNum = 1;
       state.currentVariantIndex = 0;
+      updateFavIconState();
 
       const token = safeGet('shiki_token');
       if (token) {
@@ -4036,23 +4193,11 @@
         document.getElementById('shikiStatusContainer').style.display = 'flex';
       }
 
-      // Надёжная подгрузка всех озвучек Kodik (напрямую + через резервные прокси)
-      const apiUrl = `https://kodikapi.com/search?token=${KODIK_TOKEN}&shikimori_id=${detailedItem.id}&with_episodes=true&with_material_data=true`;
-      let kodikResults = [];
-      try {
-        const res = await fetchWithTimeout(apiUrl, 4500);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.results)) kodikResults = data.results;
-        }
-      } catch (_) {}
-
-      if (kodikResults.length === 0) {
-        try {
-          const data = await fetchProxyJson(apiUrl);
-          if (data && Array.isArray(data.results)) kodikResults = data.results;
-        } catch (_) {}
-      }
+      const kodikResults = await searchKodikWithRotation(
+        detailedItem.id,
+        detailedItem.titleRu,
+        detailedItem.originalName || detailedItem.titleEn
+      );
 
       state.currentAnimeFull = parseKodikVariants(detailedItem, kodikResults);
 
@@ -4083,7 +4228,7 @@
         state.itemsRegistry[a.id] = a;
         let img = a.poster || 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
         const name = currentLang === 'en' ? (a.titleEn || a.titleRu) : a.titleRu;
-        
+
         html += `
           <div class="relation-card" onclick="loadRelatedAnime('${a.id}')">
             <img class="relation-img" style="${a.isNsfw ? 'filter:blur(10px) brightness(0.6);' : ''}" src="${img}" loading="lazy" />
@@ -4118,7 +4263,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // === ПЕРСОНАЖИ И ВСПЛЫВАЮЩИЕ МОДАЛЬНЫЕ ОКНА (GRAPHQL + REST FALLBACK) ===
+    // === ПЕРСОНАЖИ И МОДАЛКА ===
     function renderCharactersGrid(rolesList) {
       const section = document.getElementById('charactersSection');
       const grid = document.getElementById('charactersGrid');
@@ -4169,7 +4314,6 @@
       section.style.display = 'none';
       state.currentCharsData = null;
 
-      // 1. Загружаем персонажей через GraphQL Shikimori (сразу с аватарками и описанием!)
       try {
         const gqlQuery = `
           query($ids: String) {
@@ -4206,7 +4350,6 @@
                 const rolesEnList = (r.rolesEn || []).map(x => String(x).toLowerCase());
                 const rolesRuList = (r.rolesRu || []).map(x => String(x).toLowerCase());
                 const isMain = rolesEnList.includes('main') || rolesRuList.some(x => x.includes('глав'));
-                // Кэшируем персонажа сразу с описанием для мгновенного открытия модалки
                 state.charactersCache[String(r.character.id)] = r.character;
                 return {
                   character: r.character,
@@ -4225,7 +4368,6 @@
         }
       } catch (e) {}
 
-      // 2. Резервный метод через REST /api/animes/{id}/roles (без учета регистра букв)
       try {
         const res = await fetch(`https://shikimori.io/api/animes/${animeId}/roles`);
         const data = await res.json();
@@ -4246,9 +4388,7 @@
             renderCharactersGrid(topChars);
           }
         }
-      } catch (err) {
-        console.warn('Ошибка загрузки персонажей:', err);
-      }
+      } catch (_) {}
     }
 
     function closeCharacterModal() {
@@ -4341,6 +4481,21 @@
       }
     }
 
+    function getStudioPopularityRank(studioName) {
+      const name = String(studioName || '').toLowerCase();
+      if (name.includes('anilibria') || name.includes('анилибрия')) return 1;
+      if (name.includes('студийная банда') || name.includes('studio band')) return 2;
+      if (name.includes('dream cast') || name.includes('дримкаст')) return 3;
+      if (name.includes('shiza')) return 4;
+      if (name.includes('anidub') || name.includes('анидаб')) return 5;
+      if (name.includes('jam')) return 6;
+      if (name.includes('anistar')) return 7;
+      if (name.includes('animevost')) return 8;
+      if (name.includes('дубляж') || name.includes('red head') || name.includes('reanimedia')) return 9;
+      if (name.includes('субтитры') || name.includes('sub')) return 90;
+      return 50;
+    }
+
     function parseKodikVariants(baseItem, results) {
       let variants = [];
       for (const r of results) {
@@ -4373,14 +4528,16 @@
       });
       if (cleanVariants.length > 0) variants = cleanVariants;
 
+      variants.sort((a, b) => getStudioPopularityRank(a.translation.title) - getStudioPopularityRank(b.translation.title));
+
       if (variants.length === 0) {
         const episodes = {};
         for (let i = 1; i <= (baseItem.episodes || 12); i++) {
-          episodes[String(i)] = `https://kodik.info/find-player?shikimoriID=${baseItem.id}&episode=${i}`;
+          episodes[String(i)] = `https://kodikplayer.com/find-player?shikimoriID=${baseItem.id}&episode=${i}`;
         }
         variants.push({
           translation: { id: 0, title: 'Kodik', type: 'voice' },
-          default_link: `https://kodik.info/find-player?shikimoriID=${baseItem.id}`,
+          default_link: `https://kodikplayer.com/find-player?shikimoriID=${baseItem.id}`,
           episodes,
           translation_id: 0
         });
@@ -4429,7 +4586,7 @@
         btn.onclick = () => {
           state.currentEpisodeNum = epNum;
           saveSessionState();
-          
+
           document.querySelectorAll('.ep-btn').forEach(b => {
             b.style.background = '';
             b.style.color = '';
@@ -4443,232 +4600,293 @@
       });
     }
 
+    // === ЯДРО КАСТОМНОГО ПЛЕЕРА: ДЕКОДЕР KODIK + СБОРКА BLOB-МАНИФЕСТОВ M3U8 ===
+    function decodeKodikSrcClient(encoded) {
+      if (!encoded) return '';
+      const s = encoded.trim();
+      if (s.includes('mp4:hls:manifest')) return s.startsWith('//') ? 'https:' + s : s;
+      if (s.startsWith('//')) return 'https:' + s;
+      if (s.startsWith('http')) return s;
+
+      const shifts = [18, 13, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25];
+      for (const shift of shifts) {
+        let candidate = '';
+        for (let i = 0; i < s.length; i++) {
+          const code = s.charCodeAt(i);
+          if (code >= 97 && code <= 122) candidate += String.fromCharCode(((code - 97 + shift) % 26) + 97);
+          else if (code >= 65 && code <= 90) candidate += String.fromCharCode(((code - 65 + shift) % 26) + 65);
+          else candidate += s[i];
+        }
+        const rem = candidate.length % 4;
+        if (rem > 0) candidate += '='.repeat(4 - rem);
+        try {
+          const raw = atob(candidate).trim();
+          if (raw.includes('mp4:hls:manifest') || raw.includes('.m3u8') || raw.includes('.mp4')) {
+            return raw.startsWith('//') ? 'https:' + raw : raw;
+          }
+        } catch (_) {}
+      }
+      return '';
+    }
+
+    // Скачивает .m3u8 и заменяет относительные пути ./720.mp4... на абсолютные (как в get_m3u8_playlist из AnimeParsers)
+    async function buildBlobManifestUrl(streamUrl) {
+      const cleanUrl = streamUrl.startsWith('//') ? 'https:' + streamUrl : streamUrl;
+      const basePath = cleanUrl.substring(0, cleanUrl.lastIndexOf('/') + 1);
+
+      let m3u8Text = '';
+      try {
+        const directRes = await fetchWithTimeout(cleanUrl, 5000);
+        if (directRes.ok) m3u8Text = await directRes.text();
+      } catch (_) {}
+
+      if (!m3u8Text || !m3u8Text.includes('#EXTM3U')) {
+        m3u8Text = await fetchProxyText(cleanUrl, 6500);
+      }
+
+      if (!m3u8Text || !m3u8Text.includes('#EXTM3U')) {
+        throw new Error('Invalid M3U8 content');
+      }
+
+      const rewritten = m3u8Text
+        .replace(/^\.\/([^\r\n]+)/gm, `${basePath}$1`)
+        .replace(/^(\d+\.mp4[^\r\n]+)/gm, `${basePath}$1`);
+
+      if (currentBlobManifestUrl) {
+        try { URL.revokeObjectURL(currentBlobManifestUrl); } catch (_) {}
+      }
+      const blob = new Blob([rewritten], { type: 'application/vnd.apple.mpegurl' });
+      currentBlobManifestUrl = URL.createObjectURL(blob);
+      return currentBlobManifestUrl;
+    }
+
     function attachHlsStreamToExo(streamUrl, startTime = 0, onErrorFallback = null) {
-          const video = document.getElementById('kombokoCustomVideo');
-          const loader = document.getElementById('videoStreamLoader');
-          if (!video) return;
-    
-          if (currentHlsInstance) {
-            currentHlsInstance.destroy();
-            currentHlsInstance = null;
+      const video = document.getElementById('kombokoCustomVideo');
+      const loader = document.getElementById('videoStreamLoader');
+      if (!video) return;
+
+      if (currentHlsInstance) {
+        currentHlsInstance.destroy();
+        currentHlsInstance = null;
+      }
+
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: false,
+          xhrSetup: function(xhr) {
+            xhr.withCredentials = false;
           }
-    
-          if (Hls.isSupported()) {
-            const hls = new Hls({
-              enableWorker: true,
-              lowLatencyMode: false,
-              xhrSetup: function(xhr) {
-                xhr.withCredentials = false;
-              }
-            });
-            hls.loadSource(streamUrl);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-              if (loader) loader.style.display = 'none';
-              if (startTime > 0) video.currentTime = startTime;
-              video.play().catch(() => {});
-            });
-            hls.on(Hls.Events.ERROR, (ev, data) => {
-              if (data.fatal) {
-                hls.destroy();
-                if (onErrorFallback) onErrorFallback();
-              }
-            });
-            currentHlsInstance = hls;
-          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = streamUrl;
-            video.addEventListener('loadedmetadata', () => {
-              if (loader) loader.style.display = 'none';
-              if (startTime > 0) video.currentTime = startTime;
-              video.play().catch(() => {});
-            }, { once: true });
-            video.addEventListener('error', () => {
-              if (onErrorFallback) onErrorFallback();
-            }, { once: true });
+        });
+        hls.loadSource(streamUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          if (loader) loader.style.display = 'none';
+          if (startTime > 0) video.currentTime = startTime;
+          video.play().catch(() => {});
+        });
+        hls.on(Hls.Events.ERROR, (ev, data) => {
+          if (data.fatal) {
+            hls.destroy();
+            if (onErrorFallback) onErrorFallback();
           }
+        });
+        currentHlsInstance = hls;
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = streamUrl;
+        video.addEventListener('loadedmetadata', () => {
+          if (loader) loader.style.display = 'none';
+          if (startTime > 0) video.currentTime = startTime;
+          video.play().catch(() => {});
+        }, { once: true });
+        video.addEventListener('error', () => {
+          if (onErrorFallback) onErrorFallback();
+        }, { once: true });
+      }
+    }
+
+    // Многоуровневый запуск потока: Прямой M3U8 -> Прокси воркера -> Локальный Blob-манифест с абсолютными путями
+    function playStreamWithFallbacks(rawStreamUrl, startTime = 0, onAllFailed = null) {
+      attachHlsStreamToExo(rawStreamUrl, startTime, async () => {
+        try {
+          const blobUrl = await buildBlobManifestUrl(rawStreamUrl);
+          attachHlsStreamToExo(blobUrl, startTime, () => {
+            const workerProxyUrl = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(rawStreamUrl)}`;
+            attachHlsStreamToExo(workerProxyUrl, startTime, () => {
+              if (onAllFailed) onAllFailed();
+            });
+          });
+        } catch (_) {
+          const workerProxyUrl = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(rawStreamUrl)}`;
+          attachHlsStreamToExo(workerProxyUrl, startTime, () => {
+            if (onAllFailed) onAllFailed();
+          });
         }
-    
-        async function loadCurrentEpisodeVideo() {
-          if (!state.currentAnimeFull) return;
-    
-          const t = i18nData[currentLang];
-          const epNum = state.currentEpisodeNum || 1;
-          const targetId = state.currentAnimeFull.id;
-          const activeTitle = currentLang === 'en'
-            ? (state.currentAnimeFull.titleEn || state.currentAnimeFull.titleRu)
-            : state.currentAnimeFull.titleRu;
-    
-          const exoWrap = document.getElementById('exoPlayerWrap');
-          const iframe = document.getElementById('kodikIframe');
-          const video = document.getElementById('kombokoCustomVideo');
-          const loader = document.getElementById('videoStreamLoader');
-          const loaderText = document.getElementById('videoLoaderText');
-          const openLink = document.getElementById('openInNewTab');
-          const exoBadge = document.getElementById('exoEpBadge');
-          const qSelect = document.getElementById('exoQualitySelect');
-          const skipOpBtn = document.getElementById('skipOpBtn');
-    
-          document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
-          if (exoBadge) exoBadge.textContent = `${activeTitle} • ${t.epWord} ${epNum}`;
-    
-          const progressKey = `komboko_progress_${targetId}`;
-          localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
-          updateShikimoriProgress(targetId, state.currentEpisodeNum);
-    
-          if (currentHlsInstance) {
-            currentHlsInstance.destroy();
-            currentHlsInstance = null;
-          }
-          if (video) {
-            video.pause();
-            video.removeAttribute('src');
-          }
-    
-          // 1. Источник MegaPlay
-          if (state.currentSource === 'megaplay') {
-            if (exoWrap) exoWrap.style.display = 'none';
-            if (loader) loader.style.display = 'none';
-            iframe.style.display = 'block';
-            const lang = state.megaplayLang || 'sub';
-            const streamUrl = `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${lang}`;
-            openLink.href = streamUrl;
-            iframe.src = streamUrl;
-            saveSessionState();
-            return;
-          }
-    
-          const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
-          if (!variant) return;
-    
-          let rawLink = variant.episodes[String(epNum)] || variant.default_link;
-          let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-          cleanUrl = cleanUrl
-            .replace('kodik.info', 'kodikplayer.com')
-            .replace('cloud.kodik-storage.com', 'kodikplayer.com');
-          if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
-          else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
-    
-          openLink.href = cleanUrl;
-          saveSessionState();
-    
-          // 2. Обычный плеер Kodik (Embed Iframe)
-          if (state.currentSource === 'kodik') {
-            if (exoWrap) exoWrap.style.display = 'none';
-            if (loader) loader.style.display = 'none';
-            iframe.style.display = 'block';
-            iframe.src = cleanUrl;
-            return;
-          }
-    
-          // 3. Кастомный плеер Komboko (в стиле ExoPlayer)
-          iframe.style.display = 'none';
-          iframe.src = 'about:blank';
-          if (exoWrap) exoWrap.style.display = 'flex';
-          if (loader) loader.style.display = 'flex';
-          if (loaderText) loaderText.innerHTML = 'Подключаем прямой поток без рекламы...';
-    
-          const translationId = variant.translation_id || '';
-          const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
-    
-          function showStreamUnavailableNotice(reason = 'Сервер потока недоступен с текущего IP') {
-            if (!loader || !loaderText) return;
-            loader.style.display = 'flex';
-            loaderText.innerHTML = `
-              <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-                <span>${reason}</span>
-                <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
-                  Включить резервный плеер Kodik
-                </button>
-              </div>
-            `;
-          }
-    
-          try {
-            // Увеличен таймаут до 12 секунд, чтобы воркер успевал распарсить скрипт и /ftor
-            const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
-            const streamData = await streamResp.json();
-    
-            if (streamData && streamData.success && streamData.stream) {
-              state.currentQualities = streamData.qualities || {};
-    
-              // Настраиваем кнопку пропуска опенинга по реальным таймкодам из Kodik
-              if (skipOpBtn) {
-                if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
-                  const [opStart, opEnd] = streamData.skip_segments[0];
-                  skipOpBtn.onclick = () => {
-                    if (video) video.currentTime = opEnd;
-                    showExoOverlayTemporarily();
-                  };
-                  skipOpBtn.textContent = `Пропустить опенинг ⏩`;
-                } else {
-                  skipOpBtn.onclick = () => seekExoBy(85);
-                  skipOpBtn.textContent = `Пропустить опенинг +85с ⏩`;
-                }
-              }
-    
-              if (qSelect && Object.keys(state.currentQualities).length > 0) {
-                qSelect.innerHTML = Object.keys(state.currentQualities)
-                  .sort((a, b) => parseInt(b) - parseInt(a))
-                  .map(q => `<option value="${q}" ${state.currentQualities[q] === streamData.stream ? 'selected' : ''}>${q}</option>`)
-                  .join('');
-              }
-    
-              // Пробуем запустить прямой поток; если браузер блокирует манифест — пробуем через /api/playlist.m3u8 прокси воркера
-              attachHlsStreamToExo(streamData.stream, 0, () => {
-                const proxiedM3u8 = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(streamData.stream)}`;
-                attachHlsStreamToExo(proxiedM3u8, 0, () => {
-                  showStreamUnavailableNotice();
-                });
-              });
-              return;
-            } else if (streamData && streamData.error) {
-              showStreamUnavailableNotice(streamData.error);
-              return;
-            }
-          } catch (err) {
-            console.warn('Не удалось получить прямой HLS поток:', err);
-          }
-    
-          showStreamUnavailableNotice();
-        }
-    
-      function showStreamUnavailableNotice() {
+      });
+    }
+
+    async function loadCurrentEpisodeVideo() {
+      if (!state.currentAnimeFull) return;
+
+      const t = i18nData[currentLang];
+      const epNum = state.currentEpisodeNum || 1;
+      const targetId = state.currentAnimeFull.id;
+      const activeTitle = currentLang === 'en'
+        ? (state.currentAnimeFull.titleEn || state.currentAnimeFull.titleRu)
+        : state.currentAnimeFull.titleRu;
+
+      const exoWrap = document.getElementById('exoPlayerWrap');
+      const iframe = document.getElementById('kodikIframe');
+      const video = document.getElementById('kombokoCustomVideo');
+      const loader = document.getElementById('videoStreamLoader');
+      const loaderSpinner = document.getElementById('videoLoaderSpinner');
+      const loaderText = document.getElementById('videoLoaderText');
+      const openLink = document.getElementById('openInNewTab');
+      const exoBadge = document.getElementById('exoEpBadge');
+      const qSelect = document.getElementById('exoQualitySelect');
+      const skipOpBtn = document.getElementById('skipOpBtn');
+
+      document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
+      if (exoBadge) exoBadge.textContent = `${activeTitle} • ${t.epWord} ${epNum}`;
+
+      const progressKey = `komboko_progress_${targetId}`;
+      localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
+      updateShikimoriProgress(targetId, state.currentEpisodeNum);
+
+      if (currentHlsInstance) {
+        currentHlsInstance.destroy();
+        currentHlsInstance = null;
+      }
+      if (video) {
+        video.pause();
+        video.removeAttribute('src');
+      }
+
+      // 1. Источник MegaPlay (с поддержкой переключения 3 серверов Sub/Dub)
+      if (state.currentSource === 'megaplay') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+        iframe.style.display = 'block';
+        const lang = state.megaplayLang || 'sub';
+        const mirror = state.megaplayMirror || 1;
+        const streamUrl = buildMegaPlayUrl(targetId, epNum, lang, mirror);
+        openLink.href = streamUrl;
+        iframe.src = streamUrl;
+        saveSessionState();
+        return;
+      }
+
+      const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
+      if (!variant) return;
+
+      let rawLink = variant.episodes[String(epNum)] || variant.default_link;
+      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
+      cleanUrl = cleanUrl
+        .replace('kodik.info', 'kodikplayer.com')
+        .replace('kodikdb.com', 'kodikplayer.com')
+        .replace('cloud.kodik-storage.com', 'kodikplayer.com');
+
+      if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
+      else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
+
+      openLink.href = cleanUrl;
+      saveSessionState();
+
+      // 2. Обычный плеер Kodik (Embed Iframe)
+      if (state.currentSource === 'kodik') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+        iframe.style.display = 'block';
+        iframe.src = cleanUrl;
+        return;
+      }
+
+      // 3. Кастомный плеер Komboko (в стиле ExoPlayer)
+      iframe.style.display = 'none';
+      iframe.src = 'about:blank';
+      if (exoWrap) exoWrap.style.display = 'flex';
+      if (loader) loader.style.display = 'flex';
+      if (loaderSpinner) loaderSpinner.style.display = 'block';
+      if (loaderText) loaderText.innerHTML = 'Подключаем прямой поток без рекламы...';
+
+      const translationId = variant.translation_id || '';
+      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
+
+      function showStreamUnavailableNotice(reason = 'Не удалось декодировать прямой поток с текущего IP') {
         if (!loader || !loaderText) return;
+        if (loaderSpinner) loaderSpinner.style.display = 'none';
         loader.style.display = 'flex';
         loaderText.innerHTML = `
           <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <span>Сервер потока недоступен с текущего IP или спящий режим Render</span>
-            <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
-              Включить резервный плеер Kodik
-            </button>
+            <span>${reason}</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+              <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
+                Включить плеер Kodik
+              </button>
+              <button class="md-btn md-btn-tonal" style="height:36px; font-size:12px;" onclick="loadCurrentEpisodeVideo()">
+                Повторить
+              </button>
+            </div>
           </div>
         `;
       }
 
       try {
-        const streamResp = await fetchWithTimeout(streamApiUrl, 4500);
+        const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
         const streamData = await streamResp.json();
 
         if (streamData && streamData.success && streamData.stream) {
-          state.currentQualities = streamData.qualities || {};
+          state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
+
+          // Если в ответе есть базовый путь потока, гарантируем 360p, 480p и 720p (логика AnimeParsers)
+          const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
+          if (firstUrl && firstUrl.includes('mp4:hls:manifest')) {
+            const baseFolder = firstUrl.substring(0, firstUrl.lastIndexOf('/') + 1);
+            ['360', '480', '720'].forEach(q => {
+              if (!state.currentQualities[`${q}p`]) {
+                state.currentQualities[`${q}p`] = `${baseFolder}${q}.mp4:hls:manifest.m3u8`;
+              }
+            });
+          }
+
+          if (skipOpBtn) {
+            if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
+              const [, opEnd] = streamData.skip_segments[0];
+              skipOpBtn.onclick = () => {
+                if (video) video.currentTime = opEnd;
+                showExoOverlayTemporarily();
+              };
+              skipOpBtn.textContent = 'Пропустить опенинг ⏩';
+            } else {
+              skipOpBtn.onclick = () => seekExoBy(85);
+              skipOpBtn.textContent = 'Пропустить опенинг +85с ⏩';
+            }
+          }
+
+          const bestUrl = state.currentQualities['720p'] || state.currentQualities['1080p'] || streamData.stream;
+
           if (qSelect && Object.keys(state.currentQualities).length > 0) {
             qSelect.innerHTML = Object.keys(state.currentQualities)
-              .map(q => `<option value="${q}" ${ state.currentQualities[q] === streamData.stream ? 'selected' : '' }>${q.includes('p') ? q : q + 'p'}</option>`)
+              .sort((a, b) => parseInt(b) - parseInt(a))
+              .map(q => `<option value="${q}" ${state.currentQualities[q] === bestUrl ? 'selected' : ''}>${q}</option>`)
               .join('');
           }
 
-          attachHlsStreamToExo(streamData.stream, 0, () => {
+          playStreamWithFallbacks(bestUrl, 0, () => {
             showStreamUnavailableNotice();
           });
           return;
+        } else if (streamData && streamData.error) {
+          showStreamUnavailableNotice(streamData.error);
+          return;
         }
       } catch (err) {
-        console.warn('Не удалось получить прямой HLS поток:', err);
+        console.warn('Ошибка получения HLS потока:', err);
       }
 
       showStreamUnavailableNotice();
     }
-    
+
     function stepEpisode(delta) {
       if (!state.currentAnimeFull) return;
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
@@ -4691,6 +4909,7 @@
     }
 
     function switchTab(tab, save = true) {
+      closeAllStatusDropdowns();
       state.currentTab = tab;
       if (save) {
         if (tab === 'catalog') window.location.hash = '#/';
@@ -4721,23 +4940,22 @@
 
       if (tab === 'watch') watchView.style.display = 'block';
       else if (tab === 'manga-reader') mangaReaderView.style.display = 'block';
-      else if (tab === 'lists') { 
-        state.lastCatalogMode = 'lists'; 
-        listsView.style.display = 'block'; 
-        fetchUserRatesList('watching'); 
+      else if (tab === 'lists') {
+        state.lastCatalogMode = 'lists';
+        listsView.style.display = 'block';
+        fetchUserRatesList('watching');
       }
-      else if (tab === 'history') { 
-        state.lastCatalogMode = 'history'; 
-        historyView.style.display = 'block'; 
-        renderHistoryTab(); 
+      else if (tab === 'history') {
+        state.lastCatalogMode = 'history';
+        historyView.style.display = 'block';
+        renderHistoryTab();
       }
-      else { 
-        state.lastCatalogMode = 'catalog'; 
-        catalogView.style.display = 'block'; 
+      else {
+        state.lastCatalogMode = 'catalog';
+        catalogView.style.display = 'block';
       }
     }
   </script>
   <script data-goatcounter="https://c4ebuk.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
-

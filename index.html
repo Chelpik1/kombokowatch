@@ -4568,7 +4568,7 @@ async function loadKodikPlayerForAnime(item) {
       }
 
       try {
-        const streamResp = await fetchWithTimeout(streamApiUrl, 4500);
+        const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
         const streamData = await streamResp.json();
 
         if (streamData && streamData.success && streamData.stream) {

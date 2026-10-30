@@ -3198,7 +3198,7 @@
         if (gItems && gItems.length > 0) {
           const parsed = parseAnimeItem(gItems[0]);
           state.itemsRegistry[parsed.id] = parsed;
-          handleCardClick(parsed.id);
+          Click(parsed.id);
         } else {
           fetchShikimoriCatalog(true);
         }
@@ -3837,7 +3837,7 @@
         state.pendingNsfwItem = item;
         document.getElementById('ageModal').style.display = 'flex';
       } else {
-        PlayerForAnime(item);
+        loadKodikPlayerForAnime(item);
         triggerRandomPromo();
       }
     }
@@ -3848,7 +3848,7 @@
       state.pendingNsfwItem = null;
       if (proceed && target) {
         state.confirmedNsfwIds.add(String(target.id));
-        PlayerForAnime(target);
+        loadKodikPlayerForAnime(target);
         triggerRandomPromo();
       }
     }

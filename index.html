@@ -2005,7 +2005,7 @@
       try { sessionStorage.setItem(key, value); } catch(e) {}
     }
     
-    const KODIK_TOKEN = '56a768d08f43091901c44b54fe970049';
+    const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
@@ -3976,7 +3976,7 @@
       }
     }
 
-    async function loadKodikPlayerForAnime(item) {
+async function loadKodikPlayerForAnime(item) {
       switchTab('watch', false);
       window.location.hash = '#/' + item.id;
       
@@ -4002,7 +4002,6 @@
       document.getElementById('relationsSection').style.display = 'none';
       document.getElementById('charactersSection').style.display = 'none';
 
-      // Сразу запускаем параллельную загрузку связанных тайтлов и карточек персонажей
       loadAnimeRelations(item.id);
       loadAnimeCharacters(item.id);
 
@@ -4036,8 +4035,6 @@
         document.getElementById('shikiStatusContainer').style.display = 'flex';
       }
 
-      // Надёжная подгрузка всех озвучек Kodik (напрямую + через резервные прокси)
-// СТАЛО (быстро и без блокировок через твой воркер):
       let kodikResults = [];
       try {
         const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${detailedItem.id}`, 6000);
@@ -4063,7 +4060,7 @@
       loadCurrentEpisodeVideo();
       updateWatchDetailsLanguage();
     }
-
+    
     function renderRelationsList(data) {
       const section = document.getElementById('relationsSection');
       const list = document.getElementById('relationsList');

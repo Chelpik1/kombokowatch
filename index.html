@@ -414,6 +414,7 @@
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
+      flex-shrink: 0;
     }
     .modal-close:hover { background: rgba(208, 188, 255, 0.2); color: var(--color-primary); }
     .modal-body { display: flex; flex-direction: column; gap: 14px; }
@@ -1001,38 +1002,117 @@
     .relation-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .relation-type { font-size: 9px; color: var(--color-variant); }
 
-    .characters-section { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    .characters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; width: 100%; }
+    /* Карточки персонажей под описанием */
+    .characters-section { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .characters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 12px;
+      width: 100%;
+    }
     .character-card {
-      background: rgba(255, 255, 255, 0.03);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.05) 0%, rgba(208, 188, 255, 0.03) 100%);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-md);
-      padding: 8px; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
-      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+      padding: 10px 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 7px;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
     }
-    .character-card:hover { transform: translateY(-4px); border-color: var(--glass-border-glow); background: rgba(255, 255, 255, 0.06); }
-    .character-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--glass-border-glow); }
-    .character-name { font-size: 11px; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; }
+    .character-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      border-color: var(--glass-border-glow);
+      background: rgba(208, 188, 255, 0.12);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45), 0 0 15px rgba(208, 188, 255, 0.15);
+    }
+    .character-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--glass-border-glow);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      background: #141122;
+    }
+    .character-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--color-surface);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.25;
+    }
+    .character-role-badge {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--color-primary);
+      background: rgba(208, 188, 255, 0.14);
+      border: 1px solid rgba(208, 188, 255, 0.25);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-top: auto;
+    }
 
-    .character-view-box {
-      background: var(--glass-surface);
-      backdrop-filter: blur(25px);
-      border-radius: var(--radius-lg);
-      padding: 24px;
+    /* Модалка подробностей о персонаже */
+    .char-modal-card {
+      max-width: 520px;
+      padding: 22px;
+      gap: 16px;
+    }
+    .char-modal-top {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+    .char-modal-poster {
+      width: 110px;
+      height: 155px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      border: 2px solid var(--glass-border-glow);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+      flex-shrink: 0;
+      background: #141122;
+    }
+    .char-modal-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+    }
+    .char-modal-name-ru {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1.25;
+    }
+    .char-modal-name-en {
+      font-size: 12.5px;
+      color: var(--color-variant);
+      font-weight: 500;
+    }
+    .char-modal-desc-box {
+      background: rgba(14, 11, 22, 0.65);
       border: 1px solid var(--glass-border);
-      box-shadow: 0 16px 50px rgba(0,0,0,0.5);
-      display: flex; gap: 24px; align-items: start;
-      width: 100%;
-      max-width: 100%;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      max-height: 44vh;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-surface);
+      white-space: pre-line;
+      word-break: break-word;
     }
-    .character-view-avatar {
-      width: 200px; border-radius: var(--radius-md); object-fit: cover;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid var(--glass-border-glow); flex-shrink: 0;
-    }
-    .character-view-info { display: flex; flex-direction: column; gap: 12px; min-width: 0; flex: 1; }
-    .character-view-title { font-size: 24px; font-weight: 700; color: var(--color-primary); }
-    .character-view-desc { font-size: 14px; line-height: 1.6; color: var(--color-surface); white-space: pre-line; word-break: break-word; }
 
     .loader-box {
       grid-column: 1 / -1;
@@ -1209,8 +1289,7 @@
       .details-top { flex-direction: column; align-items: center; text-align: center; width: 100%; }
       .details-poster-wrap { width: 120px !important; height: 170px !important; margin: 0 auto; }
       .shiki-status-container { justify-content: center; width: 100%; }
-      .character-view-box { flex-direction: column; align-items: center; text-align: center; width: 100%; }
-      .character-view-avatar { width: 150px; }
+      .char-modal-top { flex-direction: column; text-align: center; }
     }
 
     @media (min-width: 769px) {
@@ -1244,6 +1323,24 @@
       </button>
     </div>
   </nav>
+
+  <!-- Всплывающее окно (модалка) информации о персонаже -->
+  <div id="characterModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='characterModal') closeCharacterModal()">
+    <div class="modal-content char-modal-card animate-fade">
+      <div class="modal-header">
+        <h3 data-i18n="charInfoTitle">Информация о персонаже</h3>
+        <button class="modal-close" onclick="closeCharacterModal()">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+      <div id="characterModalBody" class="modal-body">
+        <div class="loader-box" style="padding: 25px;">
+          <div class="spinner"></div>
+          <span data-i18n="loadingChar">Загружаем информацию о персонаже...</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Предупреждение 18+ -->
   <div id="ageModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='ageModal') confirmAgeModal(false)">
@@ -1543,8 +1640,9 @@
               <div class="relations-list" id="relationsList"></div>
             </div>
 
+            <!-- Секция карточек персонажей под описанием -->
             <div class="characters-section" id="charactersSection" style="display: none;">
-              <div class="relations-title" data-i18n="charTitle">Главные герои</div>
+              <div class="relations-title" data-i18n="charTitle">Главные герои и персонажи</div>
               <div class="characters-grid" id="charactersGrid"></div>
             </div>
           </div>
@@ -1643,20 +1741,6 @@
       </div>
       <div class="anime-grid" id="historyGrid"></div>
     </section>
-
-    <!-- Страница персонажа -->
-    <section id="view-character" style="display: none;">
-      <div class="section-header">
-        <button class="md-btn md-btn-tonal" onclick="switchTab('watch')">
-          <span class="material-symbols-rounded">arrow_back</span> <span data-i18n="backToAnime">К аниме</span>
-        </button>
-        <h2 class="section-title" style="flex:1; min-width:0; margin-left: 12px; font-size:16px;" data-i18n="charInfoTitle">Информация о персонаже</h2>
-      </div>
-      <div id="characterContent" class="loader-box">
-        <div class="spinner"></div>
-        <span data-i18n="loadingChar">Загружаем информацию о персонаже...</span>
-      </div>
-    </section>
   </main>
 
   <script>
@@ -1669,7 +1753,6 @@
     }
     
     const KODIK_TOKEN = '447d179e875efe44217f20d1ee2146be';
-    // Актуальный адрес твоего бэкенда на Render
     const BACKEND_URL = 'https://api.komboko.fun';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
@@ -1749,7 +1832,9 @@
         stDropped: 'Брошено',
         stRemove: 'Убрать из списка',
         relTitle: 'Связанные части и франшиза',
-        charTitle: 'Главные герои',
+        charTitle: 'Главные герои и персонажи',
+        roleMain: 'Главный',
+        roleSub: 'Второстеп.',
         voicesLabel: 'Озвучка',
         episodesLabel: 'Серии',
         listsTitle: 'Списки Shikimori',
@@ -1833,6 +1918,8 @@
         stRemove: 'Remove from list',
         relTitle: 'Related & Franchise',
         charTitle: 'Main Characters',
+        roleMain: 'Main',
+        roleSub: 'Supporting',
         voicesLabel: 'Voices',
         episodesLabel: 'Episodes',
         listsTitle: 'Shikimori Lists',
@@ -1854,6 +1941,15 @@
 
     let currentLang = localStorage.getItem('komboko_lang') || 'ru';
     const descTranslationCache = {};
+
+    function cleanShikiText(raw) {
+      if (!raw) return '';
+      return String(raw)
+        .replace(/\[spoiler(?:=[^\]]*)?\]([\s\S]*?)\[\/spoiler\]/gi, '\n[Спойлер: $1]\n')
+        .replace(/\[[^\]]+\]/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    }
 
     async function translateTextToEn(text, cacheKey) {
       if (!text || text === 'Описание отсутствует.' || text === 'No description available.') {
@@ -1947,6 +2043,7 @@
     let state = {
       animes: [],
       itemsRegistry: {},
+      charactersCache: {},
       confirmedNsfwIds: new Set(),
       pendingNsfwItem: null,
       animeClickCounter: 0,
@@ -1989,7 +2086,6 @@
     window.addEventListener('DOMContentLoaded', async () => {
       setLanguage(currentLang);
 
-      // Инициализация кнопки пропуска опенинга
       const skipBtn = document.getElementById('skipOpBtn');
       const videoEl = document.getElementById('kombokoCustomVideo');
       if (skipBtn && videoEl) {
@@ -2078,6 +2174,8 @@
             await updateWatchDetailsLanguage();
             renderVoiceChips();
             renderEpisodesGrid();
+            loadAnimeRelations(state.currentAnimeFull.id);
+            loadAnimeCharacters(state.currentAnimeFull.id);
             switchPlayerSource(state.currentSource);
             return;
           }
@@ -2194,7 +2292,7 @@
             ...base,
             originalName: item.name || base.titleEn,
             chapters: item.chapters || '?',
-            description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
+            description: cleanShikiText(item.description) || 'Описание отсутствует.',
             isManga: true
           };
         });
@@ -2348,7 +2446,7 @@
           .then(r => r.json())
           .then(detail => {
             if (detail?.description) {
-              const cleanDesc = detail.description.replace(/\[.*?\]/g, '');
+              const cleanDesc = cleanShikiText(detail.description);
               item.description = cleanDesc;
               descEl.textContent = cleanDesc;
             } else {
@@ -3025,7 +3123,7 @@
         rating: item.score && Number(item.score) > 0 ? item.score : null,
         ageRating: item.rating || '',
         poster,
-        description: (item.description || 'Описание отсутствует.').replace(/\[.*?\]/g, ''),
+        description: cleanShikiText(item.description) || 'Описание отсутствует.',
         genres: rawGenres,
         genresRu,
         genresEn,
@@ -3591,30 +3689,44 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function renderCharactersGrid(mainChars) {
+    // === ПЕРСОНАЖИ: КАРТОЧКИ ПОД ОПИСАНИЕМ И МОДАЛЬНОЕ ОКНО ===
+    function renderCharactersGrid(charsList) {
       const section = document.getElementById('charactersSection');
       const grid = document.getElementById('charactersGrid');
       grid.innerHTML = '';
 
+      if (!charsList || charsList.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      const t = i18nData[currentLang];
       let html = '';
-      mainChars.forEach(char => {
+
+      charsList.forEach(entry => {
+        const char = entry.character || entry;
+        const role = entry.role || 'Main';
+        const roleText = role === 'Main' ? t.roleMain : t.roleSub;
+
         let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
         if (char.image) {
-          const r = char.image.preview || char.image.original;
+          const r = char.image.preview || char.image.original || char.image.x96;
           if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
         }
+
         const name = currentLang === 'en' ? (char.name || char.russian) : (char.russian || char.name);
+
         html += `
-          <div class="character-card" onclick="openCharacterDetails('${char.id}')">
-            <img class="character-avatar" src="${img}" loading="lazy" />
+          <div class="character-card animate-fade" onclick="openCharacterModal('${char.id}')">
+            <img class="character-avatar" src="${img}" alt="${name}" loading="lazy" />
             <div class="character-name" title="${name}">${name}</div>
+            <span class="character-role-badge">${roleText}</span>
           </div>
         `;
       });
-      if (html) {
-        grid.innerHTML = html;
-        section.style.display = 'block';
-      }
+
+      grid.innerHTML = html;
+      section.style.display = 'block';
     }
 
     async function loadAnimeCharacters(animeId) {
@@ -3625,48 +3737,68 @@
       try {
         const res = await fetch(`https://shikimori.io/api/animes/${animeId}/characters`);
         const data = await res.json();
-        if (Array.isArray(data)) {
-          const mainChars = data.filter(c => c.role === 'Main').map(c => c.character).filter(Boolean);
-          state.currentCharsData = mainChars;
-          renderCharactersGrid(mainChars);
+        if (Array.isArray(data) && data.length > 0) {
+          // Сортируем: сначала главные (Main), затем второстепенные, берем первые 18
+          const sorted = data.sort((a, b) => (a.role === 'Main' ? -1 : 1)).slice(0, 18);
+          state.currentCharsData = sorted;
+          renderCharactersGrid(sorted);
         }
       } catch (_) {}
     }
 
-    async function openCharacterDetails(charId) {
-      switchTab('character');
-      const container = document.getElementById('characterContent');
-      container.className = 'loader-box';
-      container.innerHTML = `<div class="spinner"></div>`;
+    function closeCharacterModal() {
+      document.getElementById('characterModal').style.display = 'none';
+    }
+
+    async function openCharacterModal(charId) {
+      const modal = document.getElementById('characterModal');
+      const body = document.getElementById('characterModalBody');
+      const t = i18nData[currentLang];
+
+      modal.style.display = 'flex';
+      body.innerHTML = `
+        <div class="loader-box" style="padding: 25px;">
+          <div class="spinner"></div>
+          <span>${t.loadingChar}</span>
+        </div>
+      `;
 
       try {
-        const res = await fetch(`https://shikimori.io/api/characters/${charId}`);
-        const char = await res.json();
-        if (char && char.id) {
-          let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
-          if (char.image) {
-            const r = char.image.original || char.image.preview;
-            if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
-          }
-          const name = currentLang === 'en' ? (char.name || char.russian) : (char.russian || char.name);
-          let desc = (char.description || i18nData[currentLang].noDesc).replace(/\[.*?\]/g, '');
-          if (currentLang === 'en' && char.description) {
-            desc = await translateTextToEn(desc, `char_${char.id}`);
-          }
-
-          container.className = '';
-          container.innerHTML = `
-            <div class="character-view-box animate-fade">
-              <img class="character-view-avatar" src="${img}" alt="${name}" />
-              <div class="character-view-info">
-                <div class="character-view-title">${name}</div>
-                <div class="character-view-desc">${desc}</div>
-              </div>
-            </div>
-          `;
+        let char = state.charactersCache[String(charId)];
+        if (!char) {
+          const res = await fetch(`https://shikimori.io/api/characters/${charId}`);
+          char = await res.json();
+          if (char && char.id) state.charactersCache[String(charId)] = char;
         }
-      } catch (_) {
-        container.innerHTML = `<p style="color: #F2B8B5;">Error</p>`;
+
+        if (!char || !char.id) throw new Error('Персонаж не найден');
+
+        let img = 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+        if (char.image) {
+          const r = char.image.original || char.image.preview;
+          if (r && !r.includes('missing')) img = r.startsWith('http') ? r : `https://shikimori.io${r}`;
+        }
+
+        const nameRu = char.russian || char.name || 'Без имени';
+        const nameEn = char.name || char.japanese || '';
+        let desc = cleanShikiText(char.description) || t.noDesc;
+
+        if (currentLang === 'en' && char.description) {
+          desc = await translateTextToEn(desc, `char_${char.id}`);
+        }
+
+        body.innerHTML = `
+          <div class="char-modal-top">
+            <img class="char-modal-poster" src="${img}" alt="${nameRu}" />
+            <div class="char-modal-titles">
+              <div class="char-modal-name-ru">${nameRu}</div>
+              <div class="char-modal-name-en">${nameEn}</div>
+            </div>
+          </div>
+          <div class="char-modal-desc-box">${desc}</div>
+        `;
+      } catch (e) {
+        body.innerHTML = `<p style="color: #F2B8B5; text-align: center; padding: 20px;">Не удалось загрузить данные о персонаже.</p>`;
       }
     }
 
@@ -3760,7 +3892,7 @@
       });
     }
 
-    // Воспроизведение через чистый HLS поток без рекламы Kodik
+    // Быстрое и устойчивое воспроизведение: HLS стрим с безопасным таймаутом
     async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
 
@@ -3780,21 +3912,18 @@
       localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
       updateShikimoriProgress(targetId, state.currentEpisodeNum);
 
-      // Останавливаем предыдущий поток
       if (currentHlsInstance) {
         currentHlsInstance.destroy();
         currentHlsInstance = null;
       }
       video.pause();
       video.removeAttribute('src');
-      video.load();
 
-      // Если выбран MegaPlay — крутим через iframe
+      // Режим MegaPlay
       if (state.currentSource === 'megaplay') {
         video.style.display = 'none';
         iframe.style.display = 'block';
         if (loader) loader.style.display = 'none';
-
         const lang = state.megaplayLang || 'sub';
         const streamUrl = `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${lang}`;
         openLink.href = streamUrl;
@@ -3803,13 +3932,12 @@
         return;
       }
 
-      // Извлечение чистого m3u8 потока Kodik через Render бэкенд
+      // Подготовка чистой ссылки Kodik
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
       if (!variant) return;
 
       let rawLink = variant.episodes[String(epNum)] || variant.default_link;
       let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-
       cleanUrl = cleanUrl.replace('kodik.info', 'kodikplayer.com').replace('cloud.kodik-storage.com', 'cloud.kodikplayer.com');
       if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
       else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
@@ -3817,48 +3945,81 @@
       openLink.href = cleanUrl;
       saveSessionState();
 
+      // Функция быстрого отката без зависания интерфейса
+      function fallbackToIframe() {
+        if (loader) loader.style.display = 'none';
+        video.style.display = 'none';
+        iframe.style.display = 'block';
+        if (iframe.src !== cleanUrl) iframe.src = cleanUrl;
+      }
+
       if (loader) loader.style.display = 'flex';
 
+      // Быстрый таймаут в 3.2 секунды на случай если Render спит или заблокирован РКН
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3200);
+
       try {
-        const streamResp = await fetch(`${BACKEND_URL}/api/get-stream?link=${encodeURIComponent(cleanUrl)}`);
+        const streamResp = await fetch(`${BACKEND_URL}/api/get-stream?link=${encodeURIComponent(cleanUrl)}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
         const streamData = await streamResp.json();
 
         if (streamData && streamData.success && streamData.stream) {
           const directM3u8Url = streamData.stream;
 
-          iframe.style.display = 'none';
-          iframe.src = 'about:blank';
-          video.style.display = 'block';
-          if (loader) loader.style.display = 'none';
-
           if (Hls.isSupported()) {
-            currentHlsInstance = new Hls({
+            const hls = new Hls({
               enableWorker: true,
-              lowLatencyMode: true
+              lowLatencyMode: true,
+              xhrSetup: function(xhr) {
+                xhr.withCredentials = false;
+              }
             });
-            currentHlsInstance.loadSource(directM3u8Url);
-            currentHlsInstance.attachMedia(video);
-            currentHlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+
+            hls.loadSource(directM3u8Url);
+            hls.attachMedia(video);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              if (loader) loader.style.display = 'none';
+              iframe.style.display = 'none';
+              iframe.src = 'about:blank';
+              video.style.display = 'block';
               video.play().catch(() => {});
             });
+
+            hls.on(Hls.Events.ERROR, (event, data) => {
+              if (data.fatal) {
+                hls.destroy();
+                fallbackToIframe();
+              }
+            });
+
+            currentHlsInstance = hls;
+            return;
           } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            // Нативный запуск для Safari на iOS
+            // Для Safari на iOS
             video.src = directM3u8Url;
             video.addEventListener('loadedmetadata', () => {
+              if (loader) loader.style.display = 'none';
+              iframe.style.display = 'none';
+              iframe.src = 'about:blank';
+              video.style.display = 'block';
               video.play().catch(() => {});
             }, { once: true });
+
+            video.addEventListener('error', () => {
+              fallbackToIframe();
+            }, { once: true });
+            return;
           }
-          return;
         }
       } catch (err) {
-        console.warn('Не удалось загрузить чистый поток, откат на iframe:', err);
+        clearTimeout(timeoutId);
       }
 
-      // Запасной откат на обычный iframe, если стрим не расшифровался
-      if (loader) loader.style.display = 'none';
-      video.style.display = 'none';
-      iframe.style.display = 'block';
-      iframe.src = cleanUrl;
+      fallbackToIframe();
     }
     
     function stepEpisode(delta) {
@@ -3897,14 +4058,12 @@
 
       const catalogView = document.getElementById('view-catalog');
       const watchView = document.getElementById('view-watch');
-      const characterView = document.getElementById('view-character');
       const listsView = document.getElementById('view-lists');
       const historyView = document.getElementById('view-history');
       const mangaReaderView = document.getElementById('view-manga-reader');
 
       catalogView.style.display = 'none';
       watchView.style.display = 'none';
-      characterView.style.display = 'none';
       listsView.style.display = 'none';
       historyView.style.display = 'none';
       mangaReaderView.style.display = 'none';
@@ -3916,7 +4075,6 @@
 
       if (tab === 'watch') watchView.style.display = 'block';
       else if (tab === 'manga-reader') mangaReaderView.style.display = 'block';
-      else if (tab === 'character') characterView.style.display = 'block';
       else if (tab === 'lists') { 
         state.lastCatalogMode = 'lists'; 
         listsView.style.display = 'block'; 

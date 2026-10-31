@@ -4970,7 +4970,7 @@ backBtn: 'Back',
       });
     }
 
-    async function loadCurrentEpisodeVideo() {
+async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
       ensureVariantsInitialized();
 
@@ -4992,6 +4992,7 @@ backBtn: 'Back',
       const exoBadge = document.getElementById('exoEpBadge');
       const qSelect = document.getElementById('exoQualitySelect');
       const skipOpBtn = document.getElementById('skipOpBtn');
+      const cdnhubWrap = document.getElementById('cdnhubPlayerWrap');
 
       document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
       if (exoBadge) {
@@ -5012,17 +5013,29 @@ backBtn: 'Back',
         video.removeAttribute('src');
       }
 
-// Если выбран Aniboom, CVH или Animedia — запрашиваем ссылку через наш Python API
-      if (['aniboom', 'cvh', 'animedia'].includes(state.currentSource)) {
-        try {
-          // Формируем примерную embed-ссылку на основе Shikimori ID (согласно докам anime-dl-core)
-          let embedUrl = '';
-// === ИСТОЧНИК ANIBOOM ===
-      if (state.currentSource === 'aniboom') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
+      // Скрываем всё по умолчанию
+      if (exoWrap) exoWrap.style.display = 'none';
+      if (iframe) iframe.style.display = 'none';
+      if (cdnhubWrap) cdnhubWrap.style.display = 'none';
+      if (loader) loader.style.display = 'none';
 
+      // === ИСТОЧНИК CDNHUB (CDN Video Hub Web Component) ===
+      if (state.currentSource === 'cdnhub') {
+        if (cdnhubWrap) cdnhubWrap.style.display = 'block';
+        const playerElem = document.getElementById('cdnVideoPlayerElem');
+        if (playerElem) {
+          playerElem.setAttribute('data-title-id', String(targetId));
+          playerElem.setAttribute('season', '1');
+          playerElem.setAttribute('episode', String(epNum));
+        }
+        openLink.href = `https://player.cdnvideohub.com/s2/v2.40.0/frame?id=${targetId}`;
+        saveSessionState();
+        return;
+      }
+
+      // === ИСТОЧНИК ANIBOOM ===
+      if (state.currentSource === 'aniboom') {
+        if (iframe) iframe.style.display = 'block';
         const aniboomUrl = `https://aniboom.one/embed/${targetId}?episode=${epNum}`;
         openLink.href = aniboomUrl;
         iframe.src = aniboomUrl;
@@ -5030,145 +5043,66 @@ backBtn: 'Back',
         return;
       }
 
-      // === ИСТОЧНИК CDNHUB (CDN Video Hub Web Component) ===
-      if (state.currentSource === 'cdnhub') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        if (iframe) iframe.style.display = 'none';
-        
-        const cdnhubWrap = document.getElementById('cdnhubPlayerWrap');
-        if (cdnhubWrap) cdnhubWrap.style.display = 'block';
-
-        const playerElem = document.getElementById('cdnVideoPlayerElem');
-        if (playerElem) {
-          playerElem.setAttribute('data-title-id', String(targetId));
-          playerElem.setAttribute('season', '1');
-          playerElem.setAttribute('episode', String(epNum));
-        }
-        
-        openLink.href = `https://player.cdnvideohub.com/s2/v2.40.0/frame?id=${targetId}`;
-        saveSessionState();
-        return;
-      }
-      
-      function applyStreamToExoPlayer(streamData) {
-        if (myLoadToken !== activeVideoLoadToken) return;
-        state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
-        const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
-        if (firstUrl && firstUrl.includes('mp4:hls:manifest')) {
-          const baseFolder = firstUrl.substring(0, firstUrl.lastIndexOf('/') + 1);
-          ['360', '480', '720'].forEach(q => {
-            if (!state.currentQualities[`${q}p`]) {
-              state.currentQualities[`${q}p`] = `${baseFolder}${q}.mp4:hls:manifest.m3u8`;
-            }
-          });
-        }
-
-        if (skipOpBtn) {
-          if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
-            const [, opEnd] = streamData.skip_segments[0];
-            skipOpBtn.onclick = () => {
-              if (video) video.currentTime = opEnd;
-              showExoOverlayTemporarily();
-            };
-            skipOpBtn.textContent = 'Пропустить опенинг ⏩';
-          } else {
-            skipOpBtn.onclick = () => seekExoBy(85);
-            skipOpBtn.textContent = 'Пропустить опенинг +85с ⏩';
-          }
-        }
-
-        const bestUrl = state.currentQualities['1080p'] || state.currentQualities['720p'] || streamData.stream;
-
-        if (qSelect && Object.keys(state.currentQualities).length > 0) {
-          qSelect.innerHTML = Object.keys(state.currentQualities)
-            .sort((a, b) => parseInt(b) - parseInt(a))
-            .map(q => `<option value="${q}" ${state.currentQualities[q] === bestUrl ? 'selected' : ''}>${q}</option>`)
-            .join('');
-        }
-
-        playStreamWithFallbacks(bestUrl, 0, () => {
-          showStreamUnavailableNotice('Ошибка воспроизведения HLS потока');
-        });
-      }
-
-      function showStreamUnavailableNotice(reason = 'Прямой поток недоступен для выбранной озвучки') {
-        if (myLoadToken !== activeVideoLoadToken || !loader || !loaderText) return;
-        if (loaderSpinner) loaderSpinner.style.display = 'none';
-        loader.style.display = 'flex';
-        loaderText.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <span>${reason}</span>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-              ${state.currentSource !== 'anilibria' ? `
-                <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('anilibria')">
-                  Попробовать АниЛибрию 1080p
-                </button>
-              ` : ''}
-              <button class="md-btn md-btn-tonal" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
-                Включить плеер Kodik
-              </button>
-            </div>
-          </div>
-        `;
-      }
-
-      // === 1. ИСТОЧНИК MEGAPLAY (4 СЕРВЕРА SUB/DUB ЧЕРЕЗ ANILIST GRAPHQL) ===
+      // === ИСТОЧНИК MEGAPLAY ===
       if (state.currentSource === 'megaplay') {
-        if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'flex';
         if (loaderSpinner) loaderSpinner.style.display = 'block';
         if (loaderText) loaderText.textContent = 'Подключаем международный Sub/Dub сервер...';
-        iframe.style.display = 'block';
+        if (iframe) iframe.style.display = 'block';
 
         const lang = state.megaplayLang || 'sub';
         const mirror = state.megaplayMirror || 1;
         const mirrorBtn = document.getElementById('btnMegaMirror');
         if (mirrorBtn) mirrorBtn.textContent = `Сервер ${mirror}`;
 
-        const streamUrl = await buildMegaPlayUrlAsync(state.currentAnimeFull, epNum, lang, mirror);
-        if (myLoadToken !== activeVideoLoadToken) return;
-
-        if (loader) loader.style.display = 'none';
-        openLink.href = streamUrl;
-        iframe.src = streamUrl;
+        try {
+          const streamUrl = await buildMegaPlayUrlAsync(state.currentAnimeFull, epNum, lang, mirror);
+          if (myLoadToken !== activeVideoLoadToken) return;
+          if (loader) loader.style.display = 'none';
+          openLink.href = streamUrl;
+          iframe.src = streamUrl;
+        } catch(e) {
+          if (loaderText) loaderText.textContent = 'Ошибка загрузки MegaPlay';
+        }
         saveSessionState();
         return;
       }
 
-      // === 2. ОТДЕЛЬНЫЙ ПЛЕЕР АНИЛИБРИЯ (КАСТОМНЫЙ СКИН EXOPLAYER 1080P) ===
+      // === ИСТОЧНИК АНИЛИБРИЯ ===
       if (state.currentSource === 'anilibria') {
-        iframe.style.display = 'none';
-        iframe.src = 'about:blank';
         if (exoWrap) exoWrap.style.display = 'flex';
         if (loader) loader.style.display = 'flex';
         if (loaderSpinner) loaderSpinner.style.display = 'block';
         if (loaderText) loaderText.textContent = 'Загружаем прямой поток 1080p с сервера АниЛибрии...';
 
-        const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
-        if (myLoadToken !== activeVideoLoadToken) return;
+        try {
+          const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
+          if (myLoadToken !== activeVideoLoadToken) return;
 
-        if (!release || !release.episodes) {
-          showStreamUnavailableNotice('Данного тайтла нет в базе озвучки АниЛибрии');
-          return;
+          if (!release || !release.episodes) {
+            showStreamUnavailableNotice('Данного тайтла нет в базе озвучки АниЛибрии');
+            return;
+          }
+
+          const availableEpNums = Object.keys(release.episodes).sort((a, b) => Number(a) - Number(b));
+          renderEpisodesGrid(availableEpNums);
+
+          const epData = release.episodes[String(epNum)] || release.episodes[availableEpNums[0]];
+          if (!epData || !epData.stream) {
+            showStreamUnavailableNotice(`Серия ${epNum} еще не вышла в озвучке АниЛибрии`);
+            return;
+          }
+
+          openLink.href = epData.stream;
+          saveSessionState();
+          applyStreamToExoPlayer(epData);
+        } catch(e) {
+          showStreamUnavailableNotice('Ошибка загрузки АниЛибрии');
         }
-
-        const availableEpNums = Object.keys(release.episodes).sort((a, b) => Number(a) - Number(b));
-        renderEpisodesGrid(availableEpNums);
-
-        const epData = release.episodes[String(epNum)] || release.episodes[availableEpNums[0]];
-        if (!epData || !epData.stream) {
-          showStreamUnavailableNotice(`Серия ${epNum} еще не вышла в озвучке АниЛибрии`);
-          return;
-        }
-
-        openLink.href = epData.stream;
-        saveSessionState();
-        applyStreamToExoPlayer(epData);
         return;
       }
 
-      // Подготовка ссылки выбранной озвучки Kodik
+      // Подготовка ссылки Кодика
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
       if (!variant) return;
 
@@ -5185,18 +5119,14 @@ backBtn: 'Back',
       openLink.href = cleanUrl;
       saveSessionState();
 
-      // === 3. ОБЫЧНЫЙ ПЛЕЕР KODIK (IFRAME) ===
+      // === КОДИК IFRAME ===
       if (state.currentSource === 'kodik') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
+        if (iframe) iframe.style.display = 'block';
         iframe.src = cleanUrl;
         return;
       }
 
-      // === 4. КАСТОМНЫЙ ПЛЕЕР KOMBOKO (ПРЯМОЙ ПОТОК ВЫБРАННОЙ ОЗВУЧКИ KODIK) ===
-      iframe.style.display = 'none';
-      iframe.src = 'about:blank';
+      // === КАСТОМНЫЙ ПЛЕЕР KOMBOKO (EXO) ===
       if (exoWrap) exoWrap.style.display = 'flex';
       if (loader) loader.style.display = 'flex';
       if (loaderSpinner) loaderSpinner.style.display = 'block';
@@ -5216,18 +5146,6 @@ backBtn: 'Back',
         }
       } catch (err) {
         console.warn('Воркер Kodik не отдал поток:', err);
-      }
-
-      // Если в списке озвучек выбрана АниЛибрия и воркер не ответил — подхватываем точный релиз из АниЛибрии
-      const vTitleLow = String(variant.translation?.title || '').toLowerCase();
-      if (vTitleLow.includes('anilibria') || vTitleLow.includes('анилибрия') || variant.translation_id === 0) {
-        const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
-        if (myLoadToken !== activeVideoLoadToken) return;
-        const epData = release?.episodes?.[String(epNum)];
-        if (epData && epData.stream) {
-          applyStreamToExoPlayer(epData);
-          return;
-        }
       }
 
       showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP воркера');

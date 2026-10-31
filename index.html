@@ -23,6 +23,10 @@
   <!-- HLS.js для воспроизведения потоков -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
+  <!-- Стили темы VeoVeo / Vidstack для плеера -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vidstack/react@latest/dist/player/styles/default/theme.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vidstack/react@latest/dist/player/styles/default/layouts/video.css" />
+
   <style>
     :root {
       --glass-bg: rgba(18, 15, 28, 0.65);
@@ -1847,59 +1851,57 @@
           <div class="player-card">
             <div class="video-stage" id="videoStageContainer">
               <!-- 1. КАСТОМНЫЙ ПЛЕЕР KOMBOKO & АНИЛИБРИЯ (В СТИЛЕ EXOPLAYER) -->
-              <div id="exoPlayerWrap" class="exo-player-wrap">
-                <video id="kombokoCustomVideo" class="exo-video" playsinline></video>
+<div id="exoPlayerWrap" class="exo-player-wrap" style="position: absolute; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; z-index: 4;">
+  <!-- Основной элемент видео с поддержкой мобильных устройств -->
+  <video id="kombokoCustomVideo" class="exo-video" playsinline crossorigin style="width: 100%; height: 100%; object-fit: contain; background: #000;"></video>
 
-                <!-- Плашка 2x ускорения при удержании -->
-                <div id="exoSpeedBadge" class="exo-speed-badge">2x Ускорение ⏩</div>
+  <!-- Кастомный стильный оверлей в стиле VeoVeo -->
+  <div id="exoOverlay" class="exo-overlay" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 6, 15, 0.8) 0%, transparent 30%, transparent 70%, rgba(8, 6, 15, 0.9) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 16px; transition: opacity 0.3s ease; z-index: 6;">
+    
+    <!-- Верхняя панель: Название / Серия и выбор качества -->
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <span id="exoEpBadge" style="font-size: 13px; font-weight: 700; color: #D0BCFF; background: rgba(32, 26, 48, 0.85); border: 1px solid rgba(208, 188, 255, 0.3); padding: 6px 14px; border-radius: 999px; backdrop-filter: blur(10px);">Серия 1</span>
+      
+      <select id="exoQualitySelect" class="exo-quality-select" onchange="changeExoQuality(this.value)" style="background: rgba(32, 26, 48, 0.85); border: 1px solid rgba(208, 188, 255, 0.3); color: #fff; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; outline: none; cursor: pointer;">
+        <option value="1080p">1080p FHD</option>
+        <option value="720p" selected>720p HD</option>
+        <option value="480p">480p</option>
+      </select>
+    </div>
 
-                <!-- Индикаторы двойного тапа ±10 сек -->
-                <div id="exoSeekLeft" class="exo-seek-feedback left">« -10 сек</div>
-                <div id="exoSeekRight" class="exo-seek-feedback right">+10 сек »</div>
+    <!-- Центральные кнопки (Play / Pause / Перемотка) -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 32px; margin: auto 0;">
+      <button onclick="seekExoBy(-10)" style="width: 48px; height: 48px; border-radius: 50%; background: rgba(32, 26, 48, 0.7); border: 1px solid rgba(208, 188, 255, 0.3); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px);">
+        <span class="material-symbols-rounded">replay_10</span>
+      </button>
+      <button onclick="toggleExoPlay()" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #D0BCFF 0%, #9A75F0 100%); color: #381E72; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 25px rgba(208, 188, 255, 0.4);">
+        <span class="material-symbols-rounded" id="exoPlayIcon" style="font-size: 32px;">play_arrow</span>
+      </button>
+      <button onclick="seekExoBy(10)" style="width: 48px; height: 48px; border-radius: 50%; background: rgba(32, 26, 48, 0.7); border: 1px solid rgba(208, 188, 255, 0.3); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px);">
+        <span class="material-symbols-rounded">forward_10</span>
+      </button>
+    </div>
 
-                <!-- Фирменный оверлей управления ExoPlayer -->
-                <div id="exoOverlay" class="exo-overlay">
-                  <div class="exo-top-bar">
-                    <span id="exoEpBadge" class="exo-ep-badge">Komboko Player • Серия 1</span>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                      <select id="exoQualitySelect" class="exo-quality-select" onchange="changeExoQuality(this.value)" onclick="event.stopPropagation()">
-                        <option value="1080p">1080p FHD</option>
-                        <option value="720p" selected>720p HD</option>
-                        <option value="480p">480p</option>
-                        <option value="360p">360p</option>
-                      </select>
-                    </div>
-                  </div>
+    <!-- Нижняя панель: Таймлайн, Время и Полный экран -->
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+      <input type="range" id="exoTimeline" min="0" max="100" value="0" step="0.1" style="width: 100%; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); appearance: none; cursor: pointer;" />
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <span id="exoTimeLabel" style="font-size: 12px; font-weight: 700; color: #fff;">00:00 / 00:00</span>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="skipOpBtn" onclick="seekExoBy(85)" style="background: rgba(79, 55, 139, 0.9); color: #fff; border: 1px solid #D0BCFF; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer;">
+            Пропустить опенинг ⏩
+          </button>
+          <button onclick="toggleExoFullscreen()" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-symbols-rounded" style="font-size: 20px;">fullscreen</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
-                  <div class="exo-center-controls" onclick="event.stopPropagation()">
-                    <button class="exo-ctrl-btn" onclick="seekExoBy(-10)" title="-10 сек">
-                      <span class="material-symbols-rounded">replay_10</span>
-                    </button>
-                    <button class="exo-ctrl-btn exo-play-btn" id="exoPlayBtn" onclick="toggleExoPlay()">
-                      <span class="material-symbols-rounded" id="exoPlayIcon">play_arrow</span>
-                    </button>
-                    <button class="exo-ctrl-btn" onclick="seekExoBy(10)" title="+10 сек">
-                      <span class="material-symbols-rounded">forward_10</span>
-                    </button>
-                  </div>
-
-                  <div class="exo-bottom-bar" onclick="event.stopPropagation()">
-                    <div class="exo-timeline-row">
-                      <input type="range" id="exoTimeline" class="exo-range" min="0" max="100" value="0" step="0.1" />
-                    </div>
-                    <div class="exo-controls-row">
-                      <span id="exoTimeLabel" class="exo-time-text">00:00 / 24:00</span>
-                      <div class="exo-right-actions">
-                        <button id="skipOpBtn" class="exo-skip-op" onclick="seekExoBy(85)">Пропустить опенинг +85с ⏩</button>
-                        <button class="exo-icon-btn" onclick="toggleExoFullscreen()" title="На весь экран">
-                          <span class="material-symbols-rounded" style="font-size:20px;">fullscreen</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+  </div>
+</div>
               <!-- 2. Iframe плеер (для Кодик Обычный и MegaPlay) -->
               <iframe 
                 id="kodikIframe" 

@@ -1831,6 +1831,8 @@
               <span class="material-symbols-rounded" style="font-size:16px;">hd</span> АниЛибрия
             </button>
             <button id="btnSource-kodik" class="md-btn md-btn-tonal" onclick="switchPlayerSource('kodik')" data-i18n="kodikSourceBtn">Кодик (Обычный)</button>
+            <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">Aniboom</button>
+            <button id="btnSource-cvh" class="md-btn md-btn-tonal" onclick="switchPlayerSource('cvh')">Collaps (CVH)</button>
             <button id="btnSource-megaplay" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay')">MegaPlay (Sub/Dub)</button>
 
             <div class="megaplay-lang-switch" id="megaplayLangSwitch">
@@ -2077,7 +2079,7 @@
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
     // 4 полноценных источника: Komboko (exo), АниЛибрия (anilibria), Кодик (kodik), MegaPlay (megaplay)
-    const PLAYER_SOURCES = ['exo', 'anilibria', 'kodik', 'megaplay'];
+    const PLAYER_SOURCES = ['exo', 'anilibria', 'kodik', 'aniboom', 'CVH', 'megaplay'];
     const ADULT_GENRE_IDS = new Set([12, 539, 49]);
     const ADULT_KEYWORDS = [
       'хентай', 'hentai', 'эротик', 'erotica',
@@ -4075,6 +4077,7 @@ backBtn: 'Back',
 
       const voiceSection = document.getElementById('voiceSection');
       if (voiceSection) {
+        // Сайдбар озвучек показываем только для родных плееров (Komboko, Anilibria, Кодик)
         voiceSection.style.display = (source === 'exo' || source === 'kodik' || source === 'anilibria') ? 'block' : 'none';
       }
 
@@ -4994,6 +4997,32 @@ backBtn: 'Back',
       if (video) {
         video.pause();
         video.removeAttribute('src');
+      }
+
+      // === ИСТОЧНИК ANIBOOM ===
+      if (state.currentSource === 'aniboom') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+        iframe.style.display = 'block';
+
+        const aniboomUrl = `https://aniboom.one/embed/${targetId}?episode=${epNum}&translation=0`;
+        openLink.href = aniboomUrl;
+        iframe.src = aniboomUrl;
+        saveSessionState();
+        return;
+      }
+
+      // === ИСТОЧНИК COLLAPS (CVH) ===
+      if (state.currentSource === 'cvh') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+        iframe.style.display = 'block';
+
+        const collapsUrl = `https://collider.ws/embed/shikimori/${targetId}?episode=${epNum}`;
+        openLink.href = collapsUrl;
+        iframe.src = collapsUrl;
+        saveSessionState();
+        return;
       }
 
       function applyStreamToExoPlayer(streamData) {

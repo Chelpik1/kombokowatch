@@ -1750,6 +1750,7 @@
           <option value="aired_on" data-i18n="orderNew">По новизне</option>
         </select>
       </div>
+      <script src="https://player.cdnvideohub.com/s2/stable/video-player.umd.js"></script>
     </header>
 
     <!-- Каталог -->
@@ -1832,7 +1833,8 @@
             </button>
             <button id="btnSource-kodik" class="md-btn md-btn-tonal" onclick="switchPlayerSource('kodik')" data-i18n="kodikSourceBtn">Кодик (Обычный)</button>
             <button id="btnSource-aniboom" class="md-btn md-btn-tonal" onclick="switchPlayerSource('aniboom')">Aniboom</button>
-            <button id="btnSource-cvh" class="md-btn md-btn-tonal" onclick="switchPlayerSource('cvh')">Collaps (CVH)</button>
+            <button id="btnSource-cdnhub" class="md-btn md-btn-tonal" onclick="switchPlayerSource('cdnhub')">
+            <span class="material-symbols-rounded" style="font-size:16px;">play_circle</span> CDN Hub
             <button id="btnSource-megaplay" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay')">MegaPlay (Sub/Dub)</button>
 
             <div class="megaplay-lang-switch" id="megaplayLangSwitch">
@@ -1906,6 +1908,16 @@
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                 style="width: 100%; height: 100%; border: none; display: none; position: relative; z-index: 2;">
               </iframe>
+
+              <!-- 3. Официальный веб-компонент CDN Video Hub -->
+              <div id="cdnhubPlayerWrap" style="position: absolute; inset: 0; width: 100%; height: 100%; display: none; z-index: 3; background: #000;">
+                <video-player 
+                  id="cdnVideoPlayerElem"
+                  ident="player_1"
+                  data-publisher-id="1"
+                  style="width: 100%; height: 100%;">
+                </video-player>
+              </div>
 
               <!-- Лоадер потока -->
               <div id="videoStreamLoader" style="display: none; position: absolute; inset: 0; background: rgba(8, 6, 15, 0.86); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
@@ -2079,7 +2091,7 @@
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
     // 4 полноценных источника: Komboko (exo), АниЛибрия (anilibria), Кодик (kodik), MegaPlay (megaplay)
-    const PLAYER_SOURCES = ['exo', 'anilibria', 'kodik', 'aniboom', 'CVH', 'megaplay'];
+    const PLAYER_SOURCES = ['exo', 'anilibria', 'kodik', 'aniboom', 'cdnhub', 'megaplay'];
     const ADULT_GENRE_IDS = new Set([12, 539, 49]);
     const ADULT_KEYWORDS = [
       'хентай', 'hentai', 'эротик', 'erotica',
@@ -5013,15 +5025,16 @@ backBtn: 'Back',
       }
 
       // === ИСТОЧНИК COLLAPS / CVH (Прямой iframe) ===
-      if (state.currentSource === 'cvh') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
+      if (state.currentSource === 'cdnhub') {
+        if (cdnhubWrap) cdnhubWrap.style.display = 'block';
 
-        // Актуальный рабочий iframe-адрес Collaps по Shikimori ID
-        const collapsUrl = `https://apicollaps.cc/embed/shikimori/${targetId}?episode=${epNum}`;
-        openLink.href = collapsUrl;
-        iframe.src = collapsUrl;
+        const playerElem = document.getElementById('cdnVideoPlayerElem');
+        if (playerElem) {
+          playerElem.setAttribute('data-title-id', String(targetId));
+          playerElem.setAttribute('data-publisher-id', '1');
+        }
+        
+        openLink.href = `https://player.cdnvideohub.com/s2/v2.40.0/frame?id=${targetId}`;
         saveSessionState();
         return;
       }

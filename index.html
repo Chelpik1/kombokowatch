@@ -20,7 +20,7 @@
   <!-- Material Symbols Font -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
 
-  <!-- HLS.js для воспроизведения чистых m3u8 потоков Kodik без рекламы -->
+  <!-- HLS.js для воспроизведения потоков -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
@@ -615,7 +615,7 @@
     }
     .player-source-bar .md-btn {
       height: 38px;
-      padding: 0 16px;
+      padding: 0 15px;
       font-size: 12px;
       border-radius: var(--radius-sm);
     }
@@ -628,7 +628,7 @@
 
     .megaplay-lang-switch {
       display: none;
-      gap: 6px;
+      gap: 5px;
       margin-left: auto;
       background: rgba(255, 255, 255, 0.04);
       padding: 3px;
@@ -819,7 +819,7 @@
       color: var(--color-primary);
     }
 
-    /* Глобальный портальный выпадающий список (никогда не перекрывается соседними кнопками и iframe) */
+    /* Портальный выпадающий список поверх всех кнопок и плеера */
     .status-dropdown {
       position: fixed;
       width: 185px;
@@ -851,21 +851,60 @@
       justify-content: space-between;
       transition: background 0.15s, color 0.15s;
     }
-    .status-option:last-child {
-      border-bottom: none;
-    }
+    .status-option:last-child { border-bottom: none; }
     .status-option:hover, .status-option.active-status {
       background: rgba(208, 188, 255, 0.22);
       color: var(--color-primary);
     }
 
+    /* === АДАПТИВНАЯ СЕТКА ПЛЕЕРА И САЙДБАРА ===
+       На ПК, планшетах и в горизонтальном режиме на телефоне — сайдбар сбоку от плеера.
+       На телефоне в вертикальном режиме — сайдбар сразу ПОД плеером (над описанием). */
     .watch-layout {
       display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 24px;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      grid-template-areas:
+        "player sidebar"
+        "details sidebar";
+      gap: 22px;
       align-items: start;
       width: 100%;
       max-width: 100%;
+    }
+    .watch-player-area {
+      grid-area: player;
+      min-width: 0;
+      width: 100%;
+    }
+    .sidebar-panel {
+      grid-area: sidebar;
+      background: var(--glass-surface);
+      backdrop-filter: blur(25px);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      z-index: 40;
+      gap: 18px;
+      width: 100%;
+      min-width: 0;
+    }
+    .anime-details-box {
+      grid-area: details;
+      background: var(--glass-surface);
+      backdrop-filter: blur(25px);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .player-card {
@@ -889,7 +928,7 @@
       -webkit-user-select: none;
     }
 
-    /* === КАСТОМНЫЙ ПЛЕЕР KOMBOKO (В СТИЛЕ EXOPLAYER) === */
+    /* === КАСТОМНЫЙ ПЛЕЕР KOMBOKO & ANILIBRIA (В СТИЛЕ EXOPLAYER) === */
     .exo-player-wrap {
       position: absolute;
       inset: 0;
@@ -1107,20 +1146,6 @@
       width: 100%;
     }
 
-    .sidebar-panel {
-      background: var(--glass-surface);
-      backdrop-filter: blur(25px);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 16px 50px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      z-index: 40;
-      gap: 18px;
-      width: 100%;
-    }
-
     .voice-list { display: flex; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto; }
     .voice-chip {
       padding: 8px 14px;
@@ -1150,20 +1175,6 @@
     .ep-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }
     .ep-btn:active { background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; }
 
-    .anime-details-box {
-      margin-top: 20px;
-      background: var(--glass-surface);
-      backdrop-filter: blur(25px);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 16px 50px rgba(0,0,0,0.4);
-      width: 100%;
-      max-width: 100%;
-    }
     .details-top { display: flex; gap: 20px; align-items: start; width: 100%; }
     
     .details-poster-wrap {
@@ -1223,7 +1234,6 @@
     .relation-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .relation-type { font-size: 9px; color: var(--color-variant); }
 
-    /* Карточки персонажей под описанием */
     .characters-section { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; width: 100%; }
     .characters-grid {
       display: grid;
@@ -1282,7 +1292,6 @@
       margin-top: auto;
     }
 
-    /* Красивая всплывающая модалка информации о персонаже */
     .char-modal-card {
       max-width: 520px;
       padding: 22px;
@@ -1468,6 +1477,24 @@
       border-radius: 0 !important;
     }
 
+    /* Горизонтальный режим на мобильных устройствах: сайдбар остается сбоку от плеера */
+    @media (max-width: 920px) and (orientation: landscape) {
+      .watch-layout {
+        grid-template-columns: minmax(0, 1fr) 290px;
+        grid-template-areas:
+          "player sidebar"
+          "details sidebar";
+        gap: 14px;
+      }
+      .sidebar-panel {
+        padding: 14px;
+      }
+      .episodes-grid {
+        max-height: 210px;
+      }
+    }
+
+    /* Мобильная адаптация (Навигация внизу) */
     @media (max-width: 768px) {
       .nav-rail {
         top: auto !important;
@@ -1504,9 +1531,6 @@
         .app-main { padding-top: max(67px, calc(20px + env(safe-area-inset-top))) !important; }
       }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }
-      .watch-layout { grid-template-columns: 100%; width: 100%; max-width: 100%; overflow: hidden; }
-      .watch-layout > div { min-width: 0; width: 100%; max-width: 100%; }
-      .player-card, .anime-details-box, .sidebar-panel { width: 100%; max-width: 100%; min-width: 0; }
       .details-top { flex-direction: column; align-items: center; text-align: center; width: 100%; }
       .details-poster-wrap { width: 120px !important; height: 170px !important; margin: 0 auto; }
       .shiki-status-container { justify-content: center; width: 100%; }
@@ -1514,6 +1538,18 @@
       .exo-center-controls { gap: 18px; }
       .exo-play-btn { width: 54px; height: 54px; }
       .exo-ctrl-btn { width: 40px; height: 40px; }
+    }
+
+    /* Вертикальный (портретный) режим на телефоне: сайдбар поднимается СРАЗУ ПОД ПЛЕЕР */
+    @media (max-width: 768px) and (orientation: portrait) {
+      .watch-layout {
+        grid-template-columns: 100%;
+        grid-template-areas:
+          "player"
+          "sidebar"
+          "details";
+        gap: 16px;
+      }
     }
 
     @media (min-width: 769px) {
@@ -1785,10 +1821,14 @@
       </div>
 
       <div class="watch-layout">
-        <div>
+        <!-- ОБЛАСТЬ 1: ПЛЕЕР И КНОПКИ ИСТОЧНИКОВ -->
+        <div class="watch-player-area">
           <div class="player-source-bar">
             <button id="btnSource-exo" class="md-btn md-btn-tonal active" onclick="switchPlayerSource('exo')">
               <span class="material-symbols-rounded" style="font-size:16px;">smart_display</span> Komboko Плеер
+            </button>
+            <button id="btnSource-anilibria" class="md-btn md-btn-tonal" onclick="switchPlayerSource('anilibria')">
+              <span class="material-symbols-rounded" style="font-size:16px;">hd</span> АниЛибрия
             </button>
             <button id="btnSource-kodik" class="md-btn md-btn-tonal" onclick="switchPlayerSource('kodik')" data-i18n="kodikSourceBtn">Кодик (Обычный)</button>
             <button id="btnSource-megaplay" class="md-btn md-btn-tonal" onclick="switchPlayerSource('megaplay')">MegaPlay (Sub/Dub)</button>
@@ -1802,7 +1842,7 @@
 
           <div class="player-card">
             <div class="video-stage" id="videoStageContainer">
-              <!-- 1. КАСТОМНЫЙ ПЛЕЕР KOMBOKO В СТИЛЕ EXOPLAYER -->
+              <!-- 1. КАСТОМНЫЙ ПЛЕЕР KOMBOKO & АНИЛИБРИЯ (В СТИЛЕ EXOPLAYER) -->
               <div id="exoPlayerWrap" class="exo-player-wrap">
                 <video id="kombokoCustomVideo" class="exo-video" playsinline></video>
 
@@ -1819,7 +1859,8 @@
                     <span id="exoEpBadge" class="exo-ep-badge">Komboko Player • Серия 1</span>
                     <div style="display:flex; gap:8px; align-items:center;">
                       <select id="exoQualitySelect" class="exo-quality-select" onchange="changeExoQuality(this.value)" onclick="event.stopPropagation()">
-                        <option value="720p">720p HD</option>
+                        <option value="1080p">1080p FHD</option>
+                        <option value="720p" selected>720p HD</option>
                         <option value="480p">480p</option>
                         <option value="360p">360p</option>
                       </select>
@@ -1855,7 +1896,7 @@
                 </div>
               </div>
 
-              <!-- 2. Резервный iframe (для обычного Кодика или MegaPlay) -->
+              <!-- 2. Iframe плеер (для Кодик Обычный и MegaPlay) -->
               <iframe 
                 id="kodikIframe" 
                 referrerpolicy="origin"
@@ -1864,7 +1905,7 @@
                 style="width: 100%; height: 100%; border: none; display: none; position: relative; z-index: 2;">
               </iframe>
 
-              <!-- Лоадер расшифровки потока -->
+              <!-- Лоадер потока -->
               <div id="videoStreamLoader" style="display: none; position: absolute; inset: 0; background: rgba(8, 6, 15, 0.86); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
                 <div class="spinner" id="videoLoaderSpinner"></div>
                 <span id="videoLoaderText" style="font-size: 13px; color: var(--color-primary); font-weight: 600; text-align:center; padding: 0 16px;">Подключаем прямой поток без рекламы...</span>
@@ -1882,41 +1923,10 @@
               </a>
             </div>
           </div>
-
-          <div class="anime-details-box">
-            <div class="details-top">
-              <div class="details-poster-wrap" id="detailsPosterWrap"></div>
-              <div style="display:flex; flex-direction:column; gap:8px; flex:1; min-width:0;">
-                <div id="detailsMeta" style="font-size:12px; color:var(--color-primary); font-weight: 600;"></div>
-                <p id="detailsDesc" style="font-size:13px; line-height:1.5; color:var(--color-variant); word-break: break-word;"></p>
-                
-                <div class="shiki-status-container" id="shikiStatusContainer" style="display: none;">
-                  <span style="font-size:12px; color:var(--color-primary);" data-i18n="shikiStatusLabel">Статус на Shikimori:</span>
-                  <select id="shikiStatusSelect" class="shiki-select" onchange="updateUserAnimeStatus(this.value)">
-                    <option value="" data-i18n="stNone">Не в списке</option>
-                    <option value="watching" data-i18n="stWatching">Смотрю</option>
-                    <option value="planned" data-i18n="stPlanned">Запланировано</option>
-                    <option value="completed" data-i18n="stCompleted">Просмотрено</option>
-                    <option value="on_hold" data-i18n="stHold">Отложено</option>
-                    <option value="dropped" data-i18n="stDropped">Брошено</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="relations-section" id="relationsSection" style="display: none;">
-              <div class="relations-title" data-i18n="relTitle">Связанные части и франшиза</div>
-              <div class="relations-list" id="relationsList"></div>
-            </div>
-
-            <!-- Секция карточек персонажей под описанием -->
-            <div class="characters-section" id="charactersSection" style="display: none;">
-              <div class="relations-title" data-i18n="charTitle">Главные герои и персонажи</div>
-              <div class="characters-grid" id="charactersGrid"></div>
-            </div>
-          </div>
         </div>
 
+        <!-- ОБЛАСТЬ 2: САЙДБАР ОЗВУЧЕК И СЕРИЙ
+             (На мобильном в портретном режиме стоит СРАЗУ ПОД ПЛЕЕРОМ, на ПК/планшете/landscape — СБОКУ) -->
         <aside class="sidebar-panel">
           <div id="voiceSection">
             <div style="font-size:13px; font-weight:600; color:var(--color-variant); margin-bottom:10px;"><span data-i18n="voicesLabel">Озвучка</span> (<span id="voicesCount">0</span>)</div>
@@ -1927,6 +1937,40 @@
             <div class="episodes-grid" id="episodesGrid"></div>
           </div>
         </aside>
+
+        <!-- ОБЛАСТЬ 3: ОПИСАНИЕ, СТАТУС, ФРАНШИЗА И ПЕРСОНАЖИ -->
+        <div class="anime-details-box">
+          <div class="details-top">
+            <div class="details-poster-wrap" id="detailsPosterWrap"></div>
+            <div style="display:flex; flex-direction:column; gap:8px; flex:1; min-width:0;">
+              <div id="detailsMeta" style="font-size:12px; color:var(--color-primary); font-weight: 600;"></div>
+              <p id="detailsDesc" style="font-size:13px; line-height:1.5; color:var(--color-variant); word-break: break-word;"></p>
+              
+              <div class="shiki-status-container" id="shikiStatusContainer" style="display: none;">
+                <span style="font-size:12px; color:var(--color-primary);" data-i18n="shikiStatusLabel">Статус на Shikimori:</span>
+                <select id="shikiStatusSelect" class="shiki-select" onchange="updateUserAnimeStatus(this.value)">
+                  <option value="" data-i18n="stNone">Не в списке</option>
+                  <option value="watching" data-i18n="stWatching">Смотрю</option>
+                  <option value="planned" data-i18n="stPlanned">Запланировано</option>
+                  <option value="completed" data-i18n="stCompleted">Просмотрено</option>
+                  <option value="on_hold" data-i18n="stHold">Отложено</option>
+                  <option value="dropped" data-i18n="stDropped">Брошено</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="relations-section" id="relationsSection" style="display: none;">
+            <div class="relations-title" data-i18n="relTitle">Связанные части и франшиза</div>
+            <div class="relations-list" id="relationsList"></div>
+          </div>
+
+          <!-- Секция карточек персонажей под описанием -->
+          <div class="characters-section" id="charactersSection" style="display: none;">
+            <div class="relations-title" data-i18n="charTitle">Главные герои и персонажи</div>
+            <div class="characters-grid" id="charactersGrid"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2021,7 +2065,6 @@
       try { sessionStorage.setItem(key, value); } catch(e) {}
     }
 
-    // Ротация актуальных токенов Kodik (рабочие токены из приложения + резервные)
     const KODIK_TOKENS = [
       '56a768d08f43091901c44b54fe970049',
       '41dd95f84c21719b09d6c71182237a25',
@@ -2033,7 +2076,8 @@
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
-    const PLAYER_SOURCES = ['exo', 'kodik', 'megaplay'];
+    // 4 полноценных источника: Komboko (exo), АниЛибрия (anilibria), Кодик (kodik), MegaPlay (megaplay)
+    const PLAYER_SOURCES = ['exo', 'anilibria', 'kodik', 'megaplay'];
     const ADULT_GENRE_IDS = new Set([12, 539, 49]);
     const ADULT_KEYWORDS = [
       'хентай', 'hentai', 'эротик', 'erotica',
@@ -2181,7 +2225,7 @@
         genreAdventure: 'Adventure',
         genreThriller: 'Thriller',
         loadingMore: 'Loading more...',
-        backBtn: 'Back',
+backBtn: 'Back',
         epPrev: 'Prev',
         epNext: 'Next',
         originalBtn: 'Original',
@@ -2218,6 +2262,8 @@
 
     let currentLang = localStorage.getItem('komboko_lang') || 'ru';
     const descTranslationCache = {};
+    const anilistIdCache = {};
+    const anilibriaReleaseCache = {};
 
     function cleanShikiText(raw) {
       if (!raw) return '';
@@ -2264,7 +2310,10 @@
       const epNum = state.currentEpisodeNum || 1;
       document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
       const exoBadge = document.getElementById('exoEpBadge');
-      if (exoBadge) exoBadge.textContent = `${activeTitle} • ${t.epWord} ${epNum}`;
+      if (exoBadge) {
+        const srcPrefix = state.currentSource === 'anilibria' ? 'AniLibria 1080p' : activeTitle;
+        exoBadge.textContent = `${srcPrefix} • ${t.epWord} ${epNum}`;
+      }
 
       if (currentLang === 'en') {
         if (item.descriptionEn) {
@@ -2365,6 +2414,7 @@
     let currentHlsInstance = null;
     let currentBlobManifestUrl = null;
     let exoHideTimer = null;
+    let activeVideoLoadToken = 0;
 
     // === УПРАВЛЕНИЕ КАСТОМНЫМ ПЛЕЕРОМ EXOPLAYER ===
     function formatExoTime(sec) {
@@ -2483,7 +2533,6 @@
         });
       }
 
-      // Жесты: одиночный тап, двойной тап по краям (±10 сек), удержание (2x скорость)
       let lastTapTime = 0;
       let holdTimer = null;
       let isHolding2x = false;
@@ -2567,7 +2616,7 @@
 
       window.addEventListener('resize', closeAllStatusDropdowns);
 
-const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       if (code) {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -2606,6 +2655,7 @@ const urlParams = new URLSearchParams(window.location.search);
           const session = JSON.parse(savedSession);
           if (session.currentTab === 'watch' && session.currentAnimeFull) {
             state.currentAnimeFull = session.currentAnimeFull;
+            ensureVariantsInitialized();
             state.currentEpisodeNum = session.currentEpisodeNum || 1;
             state.currentVariantIndex = session.currentVariantIndex || 0;
             state.currentSource = PLAYER_SOURCES.includes(session.currentSource) ? session.currentSource : 'exo';
@@ -2628,7 +2678,7 @@ const urlParams = new URLSearchParams(window.location.search);
       fetchShikimoriCatalog(true);
     });
 
-    // === ФИКС НАЛОЖЕНИЯ СПИСКОВ (ПОРТАЛЬНЫЙ DROPDOWN ПОВЕРХ ВСЕХ ЭЛЕМЕНТОВ) ===
+    // === ПОРТАЛЬНЫЙ DROPDOWN ВЫБОРА СПИСКА (ПОВЕРХ ВСЕХ ЭЛЕМЕНТОВ) ===
     function closeAllStatusDropdowns() {
       document.querySelectorAll('.status-dropdown').forEach(el => el.remove());
       if (window._activeDropdownCleanup) {
@@ -2680,7 +2730,6 @@ const urlParams = new URLSearchParams(window.location.search);
 
       document.body.appendChild(dropdown);
 
-      // Вычисляем точные координаты кнопки на экране, чтобы меню никогда не перекрывалось соседними блоками
       const rect = triggerEl.getBoundingClientRect();
       const dropWidth = 185;
       const dropHeight = dropdown.offsetHeight || 240;
@@ -2722,7 +2771,7 @@ const urlParams = new URLSearchParams(window.location.search);
       });
     }
 
-    // === КАТАЛОГ МАНГИ И АНИМЕ ===
+    // === КАТАЛОГ АНИМЕ И МАНГИ ===
     function switchCatalogTab(mode) {
       if (currentCatalogMode === mode && state.animes.length > 0) return;
       currentCatalogMode = mode;
@@ -2926,8 +2975,7 @@ const urlParams = new URLSearchParams(window.location.search);
     async function fetchProxyText(targetUrl, timeoutMs = 8000) {
       const proxies = [
         u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
       ];
       for (const buildProxy of proxies) {
         try {
@@ -4015,9 +4063,9 @@ const urlParams = new URLSearchParams(window.location.search);
       }
     }
 
-    // === ПЕРЕКЛЮЧЕНИЕ ИСТОЧНИКОВ И ФИКС MEGAPLAY (3 РАБОЧИХ ЗЕРКАЛА SUB/DUB) ===
-// === ПЕРЕКЛЮЧЕНИЕ ИСТОЧНИКОВ И РЕЗЕРВНЫХ СЕРВЕРОВ ===
+    // === ПЕРЕКЛЮЧЕНИЕ 4 ПЛЕЕРОВ: KOMBOKO (EXO), АНИЛИБРИЯ (EXO), КОДИК (IFRAME), MEGAPLAY (SUB/DUB) ===
     function switchPlayerSource(source) {
+      if (!PLAYER_SOURCES.includes(source)) source = 'exo';
       state.currentSource = source;
 
       PLAYER_SOURCES.forEach(s => {
@@ -4027,7 +4075,7 @@ const urlParams = new URLSearchParams(window.location.search);
 
       const voiceSection = document.getElementById('voiceSection');
       if (voiceSection) {
-        voiceSection.style.display = (source === 'exo' || source === 'kodik') ? 'block' : 'none';
+        voiceSection.style.display = (source === 'exo' || source === 'kodik' || source === 'anilibria') ? 'block' : 'none';
       }
 
       const megaSwitch = document.getElementById('megaplayLangSwitch');
@@ -4035,6 +4083,8 @@ const urlParams = new URLSearchParams(window.location.search);
         megaSwitch.style.display = (source === 'megaplay') ? 'flex' : 'none';
       }
 
+      renderVoiceChips();
+      renderEpisodesGrid();
       loadCurrentEpisodeVideo();
     }
 
@@ -4046,63 +4096,214 @@ const urlParams = new URLSearchParams(window.location.search);
     }
 
     function toggleMegaPlayMirror() {
-      state.megaplayMirror = ((state.megaplayMirror || 1) % 3) + 1;
+      state.megaplayMirror = ((state.megaplayMirror || 1) % 4) + 1;
       const mirrorBtn = document.getElementById('btnMegaMirror');
       if (mirrorBtn) mirrorBtn.textContent = `Сервер ${state.megaplayMirror}`;
       loadCurrentEpisodeVideo();
     }
 
-    function buildMegaPlayUrl(item, epNum, lang, mirrorIndex) {
-      const isDub = lang === 'dub';
-      const targetId = item.id;
-      const rawEn = (item.originalName || item.titleEn || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    // Получение точного AniList ID и английского/ромадзи слага через официальный GraphQL AniList (не режется AdBlock!)
+    async function resolveAniListInfo(malId, fallbackItem) {
+      const key = String(malId);
+      if (anilistIdCache[key]) return anilistIdCache[key];
 
-      // Сервер 1: 2Anime Embed (работает без jikan.moe и wsrv.nl)
-      if (mirrorIndex === 1 && rawEn) {
-        const slug = isDub ? `${rawEn}-dub` : rawEn;
-        return `https://2anime.xyz/embed/${slug}-episode-${epNum}`;
-      }
-      // Сервер 2: VidSrc.cc Anime (по MAL/Shikimori ID)
-      if (mirrorIndex === 2) {
-        return `https://vidsrc.cc/v2/embed/anime/mal${targetId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
-      }
-      // Сервер 3: VidSrc.icu
-      return `https://vidsrc.icu/embed/anime/${targetId}/${epNum}/${isDub ? 1 : 0}`;
+      const query = `
+        query($idMal: Int) {
+          Media(idMal: $idMal, type: ANIME) {
+            id
+            title {
+              romaji
+              english
+            }
+          }
+        }
+      `;
+      try {
+        const res = await fetchWithTimeout('https://graphql.anilist.co', 4500, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ query, variables: { idMal: Number(malId) } })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const media = json?.data?.Media;
+          if (media && media.id) {
+            const romaji = (media.title?.romaji || fallbackItem?.originalName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const english = (media.title?.english || fallbackItem?.titleEn || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const info = { anilistId: media.id, romajiSlug: romaji, englishSlug: english || romaji };
+            anilistIdCache[key] = info;
+            return info;
+          }
+        }
+      } catch (_) {}
+
+      const fallbackSlug = (fallbackItem?.originalName || fallbackItem?.titleEn || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      return { anilistId: null, romajiSlug: fallbackSlug, englishSlug: fallbackSlug };
     }
 
-    // Прямой поиск HLS потока 1080p/720p через открытый API AniLiberty (не блокируется в РФ и AdBlock)
-    async function fetchAniLibertyDirectStream(item, epNum) {
-      const queries = [item.titleRu, item.originalName, item.titleEn].filter(Boolean);
+    async function buildMegaPlayUrlAsync(item, epNum, lang, mirrorIndex) {
+      const isDub = lang === 'dub';
+      const malId = item.id;
+      const info = await resolveAniListInfo(malId, item);
+      const aniId = info.anilistId;
+      const slug = info.romajiSlug || info.englishSlug;
+
+      // Сервер 1: Videasy Anime Player (работает по AniList ID, не требует jikan.moe, современный плеер без блокировок)
+      if (mirrorIndex === 1 && aniId) {
+        return `https://player.videasy.net/anime/${aniId}/${epNum}?dub=${isDub ? 'true' : 'false'}`;
+      }
+      // Сервер 2: Embed.su / VidSrc.cc по AniList ID или MAL ID
+      if (mirrorIndex === 2) {
+        if (aniId) return `https://vidsrc.cc/v2/embed/anime/ani${aniId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
+        return `https://vidsrc.cc/v2/embed/anime/mal${malId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
+      }
+      // Сервер 3: 2Anime по чистому Romaji/English слагу
+      if (mirrorIndex === 3 && slug) {
+        const fullSlug = isDub ? `${slug}-dub` : slug;
+        return `https://2anime.xyz/embed/${fullSlug}-episode-${epNum}`;
+      }
+      // Сервер 4: VidSrc.icu (принимает AniList ID и MAL ID)
+      return `https://vidsrc.icu/embed/anime/${aniId || malId}/${epNum}/${isDub ? 1 : 0}`;
+    }
+
+    // === СТРОГИЙ ПОИСК РЕЛИЗА АНИЛИБРИИ (ЧТОБЫ НИКОГДА НЕ ВКЛЮЧАЛОСЬ ЧУЖОЕ АНИМЕ) ===
+    function normalizeCompareTitle(str) {
+      return String(str || '')
+        .toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/[^a-zа-я0-9]/g, '')
+        .trim();
+    }
+
+    function isMatchingAnimeRelease(item, candTitles, candYear) {
+      const targetNames = [item.titleRu, item.originalName, item.titleEn]
+        .map(normalizeCompareTitle)
+        .filter(s => s.length >= 2);
+      const normCands = candTitles
+        .map(normalizeCompareTitle)
+        .filter(s => s.length >= 2);
+
+      let titleMatched = false;
+      for (const t of targetNames) {
+        for (const c of normCands) {
+          if (t === c) {
+            titleMatched = true;
+            break;
+          }
+          if (t.length >= 5 && c.length >= 5 && (t.includes(c) || c.includes(t))) {
+            titleMatched = true;
+            break;
+          }
+        }
+        if (titleMatched) break;
+      }
+
+      if (!titleMatched) return false;
+
+      if (item.year && candYear) {
+        const yDiff = Math.abs(Number(item.year) - Number(candYear));
+        if (yDiff > 1) return false;
+      }
+      return true;
+    }
+
+    async function fetchStrictAniLibriaRelease(item) {
+      const cacheKey = String(item.id);
+      if (anilibriaReleaseCache[cacheKey] !== undefined) {
+        return anilibriaReleaseCache[cacheKey];
+      }
+
+      const queries = [item.titleRu, item.originalName, item.titleEn].filter(q => q && q.trim().length > 1);
+
+      // 1. Поиск через API v1 AniLiberty (anilibria.top) со строгой сверкой названия и года
       for (const q of queries) {
         try {
-          const url = `https://anilibria.top/api/v1/app/search/releases?query=${encodeURIComponent(q)}`;
+          const url = `https://anilibria.top/api/v1/app/search/releases?query=${encodeURIComponent(q.trim())}`;
           const res = await fetchWithTimeout(url, 5000);
           if (!res.ok) continue;
           const releases = await res.json();
           if (!Array.isArray(releases) || releases.length === 0) continue;
 
-          const relId = releases[0].id;
-          const relRes = await fetchWithTimeout(`https://anilibria.top/api/v1/anime/releases/${relId}`, 5000);
-          if (!relRes.ok) continue;
-          const relData = await relRes.json();
-          const episodes = relData?.episodes || [];
-          const epObj = episodes.find(e => Number(e.ordinal) === Number(epNum)) || episodes[epNum - 1];
-          if (epObj) {
-            const qualities = {};
-            if (epObj.hls_1080) qualities['1080p'] = epObj.hls_1080;
-            if (epObj.hls_720) qualities['720p'] = epObj.hls_720;
-            if (epObj.hls_480) qualities['480p'] = epObj.hls_480;
-            const best = qualities['1080p'] || qualities['720p'] || qualities['480p'];
-            if (best) {
-              const skipSegs = [];
-              if (epObj.opening && epObj.opening.start != null && epObj.opening.stop != null) {
-                skipSegs.push([Number(epObj.opening.start), Number(epObj.opening.stop)]);
+          const matched = releases.find(r => {
+            const cTitles = [r.name?.main, r.name?.english, r.name?.alternative].filter(Boolean);
+            return isMatchingAnimeRelease(item, cTitles, r.year);
+          });
+
+          if (matched && matched.id) {
+            const relRes = await fetchWithTimeout(`https://anilibria.top/api/v1/anime/releases/${matched.id}`, 5000);
+            if (relRes.ok) {
+              const relData = await relRes.json();
+              if (relData && Array.isArray(relData.episodes) && relData.episodes.length > 0) {
+                const episodesMap = {};
+                relData.episodes.forEach(ep => {
+                  const epNum = String(ep.ordinal || ep.sort_order || 1);
+                  const qualities = {};
+                  if (ep.hls_1080) qualities['1080p'] = ep.hls_1080;
+                  if (ep.hls_720) qualities['720p'] = ep.hls_720;
+                  if (ep.hls_480) qualities['480p'] = ep.hls_480;
+                  const best = qualities['1080p'] || qualities['720p'] || qualities['480p'];
+                  if (best) {
+                    const skipSegs = [];
+                    if (ep.opening && ep.opening.start != null && ep.opening.stop != null) {
+                      skipSegs.push([Number(ep.opening.start), Number(ep.opening.stop)]);
+                    }
+                    episodesMap[epNum] = { stream: best, qualities, skip_segments: skipSegs };
+                  }
+                });
+                if (Object.keys(episodesMap).length > 0) {
+                  const resultObj = { title: relData.name?.main || item.titleRu, episodes: episodesMap };
+                  anilibriaReleaseCache[cacheKey] = resultObj;
+                  return resultObj;
+                }
               }
-              return { stream: best, qualities, skip_segments: skipSegs };
             }
           }
         } catch (_) {}
       }
+
+      // 2. Резервный поиск через API v3 (api.anilibria.tv) со строгой сверкой
+      for (const q of queries) {
+        try {
+          const url = `https://api.anilibria.tv/v3/title/search?search=${encodeURIComponent(q.trim())}&limit=10`;
+          const res = await fetchWithTimeout(url, 5000);
+          if (!res.ok) continue;
+          const data = await res.json();
+          const list = data?.list || [];
+
+          const matched = list.find(r => {
+            const cTitles = [r.names?.ru, r.names?.en, r.names?.alternative].filter(Boolean);
+            return isMatchingAnimeRelease(item, cTitles, r.season?.year);
+          });
+
+          if (matched && matched.player && matched.player.list) {
+            const host = matched.player.host ? `https://${matched.player.host}` : 'https://cache.libria.fun';
+            const episodesMap = {};
+            for (const [k, ep] of Object.entries(matched.player.list)) {
+              const epNum = String(ep.episode || k);
+              const hls = ep.hls || {};
+              const qualities = {};
+              if (hls.fhd) qualities['1080p'] = hls.fhd.startsWith('http') ? hls.fhd : `${host}${hls.fhd}`;
+              if (hls.hd) qualities['720p'] = hls.hd.startsWith('http') ? hls.hd : `${host}${hls.hd}`;
+              if (hls.sd) qualities['480p'] = hls.sd.startsWith('http') ? hls.sd : `${host}${hls.sd}`;
+              const best = qualities['1080p'] || qualities['720p'] || qualities['480p'];
+              if (best) {
+                const skipSegs = [];
+                if (Array.isArray(ep.skips?.opening) && ep.skips.opening.length === 2) {
+                  skipSegs.push([Number(ep.skips.opening[0]), Number(ep.skips.opening[1])]);
+                }
+                episodesMap[epNum] = { stream: best, qualities, skip_segments: skipSegs };
+              }
+            }
+            if (Object.keys(episodesMap).length > 0) {
+              const resultObj = { title: matched.names?.ru || item.titleRu, episodes: episodesMap };
+              anilibriaReleaseCache[cacheKey] = resultObj;
+              return resultObj;
+            }
+          }
+        } catch (_) {}
+      }
+
+      anilibriaReleaseCache[cacheKey] = null;
       return null;
     }
 
@@ -4117,11 +4318,13 @@ const urlParams = new URLSearchParams(window.location.search);
       }
     }
 
-    // === ПОИСК ОЗВУЧЕК KODIK БЕЗ ERR_CONNECTION_CLOSED ===
+    // === СТРОГИЙ ПОИСК ОЗВУЧЕК KODIK (ТОЛЬКО ПО ТОЧНОМУ SHIKIMORI ID) ===
     async function searchKodikWithRotation(shikimoriId, titleRu = '', titleEn = '') {
-      // 1. Запрос через наш Cloudflare Worker (обходит блокировки провайдера)
+      const targetIdStr = String(shikimoriId);
+
+      // 1. Запрос через наш Cloudflare Worker по shikimori_id
       try {
-        const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${encodeURIComponent(shikimoriId)}`, 7000);
+        const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${encodeURIComponent(targetIdStr)}`, 7000);
         if (res.ok) {
           const data = await res.json();
           if (data && Array.isArray(data.results) && data.results.length > 0) {
@@ -4130,29 +4333,30 @@ const urlParams = new URLSearchParams(window.location.search);
         }
       } catch (_) {}
 
-      // 2. Поиск по названию через Cloudflare Worker, если по ID не нашлось
-      const searchTitle = titleRu || titleEn;
-      if (searchTitle) {
+      // 2. Прямой запрос к рабочему зеркалу kodik-api.com по shikimori_id
+      for (const token of KODIK_TOKENS.slice(0, 2)) {
         try {
-          const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?title=${encodeURIComponent(searchTitle)}`, 6000);
+          const res = await fetchWithTimeout(`https://kodik-api.com/search?token=${token}&shikimori_id=${encodeURIComponent(targetIdStr)}&with_episodes=true&with_material_data=true&limit=100`, 5000);
           if (res.ok) {
             const data = await res.json();
             if (data && Array.isArray(data.results) && data.results.length > 0) {
+              activeKodikToken = token;
               return data.results;
             }
           }
         } catch (_) {}
       }
 
-      // 3. Прямой запрос к рабочему зеркалу kodik-api.com (с дефисом!)
-      for (const token of KODIK_TOKENS.slice(0, 2)) {
+      // 3. Если искали по названию — фильтруем ТОЛЬКО те результаты, у которых совпадает shikimori_id!
+      const searchTitle = titleRu || titleEn;
+      if (searchTitle) {
         try {
-          const res = await fetchWithTimeout(`https://kodik-api.com/search?token=${token}&shikimori_id=${encodeURIComponent(shikimoriId)}&with_episodes=true&with_material_data=true&limit=100`, 4500);
+          const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?title=${encodeURIComponent(searchTitle)}`, 6000);
           if (res.ok) {
             const data = await res.json();
-            if (data && Array.isArray(data.results) && data.results.length > 0) {
-              activeKodikToken = token;
-              return data.results;
+            if (data && Array.isArray(data.results)) {
+              const strictMatches = data.results.filter(r => !r.shikimori_id || String(r.shikimori_id) === targetIdStr);
+              if (strictMatches.length > 0) return strictMatches;
             }
           }
         } catch (_) {}
@@ -4209,7 +4413,6 @@ const urlParams = new URLSearchParams(window.location.search);
         } catch (e) {}
       }
 
-      // Сразу инициализируем variants, чтобы никогда не возникало ошибки reading '0' of undefined
       state.currentAnimeFull = parseKodikVariants(detailedItem, []);
       state.currentEpisodeNum = 1;
       state.currentVariantIndex = 0;
@@ -4585,9 +4788,22 @@ const urlParams = new URLSearchParams(window.location.search);
     function renderVoiceChips() {
       ensureVariantsInitialized();
       const container = document.getElementById('voiceList');
+      const countEl = document.getElementById('voicesCount');
+      if (!container) return;
       container.innerHTML = '';
+
+      // Если выбран плеер АниЛибрия — показываем фирменную плашку озвучки AniLibria 1080p
+      if (state.currentSource === 'anilibria') {
+        if (countEl) countEl.textContent = '1';
+        const btn = document.createElement('button');
+        btn.className = 'voice-chip active';
+        btn.textContent = 'AniLibria.TV • 1080p FHD';
+        container.appendChild(btn);
+        return;
+      }
+
       const variants = state.currentAnimeFull.variants || [];
-      document.getElementById('voicesCount').textContent = variants.length;
+      if (countEl) countEl.textContent = variants.length;
 
       variants.forEach((v, idx) => {
         const btn = document.createElement('button');
@@ -4604,14 +4820,19 @@ const urlParams = new URLSearchParams(window.location.search);
       });
     }
 
-    function renderEpisodesGrid() {
+    function renderEpisodesGrid(customEpNumbers = null) {
       ensureVariantsInitialized();
       const grid = document.getElementById('episodesGrid');
+      if (!grid) return;
       grid.innerHTML = '';
-      const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
-      if (!variant) return;
 
-      const epNumbers = Object.keys(variant.episodes).sort((a, b) => Number(a) - Number(b));
+      let epNumbers = customEpNumbers;
+      if (!epNumbers) {
+        const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
+        if (!variant) return;
+        epNumbers = Object.keys(variant.episodes).sort((a, b) => Number(a) - Number(b));
+      }
+
       epNumbers.forEach((epStr) => {
         const epNum = Number(epStr);
         const btn = document.createElement('button');
@@ -4737,6 +4958,7 @@ const urlParams = new URLSearchParams(window.location.search);
       if (!state.currentAnimeFull) return;
       ensureVariantsInitialized();
 
+      const myLoadToken = ++activeVideoLoadToken;
       const t = i18nData[currentLang];
       const epNum = state.currentEpisodeNum || 1;
       const targetId = state.currentAnimeFull.id;
@@ -4756,7 +4978,10 @@ const urlParams = new URLSearchParams(window.location.search);
       const skipOpBtn = document.getElementById('skipOpBtn');
 
       document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
-      if (exoBadge) exoBadge.textContent = `${activeTitle} • ${t.epWord} ${epNum}`;
+      if (exoBadge) {
+        const badgePrefix = state.currentSource === 'anilibria' ? 'AniLibria 1080p' : activeTitle;
+        exoBadge.textContent = `${badgePrefix} • ${t.epWord} ${epNum}`;
+      }
 
       const progressKey = `komboko_progress_${targetId}`;
       localStorage.setItem(progressKey, JSON.stringify({ episode: state.currentEpisodeNum }));
@@ -4771,57 +4996,8 @@ const urlParams = new URLSearchParams(window.location.search);
         video.removeAttribute('src');
       }
 
-      // 1. Источник MegaPlay (3 зеркала Sub/Dub)
-      if (state.currentSource === 'megaplay') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
-        const lang = state.megaplayLang || 'sub';
-        const mirror = state.megaplayMirror || 1;
-        const streamUrl = buildMegaPlayUrl(state.currentAnimeFull, epNum, lang, mirror);
-        openLink.href = streamUrl;
-        iframe.src = streamUrl;
-        saveSessionState();
-        return;
-      }
-
-      const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
-      if (!variant) return;
-
-      let rawLink = variant.episodes[String(epNum)] || variant.default_link;
-      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-      cleanUrl = cleanUrl
-        .replace('kodik.info', 'kodikplayer.com')
-        .replace('kodikdb.com', 'kodikplayer.com')
-        .replace('cloud.kodik-storage.com', 'kodikplayer.com');
-
-      if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
-      else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
-
-      openLink.href = cleanUrl;
-      saveSessionState();
-
-      // 2. Обычный плеер Kodik (Embed Iframe)
-      if (state.currentSource === 'kodik') {
-        if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
-        iframe.style.display = 'block';
-        iframe.src = cleanUrl;
-        return;
-      }
-
-      // 3. Кастомный плеер Komboko (ExoPlayer)
-      iframe.style.display = 'none';
-      iframe.src = 'about:blank';
-      if (exoWrap) exoWrap.style.display = 'flex';
-      if (loader) loader.style.display = 'flex';
-      if (loaderSpinner) loaderSpinner.style.display = 'block';
-      if (loaderText) loaderText.innerHTML = 'Подключаем прямой поток без рекламы...';
-
-      const translationId = variant.translation_id || '';
-      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
-
       function applyStreamToExoPlayer(streamData) {
+        if (myLoadToken !== activeVideoLoadToken) return;
         state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
         const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
         if (firstUrl && firstUrl.includes('mp4:hls:manifest')) {
@@ -4857,55 +5033,167 @@ const urlParams = new URLSearchParams(window.location.search);
         }
 
         playStreamWithFallbacks(bestUrl, 0, () => {
-          showStreamUnavailableNotice();
+          showStreamUnavailableNotice('Ошибка воспроизведения HLS потока');
         });
       }
 
-      function showStreamUnavailableNotice(reason = 'Прямой поток недоступен') {
-        if (!loader || !loaderText) return;
+      function showStreamUnavailableNotice(reason = 'Прямой поток недоступен для выбранной озвучки') {
+        if (myLoadToken !== activeVideoLoadToken || !loader || !loaderText) return;
         if (loaderSpinner) loaderSpinner.style.display = 'none';
         loader.style.display = 'flex';
         loaderText.innerHTML = `
           <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
             <span>${reason}</span>
             <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-              <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
+              ${state.currentSource !== 'anilibria' ? `
+                <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('anilibria')">
+                  Попробовать АниЛибрию 1080p
+                </button>
+              ` : ''}
+              <button class="md-btn md-btn-tonal" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
                 Включить плеер Kodik
-              </button>
-              <button class="md-btn md-btn-tonal" style="height:36px; font-size:12px;" onclick="loadCurrentEpisodeVideo()">
-                Повторить
               </button>
             </div>
           </div>
         `;
       }
 
+      // === 1. ИСТОЧНИК MEGAPLAY (4 СЕРВЕРА SUB/DUB ЧЕРЕЗ ANILIST GRAPHQL) ===
+      if (state.currentSource === 'megaplay') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'flex';
+        if (loaderSpinner) loaderSpinner.style.display = 'block';
+        if (loaderText) loaderText.textContent = 'Подключаем международный Sub/Dub сервер...';
+        iframe.style.display = 'block';
+
+        const lang = state.megaplayLang || 'sub';
+        const mirror = state.megaplayMirror || 1;
+        const mirrorBtn = document.getElementById('btnMegaMirror');
+        if (mirrorBtn) mirrorBtn.textContent = `Сервер ${mirror}`;
+
+        const streamUrl = await buildMegaPlayUrlAsync(state.currentAnimeFull, epNum, lang, mirror);
+        if (myLoadToken !== activeVideoLoadToken) return;
+
+        if (loader) loader.style.display = 'none';
+        openLink.href = streamUrl;
+        iframe.src = streamUrl;
+        saveSessionState();
+        return;
+      }
+
+      // === 2. ОТДЕЛЬНЫЙ ПЛЕЕР АНИЛИБРИЯ (КАСТОМНЫЙ СКИН EXOPLAYER 1080P) ===
+      if (state.currentSource === 'anilibria') {
+        iframe.style.display = 'none';
+        iframe.src = 'about:blank';
+        if (exoWrap) exoWrap.style.display = 'flex';
+        if (loader) loader.style.display = 'flex';
+        if (loaderSpinner) loaderSpinner.style.display = 'block';
+        if (loaderText) loaderText.textContent = 'Загружаем прямой поток 1080p с сервера АниЛибрии...';
+
+        const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
+        if (myLoadToken !== activeVideoLoadToken) return;
+
+        if (!release || !release.episodes) {
+          showStreamUnavailableNotice('Данного тайтла нет в базе озвучки АниЛибрии');
+          return;
+        }
+
+        const availableEpNums = Object.keys(release.episodes).sort((a, b) => Number(a) - Number(b));
+        renderEpisodesGrid(availableEpNums);
+
+        const epData = release.episodes[String(epNum)] || release.episodes[availableEpNums[0]];
+        if (!epData || !epData.stream) {
+          showStreamUnavailableNotice(`Серия ${epNum} еще не вышла в озвучке АниЛибрии`);
+          return;
+        }
+
+        openLink.href = epData.stream;
+        saveSessionState();
+        applyStreamToExoPlayer(epData);
+        return;
+      }
+
+      // Подготовка ссылки выбранной озвучки Kodik
+      const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
+      if (!variant) return;
+
+      let rawLink = variant.episodes[String(epNum)] || variant.default_link;
+      let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
+      cleanUrl = cleanUrl
+        .replace('kodik.info', 'kodikplayer.com')
+        .replace('kodikdb.com', 'kodikplayer.com')
+        .replace('cloud.kodik-storage.com', 'kodikplayer.com');
+
+      if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
+      else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
+
+      openLink.href = cleanUrl;
+      saveSessionState();
+
+      // === 3. ОБЫЧНЫЙ ПЛЕЕР KODIK (IFRAME) ===
+      if (state.currentSource === 'kodik') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+        iframe.style.display = 'block';
+        iframe.src = cleanUrl;
+        return;
+      }
+
+      // === 4. КАСТОМНЫЙ ПЛЕЕР KOMBOKO (ПРЯМОЙ ПОТОК ВЫБРАННОЙ ОЗВУЧКИ KODIK) ===
+      iframe.style.display = 'none';
+      iframe.src = 'about:blank';
+      if (exoWrap) exoWrap.style.display = 'flex';
+      if (loader) loader.style.display = 'flex';
+      if (loaderSpinner) loaderSpinner.style.display = 'block';
+      if (loaderText) loaderText.innerHTML = `Подключаем поток «${variant.translation.title}» без рекламы...`;
+
+      const translationId = variant.translation_id || '';
+      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
+
       try {
         const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
         const streamData = await streamResp.json();
+        if (myLoadToken !== activeVideoLoadToken) return;
 
         if (streamData && streamData.success && streamData.stream) {
           applyStreamToExoPlayer(streamData);
           return;
         }
       } catch (err) {
-        console.warn('Воркер Kodik не ответил, проверяем прямой поток AniLiberty:', err);
+        console.warn('Воркер Kodik не отдал поток:', err);
       }
 
-      // Автоматический резерв: прямой 1080p HLS поток через AniLiberty (работает без прокси и воркеров)
-      const anilibriaStream = await fetchAniLibertyDirectStream(state.currentAnimeFull, epNum);
-      if (anilibriaStream && anilibriaStream.stream) {
-        applyStreamToExoPlayer(anilibriaStream);
-        return;
+      // Если в списке озвучек выбрана АниЛибрия и воркер не ответил — подхватываем точный релиз из АниЛибрии
+      const vTitleLow = String(variant.translation?.title || '').toLowerCase();
+      if (vTitleLow.includes('anilibria') || vTitleLow.includes('анилибрия') || variant.translation_id === 0) {
+        const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
+        if (myLoadToken !== activeVideoLoadToken) return;
+        const epData = release?.episodes?.[String(epNum)];
+        if (epData && epData.stream) {
+          applyStreamToExoPlayer(epData);
+          return;
+        }
       }
 
-      showStreamUnavailableNotice();
+      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP воркера');
     }
 
     function stepEpisode(delta) {
       if (!state.currentAnimeFull) return;
-      const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
+      ensureVariantsInitialized();
       const target = state.currentEpisodeNum + delta;
+      if (target < 1) return;
+
+      if (state.currentSource === 'anilibria') {
+        const cached = anilibriaReleaseCache[String(state.currentAnimeFull.id)];
+        if (cached && cached.episodes && !cached.episodes[String(target)]) return;
+        state.currentEpisodeNum = target;
+        saveSessionState();
+        loadCurrentEpisodeVideo();
+        return;
+      }
+
+      const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
       if (variant && variant.episodes[String(target)]) {
         state.currentEpisodeNum = target;
         saveSessionState();

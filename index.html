@@ -21,7 +21,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
 
   <!-- HLS.js для воспроизведения потоков -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://player.cdnvideohub.com/s2/stable/video-player.umd.js"></script>
 
   <style>
@@ -5018,24 +5017,20 @@ backBtn: 'Back',
         try {
           // Формируем примерную embed-ссылку на основе Shikimori ID (согласно докам anime-dl-core)
           let embedUrl = '';
-          if (state.currentSource === 'aniboom') {
-            embedUrl = `https://aniboom.one/embed/${targetId}?episode=${epNum}`;
-          } else if (state.currentSource === 'cvh') {
-            // Для CVH можно обращаться по числовому ID тайтла
-            embedUrl = `${PYTHON_BACKEND_URL}/api/cvh-playlist?id=${targetId}&episode=${epNum}`;
-            const res = await fetchWithTimeout(embedUrl, 10000);
-            const data = await res.json();
-            if (myLoadToken !== activeVideoLoadToken) return;
-            if (data.success && data.stream_url) {
-              if (loader) loader.style.display = 'none';
-              playStreamWithFallbacks(data.stream_url, 0);
-              return;
-            }
-          } else if (state.currentSource === 'animedia') {
-            embedUrl = `https://aser.pro/vod/${targetId}`; // или ссылка из поиска Animedia
-          }
+// === ИСТОЧНИК ANIBOOM ===
+      if (state.currentSource === 'aniboom') {
+        if (exoWrap) exoWrap.style.display = 'none';
+        if (loader) loader.style.display = 'none';
+        iframe.style.display = 'block';
 
-// === ИСТОЧНИК CDNHUB (CDN Video Hub Web Component) ===
+        const aniboomUrl = `https://aniboom.one/embed/${targetId}?episode=${epNum}`;
+        openLink.href = aniboomUrl;
+        iframe.src = aniboomUrl;
+        saveSessionState();
+        return;
+      }
+
+      // === ИСТОЧНИК CDNHUB (CDN Video Hub Web Component) ===
       if (state.currentSource === 'cdnhub') {
         if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'none';
@@ -5046,7 +5041,6 @@ backBtn: 'Back',
 
         const playerElem = document.getElementById('cdnVideoPlayerElem');
         if (playerElem) {
-          // Передаем текущий Shikimori ID и номер серии в атрибуты веб-компонента
           playerElem.setAttribute('data-title-id', String(targetId));
           playerElem.setAttribute('season', '1');
           playerElem.setAttribute('episode', String(epNum));

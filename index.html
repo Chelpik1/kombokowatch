@@ -4016,6 +4016,7 @@ const urlParams = new URLSearchParams(window.location.search);
     }
 
     // === ПЕРЕКЛЮЧЕНИЕ ИСТОЧНИКОВ И ФИКС MEGAPLAY (3 РАБОЧИХ ЗЕРКАЛА SUB/DUB) ===
+// === ПЕРЕКЛЮЧЕНИЕ ИСТОЧНИКОВ И РЕЗЕРВНЫХ СЕРВЕРОВ ===
     function switchPlayerSource(source) {
       state.currentSource = source;
 
@@ -4051,18 +4052,58 @@ const urlParams = new URLSearchParams(window.location.search);
       loadCurrentEpisodeVideo();
     }
 
-    function buildMegaPlayUrl(targetId, epNum, lang, mirrorIndex) {
+    function buildMegaPlayUrl(item, epNum, lang, mirrorIndex) {
       const isDub = lang === 'dub';
-      // Сервер 1: VidSrc Anime (принимает напрямую MAL / Shikimori ID)
-      if (mirrorIndex === 1) {
-        return `https://vidsrc.icu/embed/anime/${targetId}/${epNum}/${isDub ? 1 : 0}`;
+      const targetId = item.id;
+      const rawEn = (item.originalName || item.titleEn || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+      // Сервер 1: 2Anime Embed (работает без jikan.moe и wsrv.nl)
+      if (mirrorIndex === 1 && rawEn) {
+        const slug = isDub ? `${rawEn}-dub` : rawEn;
+        return `https://2anime.xyz/embed/${slug}-episode-${epNum}`;
       }
-      // Сервер 2: VidLink Anime (принимает MAL / Shikimori ID + sub/dub)
+      // Сервер 2: VidSrc.cc Anime (по MAL/Shikimori ID)
       if (mirrorIndex === 2) {
-        return `https://vidlink.pro/anime/${targetId}/${epNum}/${isDub ? 'dub' : 'sub'}?fallback=true`;
+        return `https://vidsrc.cc/v2/embed/anime/mal${targetId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
       }
-      // Сервер 3: MegaPlay S-2 / Mal Embed
-      return `https://megaplay.buzz/embed/mal/${targetId}/${epNum}?translation=${isDub ? 'dub' : 'sub'}&autonext=1`;
+      // Сервер 3: VidSrc.icu
+      return `https://vidsrc.icu/embed/anime/${targetId}/${epNum}/${isDub ? 1 : 0}`;
+    }
+
+    // Прямой поиск HLS потока 1080p/720p через открытый API AniLiberty (не блокируется в РФ и AdBlock)
+    async function fetchAniLibertyDirectStream(item, epNum) {
+      const queries = [item.titleRu, item.originalName, item.titleEn].filter(Boolean);
+      for (const q of queries) {
+        try {
+          const url = `https://anilibria.top/api/v1/app/search/releases?query=${encodeURIComponent(q)}`;
+          const res = await fetchWithTimeout(url, 5000);
+          if (!res.ok) continue;
+          const releases = await res.json();
+          if (!Array.isArray(releases) || releases.length === 0) continue;
+
+          const relId = releases[0].id;
+          const relRes = await fetchWithTimeout(`https://anilibria.top/api/v1/anime/releases/${relId}`, 5000);
+          if (!relRes.ok) continue;
+          const relData = await relRes.json();
+          const episodes = relData?.episodes || [];
+          const epObj = episodes.find(e => Number(e.ordinal) === Number(epNum)) || episodes[epNum - 1];
+          if (epObj) {
+            const qualities = {};
+            if (epObj.hls_1080) qualities['1080p'] = epObj.hls_1080;
+            if (epObj.hls_720) qualities['720p'] = epObj.hls_720;
+            if (epObj.hls_480) qualities['480p'] = epObj.hls_480;
+            const best = qualities['1080p'] || qualities['720p'] || qualities['480p'];
+            if (best) {
+              const skipSegs = [];
+              if (epObj.opening && epObj.opening.start != null && epObj.opening.stop != null) {
+                skipSegs.push([Number(epObj.opening.start), Number(epObj.opening.stop)]);
+              }
+              return { stream: best, qualities, skip_segments: skipSegs };
+            }
+          }
+        } catch (_) {}
+      }
+      return null;
     }
 
     function shareCurrentAnime() {
@@ -4076,11 +4117,11 @@ const urlParams = new URLSearchParams(window.location.search);
       }
     }
 
-    // === ПОИСК ОЗВУЧЕК KODIK С РОТАЦИЕЙ ТОКЕНОВ И FALLBACK ===
+    // === ПОИСК ОЗВУЧЕК KODIK БЕЗ ERR_CONNECTION_CLOSED ===
     async function searchKodikWithRotation(shikimoriId, titleRu = '', titleEn = '') {
-      // 1. Попытка через наш бэкенд
+      // 1. Запрос через наш Cloudflare Worker (обходит блокировки провайдера)
       try {
-        const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${encodeURIComponent(shikimoriId)}`, 4500);
+        const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?shikimori_id=${encodeURIComponent(shikimoriId)}`, 7000);
         if (res.ok) {
           const data = await res.json();
           if (data && Array.isArray(data.results) && data.results.length > 0) {
@@ -4089,11 +4130,24 @@ const urlParams = new URLSearchParams(window.location.search);
         }
       } catch (_) {}
 
-      // 2. Прямой запрос к kodikapi.com с перебором рабочих токенов по shikimori_id
-      for (const token of KODIK_TOKENS) {
-        const apiUrl = `https://kodikapi.com/search?token=${token}&shikimori_id=${encodeURIComponent(shikimoriId)}&with_episodes=true&with_material_data=true&limit=100`;
+      // 2. Поиск по названию через Cloudflare Worker, если по ID не нашлось
+      const searchTitle = titleRu || titleEn;
+      if (searchTitle) {
         try {
-          const res = await fetchWithTimeout(apiUrl, 4500);
+          const res = await fetchWithTimeout(`${BACKEND_URL}/api/kodik-search?title=${encodeURIComponent(searchTitle)}`, 6000);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.results) && data.results.length > 0) {
+              return data.results;
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 3. Прямой запрос к рабочему зеркалу kodik-api.com (с дефисом!)
+      for (const token of KODIK_TOKENS.slice(0, 2)) {
+        try {
+          const res = await fetchWithTimeout(`https://kodik-api.com/search?token=${token}&shikimori_id=${encodeURIComponent(shikimoriId)}&with_episodes=true&with_material_data=true&limit=100`, 4500);
           if (res.ok) {
             const data = await res.json();
             if (data && Array.isArray(data.results) && data.results.length > 0) {
@@ -4103,31 +4157,6 @@ const urlParams = new URLSearchParams(window.location.search);
           }
         } catch (_) {}
       }
-
-      // 3. Поиск по названию, если по shikimori_id пусто
-      const candidateTitles = [titleRu, titleEn].filter(t => t && t.length > 1);
-      for (const searchTitle of candidateTitles) {
-        for (const token of KODIK_TOKENS.slice(0, 2)) {
-          const apiUrl = `https://kodikapi.com/search?token=${token}&title=${encodeURIComponent(searchTitle)}&with_episodes=true&limit=50`;
-          try {
-            const res = await fetchWithTimeout(apiUrl, 4500);
-            if (res.ok) {
-              const data = await res.json();
-              if (data && Array.isArray(data.results) && data.results.length > 0) {
-                activeKodikToken = token;
-                return data.results;
-              }
-            }
-          } catch (_) {}
-        }
-      }
-
-      // 4. Резерв через CORS прокси
-      try {
-        const fallbackUrl = `https://kodikapi.com/search?token=${activeKodikToken}&shikimori_id=${encodeURIComponent(shikimoriId)}&with_episodes=true&with_material_data=true`;
-        const data = await fetchProxyJson(fallbackUrl);
-        if (data && Array.isArray(data.results)) return data.results;
-      } catch (_) {}
 
       return [];
     }
@@ -4180,7 +4209,8 @@ const urlParams = new URLSearchParams(window.location.search);
         } catch (e) {}
       }
 
-      state.currentAnimeFull = detailedItem;
+      // Сразу инициализируем variants, чтобы никогда не возникало ошибки reading '0' of undefined
+      state.currentAnimeFull = parseKodikVariants(detailedItem, []);
       state.currentEpisodeNum = 1;
       state.currentVariantIndex = 0;
       updateFavIconState();
@@ -4263,7 +4293,6 @@ const urlParams = new URLSearchParams(window.location.search);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // === ПЕРСОНАЖИ И МОДАЛКА ===
     function renderCharactersGrid(rolesList) {
       const section = document.getElementById('charactersSection');
       const grid = document.getElementById('charactersGrid');
@@ -4498,7 +4527,7 @@ const urlParams = new URLSearchParams(window.location.search);
 
     function parseKodikVariants(baseItem, results) {
       let variants = [];
-      for (const r of results) {
+      for (const r of (results || [])) {
         const translation = r.translation || { id: 0, title: 'Оригинал', type: 'voice' };
         const episodes = {};
         if (r.seasons) {
@@ -4546,10 +4575,18 @@ const urlParams = new URLSearchParams(window.location.search);
       return { ...baseItem, variants };
     }
 
+    function ensureVariantsInitialized() {
+      if (state.currentAnimeFull && (!Array.isArray(state.currentAnimeFull.variants) || state.currentAnimeFull.variants.length === 0)) {
+        state.currentAnimeFull = parseKodikVariants(state.currentAnimeFull, []);
+        state.currentVariantIndex = 0;
+      }
+    }
+
     function renderVoiceChips() {
+      ensureVariantsInitialized();
       const container = document.getElementById('voiceList');
       container.innerHTML = '';
-      const variants = state.currentAnimeFull.variants;
+      const variants = state.currentAnimeFull.variants || [];
       document.getElementById('voicesCount').textContent = variants.length;
 
       variants.forEach((v, idx) => {
@@ -4568,9 +4605,10 @@ const urlParams = new URLSearchParams(window.location.search);
     }
 
     function renderEpisodesGrid() {
+      ensureVariantsInitialized();
       const grid = document.getElementById('episodesGrid');
       grid.innerHTML = '';
-      const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
+      const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
       if (!variant) return;
 
       const epNumbers = Object.keys(variant.episodes).sort((a, b) => Number(a) - Number(b));
@@ -4600,36 +4638,6 @@ const urlParams = new URLSearchParams(window.location.search);
       });
     }
 
-    // === ЯДРО КАСТОМНОГО ПЛЕЕРА: ДЕКОДЕР KODIK + СБОРКА BLOB-МАНИФЕСТОВ M3U8 ===
-    function decodeKodikSrcClient(encoded) {
-      if (!encoded) return '';
-      const s = encoded.trim();
-      if (s.includes('mp4:hls:manifest')) return s.startsWith('//') ? 'https:' + s : s;
-      if (s.startsWith('//')) return 'https:' + s;
-      if (s.startsWith('http')) return s;
-
-      const shifts = [18, 13, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25];
-      for (const shift of shifts) {
-        let candidate = '';
-        for (let i = 0; i < s.length; i++) {
-          const code = s.charCodeAt(i);
-          if (code >= 97 && code <= 122) candidate += String.fromCharCode(((code - 97 + shift) % 26) + 97);
-          else if (code >= 65 && code <= 90) candidate += String.fromCharCode(((code - 65 + shift) % 26) + 65);
-          else candidate += s[i];
-        }
-        const rem = candidate.length % 4;
-        if (rem > 0) candidate += '='.repeat(4 - rem);
-        try {
-          const raw = atob(candidate).trim();
-          if (raw.includes('mp4:hls:manifest') || raw.includes('.m3u8') || raw.includes('.mp4')) {
-            return raw.startsWith('//') ? 'https:' + raw : raw;
-          }
-        } catch (_) {}
-      }
-      return '';
-    }
-
-    // Скачивает .m3u8 и заменяет относительные пути ./720.mp4... на абсолютные (как в get_m3u8_playlist из AnimeParsers)
     async function buildBlobManifestUrl(streamUrl) {
       const cleanUrl = streamUrl.startsWith('//') ? 'https:' + streamUrl : streamUrl;
       const basePath = cleanUrl.substring(0, cleanUrl.lastIndexOf('/') + 1);
@@ -4641,7 +4649,8 @@ const urlParams = new URLSearchParams(window.location.search);
       } catch (_) {}
 
       if (!m3u8Text || !m3u8Text.includes('#EXTM3U')) {
-        m3u8Text = await fetchProxyText(cleanUrl, 6500);
+        const workerRes = await fetchWithTimeout(`${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(cleanUrl)}`, 6500);
+        if (workerRes.ok) m3u8Text = await workerRes.text();
       }
 
       if (!m3u8Text || !m3u8Text.includes('#EXTM3U')) {
@@ -4705,7 +4714,6 @@ const urlParams = new URLSearchParams(window.location.search);
       }
     }
 
-    // Многоуровневый запуск потока: Прямой M3U8 -> Прокси воркера -> Локальный Blob-манифест с абсолютными путями
     function playStreamWithFallbacks(rawStreamUrl, startTime = 0, onAllFailed = null) {
       attachHlsStreamToExo(rawStreamUrl, startTime, async () => {
         try {
@@ -4727,6 +4735,7 @@ const urlParams = new URLSearchParams(window.location.search);
 
     async function loadCurrentEpisodeVideo() {
       if (!state.currentAnimeFull) return;
+      ensureVariantsInitialized();
 
       const t = i18nData[currentLang];
       const epNum = state.currentEpisodeNum || 1;
@@ -4762,21 +4771,21 @@ const urlParams = new URLSearchParams(window.location.search);
         video.removeAttribute('src');
       }
 
-      // 1. Источник MegaPlay (с поддержкой переключения 3 серверов Sub/Dub)
+      // 1. Источник MegaPlay (3 зеркала Sub/Dub)
       if (state.currentSource === 'megaplay') {
         if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'none';
         iframe.style.display = 'block';
         const lang = state.megaplayLang || 'sub';
         const mirror = state.megaplayMirror || 1;
-        const streamUrl = buildMegaPlayUrl(targetId, epNum, lang, mirror);
+        const streamUrl = buildMegaPlayUrl(state.currentAnimeFull, epNum, lang, mirror);
         openLink.href = streamUrl;
         iframe.src = streamUrl;
         saveSessionState();
         return;
       }
 
-      const variant = state.currentAnimeFull.variants[state.currentVariantIndex];
+      const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
       if (!variant) return;
 
       let rawLink = variant.episodes[String(epNum)] || variant.default_link;
@@ -4801,7 +4810,7 @@ const urlParams = new URLSearchParams(window.location.search);
         return;
       }
 
-      // 3. Кастомный плеер Komboko (в стиле ExoPlayer)
+      // 3. Кастомный плеер Komboko (ExoPlayer)
       iframe.style.display = 'none';
       iframe.src = 'about:blank';
       if (exoWrap) exoWrap.style.display = 'flex';
@@ -4812,7 +4821,47 @@ const urlParams = new URLSearchParams(window.location.search);
       const translationId = variant.translation_id || '';
       const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
 
-      function showStreamUnavailableNotice(reason = 'Не удалось декодировать прямой поток с текущего IP') {
+      function applyStreamToExoPlayer(streamData) {
+        state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
+        const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
+        if (firstUrl && firstUrl.includes('mp4:hls:manifest')) {
+          const baseFolder = firstUrl.substring(0, firstUrl.lastIndexOf('/') + 1);
+          ['360', '480', '720'].forEach(q => {
+            if (!state.currentQualities[`${q}p`]) {
+              state.currentQualities[`${q}p`] = `${baseFolder}${q}.mp4:hls:manifest.m3u8`;
+            }
+          });
+        }
+
+        if (skipOpBtn) {
+          if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
+            const [, opEnd] = streamData.skip_segments[0];
+            skipOpBtn.onclick = () => {
+              if (video) video.currentTime = opEnd;
+              showExoOverlayTemporarily();
+            };
+            skipOpBtn.textContent = 'Пропустить опенинг ⏩';
+          } else {
+            skipOpBtn.onclick = () => seekExoBy(85);
+            skipOpBtn.textContent = 'Пропустить опенинг +85с ⏩';
+          }
+        }
+
+        const bestUrl = state.currentQualities['1080p'] || state.currentQualities['720p'] || streamData.stream;
+
+        if (qSelect && Object.keys(state.currentQualities).length > 0) {
+          qSelect.innerHTML = Object.keys(state.currentQualities)
+            .sort((a, b) => parseInt(b) - parseInt(a))
+            .map(q => `<option value="${q}" ${state.currentQualities[q] === bestUrl ? 'selected' : ''}>${q}</option>`)
+            .join('');
+        }
+
+        playStreamWithFallbacks(bestUrl, 0, () => {
+          showStreamUnavailableNotice();
+        });
+      }
+
+      function showStreamUnavailableNotice(reason = 'Прямой поток недоступен') {
         if (!loader || !loaderText) return;
         if (loaderSpinner) loaderSpinner.style.display = 'none';
         loader.style.display = 'flex';
@@ -4836,52 +4885,18 @@ const urlParams = new URLSearchParams(window.location.search);
         const streamData = await streamResp.json();
 
         if (streamData && streamData.success && streamData.stream) {
-          state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
-
-          // Если в ответе есть базовый путь потока, гарантируем 360p, 480p и 720p (логика AnimeParsers)
-          const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
-          if (firstUrl && firstUrl.includes('mp4:hls:manifest')) {
-            const baseFolder = firstUrl.substring(0, firstUrl.lastIndexOf('/') + 1);
-            ['360', '480', '720'].forEach(q => {
-              if (!state.currentQualities[`${q}p`]) {
-                state.currentQualities[`${q}p`] = `${baseFolder}${q}.mp4:hls:manifest.m3u8`;
-              }
-            });
-          }
-
-          if (skipOpBtn) {
-            if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
-              const [, opEnd] = streamData.skip_segments[0];
-              skipOpBtn.onclick = () => {
-                if (video) video.currentTime = opEnd;
-                showExoOverlayTemporarily();
-              };
-              skipOpBtn.textContent = 'Пропустить опенинг ⏩';
-            } else {
-              skipOpBtn.onclick = () => seekExoBy(85);
-              skipOpBtn.textContent = 'Пропустить опенинг +85с ⏩';
-            }
-          }
-
-          const bestUrl = state.currentQualities['720p'] || state.currentQualities['1080p'] || streamData.stream;
-
-          if (qSelect && Object.keys(state.currentQualities).length > 0) {
-            qSelect.innerHTML = Object.keys(state.currentQualities)
-              .sort((a, b) => parseInt(b) - parseInt(a))
-              .map(q => `<option value="${q}" ${state.currentQualities[q] === bestUrl ? 'selected' : ''}>${q}</option>`)
-              .join('');
-          }
-
-          playStreamWithFallbacks(bestUrl, 0, () => {
-            showStreamUnavailableNotice();
-          });
-          return;
-        } else if (streamData && streamData.error) {
-          showStreamUnavailableNotice(streamData.error);
+          applyStreamToExoPlayer(streamData);
           return;
         }
       } catch (err) {
-        console.warn('Ошибка получения HLS потока:', err);
+        console.warn('Воркер Kodik не ответил, проверяем прямой поток AniLiberty:', err);
+      }
+
+      // Автоматический резерв: прямой 1080p HLS поток через AniLiberty (работает без прокси и воркеров)
+      const anilibriaStream = await fetchAniLibertyDirectStream(state.currentAnimeFull, epNum);
+      if (anilibriaStream && anilibriaStream.stream) {
+        applyStreamToExoPlayer(anilibriaStream);
+        return;
       }
 
       showStreamUnavailableNotice();

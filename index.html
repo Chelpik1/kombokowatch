@@ -5019,7 +5019,32 @@ async function loadCurrentEpisodeVideo() {
       if (cdnhubWrap) cdnhubWrap.style.display = 'none';
       if (loader) loader.style.display = 'none';
 
-      // === ИСТОЧНИК CDNHUB (CDN Video Hub Web Component) ===
+      // Объявляем вспомогательные функции прямо здесь, чтобы не было ReferenceError
+      function showStreamUnavailableNotice(reason = 'Прямой поток недоступен') {
+        if (myLoadToken !== activeVideoLoadToken || !loader || !loaderText) return;
+        if (loaderSpinner) loaderSpinner.style.display = 'none';
+        loader.style.display = 'flex';
+        loaderText.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <span>${reason}</span>
+            <button class="md-btn md-btn-tonal" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
+              Включить плеер Kodik
+            </button>
+          </div>
+        `;
+      }
+
+      function applyStreamToExoPlayer(streamData) {
+        if (myLoadToken !== activeVideoLoadToken) return;
+        state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
+        const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
+        
+        const bestUrl = state.currentQualities['1080p'] || state.currentQualities['720p'] || firstUrl;
+        if (loader) loader.style.display = 'none';
+        playStreamWithFallbacks(bestUrl, 0, () => showStreamUnavailableNotice());
+      }
+
+      // === 1. CDNHUB ===
       if (state.currentSource === 'cdnhub') {
         if (cdnhubWrap) cdnhubWrap.style.display = 'block';
         const playerElem = document.getElementById('cdnVideoPlayerElem');
@@ -5033,7 +5058,7 @@ async function loadCurrentEpisodeVideo() {
         return;
       }
 
-      // === ИСТОЧНИК ANIBOOM ===
+      // === 2. ANIBOOM ===
       if (state.currentSource === 'aniboom') {
         if (iframe) iframe.style.display = 'block';
         const aniboomUrl = `https://aniboom.one/embed/${targetId}?episode=${epNum}`;
@@ -5043,36 +5068,23 @@ async function loadCurrentEpisodeVideo() {
         return;
       }
 
-      // === ИСТОЧНИК MEGAPLAY ===
+      // === 3. MEGAPLAY ===
       if (state.currentSource === 'megaplay') {
         if (loader) loader.style.display = 'flex';
-        if (loaderSpinner) loaderSpinner.style.display = 'block';
-        if (loaderText) loaderText.textContent = 'Подключаем международный Sub/Dub сервер...';
         if (iframe) iframe.style.display = 'block';
-
         const lang = state.megaplayLang || 'sub';
         const mirror = state.megaplayMirror || 1;
-        const mirrorBtn = document.getElementById('btnMegaMirror');
-        if (mirrorBtn) mirrorBtn.textContent = `Сервер ${mirror}`;
-
-        try {
-          const streamUrl = await buildMegaPlayUrlAsync(state.currentAnimeFull, epNum, lang, mirror);
-          if (myLoadToken !== activeVideoLoadToken) return;
-          if (loader) loader.style.display = 'none';
-          openLink.href = streamUrl;
-          iframe.src = streamUrl;
-        } catch(e) {
-          if (loaderText) loaderText.textContent = 'Ошибка загрузки MegaPlay';
-        }
+        const streamUrl = await buildMegaPlayUrlAsync(state.currentAnimeFull, epNum, lang, mirror);
+        if (loader) loader.style.display = 'none';
+        iframe.src = streamUrl;
         saveSessionState();
         return;
       }
 
-      // === ИСТОЧНИК АНИЛИБРИЯ ===
+      // === 4. АНИЛИБРИЯ (ВОЗВРАЩЕНА РАБОЧЕЙ) ===
       if (state.currentSource === 'anilibria') {
         if (exoWrap) exoWrap.style.display = 'flex';
         if (loader) loader.style.display = 'flex';
-        if (loaderSpinner) loaderSpinner.style.display = 'block';
         if (loaderText) loaderText.textContent = 'Загружаем прямой поток 1080p с сервера АниЛибрии...';
 
         try {
@@ -5102,16 +5114,13 @@ async function loadCurrentEpisodeVideo() {
         return;
       }
 
-      // Подготовка ссылки Кодика
+      // === 5. КОДИК И KOMBOKO ПЛЕЕР ===
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
       if (!variant) return;
 
       let rawLink = variant.episodes[String(epNum)] || variant.default_link;
       let cleanUrl = rawLink.startsWith('//') ? `https:${rawLink}` : rawLink;
-      cleanUrl = cleanUrl
-        .replace('kodik.info', 'kodikplayer.com')
-        .replace('kodikdb.com', 'kodikplayer.com')
-        .replace('cloud.kodik-storage.com', 'kodikplayer.com');
+      cleanUrl = cleanUrl.replace('kodik.info', 'kodikplayer.com');
 
       if (cleanUrl.includes('episode=')) cleanUrl = cleanUrl.replace(/episode=\d+/, `episode=${epNum}`);
       else cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + `episode=${epNum}`;
@@ -5119,23 +5128,18 @@ async function loadCurrentEpisodeVideo() {
       openLink.href = cleanUrl;
       saveSessionState();
 
-      // === КОДИК IFRAME ===
       if (state.currentSource === 'kodik') {
         if (iframe) iframe.style.display = 'block';
         iframe.src = cleanUrl;
         return;
       }
 
-      // === КАСТОМНЫЙ ПЛЕЕР KOMBOKO (EXO) ===
       if (exoWrap) exoWrap.style.display = 'flex';
       if (loader) loader.style.display = 'flex';
-      if (loaderSpinner) loaderSpinner.style.display = 'block';
-      if (loaderText) loaderText.innerHTML = `Подключаем поток «${variant.translation.title}» без рекламы...`;
-
-      const translationId = variant.translation_id || '';
-      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
+      if (loaderText) loaderText.textContent = `Подключаем поток «${variant.translation.title}»...`;
 
       try {
+        const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&link=${encodeURIComponent(cleanUrl)}`;
         const streamResp = await fetchWithTimeout(streamApiUrl, 12000);
         const streamData = await streamResp.json();
         if (myLoadToken !== activeVideoLoadToken) return;
@@ -5144,13 +5148,11 @@ async function loadCurrentEpisodeVideo() {
           applyStreamToExoPlayer(streamData);
           return;
         }
-      } catch (err) {
-        console.warn('Воркер Kodik не отдал поток:', err);
-      }
+      } catch (err) {}
 
-      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP воркера');
+      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ с IP воркера');
     }
-
+    
     function stepEpisode(delta) {
       if (!state.currentAnimeFull) return;
       ensureVariantsInitialized();

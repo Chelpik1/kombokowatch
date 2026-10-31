@@ -1759,7 +1759,6 @@
           <option value="aired_on" data-i18n="orderNew">По новизне</option>
         </select>
       </div>
-      <script src="https://player.cdnvideohub.com/s2/stable/video-player.umd.js"></script>
     </header>
 
     <!-- Каталог -->
@@ -4966,6 +4965,28 @@
     function playStreamWithFallbacks(rawStreamUrl, startTime = 0, onAllFailed = null) {
       attachHlsStreamToExo(rawStreamUrl, startTime, async () => {
         try {
+          // If raw stream failed, try proxying via API_BASE
+          if (!rawStreamUrl.includes('/api/proxy/m3u8')) {
+            const proxied = `${API_BASE}/api/proxy/m3u8?url=${encodeURIComponent(rawStreamUrl)}&referer=${encodeURIComponent('https://kodikplayer.com/')}`;
+            attachHlsStreamToExo(proxied, startTime, async () => {
+              try {
+                const blobUrl = await buildBlobManifestUrl(rawStreamUrl);
+                attachHlsStreamToExo(blobUrl, startTime, () => {
+                  const workerProxyUrl = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(rawStreamUrl)}`;
+                  attachHlsStreamToExo(workerProxyUrl, startTime, () => {
+                    if (onAllFailed) onAllFailed();
+                  });
+                });
+              } catch (_) {
+                const workerProxyUrl = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(rawStreamUrl)}`;
+                attachHlsStreamToExo(workerProxyUrl, startTime, () => {
+                  if (onAllFailed) onAllFailed();
+                });
+              }
+            });
+            return;
+          }
+
           const blobUrl = await buildBlobManifestUrl(rawStreamUrl);
           attachHlsStreamToExo(blobUrl, startTime, () => {
             const workerProxyUrl = `${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(rawStreamUrl)}`;
@@ -5028,7 +5049,7 @@
         if (myLoadToken !== activeVideoLoadToken) return;
         state.currentQualities = streamData.raw_qualities || streamData.qualities || {};
         const firstUrl = Object.values(state.currentQualities)[0] || streamData.stream;
-        if (firstUrl && firstUrl.includes('mp4:hls:manifest')) {
+        if (firstUrl && typeof firstUrl === 'string' && firstUrl.startsWith('http') && firstUrl.includes('mp4:hls:manifest')) {
           const baseFolder = firstUrl.substring(0, firstUrl.lastIndexOf('/') + 1);
           ['360', '480', '720'].forEach(q => {
             if (!state.currentQualities[`${q}p`]) {
@@ -5039,7 +5060,10 @@
 
         if (skipOpBtn) {
           if (Array.isArray(streamData.skip_segments) && streamData.skip_segments.length > 0) {
-            const [, opEnd] = streamData.skip_segments[0];
+            const firstSkip = streamData.skip_segments[0];
+            const opEnd = Array.isArray(firstSkip)
+              ? Number(firstSkip[1])
+              : (firstSkip && typeof firstSkip.end === 'number' ? firstSkip.end : 85);
             skipOpBtn.onclick = () => {
               if (video) video.currentTime = opEnd;
               showExoOverlayTemporarily();

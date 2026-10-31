@@ -4999,32 +4999,33 @@ backBtn: 'Back',
         video.removeAttribute('src');
       }
 
-      // === ИСТОЧНИК ANIBOOM ===
+// === ИСТОЧНИК ANIBOOM (Прямой iframe) ===
       if (state.currentSource === 'aniboom') {
         if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'none';
         iframe.style.display = 'block';
 
-        const aniboomUrl = `https://aniboom.one/embed/${targetId}?episode=${epNum}&translation=0`;
+        const aniboomUrl = `https://video.rhodata.uz/embed/shikimori/${targetId}?episode=${epNum}`;
         openLink.href = aniboomUrl;
         iframe.src = aniboomUrl;
         saveSessionState();
         return;
       }
 
-      // === ИСТОЧНИК COLLAPS (CVH) ===
+      // === ИСТОЧНИК COLLAPS / CVH (Прямой iframe) ===
       if (state.currentSource === 'cvh') {
         if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'none';
         iframe.style.display = 'block';
 
-        const collapsUrl = `https://collider.ws/embed/shikimori/${targetId}?episode=${epNum}`;
+        // Актуальный рабочий iframe-адрес Collaps по Shikimori ID
+        const collapsUrl = `https://apicollaps.cc/embed/shikimori/${targetId}?episode=${epNum}`;
         openLink.href = collapsUrl;
         iframe.src = collapsUrl;
         saveSessionState();
         return;
       }
-
+      
       function applyStreamToExoPlayer(streamData) {
         if (myLoadToken !== activeVideoLoadToken) return;
         state.currentQualities = streamData.raw_qualities || streamData.qualities || {};

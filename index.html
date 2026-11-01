@@ -5102,17 +5102,26 @@
         if (myLoadToken !== activeVideoLoadToken || !loader || !loaderText) return;
         if (loaderSpinner) loaderSpinner.style.display = 'none';
         loader.style.display = 'flex';
+        
+        // Текст выбранной озвучки, которую хотел посмотреть пользователь
+        const currentVariantTitle = (state.currentAnimeFull.variants && state.currentAnimeFull.variants[state.currentVariantIndex]) 
+          ? state.currentAnimeFull.variants[state.currentVariantIndex].translation.title 
+          : 'эту озвучку';
+
         loaderText.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <span>${reason}</span>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-              ${state.currentSource !== 'anilibria' ? `
-                <button class="md-btn md-btn-filled" style="height:36px; font-size:12px;" onclick="switchPlayerSource('anilibria')">
-                  Попробовать АниЛибрию 1080p
-                </button>
-              ` : ''}
-              <button class="md-btn md-btn-tonal" style="height:36px; font-size:12px;" onclick="switchPlayerSource('kodik')">
-                Включить плеер Kodik
+          <div style="display:flex; flex-direction:column; align-items:center; gap:12px; max-width: 360px; padding: 0 10px;">
+            <div style="font-size: 13.5px; font-weight: 700; color: #FFD54F; line-height: 1.4;">
+              ⚠️ Поток «${currentVariantTitle}» сейчас защищен от прямых подключений.
+            </div>
+            <div style="font-size: 12px; color: var(--color-variant); line-height: 1.35;">
+              Выберите удобный вариант просмотра:
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; width: 100%; margin-top: 4px;">
+              <button class="md-btn md-btn-filled" style="height:38px; font-size:12px; width: 100%; justify-content: center;" onclick="switchPlayerSource('anilibria')">
+                ✨ Включить АниЛибрию (1080p без рекламы)
+              </button>
+              <button class="md-btn md-btn-tonal" style="height:38px; font-size:12px; width: 100%; justify-content: center; border-color: rgba(255,255,255,0.2);" onclick="switchPlayerSource('kodik')">
+                🛡️ Включить Кодик (возможна реклама)
               </button>
             </div>
           </div>

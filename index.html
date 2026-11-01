@@ -1901,6 +1901,9 @@
           <button id="skipOpBtn" onclick="seekExoBy(85)" style="background: rgba(79, 55, 139, 0.9); color: #fff; border: 1px solid #D0BCFF; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer;">
             Пропустить опенинг ⏩
           </button>
+          <button id="pipToggleBtn" title="Картинка в картинке" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-symbols-rounded" style="font-size: 20px;">picture_in_picture_alt</span>
+          </button>
           <button onclick="toggleExoFullscreen()" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
             <span class="material-symbols-rounded" style="font-size: 20px;">fullscreen</span>
           </button>
@@ -2495,6 +2498,39 @@
       const savedTime = video ? video.currentTime : 0;
       playStreamWithFallbacks(url, savedTime);
     }
+
+    // Обработчик для Картинки в картинке (PiP) на iPhone и десктопах
+    document.addEventListener('DOMContentLoaded', () => {
+      const videoElement = document.getElementById('kombokoCustomVideo');
+      const pipButton = document.getElementById('pipToggleBtn');
+
+      if (pipButton && videoElement) {
+        pipButton.addEventListener('click', async () => {
+          try {
+            // Стандартное API (Desktop Safari, Chrome, Edge, Android)
+            if (document.pictureInPictureEnabled && !videoElement.disablePictureInPicture) {
+              if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+              } else {
+                await videoElement.requestPictureInPicture();
+              }
+            } 
+            // WebKit API (Специально для iOS Safari на iPhone / iPad)
+            else if (typeof videoElement.webkitSetPresentationMode === 'function') {
+              if (videoElement.webkitPresentationMode === 'picture-in-picture') {
+                videoElement.webkitSetPresentationMode('inline');
+              } else {
+                videoElement.webkitSetPresentationMode('picture-in-picture');
+              }
+            } else {
+              alert('Режим «Картинка в картинке» не поддерживается этим браузером (откройте сайт в Safari на iPhone)');
+            }
+          } catch (error) {
+            console.warn('Ошибка PiP режима:', error);
+          }
+        });
+      }
+    });
 
     function initExoPlayerControls() {
       const wrap = document.getElementById('exoPlayerWrap');

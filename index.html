@@ -5437,7 +5437,7 @@
         return;
       }
 
-      // === 7. КАСТОМНЫЙ ПЛЕЕР KOMBOKO (БЕЗ РЕКЛАМЫ) ===
+// === 7. КАСТОМНЫЙ ПЛЕЕР KOMBOKO (БЕЗ РЕКЛАМЫ) ===
       iframe.style.display = 'none';
       iframe.src = 'about:blank';
       if (exoWrap) exoWrap.style.display = 'flex';
@@ -5445,7 +5445,7 @@
       if (loaderSpinner) loaderSpinner.style.display = 'block';
       if (loaderText) loaderText.innerHTML = `Подключаем поток «${variant.translation.title}» без рекламы...`;
 
-      // Попытка №1: Дешифровка потока Kodik через твой server.js
+      // Попытка: Дешифровка потока выбранной озвучки Kodik через твой server.js
       try {
         const localApiUrl = `${API_BASE}/api/kodik/extract?link=${encodeURIComponent(cleanUrl)}`;
         const localResp = await fetchWithTimeout(localApiUrl, 8000);
@@ -5464,20 +5464,11 @@
         console.warn('Локальный API дешифровки Kodik:', err);
       }
 
-      // Попытка №2: Автоматический подхват 1080p потока из АниЛибрии (если IP сервера заблокирован Кодиком)
-      const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
-      if (myLoadToken !== activeVideoLoadToken) return;
-      if (release && release.episodes) {
-        const availableEps = Object.keys(release.episodes).sort((a, b) => Number(a) - Number(b));
-        const epData = release.episodes[String(epNum)] || release.episodes[availableEps[0]];
-        if (epData && epData.stream) {
-          if (exoBadge) exoBadge.textContent = `${activeTitle} (AniLibria 1080p) • ${t.epWord} ${epNum}`;
-          applyStreamToExoPlayer(epData);
-          return;
-        }
+      // ЕСПЛИ ПОТОК НЕ ДОСТУПЕН — НИЧЕГО НЕ ПЕРЕКЛЮЧАЕМ МОЛЧА!
+      // Показываем пользователю плашку выбора: АниЛибрия или Кодик с рекламой.
+      if (myLoadToken === activeVideoLoadToken) {
+        showStreamUnavailableNotice('Прямой поток для этой озвучки защищен');
       }
-
-      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP сервера');
     }
     
     function stepEpisode(delta) {

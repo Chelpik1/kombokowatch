@@ -1915,7 +1915,7 @@
               <!-- 2. Iframe плеер (для Кодик Обычный и MegaPlay) -->
               <iframe 
                 id="kodikIframe" 
-                referrerpolicy="origin"
+                referrerpolicy="no-referrer-when-downgrade"
                 allowfullscreen 
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                 style="width: 100%; height: 100%; border: none; display: none; position: relative; z-index: 2;">
@@ -4154,31 +4154,33 @@
       const malId = item.id;
       const info = await resolveAniListInfo(malId, item);
       const aniId = info.anilistId;
-      const slug = info.romajiSlug || info.englishSlug || (item.originalName || item.titleEn || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const isMovie = item.kind === 'movie';
 
-      // Сервер 1: Embed.su (быстрый, адаптивный плеер с субтитрами и дубляжом)
+      // Сервер 1: VidLink.pro (работает напрямую по MAL ID + авто-фоллбэк с dub на sub)
       if (mirrorIndex === 1) {
-        return `https://embed.su/embed/anime/${aniId || malId}/${epNum}`;
+        return `https://vidlink.pro/anime/${malId}/${epNum}/${isDub ? 'dub' : 'sub'}?fallback=true`;
       }
-      // Сервер 2: VidSrc.cc (поддерживает AniList ID и MAL ID, прямое переключение sub/dub)
+      // Сервер 2: Videasy (поддерживает AniList ID)
       if (mirrorIndex === 2) {
+        const targetId = aniId || malId;
+        return `https://player.videasy.net/anime/${targetId}/${isMovie ? 1 : epNum}?dub=${isDub ? 'true' : 'false'}`;
+      }
+      // Сервер 3: VidSrc.icu (работает по AniList ID и MAL ID)
+      if (mirrorIndex === 3) {
+        return `https://vidsrc.icu/embed/anime/${aniId || malId}/${epNum}/${isDub ? 1 : 0}`;
+      }
+      // Сервер 4: VidSrc.cc v2
+      if (mirrorIndex === 4) {
         if (aniId) return `https://vidsrc.cc/v2/embed/anime/ani${aniId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
         return `https://vidsrc.cc/v2/embed/anime/mal${malId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
       }
-      // Сервер 3: AutoEmbed / SmashyStream
-      if (mirrorIndex === 3) {
-        return `https://player.autoembed.cc/embed/anime/${aniId || malId}/${epNum}`;
+      // Сервер 5: MultiEmbed (по IMDb ID из Кодика) или резервный VidSrc v3
+      if (item.imdbId) {
+        return isMovie
+          ? `https://multiembed.mov/?video_id=${item.imdbId}`
+          : `https://multiembed.mov/?video_id=${item.imdbId}&s=1&e=${epNum}`;
       }
-      // Сервер 4: Videasy Anime Player
-      if (mirrorIndex === 4 && aniId) {
-        return `https://player.videasy.net/anime/${aniId}/${epNum}?dub=${isDub ? 'true' : 'false'}`;
-      }
-      // Сервер 5: 2Anime по чистому Romaji/English слагу
-      if (slug) {
-        const fullSlug = isDub ? `${slug}-dub` : slug;
-        return `https://2anime.xyz/embed/${fullSlug}-episode-${epNum}`;
-      }
-      return `https://vidsrc.icu/embed/anime/${aniId || malId}/${epNum}/${isDub ? 1 : 0}`;
+      return `https://vidsrc.cc/v3/embed/anime/ani${aniId || malId}/${epNum}/${isDub ? 'dub' : 'sub'}`;
     }
 
     // === СТРОГИЙ ПОИСК РЕЛИЗА АНИЛИБРИИ (ЧТОБЫ НИКОГДА НЕ ВКЛЮЧАЛОСЬ ЧУЖОЕ АНИМЕ) ===
@@ -4745,7 +4747,13 @@
 
     function parseKodikVariants(baseItem, results) {
       let variants = [];
+      let kinopoiskId = baseItem.kinopoiskId || null;
+      let imdbId = baseItem.imdbId || null;
+
       for (const r of (results || [])) {
+        if (!kinopoiskId && r.kinopoisk_id) kinopoiskId = String(r.kinopoisk_id);
+        if (!imdbId && r.imdb_id) imdbId = String(r.imdb_id);
+
         const translation = r.translation || { id: 0, title: 'Оригинал', type: 'voice' };
         const episodes = {};
         if (r.seasons) {
@@ -4790,7 +4798,7 @@
         });
       }
 
-      return { ...baseItem, variants };
+      return { ...baseItem, kinopoiskId, imdbId, variants };
     }
 
     function ensureVariantsInitialized() {
@@ -5017,6 +5025,7 @@
 
       const exoWrap = document.getElementById('exoPlayerWrap');
       const iframe = document.getElementById('kodikIframe');
+      const cdnhubWrap = document.getElementById('cdnhubPlayerWrap');
       const video = document.getElementById('kombokoCustomVideo');
       const loader = document.getElementById('videoStreamLoader');
       const loaderSpinner = document.getElementById('videoLoaderSpinner');
@@ -5025,6 +5034,8 @@
       const exoBadge = document.getElementById('exoEpBadge');
       const qSelect = document.getElementById('exoQualitySelect');
       const skipOpBtn = document.getElementById('skipOpBtn');
+
+      if (cdnhubWrap) cdnhubWrap.style.display = 'none';
 
       document.getElementById('currentEpLabel').textContent = `${t.epWord} ${epNum}`;
       if (exoBadge) {
@@ -5110,7 +5121,7 @@
         `;
       }
 
-      // === 1. ИСТОЧНИК MEGAPLAY (4 СЕРВЕРА SUB/DUB ЧЕРЕЗ ANILIST GRAPHQL) ===
+      // === 1. ИСТОЧНИК MEGAPLAY (SUB/DUB) ===
       if (state.currentSource === 'megaplay') {
         if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'flex';
@@ -5133,7 +5144,7 @@
         return;
       }
 
-      // === 2. ОТДЕЛЬНЫЙ ПЛЕЕР АНИЛИБРИЯ (КАСТОМНЫЙ СКИН EXOPLAYER 1080P) ===
+      // === 2. ОТДЕЛЬНЫЙ ПЛЕЕР АНИЛИБРИЯ (1080P) ===
       if (state.currentSource === 'anilibria') {
         iframe.style.display = 'none';
         iframe.src = 'about:blank';
@@ -5165,7 +5176,7 @@
         return;
       }
 
-      // Подготовка ссылки выбранной озвучки Kodik
+      // Подготовка базовой ссылки выбранной озвучки Kodik
       const variant = state.currentAnimeFull.variants[state.currentVariantIndex] || state.currentAnimeFull.variants[0];
       if (!variant) return;
 
@@ -5182,7 +5193,9 @@
       openLink.href = cleanUrl;
       saveSessionState();
 
-      // === ИСТОЧНИК ANIBOOM (БЕЗ РЕКЛАМЫ) ===
+      const goQuery = `q=${encodeURIComponent(state.currentAnimeFull.titleRu || activeTitle)}&orig=${encodeURIComponent(state.currentAnimeFull.originalName || '')}&episode=${epNum}`;
+
+      // === 3. ИСТОЧНИК ANIBOOM ===
       if (state.currentSource === 'aniboom') {
         iframe.style.display = 'none';
         iframe.src = 'about:blank';
@@ -5193,8 +5206,7 @@
 
         try {
           let aniboomEmbedUrl = null;
-          // Поиск через парсер AnimeGo
-          const goRes = await fetchWithTimeout(`${API_BASE}/api/animego/players?q=${encodeURIComponent(activeTitle)}&episode=${epNum}`, 7000);
+          const goRes = await fetchWithTimeout(`${API_BASE}/api/animego/players?${goQuery}`, 8000);
           if (goRes.ok) {
             const goData = await goRes.json();
             const found = (goData.players || []).find(p => p.name === 'Aniboom');
@@ -5209,7 +5221,7 @@
                 const proxyMaster = `${API_BASE}/api/proxy/m3u8?url=${encodeURIComponent(extData.stream)}&referer=${encodeURIComponent('https://aniboom.one/')}`;
                 applyStreamToExoPlayer({
                   stream: proxyMaster,
-                  qualities: extData.qualities || { '1080p': proxyMaster },
+                  qualities: { '1080p': proxyMaster },
                 });
                 return;
               }
@@ -5225,7 +5237,7 @@
         return;
       }
 
-      // === ИСТОЧНИК SIBNET (ПРЯМОЙ MP4 ПОТОК) ===
+      // === 4. ИСТОЧНИК SIBNET ===
       if (state.currentSource === 'sibnet') {
         iframe.style.display = 'none';
         iframe.src = 'about:blank';
@@ -5236,7 +5248,7 @@
 
         try {
           let sibnetEmbedUrl = null;
-          const goRes = await fetchWithTimeout(`${API_BASE}/api/animego/players?q=${encodeURIComponent(activeTitle)}&episode=${epNum}`, 7000);
+          const goRes = await fetchWithTimeout(`${API_BASE}/api/animego/players?${goQuery}`, 8000);
           if (goRes.ok) {
             const goData = await goRes.json();
             const found = (goData.players || []).find(p => p.name === 'Sibnet');
@@ -5257,6 +5269,15 @@
                 return;
               }
             }
+            // Фоллбэк: открываем штатный embed-плеер Sibnet, если прямой MP4 недоступен
+            if (myLoadToken === activeVideoLoadToken) {
+              if (exoWrap) exoWrap.style.display = 'none';
+              if (loader) loader.style.display = 'none';
+              iframe.style.display = 'block';
+              openLink.href = sibnetEmbedUrl;
+              iframe.src = sibnetEmbedUrl;
+              return;
+            }
           }
         } catch (err) {
           console.warn('Ошибка подключения Sibnet:', err);
@@ -5268,40 +5289,73 @@
         return;
       }
 
-      // === ИСТОЧНИК CDN HUB (CVH) ===
+      // === 5. ИСТОЧНИК CDN HUB (CVH) ===
       if (state.currentSource === 'cdnhub') {
         if (exoWrap) exoWrap.style.display = 'none';
+        iframe.style.display = 'none';
+        iframe.src = 'about:blank';
         if (loader) loader.style.display = 'flex';
         if (loaderSpinner) loaderSpinner.style.display = 'block';
         if (loaderText) loaderText.textContent = 'Подключаем CDN Hub...';
-        iframe.style.display = 'block';
+
+        const kpId = state.currentAnimeFull.kinopoiskId || '';
 
         try {
-          let cvhEmbedUrl = null;
-          const goRes = await fetchWithTimeout(`${API_BASE}/api/animego/players?q=${encodeURIComponent(activeTitle)}&episode=${epNum}`, 7000);
+          // Сперва проверяем наличие прямого CVH плеера на AnimeGO
+          const goRes = await fetchWithTimeout(`${API_BASE}/api/animego/players?${goQuery}`, 7000);
           if (goRes.ok) {
             const goData = await goRes.json();
             const found = (goData.players || []).find(p => p.name === 'CVH');
-            if (found && found.embedUrl) cvhEmbedUrl = found.embedUrl;
+            if (found && found.embedUrl && myLoadToken === activeVideoLoadToken) {
+              if (loader) loader.style.display = 'none';
+              iframe.style.display = 'block';
+              openLink.href = found.embedUrl;
+              iframe.src = found.embedUrl;
+              saveSessionState();
+              return;
+            }
           }
 
-          if (cvhEmbedUrl) {
-            if (loader) loader.style.display = 'none';
-            openLink.href = cvhEmbedUrl;
-            iframe.src = cvhEmbedUrl;
-            saveSessionState();
-            return;
+          // Если нет в AnimeGO — запрашиваем по Kinopoisk ID через веб-компонент CDN Video Hub
+          const cvhRes = await fetchWithTimeout(
+            `${API_BASE}/api/cdnhub/embed?shikimori_id=${encodeURIComponent(targetId)}&kp_id=${encodeURIComponent(kpId)}&q=${encodeURIComponent(activeTitle)}`,
+            6000
+          );
+          if (cvhRes.ok) {
+            const cvhData = await cvhRes.json();
+            const resolvedKpId = cvhData?.kinopoisk_id || kpId;
+            if (resolvedKpId && cdnhubWrap && myLoadToken === activeVideoLoadToken) {
+              if (loader) loader.style.display = 'none';
+              cdnhubWrap.style.display = 'block';
+              cdnhubWrap.innerHTML = `
+                <video-player
+                  id="cdnVideoPlayerElem"
+                  ident="player_1"
+                  data-publisher-id="1"
+                  data-kinopoisk-id="${resolvedKpId}"
+                  data-title="${activeTitle.replace(/"/g, '&quot;')}"
+                  style="width: 100%; height: 100%;">
+                </video-player>
+              `;
+              if (!document.getElementById('cvh-player-script')) {
+                const s = document.createElement('script');
+                s.id = 'cvh-player-script';
+                s.src = 'https://pljs.cdnvideohub.com/player.js';
+                s.async = true;
+                document.body.appendChild(s);
+              }
+              return;
+            }
           }
         } catch (e) {}
 
         if (myLoadToken === activeVideoLoadToken) {
-          if (loader) loader.style.display = 'none';
-          iframe.src = cleanUrl;
+          showStreamUnavailableNotice('Плеер CDN Hub для этого тайтла не найден');
         }
         return;
       }
 
-      // === 3. ОБЫЧНЫЙ ПЛЕЕР KODIK (IFRAME) ===
+      // === 6. ОБЫЧНЫЙ ПЛЕЕР KODIK (IFRAME) ===
       if (state.currentSource === 'kodik') {
         if (exoWrap) exoWrap.style.display = 'none';
         if (loader) loader.style.display = 'none';
@@ -5310,7 +5364,7 @@
         return;
       }
 
-      // === 4. КАСТОМНЫЙ ПЛЕЕР KOMBOKO (ПРЯМОЙ ПОТОК ВЫБРАННОЙ ОЗВУЧКИ KODIK) ===
+      // === 7. КАСТОМНЫЙ ПЛЕЕР KOMBOKO (БЕЗ РЕКЛАМЫ) ===
       iframe.style.display = 'none';
       iframe.src = 'about:blank';
       if (exoWrap) exoWrap.style.display = 'flex';
@@ -5318,27 +5372,16 @@
       if (loaderSpinner) loaderSpinner.style.display = 'block';
       if (loaderText) loaderText.innerHTML = `Подключаем поток «${variant.translation.title}» без рекламы...`;
 
-      const translationId = variant.translation_id || '';
-
-      // 1. Попытка №1: Собственный чистый API-интерфейс дешифровки Caesar Shift Kodik без рекламы
+      // Попытка №1: Дешифровка потока Kodik через твой server.js
       try {
         const localApiUrl = `${API_BASE}/api/kodik/extract?link=${encodeURIComponent(cleanUrl)}`;
         const localResp = await fetchWithTimeout(localApiUrl, 8000);
         if (localResp.ok) {
           const localData = await localResp.json();
           if (myLoadToken === activeVideoLoadToken && localData && localData.success && localData.stream) {
-            // Оборачиваем через локальный M3U8 прокси для 100% обхода CORS и проверки Referer
-            const bestRaw = localData.stream;
-            const proxiedUrl = `${API_BASE}/api/proxy/m3u8?url=${encodeURIComponent(bestRaw)}&referer=${encodeURIComponent('https://kodikplayer.com/')}`;
-            const proxiedQualities = {};
-            if (localData.qualities) {
-              for (const [qk, qv] of Object.entries(localData.qualities)) {
-                proxiedQualities[qk] = `${API_BASE}/api/proxy/m3u8?url=${encodeURIComponent(qv)}&referer=${encodeURIComponent('https://kodikplayer.com/')}`;
-              }
-            }
             applyStreamToExoPlayer({
-              stream: proxiedUrl,
-              qualities: Object.keys(proxiedQualities).length > 0 ? proxiedQualities : { '720p': proxiedUrl },
+              stream: localData.stream,
+              qualities: localData.qualities || { '720p': localData.stream },
               skip_segments: localData.skip_segments || [],
             });
             return;
@@ -5348,37 +5391,22 @@
         console.warn('Локальный API дешифровки Kodik:', err);
       }
 
-      // 2. Попытка №2: Резервный Cloudflare Worker
-      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
-
-      try {
-        const streamResp = await fetchWithTimeout(streamApiUrl, 10000);
-        const streamData = await streamResp.json();
-        if (myLoadToken !== activeVideoLoadToken) return;
-
-        if (streamData && streamData.success && streamData.stream) {
-          applyStreamToExoPlayer(streamData);
-          return;
-        }
-      } catch (err) {
-        console.warn('Резервный воркер Kodik не отдал поток:', err);
-      }
-
-      // Если в списке озвучек выбрана АниЛибрия и воркер не ответил — подхватываем точный релиз из АниЛибрии
-      const vTitleLow = String(variant.translation?.title || '').toLowerCase();
-      if (vTitleLow.includes('anilibria') || vTitleLow.includes('анилибрия') || variant.translation_id === 0) {
-        const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
-        if (myLoadToken !== activeVideoLoadToken) return;
-        const epData = release?.episodes?.[String(epNum)];
+      // Попытка №2: Автоматический подхват 1080p потока из АниЛибрии (если IP сервера заблокирован Кодиком)
+      const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
+      if (myLoadToken !== activeVideoLoadToken) return;
+      if (release && release.episodes) {
+        const availableEps = Object.keys(release.episodes).sort((a, b) => Number(a) - Number(b));
+        const epData = release.episodes[String(epNum)] || release.episodes[availableEps[0]];
         if (epData && epData.stream) {
+          if (exoBadge) exoBadge.textContent = `${activeTitle} (AniLibria 1080p) • ${t.epWord} ${epNum}`;
           applyStreamToExoPlayer(epData);
           return;
         }
       }
 
-      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP воркера');
+      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP сервера');
     }
-
+    
     function stepEpisode(delta) {
       if (!state.currentAnimeFull) return;
       ensureVariantsInitialized();

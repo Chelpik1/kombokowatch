@@ -2626,7 +2626,37 @@
           }
         }
       });
+      // === ДОБАВЛЯЕМ ОБРАБОТЧИК КАРТИНКА В КАРТИНКЕ (PiP) ДЛЯ SAFARI / iOS ===
+      const pipButton = document.getElementById('pipToggleBtn');
+      if (pipButton) {
+        pipButton.addEventListener('click', async (e) => {
+          e.stopPropagation(); // Чтобы клик не уходил на фон плеера
+          try {
+            // 1. Стандартное API (Desktop Chrome / Edge / Safari / Android)
+            if (document.pictureInPictureEnabled && !video.disablePictureInPicture) {
+              if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+              } else {
+                await video.requestPictureInPicture();
+              }
+            } 
+            // 2. WebKit API (Специально для iOS Safari на iPhone / iPad)
+            else if (typeof video.webkitSetPresentationMode === 'function') {
+              if (video.webkitPresentationMode === 'picture-in-picture') {
+                video.webkitSetPresentationMode('inline');
+              } else {
+                video.webkitSetPresentationMode('picture-in-picture');
+              }
+            } else {
+              alert('Ваш браузер не поддерживает PiP. Откройте сайт в Safari на iPhone.');
+            }
+          } catch (error) {
+            console.warn('Ошибка PiP режима:', error);
+          }
+        });
+      }
     }
+    
 
     window.addEventListener('DOMContentLoaded', async () => {
       setLanguage(currentLang);

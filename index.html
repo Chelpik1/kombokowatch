@@ -2137,12 +2137,14 @@
 
     /* === ОБСУЖДЕНИЕ НОВОСТЕЙ === */
     .news-comments-section {
-      margin-top: 26px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 32px !important;
+      padding-top: 24px !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
       display: flex;
       flex-direction: column;
       gap: 14px;
+      flex-shrink: 0 !important;
+      width: 100% !important;
     }
     .news-comments-header {
       display: flex;
@@ -4015,6 +4017,11 @@
       background: rgba(22, 17, 34, 0.98);
       backdrop-filter: blur(28px);
       -webkit-backdrop-filter: blur(28px);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
     @media (max-width: 640px) {
       .news-reader-card {
@@ -4117,18 +4124,37 @@
     }
     .news-reader-body {
       font-size: 14.5px;
-      line-height: 1.7;
+      line-height: 1.75;
       color: var(--color-surface);
-      overflow-y: auto;
-      padding-right: 4px;
+      flex-shrink: 0 !important;
+      overflow: visible !important;
+      padding: 8px 0 0 0;
+      margin: 12px 0 0 0;
       word-break: break-word;
+      min-height: 50px;
+      width: 100%;
+      display: block;
     }
     .news-reader-body img {
       max-width: 100%;
       height: auto;
       border-radius: var(--radius-md);
       border: 1px solid var(--glass-border);
-      margin: 14px auto;
+      margin: 16px auto;
+      display: block;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .news-reader-body .b-shiki_wall,
+    .news-reader-body .b-image,
+    .news-reader-body .b-video {
+      display: block;
+      margin: 14px 0;
+      max-width: 100%;
+    }
+    .news-reader-body .b-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
       display: block;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
@@ -4778,6 +4804,137 @@
       100% {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    /* Плавная кинематографичная анимация Каталога */
+    #view-catalog.catalog-view-enter {
+      animation: catalogViewSpring 0.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      will-change: transform, opacity;
+    }
+    #view-catalog.catalog-view-enter .continue-watching-section {
+      animation: catalogSubFloat 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    #view-catalog.catalog-view-enter .anime-card {
+      animation: catalogCardPop 0.52s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      animation-delay: calc(var(--card-i, 0) * 0.032s);
+    }
+
+    /* Плавная анимация перехода на вкладку Списки */
+    #view-lists.lists-view-enter {
+      animation: listsViewEnter 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      will-change: transform, opacity;
+    }
+    #view-lists.lists-view-enter .list-subtabs-wrap {
+      animation: listsPillDrop 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    #view-lists.lists-view-enter #listFilters {
+      animation: listsFiltersSlide 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    #view-lists.lists-view-enter .anime-card,
+    #view-lists.lists-view-enter .history-item {
+      animation: listCardCascade 0.48s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      animation-delay: calc(var(--card-i, 0) * 0.035s);
+    }
+
+    /* Плавная анимация перехода на вкладку Новости */
+    #view-news.news-view-enter {
+      animation: newsViewEnter 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      will-change: transform, opacity;
+    }
+    #view-news.news-view-enter .news-card {
+      animation: newsCardCascade 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      animation-delay: calc(var(--news-i, 0) * 0.038s);
+    }
+
+    @keyframes catalogViewSpring {
+      0% {
+        opacity: 0;
+        transform: translateY(24px) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes catalogSubFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes catalogCardPop {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes listsViewEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.988);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes listsPillDrop {
+      0% {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes listsFiltersSlide {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes listCardCascade {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes newsViewEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.988);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes newsCardCascade {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
       }
     }
 
@@ -8433,6 +8590,12 @@
         return;
       }
 
+      const initialCatalogView = document.getElementById('view-catalog');
+      if (initialCatalogView) {
+        initialCatalogView.classList.remove('catalog-view-enter');
+        void initialCatalogView.offsetWidth;
+        initialCatalogView.classList.add('catalog-view-enter');
+      }
       renderContinueWatchingBlock();
       fetchShikimoriCatalog(true);
     });
@@ -11348,7 +11511,7 @@
 
       const listToRender = customList || (appendOnly ? [] : state.newsState.items);
       let html = '';
-      listToRender.forEach(topic => {
+      listToRender.forEach((topic, idx) => {
         const imgUrl = getTopicImageUrl(topic);
         const author = topic.user || {};
         const authorName = author.nickname || 'Shikimori';
@@ -11393,7 +11556,7 @@
         `;
 
         html += `
-          <article class="news-card animate-fade" onclick="openNewsArticle(${topic.id})">
+          <article class="news-card animate-fade" style="--news-i: ${Math.min(idx, 16)};" onclick="openNewsArticle(${topic.id})">
             <div class="news-card-thumb-wrap">
               ${thumbHtml}
             </div>
@@ -11533,7 +11696,11 @@
       const contentEl = document.getElementById('newsReaderContent');
       const shikiLinkEl = document.getElementById('newsReaderShikiLink');
 
-      if (modal) modal.style.display = 'flex';
+      if (modal) {
+        modal.style.display = 'flex';
+        const card = modal.querySelector('.news-reader-card');
+        if (card) card.scrollTop = 0;
+      }
       currentNewsTopicId = topicId;
       loadNewsComments(topicId);
       if (contentEl) contentEl.innerHTML = `<div class="loader-box" style="padding: 40px;"><div class="spinner"></div><span>Загружаем новость...</span></div>`;
@@ -11612,13 +11779,27 @@
 
       // Подготовка контента статьи: html_body + html_footer (картинки)
       let rawHtml = (topic.html_body || '') + (topic.html_footer || '');
+      if (!rawHtml.trim() && topic.body) {
+        rawHtml = escapeHtml(topic.body)
+          .replace(/\[b\]([\s\S]*?)\[\/b\]/gi, '<strong>$1</strong>')
+          .replace(/\[i\]([\s\S]*?)\[\/i\]/gi, '<em>$1</em>')
+          .replace(/\[quote\]([\s\S]*?)\[\/quote\]/gi, '<div class="b-quote"><div class="quote-content">$1</div></div>')
+          .replace(/\[url=(.*?)\]([\s\S]*?)\[\/url\]/gi, '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>')
+          .replace(/\[anime=(\d+)\]([\s\S]*?)\[\/anime\]/gi, '<strong>$2</strong>')
+          .replace(/\[manga=(\d+)\]([\s\S]*?)\[\/manga\]/gi, '<strong>$2</strong>')
+          .replace(/\n\n/g, '<br><br>')
+          .replace(/\n/g, '<br>');
+      }
+
       // Фикс относительных картинок и ссылок Shikimori
       rawHtml = rawHtml.replace(/src=["']\/([^"']+)["']/g, 'src="https://shikimori.io/$1"');
       rawHtml = rawHtml.replace(/href=["']\/([^"']+)["']/g, 'href="https://shikimori.io/$1"');
       // Внешние ссылки открывать в новой вкладке
       rawHtml = rawHtml.replace(/<a\s+([^>]*?)href=/gi, '<a $1 target="_blank" rel="noopener noreferrer" href=');
 
-      if (contentEl) contentEl.innerHTML = rawHtml || '<p>Текст статьи пуст.</p>';
+      if (contentEl) {
+        contentEl.innerHTML = rawHtml || '<p style="color:var(--color-variant);">Текст статьи пуст.</p>';
+      }
     }
 
     let currentNewsTopicId = null;
@@ -12665,7 +12846,7 @@
       };
 
       let html = '';
-      list.forEach(item => {
+      list.forEach((item, idx) => {
         item.isNsfw = checkIsAdultItem(item);
         const idStr = String(item.id);
         state.itemsRegistry[idStr] = item;
@@ -12722,7 +12903,7 @@
         }
 
         html += `
-          <article class="anime-card animate-fade" data-anime-id="${idStr}" onclick="${clickHandler}">
+          <article class="anime-card animate-fade" style="--card-i: ${Math.min(idx, 16)};" data-anime-id="${idStr}" onclick="${clickHandler}">
             <div class="poster-wrap ${item.isNsfw ? 'nsfw-card' : ''}">
               ${posterInner}
               <div class="card-badges">
@@ -14499,16 +14680,10 @@
               <span class="material-symbols-rounded" style="font-size:16px;">${alt1.icon}</span>
               <span>${isEn ? `Switch to ${alt1.label}` : `Включить ${alt1.label}`}</span>
             </button>
-            <div class="player-error-backup-row">
-              <button type="button" class="player-error-btn backup" onclick="switchPlayerSource('${alt2.key}')" title="${alt2.label}">
-                <span class="material-symbols-rounded" style="font-size:15px;">${alt2.icon}</span>
-                <span>${alt2.label}</span>
-              </button>
-              <button type="button" class="player-error-btn backup" onclick="loadCurrentEpisodeVideo(${safeResumeTime})" title="${retryLabel}">
-                <span class="material-symbols-rounded" style="font-size:15px;">refresh</span>
-                <span>${retryLabel}</span>
-              </button>
-            </div>
+            <button type="button" class="player-error-btn backup" style="width: 100% !important; justify-content: center;" onclick="switchPlayerSource('${alt2.key}')" title="${alt2.label}">
+              <span class="material-symbols-rounded" style="font-size:15px;">${alt2.icon}</span>
+              <span>${alt2.label}</span>
+            </button>
           `;
         } else {
           actionsHtml = `
@@ -14516,16 +14691,10 @@
               <span class="material-symbols-rounded" style="font-size:16px;">refresh</span>
               <span>${retryLabel}</span>
             </button>
-            <div class="player-error-backup-row">
-              <button type="button" class="player-error-btn backup" onclick="switchPlayerSource('${alt1.key}')" title="${alt1.label}">
-                <span class="material-symbols-rounded" style="font-size:15px;">${alt1.icon}</span>
-                <span>${alt1.label}</span>
-              </button>
-              <button type="button" class="player-error-btn backup" onclick="switchPlayerSource('${alt2.key}')" title="${alt2.label}">
-                <span class="material-symbols-rounded" style="font-size:15px;">${alt2.icon}</span>
-                <span>${alt2.label}</span>
-              </button>
-            </div>
+            <button type="button" class="player-error-btn backup" style="width: 100% !important; justify-content: center;" onclick="switchPlayerSource('${alt1.key}')" title="${alt1.label}">
+              <span class="material-symbols-rounded" style="font-size:15px;">${alt1.icon}</span>
+              <span>${isEn ? `Switch to ${alt1.label}` : `Включить ${alt1.label}`}</span>
+            </button>
           `;
         }
 
@@ -14775,16 +14944,27 @@
       else if (tab === 'manga-reader') mangaReaderView.style.display = 'block';
       else if (tab === 'lists') {
         state.lastCatalogMode = 'lists';
+        listsView.classList.remove('lists-view-enter');
+        void listsView.offsetWidth;
+        listsView.classList.add('lists-view-enter');
         listsView.style.display = 'block';
         switchListsSubTab(state.currentListsSubTab || 'lists');
       }
       else if (tab === 'news') {
         state.lastCatalogMode = 'news';
-        if (newsView) newsView.style.display = 'block';
+        if (newsView) {
+          newsView.classList.remove('news-view-enter');
+          void newsView.offsetWidth;
+          newsView.classList.add('news-view-enter');
+          newsView.style.display = 'block';
+        }
         renderNewsTab();
       }
       else {
         state.lastCatalogMode = 'catalog';
+        catalogView.classList.remove('catalog-view-enter');
+        void catalogView.offsetWidth;
+        catalogView.classList.add('catalog-view-enter');
         catalogView.style.display = 'block';
       }
     }

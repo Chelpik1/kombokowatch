@@ -5176,6 +5176,212 @@
       padding: 1px 5px;
       border-radius: 4px;
     }
+
+    /* ===== МИЛЫЕ ЧИБИКИ-МАСКОТЫ ===== */
+    .chibi-modal-avatar {
+      width: 95px;
+      height: 95px;
+      object-fit: contain;
+      margin: 0 auto 10px auto;
+      display: block;
+      filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
+    }
+    .chibi-welcome-hero {
+      width: 105px;
+      height: 105px;
+      object-fit: contain;
+      margin: 0 auto 12px auto;
+      display: block;
+      filter: drop-shadow(0 8px 24px rgba(208, 188, 255, 0.45));
+      animation: chibiBounce 2.4s ease-in-out infinite;
+    }
+    .chibi-shocked {
+      width: 105px;
+      height: 105px;
+      object-fit: contain;
+      margin: 0 auto 10px auto;
+      display: block;
+      filter: drop-shadow(0 8px 24px rgba(244, 63, 94, 0.45));
+      animation: chibiShockShake 1.6s ease-in-out infinite;
+    }
+    .chibi-error-avatar {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+      animation: chibiSadFloat 2.6s ease-in-out infinite;
+    }
+    .chibi-empty-mascot {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+      margin: 0 auto 10px auto;
+      display: block;
+      filter: drop-shadow(0 8px 22px rgba(208, 188, 255, 0.3));
+      animation: chibiGentleFloat 3s ease-in-out infinite;
+    }
+    .chibi-promo-lying {
+      position: absolute;
+      top: -48px;
+      right: 20px;
+      width: 105px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.7));
+      pointer-events: none;
+      z-index: 30;
+      animation: chibiGentleFloat 3.2s ease-in-out infinite;
+    }
+    .modal-content.has-chibi-topper {
+      overflow: visible !important;
+    }
+    @media (max-width: 480px) {
+      .chibi-promo-lying {
+        width: 84px;
+        top: -40px;
+        right: 12px;
+      }
+      .chibi-welcome-hero {
+        width: 90px;
+        height: 90px;
+      }
+      .chibi-shocked {
+        width: 92px;
+        height: 92px;
+      }
+    }
+    .chibi-sitting-corner {
+      position: absolute;
+      top: -38px;
+      right: 18px;
+      width: 76px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+      pointer-events: none;
+      z-index: 15;
+      animation: chibiGentleFloat 3.6s ease-in-out infinite;
+    }
+    .chibi-rate-avatar {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      margin: 0 auto 6px auto;
+      display: block;
+      filter: drop-shadow(0 6px 16px rgba(208, 188, 255, 0.35));
+      animation: chibiGentleFloat 2.8s ease-in-out infinite;
+    }
+    .chibi-trivia-icon {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      vertical-align: middle;
+      filter: drop-shadow(0 2px 6px rgba(208, 188, 255, 0.4));
+      margin-right: 4px;
+    }
+
+    /* Floating Guide Mascot Button */
+    .chibi-floating-guide {
+      position: fixed;
+      bottom: 84px;
+      right: 18px;
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .chibi-floating-guide:hover {
+      transform: scale(1.08) translateY(-4px);
+    }
+    .chibi-floating-guide:active {
+      transform: scale(0.94);
+    }
+    .chibi-floating-img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(208, 188, 255, 0.5));
+      animation: chibiBounce 3.2s ease-in-out infinite;
+      transition: transform 0.2s ease;
+    }
+    .chibi-floating-bubble {
+      background: rgba(28, 22, 42, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border-glow);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(208, 188, 255, 0.25);
+      border-radius: 16px;
+      padding: 6px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      animation: chibiBubblePop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (max-width: 640px) {
+      .chibi-floating-guide {
+        bottom: 76px;
+        right: 12px;
+      }
+      .chibi-floating-img {
+        width: 52px;
+        height: 52px;
+      }
+      .chibi-floating-bubble {
+        display: none;
+      }
+    }
+    body.exo-fullscreen-active .chibi-floating-guide,
+    body.in-watch-mode .chibi-floating-guide,
+    :fullscreen .chibi-floating-guide,
+    :-webkit-full-screen .chibi-floating-guide {
+      display: none !important;
+    }
+
+    @keyframes chibiGentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes chibiBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-7px) scale(1.02); }
+    }
+    @keyframes chibiShockShake {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      20% { transform: translateY(-3px) rotate(-3deg); }
+      40% { transform: translateY(-1px) rotate(3deg); }
+      60% { transform: translateY(-3px) rotate(-2deg); }
+      80% { transform: translateY(-1px) rotate(2deg); }
+    }
+    @keyframes chibiSadFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(3px); }
+    }
+    @keyframes chibiBubblePop {
+      from { opacity: 0; transform: scale(0.9) translateX(8px); }
+      to { opacity: 1; transform: scale(1) translateX(0); }
+    }
+    .welcome-step-pane {
+      animation: welcomeStepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes welcomeStepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
   </style>
 </head>
 <body>
@@ -5307,6 +5513,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Чибик для оценки -->
+      <img src="/assets/aistudio/sprite_09_d0967fec.webp" class="chibi-rate-avatar" alt="Оценить" />
 
       <!-- Оценка (ползунок от 1 до 10) -->
       <div class="rate-score-section">
@@ -5543,6 +5752,7 @@
         </h3>
         <button class="modal-close" onclick="closeJoinRoomModal()"><span class="material-symbols-rounded">close</span></button>
       </div>
+      <img src="/assets/aistudio/sprite_11_8ea686eb.webp" class="chibi-modal-avatar" alt="Совместный просмотр" />
       <p style="font-size: 13px; color: var(--color-variant); margin-top: 4px;" data-i18n="joinRoomDesc">
         Введите 6-значный код комнаты, полученный от друга:
       </p>
@@ -5557,9 +5767,7 @@
   <!-- Модальное окно синхронизации между устройствами (Cross-Device Sync) -->
   <div id="crossDevicePromptModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='crossDevicePromptModal') closeCrossDevicePrompt(false)">
     <div class="modal-content animate-fade sync-prompt-card">
-      <div class="sync-prompt-icon-wrap">
-        <span class="material-symbols-rounded">devices</span>
-      </div>
+      <img src="/assets/aistudio/sprite_05_d78e1470.webp" class="chibi-modal-avatar" alt="Синхронизация" style="margin-bottom: 0;" />
       <div>
         <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);" data-i18n="crossDeviceTitle">Продолжить просмотр?</h3>
         <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.45;" data-i18n="crossDeviceDesc">
@@ -5588,8 +5796,8 @@
   <!-- Предупреждение 18+ -->
   <div id="ageModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='ageModal') confirmAgeModal(false)">
     <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center;">
-      <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">visibility_off</span>
-      <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);" data-i18n="ageTitle">Ограничение 18+</h3>
+      <img src="/assets/aistudio/sprite_14_eafb0cce.webp" class="chibi-shocked" alt="Шокированный чибик 18+" />
+      <h3 style="font-size: 18px; font-weight: 700; color: #ffb4ab;" data-i18n="ageTitle">Ограничение 18+</h3>
       <p style="font-size: 13.5px; line-height: 1.55; color: var(--color-surface);" data-i18n="ageDesc">
         Данный контент предназначен для лиц старше 18 лет. Нажимая продолжить, вы подтверждаете что вам есть 18
       </p>
@@ -5633,7 +5841,8 @@
 
   <!-- Промо-модалки -->
   <div id="promoModal-1" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-1') closePromoModal(1)">
-    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
+    <div class="modal-content animate-fade has-chibi-topper" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
+      <img src="/assets/aistudio/sprite_02_bfe62a59.webp" class="chibi-promo-lying" alt="Чибик на рекламе" />
       <button class="promo-close-btn" onclick="closePromoModal(1)"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
       <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">campaign</span>
       <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);" data-i18n="promoTgTitle">Komboko</h3>
@@ -5648,7 +5857,8 @@
   </div>
 
   <div id="promoModal-2" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-2') closePromoModal(2)">
-    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
+    <div class="modal-content animate-fade has-chibi-topper" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
+      <img src="/assets/aistudio/sprite_02_bfe62a59.webp" class="chibi-promo-lying" alt="Чибик на рекламе" />
       <button class="promo-close-btn" onclick="closePromoModal(2)"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
       <span class="material-symbols-rounded" style="font-size: 38px; color: var(--color-primary);">vpn_lock</span>
       <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);" data-i18n="promoVpnTitle">Свободный интернет</h3>
@@ -5663,7 +5873,8 @@
   </div>
 
   <div id="promoModal-3" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='promoModal-3') closePromoModal(3)">
-    <div class="modal-content animate-fade" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
+    <div class="modal-content animate-fade has-chibi-topper" style="max-width: 410px; text-align: center; align-items: center; position: relative;">
+      <img src="/assets/aistudio/sprite_02_bfe62a59.webp" class="chibi-promo-lying" alt="Чибик на рекламе" />
       <button class="promo-close-btn" onclick="closePromoModal(3)"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
       <span class="material-symbols-rounded" style="font-size: 38px; color: #FFD54F;">stars</span>
       <h3 style="font-size: 18px; font-weight: 700; color: var(--color-primary);" data-i18n="promoStarsTitle">Telegram Stars</h3>
@@ -5714,14 +5925,13 @@
         <div class="welcome-dot" id="welcomeDot-2"></div>
         <div class="welcome-dot" id="welcomeDot-3"></div>
         <div class="welcome-dot" id="welcomeDot-4"></div>
+        <div class="welcome-dot" id="welcomeDot-5"></div>
       </div>
 
       <!-- Шаг 1: Выбор языка / Choose language -->
       <div id="welcomeStep-1" class="welcome-step-pane">
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: rgba(208, 188, 255, 0.15); border: 1.5px solid var(--color-primary); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
-            <span class="material-symbols-rounded" style="font-size: 32px;">language</span>
-          </div>
+          <img src="/assets/aistudio/sprite_07_bc5cc640.webp" class="chibi-welcome-hero" alt="Привет!" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;">Выберите язык / Choose language</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;">
             Выберите предпочитаемый язык интерфейса / Select your preferred interface language
@@ -5741,12 +5951,44 @@
         </div>
       </div>
 
-      <!-- Шаг 2: Плееры и советы -->
+      <!-- Шаг 2: Знакомство с Боку -->
       <div id="welcomeStep-2" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: rgba(208, 188, 255, 0.15); border: 1.5px solid var(--color-primary); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
-            <span class="material-symbols-rounded" style="font-size: 32px;">smart_display</span>
+          <img src="/assets/aistudio/sprite_07_bc5cc640.webp" class="chibi-welcome-hero" alt="Привет от Боку!" />
+          <h3 style="font-size: 20px; font-weight: 800; color: #fff;">Привет! Я Боку 💜</h3>
+          <p style="font-size: 13px; color: var(--color-primary); margin-top: 3px; font-weight: 700;">
+            Твой путеводитель по сайту Komboko
+          </p>
+          <p style="font-size: 12.5px; color: var(--color-variant); margin-top: 6px; line-height: 1.45;">
+            Я помогу тебе находить лучшие тайтлы, подскажу, если плеер закапризничает, и подберу аниме точно под твой вкус!
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="welcome-feature-box">
+            <span class="material-symbols-rounded" style="color: #c084fc; font-size: 22px;">auto_awesome</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong>Умный подбор от Боку:</strong> Подбираю тайтлы по твоим спискам Shikimori, любимым жанрам и рейтингу.
+            </div>
           </div>
+          <div class="welcome-feature-box">
+            <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">support_agent</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong>Всегда на связи:</strong> Я живу в правом нижнем углу сайта — нажми на меня за подсказкой или советом.
+            </div>
+          </div>
+          <div class="welcome-feature-box">
+            <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">mood</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong>Живые эмоции:</strong> Делюсь настроением, показываю статус серии и предупреждаю об ограничениях.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Шаг 3: Плееры и советы -->
+      <div id="welcomeStep-3" class="welcome-step-pane" style="display: none;">
+        <div style="text-align: center; margin-bottom: 12px;">
+          <img src="/assets/aistudio/sprite_05_d78e1470.webp" class="chibi-welcome-hero" alt="Советы" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;" data-i18n="welcomeTitle2">Плееры и источники</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;" data-i18n="welcomeDesc2">
             В тайтлах доступно сразу 4 источника видео. Если плеер не грузит — воспользуйтесь советами:
@@ -5768,12 +6010,10 @@
         </div>
       </div>
 
-      <!-- Шаг 3: Списки, Манга и Совместный просмотр -->
-      <div id="welcomeStep-3" class="welcome-step-pane" style="display: none;">
+      <!-- Шаг 4: Списки, Манга и Совместный просмотр -->
+      <div id="welcomeStep-4" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 12px;">
-          <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: rgba(208, 188, 255, 0.15); border: 1.5px solid var(--color-primary); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
-            <span class="material-symbols-rounded" style="font-size: 32px;">groups</span>
-          </div>
+          <img src="/assets/aistudio/sprite_11_8ea686eb.webp" class="chibi-welcome-hero" alt="Синхронизация" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;" data-i18n="welcomeTitle3">Синхронизация и фичи</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;" data-i18n="welcomeDesc3">
             Войдите через Shikimori, чтобы синхронизировать списки, отмечать просмотренные серии в один клик и смотреть аниме вместе с друзьями в комнатах.
@@ -5795,12 +6035,10 @@
         </div>
       </div>
 
-      <!-- Шаг 4: Подписка на Telegram -->
-      <div id="welcomeStep-4" class="welcome-step-pane" style="display: none;">
+      <!-- Шаг 5: Подписка на Telegram -->
+      <div id="welcomeStep-5" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 14px;">
-          <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: rgba(208, 188, 255, 0.15); border: 1.5px solid var(--color-primary); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
-            <span class="material-symbols-rounded" style="font-size: 32px;">campaign</span>
-          </div>
+          <img src="/assets/aistudio/sprite_04_afb8ee73.webp" class="chibi-welcome-hero" alt="Telegram" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;" data-i18n="welcomeTitle4">Мы в Telegram</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;" data-i18n="welcomeDesc4">
             Перед тем как перейти к просмотру, подпишитесь на наш официальный Telegram-канал, чтобы первыми узнавать об обновлениях и зеркалах сайта!
@@ -5821,6 +6059,63 @@
         </button>
         <button id="welcomeNextBtn" class="md-btn md-btn-filled" style="height: 38px; padding: 0 18px; font-size: 12px; margin-left: 8px;" onclick="stepWelcome(1)">
           <span id="welcomeNextLabel" data-i18n="welcomeNext">Далее</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно путеводителя Боку -->
+  <div id="chibiGuideModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='chibiGuideModal') closeChibiGuideModal()">
+    <div class="modal-content animate-fade" style="max-width: 440px; text-align: center; position: relative;">
+      <button class="promo-close-btn" onclick="closeChibiGuideModal()"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
+      <img id="guideModalChibiImg" src="/assets/aistudio/sprite_10_bcbb0cee.webp" class="chibi-modal-avatar" alt="Боку" onclick="cycleChibiMascotEmotion()" style="cursor: pointer;" title="Нажми на меня!" />
+      <h3 style="font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px;">Боку — твой путеводитель</h3>
+      <p id="guideSpeechBubble" style="font-size: 13px; color: var(--color-primary); background: rgba(208, 188, 255, 0.1); border: 1px solid var(--glass-border-glow); padding: 8px 14px; border-radius: var(--radius-md); margin: 8px 0 16px; font-weight: 600; line-height: 1.45;">
+        «Привет! Я Боку, твой путеводитель по сайту Komboko!»
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 16px;">
+        <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(5)" style="cursor: pointer;">
+          <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">swap_horiz</span>
+          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+            <strong>4 источника видео:</strong> Komboko, АниЛибрия, Kodik и MegaPlay переключаются прямо над плеером.
+          </div>
+        </div>
+        <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(11)" style="cursor: pointer;">
+          <span class="material-symbols-rounded" style="color: #c084fc; font-size: 22px;">groups</span>
+          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+            <strong>Совместный просмотр:</strong> Жми кнопку «Комната» в плеере и смотри аниме синхронно с друзьями!
+          </div>
+        </div>
+        <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(9)" style="cursor: pointer;">
+          <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">stars</span>
+          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+            <strong>Синхронизация Shikimori:</strong> Авторизуйся, чтобы вести списки «Смотрю/В планах» и ставить оценки.
+          </div>
+        </div>
+      </div>
+
+      <!-- Блок предложения авторизации для незарегистрированных пользователей -->
+      <div id="bokuAuthSuggestionBox" style="display: none; background: rgba(208, 188, 255, 0.08); border: 1px dashed var(--color-primary); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px; text-align: center;">
+        <p id="bokuAuthSuggestionText" style="font-size: 12.5px; color: #fff; line-height: 1.45; margin-bottom: 10px;">
+          Чтобы я мог подбирать аниме точно под твой вкус по спискам Shikimori, авторизуйся на сайте! А пока держи шедевр с высоким рейтингом:
+        </p>
+        <div style="display: flex; gap: 8px;">
+          <button class="md-btn md-btn-filled" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="redirectToShikimoriLogin()">
+            <span class="material-symbols-rounded" style="font-size: 15px;">login</span> Войти
+          </button>
+          <button class="md-btn md-btn-tonal" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="pickHighRatedRandomMasterpiece()">
+            <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span> Шедевр
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; width: 100%;">
+        <button class="md-btn md-btn-tonal" style="flex: 1; height: 40px; font-size: 12px;" onclick="cycleChibiMascotEmotion()">
+          <span class="material-symbols-rounded" style="font-size: 16px;">mood</span> Настроение Боку
+        </button>
+        <button class="md-btn md-btn-filled" id="bokuRandomBtn" style="flex: 1; height: 40px; font-size: 12px;" onclick="pickRandomAnimeByChibi()">
+          <span class="material-symbols-rounded" style="font-size: 16px;">casino</span> Случайное от Боку
         </button>
       </div>
     </div>
@@ -6446,9 +6741,7 @@
     <section id="view-news" style="display: none;">
       <!-- Заглушка если не авторизован -->
       <div id="newsAuthPrompt" class="news-auth-card animate-fade" style="display: none;">
-        <div class="news-auth-icon-wrap">
-          <span class="material-symbols-rounded">newspaper</span>
-        </div>
+        <img src="/assets/aistudio/sprite_13_19327248.webp" class="chibi-empty-mascot" alt="Грустный чибик" />
         <h2 class="news-auth-title" data-i18n="newsAuthTitle">Новости Shikimori</h2>
         <p class="news-auth-desc" data-i18n="newsAuthDesc">
           Раздел с актуальными новостями, анонсами и статьями об аниме доступен только авторизованным пользователям. Войдите через аккаунт Shikimori, чтобы быть в курсе всех событий индустрии.
@@ -7043,7 +7336,7 @@
 
     function updateWelcomeStepUI() {
       const step = state.welcomeStep || 1;
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 5; i++) {
         const pane = document.getElementById(`welcomeStep-${i}`);
         const dot = document.getElementById(`welcomeDot-${i}`);
         if (pane) pane.style.display = i === step ? 'block' : 'none';
@@ -7054,14 +7347,14 @@
       const skipBtn = document.getElementById('welcomeSkipBtn');
       const t = i18nData[currentLang] || i18nData.ru;
       if (backBtn) backBtn.style.display = step > 1 ? 'inline-flex' : 'none';
-      if (skipBtn) skipBtn.style.display = step < 4 ? 'inline-flex' : 'none';
-      if (nextLabel) nextLabel.textContent = step === 4 ? (t.welcomeFinish || 'Начать просмотр') : (t.welcomeNext || 'Далее');
+      if (skipBtn) skipBtn.style.display = step < 5 ? 'inline-flex' : 'none';
+      if (nextLabel) nextLabel.textContent = step === 5 ? (t.welcomeFinish || 'Начать просмотр') : (t.welcomeNext || 'Далее');
     }
 
     function stepWelcome(delta) {
       const next = (state.welcomeStep || 1) + delta;
       if (next < 1) return;
-      if (next > 4) {
+      if (next > 5) {
         closeWelcomeModal(true);
         return;
       }
@@ -10207,7 +10500,7 @@
     function closeSocialModalOnOutside(e) { if (e.target.id === 'infoModal') closeSocialModal(); }
 
     function isAnyPromoOrSystemModalOpen() {
-      const modalIds = ['promoModal-1', 'promoModal-2', 'promoModal-3', 'ageModal', 'logoutModal', 'welcomeModal', 'infoModal', 'termsModal', 'joinRoomModal'];
+      const modalIds = ['promoModal-1', 'promoModal-2', 'promoModal-3', 'ageModal', 'logoutModal', 'welcomeModal', 'infoModal', 'termsModal', 'joinRoomModal', 'chibiGuideModal'];
       return modalIds.some(id => {
         const el = document.getElementById(id);
         return el && el.style.display === 'flex';
@@ -11908,8 +12201,9 @@
       if (!token || !state.currentUser) {
         filtersBar.style.display = 'none';
         grid.innerHTML = `
-          <div class="loader-box" style="gap: 16px; grid-column: 1/-1;">
-            <p style="color: var(--color-surface); font-size: 15px; text-align: center;">${t.authRequired}</p>
+          <div class="loader-box" style="gap: 16px; grid-column: 1/-1; padding: 36px 16px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+            <img src="/assets/aistudio/sprite_13_19327248.webp" class="chibi-empty-mascot" alt="Грустный чибик" />
+            <p style="color: var(--color-surface); font-size: 15px; text-align: center; max-width: 320px; line-height: 1.5; margin: 0 auto;">${t.authRequired}</p>
             <button class="md-btn md-btn-filled" onclick="redirectToShikimoriLogin()">${t.loginBtn}</button>
           </div>
         `;
@@ -11931,7 +12225,12 @@
           const listItems = gItems.map(item => parseAnimeItem(item));
           renderGrid(listItems, 'userListsGrid', false);
         } else {
-          grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">${t.emptyText}</p>`;
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 42px 16px; text-align: center; gap: 12px;">
+              <img src="/assets/aistudio/sprite_13_19327248.webp" class="chibi-empty-mascot" alt="Грустный чибик" />
+              <p style="color: var(--color-variant); font-size: 14.5px; max-width: 320px; line-height: 1.5;">${t.emptyText || 'В этом списке пока ничего нет...'}</p>
+            </div>
+          `;
         }
       } catch (err) {
         grid.innerHTML = `<p style="grid-column:1/-1; color:#F2B8B5; text-align:center;">Error</p>`;
@@ -12828,7 +13127,12 @@
 
       if (!list || list.length === 0) {
         if (!append) {
-          grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--color-variant); text-align:center;">${t.emptyText}</p>`;
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 16px; text-align: center; gap: 14px;">
+              <img src="/assets/aistudio/sprite_16_1c0db8e6.webp" class="chibi-empty-mascot" alt="Ничего не найдено" />
+              <p style="color: var(--color-variant); font-size: 15px; max-width: 340px; line-height: 1.5;">${t.emptyText || 'Ничего не найдено...'}</p>
+            </div>
+          `;
         }
         return;
       }
@@ -14701,7 +15005,7 @@
         loaderText.innerHTML = `
           <div class="player-stage-error">
             <div class="player-error-header">
-              <span class="material-symbols-rounded player-error-icon">${iconName}</span>
+              <img src="/assets/aistudio/sprite_13_19327248.webp" class="chibi-error-avatar" alt="Грустный чибик" />
               <div class="player-error-header-text">
                 <div class="player-error-title">${titleText}</div>
                 <div class="player-error-subtitle">${subtitleText}</div>
@@ -14967,8 +15271,205 @@
         catalogView.classList.add('catalog-view-enter');
         catalogView.style.display = 'block';
       }
+
+      // Скрываем плавающего чибика в режиме просмотра видео, чтобы не мешать зрителю
+      document.body.classList.toggle('in-watch-mode', tab === 'watch' || tab === 'manga-reader');
     }
+
+    // === БОКУ — ПУТЕВОДИТЕЛЬ И ИНТЕРАКТИВНЫЙ КОМПАНЬОН ===
+    const CHIBI_MASCOTS = [
+      { id: 10, src: '/assets/aistudio/sprite_10_bcbb0cee.webp', quote: '«Боку на связи! Если плеер завис — попробуйте переключить источник на Анилибрию или отключить VPN!»', bubble: '💡 Совет от Боку!' },
+      { id: 7,  src: '/assets/aistudio/sprite_07_bc5cc640.webp', quote: '«Привет-привет! Я Боку, рада видеть тебя на Komboko! Приятного просмотра аниме!»', bubble: '👋 Привет от Боку!' },
+      { id: 11, src: '/assets/aistudio/sprite_11_8ea686eb.webp', quote: '«Урааа! Не забудь позвать друзей в комнату Watch Party для синхронного просмотра!»', bubble: '🎉 Зови друзей в комнату!' },
+      { id: 4,  src: '/assets/aistudio/sprite_04_afb8ee73.webp', quote: '«Стильный выбор! Загляни в наш Telegram за актуальными новостями и новыми зеркалами!»', bubble: '😎 Мы в Telegram!' },
+      { id: 9,  src: '/assets/aistudio/sprite_09_d0967fec.webp', quote: '«Оценивай просмотренные тайтлы в Shikimori, мне очень интересно твое мнение... 👉👈»', bubble: '😳 Оценивай в Shikimori' },
+      { id: 5,  src: '/assets/aistudio/sprite_05_d78e1470.webp', quote: '«Лайфхак: двойной тап по краям плеера перематывает видео на 10 секунд вперед или назад!»', bubble: '⚡ Быстрая перемотка' },
+      { id: 1,  src: '/assets/aistudio/sprite_01_c06825a2.webp', quote: '«Уютного вечера с чашкой вкусного чая и любимым тайтлом!»', bubble: '☕ Уютного просмотра!' },
+      { id: 8,  src: '/assets/aistudio/sprite_08_6ae8b0cc.webp', quote: '«На Komboko собраны тысячи тайтлов и озвучек в высоком качестве!»', bubble: '✨ 4 источника видео' }
+    ];
+    let currentChibiIndex = 0;
+
+    function openChibiGuideModal() {
+      const modal = document.getElementById('chibiGuideModal');
+      if (modal) modal.style.display = 'flex';
+      const box = document.getElementById('bokuAuthSuggestionBox');
+      if (box) box.style.display = 'none';
+    }
+
+    function closeChibiGuideModal() {
+      closeModalWithAnim('chibiGuideModal');
+    }
+
+    function cycleChibiMascotEmotion(targetId = null, isAuto = false) {
+      if (typeof targetId === 'number') {
+        const found = CHIBI_MASCOTS.findIndex(m => m.id === targetId);
+        if (found !== -1) currentChibiIndex = found;
+      } else if (isAuto) {
+        // Выбираем случайную эмоцию, отличную от текущей
+        let nextIdx = Math.floor(Math.random() * CHIBI_MASCOTS.length);
+        if (nextIdx === currentChibiIndex) nextIdx = (nextIdx + 1) % CHIBI_MASCOTS.length;
+        currentChibiIndex = nextIdx;
+      } else {
+        currentChibiIndex = (currentChibiIndex + 1) % CHIBI_MASCOTS.length;
+      }
+
+      const mascot = CHIBI_MASCOTS[currentChibiIndex];
+      const modalImg = document.getElementById('guideModalChibiImg');
+      const floatImg = document.getElementById('chibiFloatingImg');
+      const speech = document.getElementById('guideSpeechBubble');
+      const bubble = document.getElementById('chibiFloatingBubble');
+
+      if (modalImg) {
+        modalImg.style.transform = 'scale(0.85)';
+        setTimeout(() => {
+          modalImg.src = mascot.src;
+          modalImg.style.transform = 'scale(1)';
+        }, 120);
+      }
+      if (floatImg) {
+        floatImg.style.transform = 'scale(0.85)';
+        setTimeout(() => {
+          floatImg.src = mascot.src;
+          floatImg.style.transform = 'scale(1)';
+        }, 120);
+      }
+      if (speech) speech.textContent = mascot.quote;
+      if (bubble) bubble.textContent = mascot.bubble;
+    }
+
+    // Умный подбор аниме от Боку:
+    // 1) Для зарегистрированных: по спискам Shikimori и предпочтениям
+    // 2) Если списков на Shikimori нет: подбирает случайный признанный шедевр из топа с высоким рейтингом
+    // 3) Для незарегистрированных: предлагает авторизоваться через Shikimori и даёт шедевр
+    async function pickRandomAnimeByChibi() {
+      const token = safeGet('shiki_token');
+      const user = state.currentUser;
+      const speech = document.getElementById('guideSpeechBubble');
+      const suggestionBox = document.getElementById('bokuAuthSuggestionBox');
+      const randomBtn = document.getElementById('bokuRandomBtn');
+
+      // 1. Незарегистрированный пользователь: просим авторизоваться
+      if (!token || !user) {
+        if (suggestionBox) suggestionBox.style.display = 'block';
+        if (speech) {
+          speech.innerHTML = '«Чтобы я мог подбирать аниме точно под твой вкус и по твоим спискам Shikimori, <strong>авторизуйся на сайте</strong>! А пока держи шедевр с высоким рейтингом ⭐️»';
+        }
+        cycleChibiMascotEmotion(9); // смущенный / просящий Боку
+        showToast('Боку: авторизуйся через Shikimori для умного подбора по спискам!');
+        return;
+      }
+
+      // 2. Зарегистрированный пользователь: анализируем списки Shikimori
+      if (suggestionBox) suggestionBox.style.display = 'none';
+      if (speech) speech.textContent = '«Боку изучает твои списки Shikimori и подбирает идеальный тайтл... 🔍»';
+      cycleChibiMascotEmotion(10);
+      if (randomBtn) {
+        randomBtn.disabled = true;
+        randomBtn.innerHTML = '<span class="material-symbols-rounded" style="animation: spin 1s linear infinite; font-size:16px;">sync</span> Боку ищет...';
+      }
+
+      try {
+        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${user.id}&target_type=Anime`, {
+          headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
+        });
+        const rates = await res.json();
+
+        // 2а. У пользователя есть списки на Shikimori!
+        if (Array.isArray(rates) && rates.length > 0) {
+          const planned = rates.filter(r => r.status === 'planned');
+          const watching = rates.filter(r => r.status === 'watching');
+          let pool = [];
+          let reasonText = '';
+
+          if (planned.length > 0) {
+            pool = planned;
+            reasonText = 'из твоего списка «В планах»';
+          } else if (watching.length > 0) {
+            pool = watching;
+            reasonText = 'из твоего списка «Смотрю»';
+          } else {
+            pool = rates;
+            reasonText = 'по твоим интересам в Shikimori';
+          }
+
+          const chosenRate = pool[Math.floor(Math.random() * pool.length)];
+          const gArr = await fetchGraphQLAnimes({ ids: String(chosenRate.target_id), limit: 1 });
+
+          if (gArr && gArr.length > 0) {
+            const item = parseAnimeItem(gArr[0]);
+            state.itemsRegistry[item.id] = item;
+            closeChibiGuideModal();
+            showToast(`🍿 Боку подобрал ${reasonText}: ${item.russian || item.name}!`);
+            handleCardClick(item.id);
+            return;
+          }
+        }
+
+        // 2б. Авторизован, но списки на Shikimori пусты: подбираем шедевр из топа
+        if (speech) {
+          speech.textContent = '«Твои списки на Shikimori пока пусты! Но не переживай — Боку подобрал для тебя признанный шедевр с высоким рейтингом ⭐️»';
+        }
+        showToast('✨ Списки пока пусты — Боку подобрал шедевр с высоким рейтингом!');
+        await pickHighRatedRandomMasterpiece();
+      } catch (err) {
+        console.warn('Boku recommendation error:', err);
+        await pickHighRatedRandomMasterpiece();
+      } finally {
+        if (randomBtn) {
+          randomBtn.disabled = false;
+          randomBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 16px;">casino</span> Случайное от Боку';
+        }
+      }
+    }
+
+    // Подбор случайного шедевра с высоким рейтингом (score >= 8.0)
+    async function pickHighRatedRandomMasterpiece() {
+      closeChibiGuideModal();
+      try {
+        const randomPage = Math.floor(Math.random() * 4) + 1;
+        const topItems = await fetchGraphQLAnimes({ page: randomPage, limit: 24, order: 'ranked' });
+        if (Array.isArray(topItems) && topItems.length > 0) {
+          const highRated = topItems.filter(i => (Number(i.score) || 0) >= 8.0);
+          const candidateList = highRated.length > 0 ? highRated : topItems;
+          const chosen = candidateList[Math.floor(Math.random() * candidateList.length)];
+          const item = parseAnimeItem(chosen);
+          state.itemsRegistry[item.id] = item;
+          showToast(`⭐️ Рекомендация Боку: ${item.russian || item.name} (оценка ${item.rating || '8+'})!`);
+          handleCardClick(item.id);
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to load high-rated masterpieces:', err);
+      }
+
+      // Резервный выбор из зарегистрированных тайтлов
+      const keys = Object.keys(state.itemsRegistry || {});
+      if (keys.length > 0) {
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const item = state.itemsRegistry[randomKey];
+        if (item && item.id) {
+          handleCardClick(item.id);
+          return;
+        }
+      }
+      switchTab('catalog');
+    }
+
+    // Самостоятельная смена эмоций и реплик Боку (каждые 24 секунды)
+    setInterval(() => {
+      const isWatch = document.body.classList.contains('in-watch-mode') || document.body.classList.contains('exo-fullscreen-active');
+      if (!isWatch) {
+        cycleChibiMascotEmotion(null, true);
+      }
+    }, 24000);
   </script>
+
+  <!-- Плавающий чибик Боку — путеводитель -->
+  <div id="chibiFloatingGuide" class="chibi-floating-guide" onclick="openChibiGuideModal()" title="Боку — твой путеводитель">
+    <div class="chibi-floating-bubble" id="chibiFloatingBubble">💡 Боку на связи!</div>
+    <img id="chibiFloatingImg" src="/assets/aistudio/sprite_10_bcbb0cee.webp" class="chibi-floating-img" alt="Боку" />
+  </div>
+
   <script data-goatcounter="https://c4ebuk.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

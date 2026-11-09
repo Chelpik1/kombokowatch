@@ -6046,6 +6046,10 @@
         Авторизован через Shikimori
       </p>
       <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        <a href="/collection" class="md-btn md-btn-filled" style="width: 100%; height: 42px; text-decoration: none; justify-content: center; gap: 8px;">
+          <span class="material-symbols-rounded" style="font-size: 18px;">style</span>
+          <span data-i18n="myCollectionBtn">Коллекция и карточки</span>
+        </a>
         <button class="md-btn md-btn-tonal" style="width: 100%; height: 42px;" onclick="closeLogoutModal(); switchTab('lists'); fetchUserRatesList('watching');">
           <span class="material-symbols-rounded" style="font-size: 18px;">bookmark</span>
           <span data-i18n="myListsBtn">Мои списки аниме</span>
@@ -6264,7 +6268,7 @@
     <div class="modal-content animate-fade" style="max-width: 440px; text-align: center; position: relative;">
       <button class="promo-close-btn" onclick="closeChibiGuideModal()"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
       <img id="guideModalChibiImg" src="/assets/sprite_10_bcbb0cee.webp" class="chibi-modal-avatar" alt="Боку" onclick="cycleChibiMascotEmotion()" style="cursor: pointer;" title="Нажми на меня!" />
-      <h3 style="font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px;">Боку — твоя путеводительница</h3>
+      <h3 style="font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px;" data-i18n="bokuGuideTitle">Боку — твоя путеводительница</h3>
       <p id="guideSpeechBubble" style="font-size: 13px; color: var(--color-primary); background: rgba(208, 188, 255, 0.1); border: 1px solid var(--glass-border-glow); padding: 8px 14px; border-radius: var(--radius-md); margin: 8px 0 16px; font-weight: 600; line-height: 1.45;">
         «Привет! Я Боку, твоя путеводительница по сайту Komboko! 💜»
       </p>
@@ -6273,44 +6277,50 @@
         <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(5)" style="cursor: pointer;">
           <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">swap_horiz</span>
           <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong>4 источника видео:</strong> Komboko, АниЛибрия, Kodik и MegaPlay переключаются прямо над плеером.
+            <strong data-i18n="bokuFeat1Strong">4 источника видео:</strong> <span data-i18n="bokuFeat1Desc">Komboko, АниЛибрия, Kodik и MegaPlay переключаются прямо над плеером.</span>
           </div>
         </div>
         <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(11)" style="cursor: pointer;">
           <span class="material-symbols-rounded" style="color: #c084fc; font-size: 22px;">groups</span>
           <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong>Совместный просмотр:</strong> Жми кнопку «Комната» в плеере и смотри аниме синхронно с друзьями!
+            <strong data-i18n="bokuFeat2Strong">Совместный просмотр:</strong> <span data-i18n="bokuFeat2Desc">Жми кнопку «Комната» в плеере и смотри аниме синхронно с друзьями!</span>
           </div>
         </div>
         <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(9)" style="cursor: pointer;">
           <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">stars</span>
           <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong>Синхронизация Shikimori:</strong> Авторизуйся, чтобы вести списки «Смотрю/В планах» и ставить оценки.
+            <strong data-i18n="bokuFeat3Strong">Синхронизация Shikimori:</strong> <span data-i18n="bokuFeat3Desc">Авторизуйся, чтобы вести списки «Смотрю/В планах» и ставить оценки.</span>
           </div>
         </div>
+        <a href="/collection" class="welcome-feature-box" style="cursor: pointer; text-decoration: none;">
+          <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 22px;">style</span>
+          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+            <strong data-i18n="bokuFeatureCardsTitle">Коллекция карточек:</strong> <span data-i18n="bokuFeatureCardsDesc">Смотри от 60% тайтла, получай карточки и прокачивай их в апгрейдере!</span>
+          </div>
+        </a>
       </div>
 
       <!-- Блок предложения авторизации для незарегистрированных пользователей -->
       <div id="bokuAuthSuggestionBox" style="display: none; background: rgba(208, 188, 255, 0.08); border: 1px dashed var(--color-primary); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px; text-align: center;">
-        <p id="bokuAuthSuggestionText" style="font-size: 12.5px; color: #fff; line-height: 1.45; margin-bottom: 10px;">
+        <p id="bokuAuthSuggestionText" style="font-size: 12.5px; color: #fff; line-height: 1.45; margin-bottom: 10px;" data-i18n="bokuAuthNotice">
           Чтобы я могла подбирать аниме точно под твой вкус по спискам Shikimori, авторизуйся на сайте! А пока держи шедевр с высоким рейтингом:
         </p>
         <div style="display: flex; gap: 8px;">
           <button class="md-btn md-btn-filled" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="redirectToShikimoriLogin()">
-            <span class="material-symbols-rounded" style="font-size: 15px;">login</span> Войти
+            <span class="material-symbols-rounded" style="font-size: 15px;">login</span> <span data-i18n="bokuAuthLogin">Войти</span>
           </button>
           <button class="md-btn md-btn-tonal" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="startBokuRoulette()">
-            <span class="material-symbols-rounded" style="font-size: 15px;">casino</span> Рулетка
+            <span class="material-symbols-rounded" style="font-size: 15px;">casino</span> <span data-i18n="bokuAuthRoulette">Рулетка</span>
           </button>
         </div>
       </div>
 
       <div style="display: flex; gap: 8px; width: 100%;">
         <button class="md-btn md-btn-tonal" style="flex: 1; height: 40px; font-size: 12px;" onclick="cycleChibiMascotEmotion()">
-          <span class="material-symbols-rounded" style="font-size: 16px;">mood</span> Настроение Боку
+          <span class="material-symbols-rounded" style="font-size: 16px;">mood</span> <span data-i18n="bokuMoodBtn">Настроение Боку</span>
         </button>
         <button class="md-btn md-btn-filled" id="bokuRandomBtn" style="flex: 1.2; height: 40px; font-size: 12px;" onclick="closeChibiGuideModal(); startBokuRoulette();">
-          <span class="material-symbols-rounded" style="font-size: 16px;">casino</span> Рулетка от Боку ✨
+          <span class="material-symbols-rounded" style="font-size: 16px;">casino</span> <span data-i18n="bokuRouletteBtn">Рулетка от Боку ✨</span>
         </button>
       </div>
     </div>
@@ -7274,7 +7284,20 @@
         newsCommentsTitle: 'Обсуждение',
         newsCommentsEmpty: 'Пока никто не оставил комментариев. Будьте первыми!',
         newsCommentsLoading: 'Загружаем обсуждение...',
-        selectedGenresLabel: 'выбрано'
+        selectedGenresLabel: 'выбрано',
+        myCollectionBtn: 'Коллекция и карточки',
+        bokuGuideTitle: 'Боку — твоя путеводительница',
+        bokuMoodBtn: 'Настроение Боку',
+        bokuRouletteBtn: 'Рулетка от Боку ✨',
+        bokuFeatureCardsTitle: 'Коллекция карточек:',
+        bokuFeatureCardsDesc: 'Смотри от 60% тайтла, получай карточки и прокачивай их в апгрейдере!',
+        bokuAuthNotice: 'Чтобы я могла подбирать аниме точно под твой вкус по спискам Shikimori, авторизуйся на сайте! А пока держи шедевр с высоким рейтингом:',
+        bokuAuthLogin: 'Войти',
+        bokuAuthRoulette: 'Рулетка',
+        bokuRouletteSubStatus: 'Боку запускает барабан и перебирает тайтлы... 🎲',
+        bokuWinnerLove: '«Подобрала для Вас с любовью 💜»',
+        bokuWinnerSpinAgain: 'Крутить ещё раз',
+        bokuWinnerWatchNow: 'Смотреть прямо сейчас'
       },
       en: {
         continueTitle: 'Continue Watching',
@@ -7448,7 +7471,20 @@
         welcomeTgBtn: 'Subscribe on Telegram',
         welcomeSkip: 'Skip',
         welcomeNext: 'Next',
-        welcomeFinish: 'Start Watching'
+        welcomeFinish: 'Start Watching',
+        myCollectionBtn: 'Cards & Collection',
+        bokuGuideTitle: 'Boku — Your Mascot & Guide',
+        bokuMoodBtn: 'Boku’s Mood',
+        bokuRouletteBtn: 'Boku Roulette ✨',
+        bokuFeatureCardsTitle: 'Card Collection:',
+        bokuFeatureCardsDesc: 'Watch 60%+ of any anime to unlock collectible cards and upgrade them in the upgrader!',
+        bokuAuthNotice: 'Log in with Shikimori to let me pick anime tailored to your tastes! Meanwhile, check out this top-rated masterpiece:',
+        bokuAuthLogin: 'Log In',
+        bokuAuthRoulette: 'Roulette',
+        bokuRouletteSubStatus: 'Boku is spinning the reel and choosing titles... 🎲',
+        bokuWinnerLove: '“Picked for you with love 💜”',
+        bokuWinnerSpinAgain: 'Spin again',
+        bokuWinnerWatchNow: 'Watch right now'
       }
     };
 
@@ -8030,6 +8066,10 @@
         loadAnimeStats(state.currentAnimeFull.id);
         if (state.currentRelationsData) renderRelationsList(state.currentRelationsData);
         if (state.currentCharsData) renderCharactersGrid(state.currentCharsData);
+      }
+
+      if (typeof cycleChibiMascotEmotion === 'function') {
+        cycleChibiMascotEmotion(currentChibiIndex);
       }
     }
 
@@ -10880,7 +10920,7 @@
     let lastReportedServerProgressTime = 0;
 
     function reportWatchProgressToServer(force = false) {
-      if (!state.currentUser || !state.currentAnimeFull) return;
+      if (!state.currentAnimeFull) return;
       const now = Date.now();
       if (!force && now - lastReportedServerProgressTime < 3500) return;
       lastReportedServerProgressTime = now;
@@ -10890,30 +10930,84 @@
       const dur = video ? (video.duration || 0) : 0;
       const curVariant = state.currentAnimeFull?.variants?.[state.currentVariantIndex];
 
-      const payload = {
-        userId: String(state.currentUser.id),
-        deviceId: getDeviceId(),
-        animeId: String(state.currentAnimeFull.id),
-        animeTitle: state.currentAnimeFull.titleRu || '',
-        animeTitleEn: state.currentAnimeFull.titleEn || '',
-        poster: state.currentAnimeFull.poster || '',
-        year: state.currentAnimeFull.year || '',
-        kind: state.currentAnimeFull.kind || 'TV',
-        episodes: state.currentAnimeFull.episodes || 12,
-        episode: state.currentEpisodeNum || 1,
-        time: Math.floor(cur),
-        duration: Math.floor(dur),
-        source: state.currentSource,
-        variantIndex: state.currentVariantIndex,
-        translationId: curVariant?.translation_id || curVariant?.translation?.id || null,
-        translationTitle: curVariant?.translation?.title || null
-      };
+      const devId = getDeviceId();
+      const token = safeGet('shiki_token');
 
-      fetch(apiUrl('/api/sync/progress'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
+      // 1. Синхронизация воспроизведения между устройствами (для авторизованных)
+      if (state.currentUser) {
+        const payload = {
+          userId: String(state.currentUser.id),
+          deviceId: devId,
+          animeId: String(state.currentAnimeFull.id),
+          animeTitle: state.currentAnimeFull.titleRu || '',
+          animeTitleEn: state.currentAnimeFull.titleEn || '',
+          poster: state.currentAnimeFull.poster || '',
+          year: state.currentAnimeFull.year || '',
+          kind: state.currentAnimeFull.kind || 'TV',
+          episodes: state.currentAnimeFull.episodes || 12,
+          episode: state.currentEpisodeNum || 1,
+          time: Math.floor(cur),
+          duration: Math.floor(dur),
+          source: state.currentSource,
+          variantIndex: state.currentVariantIndex,
+          translationId: curVariant?.translation_id || curVariant?.translation?.id || null,
+          translationTitle: curVariant?.translation?.title || null
+        };
+
+        fetch(apiUrl('/api/sync/progress'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      }
+
+      // 2. Честный трекинг 60% хронометража для выдачи карточки тайтла и Бококойнов
+      if (dur >= 60) {
+        const cardHeaders = {
+          'Content-Type': 'application/json',
+          'x-device-id': devId
+        };
+        if (token) cardHeaders['Authorization'] = `Bearer ${token}`;
+
+        fetch('/api/cards/track_watch', {
+          method: 'POST',
+          headers: cardHeaders,
+          body: JSON.stringify({
+            animeId: String(state.currentAnimeFull.id),
+            animeTitle: state.currentAnimeFull.titleRu || state.currentAnimeFull.russian || state.currentAnimeFull.name || 'Аниме',
+            animeTitleEn: state.currentAnimeFull.titleEn || '',
+            poster: state.currentAnimeFull.poster || '',
+            kind: state.currentAnimeFull.kind || 'TV',
+            episodes: state.currentAnimeFull.episodes || 12,
+            episode: state.currentEpisodeNum || 1,
+            currentTime: Math.floor(cur),
+            duration: Math.floor(dur),
+            deviceId: devId
+          })
+        }).then(r => r.json()).then(data => {
+          if (data && data.success && data.newlyAwarded && data.card) {
+            localStorage.setItem('komboko_quest_watched_title', 'true');
+            showCardAwardToast(data.card);
+          }
+        }).catch(() => {});
+      }
+    }
+
+    function showCardAwardToast(card) {
+      const isEn = (currentLang === 'en');
+      const title = card.title || 'Аниме';
+      const msg = isEn
+        ? `🎉 Boku: Congratulations! For watching 60%+ you earned the card "${title}" and +150 Bokocoins! 🎴`
+        : `🎉 Боку: Поздравляю! За честный просмотр 60% тайтла получена карточка «${title}» и +150 Бококойнов! 🎴`;
+
+      showToast(msg);
+      cycleChibiMascotEmotion(11);
+
+      const bubble = document.getElementById('chibiFloatingBubble');
+      if (bubble) {
+        bubble.innerHTML = `${msg} <a href="/collection" class="boku-bubble-btn" onclick="event.stopPropagation();">${isEn ? 'Collection' : 'В коллекцию'}</a>`;
+        bubble.style.display = 'inline-flex';
+      }
     }
 
     async function checkCrossDeviceProgress(userId) {
@@ -15561,14 +15655,78 @@
 
     // === БОКУ — ПУТЕВОДИТЕЛЬ И ИНТЕРАКТИВНЫЙ КОМПАНЬОН ===
     const CHIBI_MASCOTS = [
-      { id: 10, src: '/assets/sprite_10_bcbb0cee.webp', quote: '«Боку на связи! Если плеер завис — попробуйте переключить источник на Анилибрию или отключить VPN!»', bubble: '💡 Совет от Боку!' },
-      { id: 7,  src: '/assets/sprite_07_bc5cc640.webp', quote: '«Привет-привет! Я Боку, рада видеть тебя на Komboko! Приятного просмотра аниме!»', bubble: '👋 Привет от Боку!' },
-      { id: 11, src: '/assets/sprite_11_8ea686eb.webp', quote: '«Урааа! Не забудь позвать друзей в комнату Watch Party для синхронного просмотра!»', bubble: '🎉 Зови друзей в комнату!' },
-      { id: 4,  src: '/assets/sprite_04_afb8ee73.webp', quote: '«Стильный выбор! Загляни в наш Telegram за актуальными новостями и новыми зеркалами!»', bubble: '😎 Мы в Telegram!' },
-      { id: 9,  src: '/assets/sprite_09_d0967fec.webp', quote: '«Оценивай просмотренные тайтлы в Shikimori, мне очень интересно твое мнение... 👉👈»', bubble: '😳 Оценивай в Shikimori' },
-      { id: 5,  src: '/assets/sprite_05_d78e1470.webp', quote: '«Лайфхак: двойной тап по краям плеера перематывает видео на 10 секунд вперед или назад!»', bubble: '⚡ Быстрая перемотка' },
-      { id: 1,  src: '/assets/sprite_01_c06825a2.webp', quote: '«Уютного вечера с чашкой вкусного чая и любимым тайтлом!»', bubble: '☕ Уютного просмотра!' },
-      { id: 8,  src: '/assets/sprite_08_6ae8b0cc.webp', quote: '«На Komboko собраны тысячи тайтлов и озвучек в высоком качестве!»', bubble: '✨ 4 источника видео' }
+      {
+        id: 10,
+        src: '/assets/sprite_10_bcbb0cee.webp',
+        quoteRu: '«Боку на связи! Если плеер завис — попробуйте переключить источник на Анилибрию или отключить VPN!»',
+        quoteEn: '“Boku here! If the player gets stuck, try switching source to AniLibria or turning off your VPN!”',
+        bubbleRu: '💡 Совет от Боку!',
+        bubbleEn: '💡 Tip from Boku!'
+      },
+      {
+        id: 7,
+        src: '/assets/sprite_07_bc5cc640.webp',
+        quoteRu: '«Привет-привет! Я Боку, рада видеть тебя на Komboko! Приятного просмотра аниме!»',
+        quoteEn: '“Hey there! I’m Boku, so happy to see you on Komboko! Enjoy watching anime!”',
+        bubbleRu: '👋 Привет от Боку!',
+        bubbleEn: '👋 Hi from Boku!'
+      },
+      {
+        id: 11,
+        src: '/assets/sprite_11_8ea686eb.webp',
+        quoteRu: '«Урааа! Не забудь позвать друзей в комнату Watch Party для синхронного просмотра!»',
+        quoteEn: '“Yay! Don’t forget to invite friends to a Watch Party room for synced streaming!”',
+        bubbleRu: '🎉 Зови друзей в комнату!',
+        bubbleEn: '🎉 Invite friends to room!'
+      },
+      {
+        id: 4,
+        src: '/assets/sprite_04_afb8ee73.webp',
+        quoteRu: '«Стильный выбор! Загляни в наш Telegram за актуальными новостями и новыми зеркалами!»',
+        quoteEn: '“Stylish choice! Check out our Telegram for latest news and fresh mirrors!”',
+        bubbleRu: '😎 Мы в Telegram!',
+        bubbleEn: '😎 Join Telegram!'
+      },
+      {
+        id: 9,
+        src: '/assets/sprite_09_d0967fec.webp',
+        quoteRu: '«Оценивай просмотренные тайтлы в Shikimori, мне очень интересно твое мнение... 👉👈»',
+        quoteEn: '“Rate watched titles on Shikimori, I really care about your taste... 👉👈”',
+        bubbleRu: '😳 Оценивай в Shikimori',
+        bubbleEn: '😳 Rate on Shikimori'
+      },
+      {
+        id: 5,
+        src: '/assets/sprite_05_d78e1470.webp',
+        quoteRu: '«Лайфхак: двойной тап по краям плеера перематывает видео на 10 секунд вперед или назад!»',
+        quoteEn: '“Pro tip: double tap video edges to seek 10 seconds forward or backward!”',
+        bubbleRu: '⚡ Быстрая перемотка',
+        bubbleEn: '⚡ Quick seek'
+      },
+      {
+        id: 1,
+        src: '/assets/sprite_01_c06825a2.webp',
+        quoteRu: '«Уютного вечера с чашкой вкусного чая и любимым тайтлом!»',
+        quoteEn: '“Have a cozy evening with a cup of warm tea and your favorite anime!”',
+        bubbleRu: '☕ Уютного просмотра!',
+        bubbleEn: '☕ Cozy watching!'
+      },
+      {
+        id: 8,
+        src: '/assets/sprite_08_6ae8b0cc.webp',
+        quoteRu: '«На Komboko собраны тысячи тайтлов и озвучек в высоком качестве!»',
+        quoteEn: '“Komboko features thousands of titles and voice tracks in crisp HD quality!”',
+        bubbleRu: '✨ 4 источника видео',
+        bubbleEn: '✨ 4 video sources'
+      },
+      {
+        id: 12,
+        src: '/assets/sprite_12_1144c06a.webp',
+        quoteRu: '«Смотри аниме от 60% хронометража, получай коллекционные карточки и прокачивай их в апгрейдере!»',
+        quoteEn: '“Watch 60%+ of any anime to unlock collectible cards and upgrade them in the upgrader!”',
+        bubbleRu: '🎴 Карточки и апгрейдер',
+        bubbleEn: '🎴 Cards & Upgrader'
+      }
     ];
     let currentChibiIndex = 0;
 
@@ -15576,7 +15734,10 @@
       const modal = document.getElementById('chibiGuideModal');
       if (modal) modal.style.display = 'flex';
       const box = document.getElementById('bokuAuthSuggestionBox');
-      if (box) box.style.display = 'none';
+      if (box) {
+        box.style.display = state.currentUser ? 'none' : 'block';
+      }
+      cycleChibiMascotEmotion(currentChibiIndex);
     }
 
     function closeChibiGuideModal() {
@@ -15588,7 +15749,6 @@
         const found = CHIBI_MASCOTS.findIndex(m => m.id === targetId);
         if (found !== -1) currentChibiIndex = found;
       } else if (isAuto) {
-        // Выбираем случайную эмоцию, отличную от текущей
         let nextIdx = Math.floor(Math.random() * CHIBI_MASCOTS.length);
         if (nextIdx === currentChibiIndex) nextIdx = (nextIdx + 1) % CHIBI_MASCOTS.length;
         currentChibiIndex = nextIdx;
@@ -15601,6 +15761,7 @@
       const floatImg = document.getElementById('chibiFloatingImg');
       const speech = document.getElementById('guideSpeechBubble');
       const bubble = document.getElementById('chibiFloatingBubble');
+      const isEn = (currentLang === 'en');
 
       if (modalImg) {
         modalImg.style.transform = 'scale(0.85)';
@@ -15616,8 +15777,8 @@
           floatImg.style.transform = 'scale(1)';
         }, 120);
       }
-      if (speech) speech.textContent = mascot.quote;
-      if (bubble) bubble.textContent = mascot.bubble;
+      if (speech) speech.textContent = isEn ? (mascot.quoteEn || mascot.quoteRu || mascot.quote) : (mascot.quoteRu || mascot.quote);
+      if (bubble) bubble.textContent = isEn ? (mascot.bubbleEn || mascot.bubbleRu || mascot.bubble) : (mascot.bubbleRu || mascot.bubble);
     }
 
     // === РУЛЕТКА И УМНЫЙ ПОДБОР АНИМЕ ОТ БОКУ ===
@@ -15654,13 +15815,14 @@
       const subStatus = document.getElementById('rouletteSubStatus');
       const timerText = document.getElementById('rouletteTimerText');
       const mascotImg = document.getElementById('bokuRouletteMascot');
+      const isEn = (currentLang === 'en');
 
       if (modal) modal.style.display = 'flex';
       if (spinView) spinView.style.display = 'block';
       if (winnerView) winnerView.style.display = 'none';
       if (mascotImg) mascotImg.src = '/assets/sprite_10_bcbb0cee.webp';
-      if (subStatus) subStatus.textContent = 'Боку запускает барабан и перебирает тайтлы... 🎲';
-      if (timerText) timerText.textContent = 'Раскручиваем барабан аниме...';
+      if (subStatus) subStatus.textContent = isEn ? 'Boku is spinning the reel and choosing titles... 🎲' : 'Боку запускает барабан и перебирает тайтлы... 🎲';
+      if (timerText) timerText.textContent = isEn ? 'Spinning the anime reel...' : 'Раскручиваем барабан аниме...';
 
       // 1. Сбор пула тайтлов для ленты рулетки (34 элемента)
       let candidatePool = Object.values(state.itemsRegistry || {}).filter(it => it && it.poster && it.id);
@@ -15681,7 +15843,7 @@
       const token = safeGet('shiki_token');
       const user = state.currentUser;
       let targetWinner = null;
-      let recommendationReason = 'Рекомендация Боку';
+      let recommendationReason = isEn ? 'Boku Recommendation' : 'Рекомендация Боку';
 
       if (token && user) {
         try {
@@ -15693,7 +15855,9 @@
             const planned = rates.filter(r => r.status === 'planned');
             const watching = rates.filter(r => r.status === 'watching');
             let pool = planned.length > 0 ? planned : (watching.length > 0 ? watching : rates);
-            recommendationReason = planned.length > 0 ? 'Из твоего списка «В планах»' : (watching.length > 0 ? 'Из твоего списка «Смотрю»' : 'По твоим интересам');
+            recommendationReason = planned.length > 0 
+              ? (isEn ? 'From your «Planned» list' : 'Из твоего списка «В планах»')
+              : (watching.length > 0 ? (isEn ? 'From your «Watching» list' : 'Из твоего списка «Смотрю»') : (isEn ? 'Based on your interests' : 'По твоим интересам'));
             const chosenRate = pool[Math.floor(Math.random() * pool.length)];
             const gArr = await fetchGraphQLAnimes({ ids: String(chosenRate.target_id), limit: 1 });
             if (gArr && gArr.length > 0) {
@@ -15705,7 +15869,6 @@
       }
 
       if (!targetWinner) {
-        // Подбор признанного шедевра с высоким рейтингом
         try {
           const randomPage = Math.floor(Math.random() * 4) + 1;
           const topItems = await fetchGraphQLAnimes({ page: randomPage, limit: 24, order: 'ranked' });
@@ -15713,7 +15876,9 @@
             const highRated = topItems.filter(i => (Number(i.score) || 0) >= 8.0);
             const pool = highRated.length > 0 ? highRated : topItems;
             targetWinner = parseAnimeItem(pool[Math.floor(Math.random() * pool.length)]);
-            recommendationReason = (Number(targetWinner.score || targetWinner.rating) >= 8.0) ? 'Признанный шедевр (топ 8+)' : 'Популярный хит';
+            recommendationReason = (Number(targetWinner.score || targetWinner.rating) >= 8.0) 
+              ? (isEn ? 'Acclaimed Masterpiece (Top 8+)' : 'Признанный шедевр (топ 8+)')
+              : (isEn ? 'Popular Hit' : 'Популярный хит');
             state.itemsRegistry[targetWinner.id] = targetWinner;
           }
         } catch (e) {}
@@ -15721,7 +15886,7 @@
 
       if (!targetWinner && candidatePool.length > 0) {
         targetWinner = candidatePool[Math.floor(Math.random() * candidatePool.length)];
-        recommendationReason = 'Случайный выбор Боку';
+        recommendationReason = isEn ? 'Boku’s random pick' : 'Случайный выбор Боку';
       }
 
       if (!targetWinner) {
@@ -15729,11 +15894,14 @@
           id: '21',
           name: 'One Piece',
           russian: 'Ван-Пис',
+          titleEn: 'One Piece',
           poster: 'https://desu.shikimori.one/system/animes/original/21.jpg',
           score: '8.7',
           year: '1999',
-          kind: 'ТВ Сериал',
-          description: 'Гол Д. Роджер — король пиратов, стяжавший за свою жизнь богатство, славу и власть...'
+          kind: isEn ? 'TV Series' : 'ТВ Сериал',
+          description: isEn 
+            ? 'Gol D. Roger was known as the Pirate King, the strongest and most infamous being to have sailed the Grand Line...'
+            : 'Гол Д. Роджер — король пиратов, стяжавший за свою жизнь богатство, славу и власть...'
         };
       }
 
@@ -15757,7 +15925,9 @@
 
       if (strip) {
         strip.innerHTML = stripItems.map((item, idx) => {
-          const itemTitle = item.titleRu || item.russian || item.name || item.titleEn || item.originalName || 'Аниме';
+          const itemTitle = isEn
+            ? (item.titleEn || item.name || item.russian || item.titleRu || 'Anime')
+            : (item.titleRu || item.russian || item.name || item.titleEn || 'Аниме');
           return `
           <div class="roulette-item" data-index="${idx}">
             <img src="${item.poster || 'https://shikimori.io/favicons/apple-touch-icon-180x180.png'}" loading="lazy" alt="" />
@@ -15765,10 +15935,9 @@
           </div>
         `;}).join('');
 
-        // Сброс позиции барабана без анимации
         strip.style.transition = 'none';
         strip.style.transform = 'translateX(0px)';
-        void strip.offsetWidth; // force reflow
+        void strip.offsetWidth;
       }
 
       // 4. Расчет точной координаты остановки по центру визора
@@ -15778,11 +15947,9 @@
       const ITEM_GAP = 12;
       const STRIP_PADDING = 12;
       const cardCenter = STRIP_PADDING + TARGET_INDEX * (ITEM_WIDTH + ITEM_GAP) + (ITEM_WIDTH / 2);
-      // Небольшое естественное смещение внутри карточки (±12px от центра)
       const randomOffset = (Math.random() - 0.5) * 24;
       const finalTranslateX = -Math.round(cardCenter - (viewportWidth / 2) + randomOffset);
 
-      // 5. Запуск анимации вращения ровно на 4.9-5.0 секунд с плавной кривой замедления
       setTimeout(() => {
         if (strip) {
           strip.style.transition = 'transform 4.9s cubic-bezier(0.12, 0.95, 0.15, 1)';
@@ -15792,21 +15959,20 @@
 
       // Динамические статусы Боку во время вращения
       rouletteStatusTimer = setTimeout(() => {
-        if (subStatus) subStatus.textContent = 'Изучаю сюжеты, жанры и твои вкусы... ✨';
+        if (subStatus) subStatus.textContent = isEn ? 'Scanning plots, genres, and your taste... ✨' : 'Изучаю сюжеты, жанры и твои вкусы... ✨';
         if (mascotImg) mascotImg.src = '/assets/sprite_16_1c0db8e6.webp';
       }, 1600);
 
       setTimeout(() => {
-        if (subStatus) subStatus.textContent = 'Барабан замедляется... Вот же он! 🎯';
+        if (subStatus) subStatus.textContent = isEn ? 'The reel is slowing down... Here it is! 🎯' : 'Барабан замедляется... Вот же он! 🎯';
         if (mascotImg) mascotImg.src = '/assets/sprite_05_d78e1470.webp';
       }, 3400);
 
-      // 6. Окончание вращения и красивая вылетающая плашка победителя
+      // 6. Окончание вращения и карточка победителя
       setTimeout(() => {
         isRouletteSpinning = false;
         if (spinView) spinView.style.display = 'none';
-        
-        // Заполняем карточку победителя
+
         const winnerPoster = document.getElementById('rouletteWinnerPoster');
         const winnerTitle = document.getElementById('rouletteWinnerTitle');
         const winnerMeta = document.getElementById('rouletteWinnerMeta');
@@ -15816,15 +15982,18 @@
         const winnerChibi = document.getElementById('rouletteWinnerChibi');
         const winnerQuote = document.getElementById('rouletteWinnerQuote');
 
-        const resolvedWinnerTitle = targetWinner.titleRu || targetWinner.russian || targetWinner.name || targetWinner.titleEn || targetWinner.originalName || 'Аниме';
+        const resolvedWinnerTitle = isEn
+          ? (targetWinner.titleEn || targetWinner.name || targetWinner.russian || targetWinner.titleRu || 'Anime')
+          : (targetWinner.titleRu || targetWinner.russian || targetWinner.name || targetWinner.titleEn || 'Аниме');
+
         if (winnerPoster) winnerPoster.src = targetWinner.poster || '';
         if (winnerTitle) winnerTitle.textContent = resolvedWinnerTitle;
-        if (winnerMeta) winnerMeta.textContent = `${targetWinner.year || '2024'} • ${targetWinner.kind || 'ТВ Сериал'}`;
+        if (winnerMeta) winnerMeta.textContent = `${targetWinner.year || '2024'} • ${targetWinner.kind || (isEn ? 'TV Series' : 'ТВ Сериал')}`;
         if (winnerScore) winnerScore.textContent = targetWinner.score || targetWinner.rating || '8.5';
         if (winnerReason) winnerReason.textContent = recommendationReason;
-        if (winnerDesc) winnerDesc.textContent = targetWinner.description || 'Захватывающая история, которая не оставит вас равнодушным!';
+        if (winnerDesc) winnerDesc.textContent = targetWinner.description || (isEn ? 'A thrilling story that will keep you on the edge of your seat!' : 'Захватывающая история, которая не оставит вас равнодушным!');
         if (winnerChibi) winnerChibi.src = '/assets/sprite_11_8ea686eb.webp';
-        if (winnerQuote) winnerQuote.textContent = '«Подобрала для Вас с любовью 💜»';
+        if (winnerQuote) winnerQuote.textContent = isEn ? '“Picked for you with love 💜”' : '«Подобрала для Вас с любовью 💜»';
 
         if (winnerView) {
           winnerView.style.display = 'flex';
@@ -15834,7 +16003,7 @@
         }
 
         cycleChibiMascotEmotion(11);
-        showToast('✨ Боку: «Подобрала для Вас с любовью 💜»');
+        showToast(isEn ? '✨ Boku: “Picked for you with love 💜”' : '✨ Боку: «Подобрала для Вас с любовью 💜»');
       }, 5150);
     }
 
@@ -15844,7 +16013,6 @@
       startBokuRoulette();
     }
 
-    // Быстрый переход в поиск при клике на реплику Боку
     function openSearchFromBoku() {
       switchTab('catalog');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -15855,12 +16023,34 @@
       }
     }
 
-    // Приветствие от Боку при каждом заходе на сайт
+    // Приветствие от Боку при каждом заходе на сайт (на RU и EN)
     function initBokuGreeting() {
       const bubble = document.getElementById('chibiFloatingBubble');
       if (!bubble) return;
 
-      const greetings = [
+      const isEn = (currentLang === 'en');
+      const greetings = isEn ? [
+        {
+          text: 'What would you like to watch today?',
+          btnHtml: '<button class="boku-bubble-btn" onclick="event.stopPropagation(); startBokuRoulette();">🎲 Pick for me</button>',
+          spriteId: 7
+        },
+        {
+          text: 'Spotted an interesting title? I’ll gladly help you find it!',
+          btnHtml: '<button class="boku-bubble-btn" onclick="event.stopPropagation(); openSearchFromBoku();">🔍 Search</button>',
+          spriteId: 10
+        },
+        {
+          text: 'Want something specific or a surprise? I can pick a random title based on your taste!',
+          btnHtml: '<button class="boku-bubble-btn" onclick="event.stopPropagation(); startBokuRoulette();">✨ Pick title</button>',
+          spriteId: 16
+        },
+        {
+          text: 'Have you checked your Card Collection today? Watch 60%+ of any title to unlock cards!',
+          btnHtml: '<a href="/collection" class="boku-bubble-btn" onclick="event.stopPropagation();">🎴 Collection</a>',
+          spriteId: 12
+        }
+      ] : [
         {
           text: 'Что хотите глянуть сегодня?',
           btnHtml: '<button class="boku-bubble-btn" onclick="event.stopPropagation(); startBokuRoulette();">🎲 Подобрать</button>',
@@ -15875,6 +16065,11 @@
           text: 'Хотите что-то определенное или что-то неожиданное? Я могу подобрать рандомный тайтл на основе ваших интересов!',
           btnHtml: '<button class="boku-bubble-btn" onclick="event.stopPropagation(); startBokuRoulette();">✨ Подобрать</button>',
           spriteId: 16
+        },
+        {
+          text: 'Заглядывали сегодня в свою коллекцию карточек? Смотрите от 60% тайтла и забирайте карточки!',
+          btnHtml: '<a href="/collection" class="boku-bubble-btn" onclick="event.stopPropagation();">🎴 В коллекцию</a>',
+          spriteId: 12
         }
       ];
 

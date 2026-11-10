@@ -178,64 +178,78 @@
     }
     .tg-header-btn:hover {
       transform: scale(1.08);
-      background: rgba(208, 188, 255, 0.2);
-      border-color: var(--glass-border-glow);
+      background: rgba(208, 188, 255, 0.25);
+      border-color: var(--color-primary);
+    }
+    .tg-header-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+    .nav-destinations {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      align-items: center;
     }
 
-    .nav-items { display: flex; flex-direction: column; gap: 16px; width: 100%; align-items: center; }
-    .nav-item {
+    .nav-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      background: none;
+      background: transparent;
       border: none;
-      color: var(--color-variant);
       cursor: pointer;
-      width: 100%;
-      font-size: 11px;
-      text-decoration: none;
-      transition: color 0.2s;
+      color: var(--color-variant);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 72px;
+      padding: 10px 0;
+      border-radius: var(--radius-md);
       position: relative;
     }
-    .nav-pill {
-      width: 60px;
-      height: 36px;
+    .nav-btn:hover { color: var(--color-surface); transform: translateY(-2px); }
+    .nav-btn.active { color: var(--color-primary); }
+    .nav-btn .nav-indicator {
+      width: 56px;
+      height: 32px;
       border-radius: var(--radius-full);
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
     }
-    .nav-item:hover { color: var(--color-surface); }
-    .nav-item:hover .nav-pill { background: rgba(255, 255, 255, 0.05); }
-    .nav-item.active { color: var(--color-primary); }
-    .nav-item.active .nav-pill {
-      background: rgba(208, 188, 255, 0.2);
-      box-shadow: inset 0 0 0 1.5px rgba(208, 188, 255, 0.4), 0 4px 15px rgba(208, 188, 255, 0.2);
+    .nav-btn.active .nav-indicator {
+      background: var(--color-primary-container);
+      box-shadow: 0 0 16px rgba(208, 188, 255, 0.35);
     }
-    .nav-item.active .material-symbols-rounded { font-variation-settings: 'FILL' 1; }
+    .nav-btn.active .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      color: var(--color-on-primary-container);
+    }
+    .nav-label { font-size: 11px; font-weight: 600; text-align: center; }
 
-    .quest-badge-dot {
+    .nav-badge-dot {
       position: absolute;
-      top: 2px;
-      right: 10px;
-      width: 9px;
-      height: 9px;
+      top: 4px;
+      right: 12px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: #D0BCFF;
-      box-shadow: 0 0 8px #D0BCFF;
+      background: #f43f5e;
+      box-shadow: 0 0 8px #f43f5e;
       display: none;
     }
 
-    /* === ШАПКА И ОСНОВНОЙ КОНТЕЙНЕР === */
-    .app-main {
-      flex: 1;
+    .main-viewport {
       margin-left: 92px;
-      padding: 24px 28px 64px;
+      flex: 1;
+      min-height: 100dvh;
+      padding: 24px 36px 60px 36px;
+      display: flex;
+      flex-direction: column;
+      max-width: 1400px;
       width: calc(100% - 92px);
-      max-width: 100%;
     }
 
     .app-header-brand {
@@ -267,7 +281,7 @@
       margin-top: -2px;
     }
 
-    .header-right-tools { display: flex; align-items: center; gap: 8px; }
+    .header-right-tools { display: flex; align-items: center; gap: 10px; }
 
     /* === ФИРМЕННЫЕ ФИОЛЕТОВЫЕ БОКОКОЙНЫ === */
     .bokocoin-pill {
@@ -319,7 +333,7 @@
     /* Кнопки MD3 */
     .md-btn {
       height: 44px;
-      padding: 0 20px;
+      padding: 0 18px;
       border-radius: var(--radius-full);
       border: none;
       font-size: 13.5px;
@@ -349,6 +363,27 @@
     .md-btn-tonal:hover:not(:disabled) {
       background: rgba(208, 188, 255, 0.14);
       border-color: var(--glass-border-glow);
+    }
+
+    /* Статусы кнопок забора награды */
+    .md-btn-claim-active {
+      background: linear-gradient(135deg, #D0BCFF 0%, #9A75F0 100%) !important;
+      color: #1e0b4b !important;
+      font-weight: 800 !important;
+      box-shadow: 0 4px 18px rgba(154, 117, 240, 0.45) !important;
+      animation: claimPulse 1.8s infinite ease-in-out;
+      cursor: pointer !important;
+    }
+    @keyframes claimPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(208, 188, 255, 0.7); transform: scale(1); }
+      50% { box-shadow: 0 0 0 8px rgba(208, 188, 255, 0); transform: scale(1.03); }
+    }
+    .md-btn-claim-disabled {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: rgba(255, 255, 255, 0.35) !important;
+      cursor: pointer !important;
+      filter: grayscale(1);
     }
 
     /* === КОЛЛЕКЦИЯ === */
@@ -455,6 +490,13 @@
       padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px;
       font-size: 10px; font-weight: 800; z-index: 6; color: var(--color-surface);
     }
+    .pity-pill {
+      position: absolute; bottom: 8px; left: 8px;
+      background: rgba(154, 117, 240, 0.88); backdrop-filter: blur(8px);
+      border: 1px solid #fff; border-radius: var(--radius-full);
+      padding: 2px 7px; display: inline-flex; align-items: center; gap: 3px;
+      font-size: 9.5px; font-weight: 800; z-index: 6; color: #fff;
+    }
 
     .card-caption { padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
     .card-anime-title {
@@ -463,339 +505,375 @@
       overflow: hidden; min-height: 2.7em; word-break: break-word;
     }
     .card-go-upgrade-btn {
-      margin-top: auto; width: 100%; height: 34px; border-radius: var(--radius-sm);
-      background: rgba(208, 188, 255, 0.1); border: 1px solid rgba(208, 188, 255, 0.25);
-      color: var(--color-primary); font-size: 11px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s;
-    }
-    .card-go-upgrade-btn:hover { background: rgba(208, 188, 255, 0.22); color: #fff; }
-
-    .empty-collection-card {
-      grid-column: 1 / -1; background: var(--glass-surface); backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border-glow); border-radius: var(--radius-lg);
-      padding: 44px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; max-width: 520px; margin: 20px auto; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    }
-    .empty-chibi-img { width: 105px; height: 105px; object-fit: contain; margin-bottom: 14px; filter: drop-shadow(0 8px 22px rgba(208, 188, 255, 0.3)); animation: chibiGentleFloat 3s ease-in-out infinite; }
-
-    /* === АПГРЕЙДЕР (ДВУХЭТАПНОЕ КОЛЕСО АПГРЕЙДА И ОТКАТА) === */
-    .upgrader-arena {
-      display: grid;
-      grid-template-columns: 1fr 310px 1fr;
-      gap: 22px;
+      margin-top: auto;
+      height: 34px;
+      border-radius: var(--radius-md);
+      background: rgba(208, 188, 255, 0.12);
+      border: 1px solid rgba(208, 188, 255, 0.28);
+      color: var(--color-primary);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
       align-items: center;
-      margin-bottom: 28px;
-      background: rgba(22, 17, 36, 0.55);
-      border: 1px solid var(--glass-border);
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .card-go-upgrade-btn:hover {
+      background: rgba(208, 188, 255, 0.25);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+
+    /* === КУЗНИЦА АПГРЕЙДА (UPGRADER ARENA) === */
+    .upgrader-arena {
+      background: var(--glass-surface);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
       border-radius: var(--radius-lg);
-      padding: 26px 24px;
-      backdrop-filter: blur(24px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 1.5px solid var(--glass-border-glow);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      padding: 28px 24px;
+      display: grid;
+      grid-template-columns: 260px 1fr 260px;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
     }
 
     .upgrader-slot {
-      background: rgba(14, 11, 24, 0.78);
-      border: 2px dashed rgba(208, 188, 255, 0.22);
+      border: 2px dashed rgba(208, 188, 255, 0.25);
       border-radius: var(--radius-lg);
-      min-height: 340px;
-      padding: 18px;
+      min-height: 360px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 16px;
       text-align: center;
+      background: rgba(14, 11, 24, 0.45);
       position: relative;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.3s;
     }
-    .upgrader-slot.drag-over {
-      border-color: var(--color-primary);
-      background: rgba(154, 117, 240, 0.16);
-      box-shadow: 0 0 30px rgba(208, 188, 255, 0.25);
-      transform: scale(1.02);
-    }
-    .upgrader-slot.has-card { border-style: solid; border-color: rgba(208, 188, 255, 0.3); }
+    .slot-header-label { font-size: 12px; font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .slot-sub-label { font-size: 11.5px; color: var(--color-variant); max-width: 180px; line-height: 1.35; }
+    .slot-placeholder-arrows { margin-top: 14px; opacity: 0.45; animation: bokuBounce 2s infinite ease-in-out; }
 
-    .slot-header-label { font-size: 13px; font-weight: 700; color: var(--color-surface); margin-bottom: 4px; }
-    .slot-sub-label { font-size: 11px; color: var(--color-variant); opacity: 0.75; margin-bottom: 14px; }
-
-    .slot-placeholder-arrows {
-      display: flex; flex-direction: column; align-items: center; margin: 18px 0; color: var(--color-primary); opacity: 0.45;
-    }
-    .slot-placeholder-arrows .material-symbols-rounded { font-size: 48px; line-height: 0.55; animation: arrowPulse 1.8s infinite ease-in-out; }
-    @keyframes arrowPulse { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 0.9; transform: translateY(4px); } }
-
-    .slot-card-wrapper { width: 175px; position: relative; }
-    .slot-remove-btn {
-      position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(239, 68, 68, 0.9); border: 1.5px solid #fff; color: #fff;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 15; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .upgrader-center-column { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
-
-    .wheel-container {
-      width: 270px;
-      height: 270px;
+    .wheel-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
       position: relative;
+    }
+
+    .wheel-svg-container {
+      position: relative;
+      width: 220px;
+      height: 220px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(28, 22, 45, 0.95) 0%, rgba(10, 8, 18, 0.98) 72%);
-      box-shadow: 0 0 45px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(208, 188, 255, 0.12);
-      border: 1.5px solid rgba(208, 188, 255, 0.25);
-      transition: border-color 0.4s ease, box-shadow 0.4s ease;
-    }
-    .wheel-container.downgrade-mode {
-      border-color: rgba(244, 63, 94, 0.65);
-      box-shadow: 0 0 55px rgba(244, 63, 94, 0.35), inset 0 0 30px rgba(244, 63, 94, 0.22);
     }
 
-    .wheel-svg { width: 250px; height: 250px; transform: rotate(-90deg); overflow: visible; }
-    .wheel-track { fill: none; stroke: rgba(255, 255, 255, 0.06); stroke-width: 14; }
-    .wheel-Ticks { fill: none; stroke: rgba(208, 188, 255, 0.18); stroke-width: 4; stroke-dasharray: 2 10.04; }
+    .wheel-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .wheel-track { fill: none; stroke: rgba(255, 255, 255, 0.08); stroke-width: 14; }
+    .wheel-ticks { fill: none; stroke: rgba(255, 255, 255, 0.15); stroke-width: 4; stroke-dasharray: 2 12; }
     .wheel-chance-arc {
       fill: none;
-      stroke: url(#purpleChanceGrad);
+      stroke: url(#wheelGradientWin);
       stroke-width: 14;
-      stroke-linecap: butt;
-      stroke-dasharray: 0 628.32;
-      transition: stroke-dasharray 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-      filter: drop-shadow(0 0 10px rgba(154, 117, 240, 0.7));
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.45s ease, stroke 0.3s ease;
     }
-    .wheel-container.downgrade-mode .wheel-chance-arc {
-      stroke: url(#redDangerGrad);
-      filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.85));
-    }
+
+    .downgrade-mode .wheel-chance-arc { stroke: url(#wheelGradientDanger) !important; }
 
     .wheel-pointer-ring {
       position: absolute;
       inset: 0;
-      border-radius: 50%;
       pointer-events: none;
-      transition: transform 3.2s cubic-bezier(0.12, 0.82, 0.18, 1);
-      will-change: transform;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 3.2s cubic-bezier(0.12, 0.88, 0.28, 1);
     }
     .wheel-pointer-arrow {
       position: absolute;
-      top: -6px; left: 50%;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 9px solid transparent;
-      border-right: 9px solid transparent;
-      border-top: 18px solid #D0BCFF;
-      filter: drop-shadow(0 0 10px #D0BCFF) drop-shadow(0 0 4px #ffffff);
-      transition: border-top-color 0.3s ease;
-    }
-    .wheel-container.downgrade-mode .wheel-pointer-arrow {
-      border-top-color: #F43F5E;
-      filter: drop-shadow(0 0 10px #F43F5E) drop-shadow(0 0 4px #ffffff);
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 20px solid #ffffff;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 18px var(--color-primary));
     }
 
     .wheel-center-info {
       position: absolute;
-      inset: 36px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(40, 30, 66, 0.82) 0%, rgba(16, 12, 28, 0.96) 100%);
-      border: 1px solid rgba(208, 188, 255, 0.22);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px;
       text-align: center;
-      z-index: 4;
-      transition: background 0.4s ease, border-color 0.4s ease;
+      pointer-events: none;
+      padding: 0 12px;
     }
-    .wheel-container.downgrade-mode .wheel-center-info {
-      background: radial-gradient(circle, rgba(88, 20, 42, 0.88) 0%, rgba(20, 10, 18, 0.97) 100%);
-      border-color: rgba(244, 63, 94, 0.45);
-    }
-
     .wheel-stage-badge {
-      font-size: 9.5px;
+      font-size: 10.5px;
       font-weight: 800;
+      color: var(--color-primary);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
+      background: rgba(208, 188, 255, 0.14);
       padding: 2px 8px;
       border-radius: var(--radius-full);
-      background: rgba(208, 188, 255, 0.15);
-      color: var(--color-primary);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
-    .wheel-container.downgrade-mode .wheel-stage-badge {
-      background: rgba(244, 63, 94, 0.25);
-      color: #FDA4AF;
-    }
-
-    .wheel-chevrons { color: var(--color-primary); font-size: 24px; line-height: 0.55; margin-bottom: 4px; filter: drop-shadow(0 0 12px rgba(208, 188, 255, 0.5)); }
-    .wheel-container.downgrade-mode .wheel-chevrons { color: #F43F5E; filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.7)); }
-
-    .wheel-chance-pct { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-    .wheel-cost-tag {
-      font-size: 11px; font-weight: 700; color: var(--color-primary); margin-top: 3px;
-      background: rgba(208, 188, 255, 0.12); padding: 3px 10px; border-radius: var(--radius-full); border: 1px solid rgba(208, 188, 255, 0.25);
-    }
-    .wheel-container.downgrade-mode .wheel-cost-tag {
-      color: #FDA4AF; background: rgba(244, 63, 94, 0.18); border-color: rgba(244, 63, 94, 0.4);
-    }
-    .wheel-risk-hint { font-size: 10px; color: var(--color-variant); margin-top: 5px; opacity: 0.9; max-width: 160px; line-height: 1.25; }
+    .wheel-chevrons { font-size: 16px; color: var(--color-primary); line-height: 10px; margin-bottom: 4px; }
+    .wheel-chance-pct { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.5px; }
+    .wheel-cost-tag { font-size: 12px; font-weight: 700; color: var(--color-variant); margin-top: 4px; }
+    .wheel-risk-hint { font-size: 10px; color: rgba(255,255,255,0.45); max-width: 140px; margin-top: 2px; line-height: 1.25; }
 
     .btn-roll-upgrade {
-      width: 100%;
-      height: 50px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, #D0BCFF 0%, #9A75F0 50%, #6d28d9 100%);
+      background: linear-gradient(135deg, #D0BCFF 0%, #9A75F0 100%);
       color: #1e0b4b;
       font-size: 15px;
       font-weight: 800;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 0 8px 28px rgba(154, 117, 240, 0.45);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .btn-roll-upgrade:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 34px rgba(208, 188, 255, 0.65); }
-    .btn-roll-upgrade:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.4); }
-
-    .upgrader-tray-box { background: var(--glass-surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 18px 20px; backdrop-filter: blur(20px); }
-    .tray-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 10px; flex-wrap: wrap; }
-    .tray-title { font-size: 15px; font-weight: 700; color: var(--color-primary); display: flex; align-items: center; gap: 8px; }
-    .tray-hint { font-size: 12px; color: var(--color-variant); }
-
-    .tray-scroll-strip { display: flex; gap: 14px; overflow-x: auto; padding: 6px 4px 12px; scroll-behavior: smooth; min-height: 120px; }
-    .tray-card-item { width: 142px; flex-shrink: 0; cursor: grab; touch-action: pan-x; }
-    .tray-card-item:active { cursor: grabbing; }
-    .tray-card-item.in-slot { opacity: 0.35; pointer-events: none; filter: grayscale(0.6); }
-
-    .drag-ghost-card {
-      position: fixed; width: 135px; pointer-events: none; z-index: 99999;
-      transform: translate(-50%, -50%) rotate(4deg) scale(1.06);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 25px rgba(208, 188, 255, 0.6);
-      border-radius: 20px; overflow: hidden; opacity: 0.95;
-    }
-
-    /* === ЗАДАНИЯ === */
-    .quests-section-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #fff;
-      margin: 24px 0 12px;
-      display: flex;
+      height: 48px;
+      padding: 0 32px;
+      border-radius: var(--radius-full);
+      border: none;
+      box-shadow: 0 8px 25px rgba(154, 117, 240, 0.45);
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .quests-section-title .material-symbols-rounded {
-      color: var(--color-primary);
-      font-size: 20px;
-    }
+    .btn-roll-upgrade:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 10px 32px rgba(154, 117, 240, 0.6); }
+    .btn-roll-upgrade:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; filter: grayscale(0.6); }
 
-    .quests-summary-banner {
-      background: linear-gradient(135deg, rgba(79, 55, 139, 0.45) 0%, rgba(32, 26, 48, 0.85) 100%);
-      border: 1px solid var(--glass-border-glow); border-radius: var(--radius-lg);
-      padding: 20px 24px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between;
-      gap: 18px; flex-wrap: wrap; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    .upgrader-tray-box {
+      background: var(--glass-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--glass-border);
+      padding: 20px 22px;
     }
-    .quests-banner-left { display: flex; align-items: center; gap: 16px; }
-    .quests-banner-chibi { width: 68px; height: 68px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(208, 188, 255, 0.4)); flex-shrink: 0; }
-
-    .quests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
-
-    .quest-card {
-      background: var(--glass-surface); backdrop-filter: blur(18px);
-      border: 1px solid var(--glass-border); border-radius: var(--radius-md);
-      padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: transform 0.2s, border-color 0.2s;
-    }
-    .quest-card:hover { transform: translateY(-3px); border-color: var(--glass-border-glow); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
-    .quest-card.ready-to-claim {
-      border-color: var(--color-primary); background: linear-gradient(135deg, rgba(154, 117, 240, 0.16) 0%, rgba(32, 26, 48, 0.65) 100%); box-shadow: 0 0 24px rgba(208, 188, 255, 0.18);
-    }
-    .quest-card.completed-quest {
-      border-color: rgba(74, 222, 128, 0.35);
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(32, 26, 48, 0.5) 100%);
-    }
-
-    .quest-top { display: flex; align-items: flex-start; gap: 14px; }
-    .quest-icon-box {
-      width: 46px; height: 46px; border-radius: 14px; background: rgba(208, 188, 255, 0.12);
-      border: 1px solid rgba(208, 188, 255, 0.28); color: var(--color-primary);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .quest-info { flex: 1; min-width: 0; }
-    .quest-title { font-size: 14.5px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
-    .quest-desc { font-size: 12px; color: var(--color-variant); line-height: 1.45; }
-
-    .quest-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.06); }
-    .quest-reward-tag {
-      display: inline-flex; align-items: center; gap: 6px; background: rgba(154, 117, 240, 0.18);
-      border: 1px solid rgba(208, 188, 255, 0.35); padding: 5px 12px; border-radius: var(--radius-full);
-      font-size: 12px; font-weight: 800; color: #EADDFF;
-    }
-    .quest-reward-tag .bokocoin-icon { width: 18px; height: 18px; font-size: 10px; }
-
-    /* === ПРОСТОРНОЕ МОДАЛЬНОЕ ОКНО ОПИСАНИЯ АНИМЕ === */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(8, 6, 15, 0.85); backdrop-filter: blur(14px);
-      z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px;
-    }
-    .modal-content {
-      background: rgba(30, 24, 46, 0.98); border: 1.5px solid var(--glass-border-glow);
-      border-radius: var(--radius-lg); width: 100%; max-width: 480px; padding: 22px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.85); display: flex; flex-direction: column; gap: 14px;
-      position: relative; max-height: 90dvh; overflow-y: auto;
-    }
-    .modal-close {
-      position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.08);
-      border: 1px solid var(--glass-border); color: var(--color-surface); width: 34px; height: 34px;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
-      z-index: 10;
-    }
-
-    .card-info-modal-box {
-      max-width: 520px;
-      text-align: left;
-      align-items: stretch;
-    }
-    .card-info-header-row {
+    .tray-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .tray-title { font-size: 15px; font-weight: 700; color: #fff; }
+    .tray-carousel {
       display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      flex-shrink: 0;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 4px 2px 14px 2px;
+      scrollbar-width: thin;
     }
-    .card-info-thumb {
-      width: 86px;
-      height: 122px;
-      border-radius: 14px;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 1.5px solid var(--glass-border-glow);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-      background: #151122;
-    }
-    .card-info-header-meta {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding-right: 28px;
-    }
-    .card-info-title {
-      font-size: 16.5px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.3;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+    .tray-card-mini {
+      flex: 0 0 110px;
+      cursor: pointer;
+      border-radius: var(--radius-md);
       overflow: hidden;
+      background: #141022;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
     }
-    .card-info-sub {
-      font-size: 11.5px;
-      color: var(--color-variant);
+    .tray-card-mini:hover { transform: translateY(-4px); border-color: var(--color-primary); }
+    .tray-card-mini.selected {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(208, 188, 255, 0.35), 0 8px 24px rgba(208, 188, 255, 0.4);
+      transform: translateY(-4px);
+    }
+    .tray-card-poster { width: 100%; aspect-ratio: 2 / 2.85; object-fit: cover; display: block; }
+    .tray-card-caption {
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      opacity: 0.85;
+      color: #fff;
+    }
+
+    /* === ЗАДАНИЯ === */
+    .quests-summary-banner {
+      background: linear-gradient(135deg, rgba(79, 55, 139, 0.45) 0%, rgba(32, 26, 48, 0.8) 100%);
+      border: 1.5px solid var(--glass-border-glow);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .quests-banner-left { display: flex; align-items: center; gap: 16px; }
+    .boku-mascot-chibi-badge {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      animation: chibiGentleFloat 4s ease-in-out infinite;
+      filter: drop-shadow(0 4px 14px rgba(208, 188, 255, 0.45));
+    }
+    .quests-banner-title { font-size: 18px; font-weight: 800; color: #fff; }
+    .quests-banner-desc { font-size: 12.5px; color: var(--color-variant); max-width: 520px; line-height: 1.4; margin-top: 4px; }
+
+    .quests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .quest-card {
+      background: var(--glass-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--glass-border);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .quest-card:hover { border-color: rgba(208, 188, 255, 0.35); transform: translateY(-2px); }
+    .quest-card.completed-quest { opacity: 0.65; border-color: rgba(74, 222, 128, 0.25); }
+    .quest-card.ready-to-claim {
+      border-color: var(--color-primary);
+      box-shadow: 0 8px 30px rgba(208, 188, 255, 0.25);
+    }
+
+    .quest-top { display: flex; align-items: flex-start; gap: 12px; }
+    .quest-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      background: rgba(208, 188, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .quest-info { flex: 1; }
+    .quest-title { font-size: 13.5px; font-weight: 700; color: #fff; line-height: 1.3; }
+    .quest-desc { font-size: 11.5px; color: var(--color-variant); line-height: 1.4; margin-top: 4px; }
+
+    .quest-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .quest-reward-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(154, 117, 240, 0.2);
+      border: 1px solid rgba(208, 188, 255, 0.35);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+
+    /* === МОДАЛЬНЫЕ ОКНА === */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 6, 15, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .modal-content {
+      background: rgba(26, 20, 38, 0.95);
+      border: 1.5px solid var(--glass-border-glow);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+    .modal-close:hover { background: rgba(255, 255, 255, 0.2); }
+
+    /* Модальное окно описания аниме */
+    .card-info-modal-box {
+      max-width: 560px;
+      max-height: 85dvh;
+      overflow-y: auto;
+    }
+    .card-info-header-row {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .card-info-thumb {
+      width: 110px;
+      height: 160px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1.5px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+    .card-info-header-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      padding-right: 28px;
+    }
+    .card-info-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.3;
+    }
+    .card-info-sub {
+      font-size: 12px;
+      color: var(--color-variant);
     }
     .card-info-pills-row {
       display: flex;
@@ -804,145 +882,218 @@
       margin-top: 4px;
     }
     .card-info-pill {
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 3px 9px;
+      padding: 3px 8px;
       border-radius: var(--radius-full);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--glass-border);
-      color: var(--color-surface);
-    }
-    .card-info-pill.score {
-      color: #FFD54F;
-      background: rgba(255, 213, 79, 0.14);
-      border-color: rgba(255, 213, 79, 0.35);
-    }
-    .card-info-pill.rarity-pill {
-      color: #D0BCFF;
-      background: rgba(208, 188, 255, 0.16);
-      border-color: rgba(208, 188, 255, 0.35);
-    }
-
-    .card-info-desc-box {
-      background: rgba(14, 11, 24, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 16px 18px;
-      min-height: 180px;
-      max-height: 38dvh;
-      overflow-y: auto;
-      font-size: 13.5px;
-      line-height: 1.65;
-      color: var(--color-surface);
-      white-space: pre-line;
-      word-break: break-word;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* === 5-СЕКУНДНЫЙ БАННЕР ВЫПОЛНЕНИЯ ЗАДАНИЯ === */
-    .quest-success-banner {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(30px);
-      z-index: 100000;
-      min-width: 320px;
-      max-width: 92vw;
-      background: linear-gradient(135deg, rgba(26, 18, 44, 0.98), rgba(16, 12, 28, 0.99));
-      border: 1.5px solid rgba(168, 85, 247, 0.65);
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 35px rgba(168, 85, 247, 0.4);
-      border-radius: 20px;
-      overflow: hidden;
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-    .quest-success-banner.visible {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0);
-    }
-    .quest-success-banner.hiding {
-      opacity: 0;
-      transform: translateX(-50%) translateY(20px);
-    }
-    .quest-success-inner {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 13px 18px;
-    }
-    .quest-success-avatar-wrap {
-      width: 46px;
-      height: 46px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 14px;
-      background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.1) 70%);
-      border: 1px solid rgba(168, 85, 247, 0.45);
-    }
-    .quest-success-chibi {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
-      filter: drop-shadow(0 2px 6px rgba(168, 85, 247, 0.45));
-      animation: bokuBounce 1.6s ease-in-out infinite;
-    }
-    .quest-success-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .quest-success-badge {
       font-size: 11px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #c084fc;
-      margin-bottom: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-surface);
     }
-    .quest-success-msg {
+    .card-info-desc-box {
+      background: rgba(14, 11, 24, 0.55);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
       font-size: 13.5px;
-      font-weight: 800;
-      color: #ffffff;
-      line-height: 1.3;
+      color: var(--color-surface);
+      line-height: 1.6;
+      max-height: 42dvh;
+      overflow-y: auto;
+      white-space: pre-line;
+      word-break: break-word;
+      user-select: text;
     }
-    .quest-success-sub {
-      font-size: 11.5px;
-      color: rgba(255, 255, 255, 0.65);
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+    /* Модалка смены скина Боку */
+    .skins-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
     }
-    .quest-success-coin-badge {
+    .skin-card {
+      background: rgba(14, 11, 24, 0.55);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      text-align: center;
+    }
+    .skin-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-primary);
+    }
+    .skin-card.active {
+      border-color: var(--color-primary);
+      background: rgba(208, 188, 255, 0.12);
+      box-shadow: 0 0 20px rgba(208, 188, 255, 0.35);
+    }
+    .skin-preview-img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+    }
+    .skin-name { font-size: 13px; font-weight: 700; color: #fff; }
+    .skin-desc { font-size: 10px; color: var(--color-variant); line-height: 1.25; }
+
+    /* 5-секундный всплывающий баннер выполнения задания */
+    .quest-success-banner {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 9999;
+      background: rgba(30, 20, 50, 0.95);
+      border: 1.5px solid var(--color-primary);
+      border-radius: var(--radius-full);
+      padding: 12px 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75), 0 0 30px rgba(208, 188, 255, 0.5);
+      backdrop-filter: blur(25px);
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(202, 138, 4, 0.12));
-      border: 1px solid rgba(250, 204, 21, 0.45);
-      border-radius: 999px;
-      flex-shrink: 0;
+      gap: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .quest-coin-icon { font-size: 16px; }
-    .quest-coin-val { font-size: 13px; font-weight: 800; color: #fef08a; }
-    .quest-success-progress-track {
-      width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.08);
+    .quest-success-banner.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
     }
-    .quest-success-progress-fill {
+
+    /* === ОНБОРДИНГ: СВЕТОВОЙ ПРОЖЕКТОР, ЗАТЕМНЕНИЕ И БЛЮР === */
+    .onboarding-backdrop {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99990;
+      pointer-events: auto;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      transition: opacity 0.3s ease;
+    }
+    .onboarding-spotlight-svg {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, #a855f7, #ec4899, #eab308);
+      pointer-events: none;
     }
-    @keyframes questTimerBar {
-      from { width: 100%; }
-      to { width: 0%; }
+    #spotlightHoleCutout {
+      transition: x 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  y 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  rx 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  ry 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .spotlight-glowing-frame {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 14px;
+      border: 2px solid var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(208, 188, 255, 0.3), 0 0 35px rgba(208, 188, 255, 0.65);
+      z-index: 99995;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+    }
+    .spotlight-glowing-frame.active {
+      opacity: 1;
+      animation: spotlightPulse 2s ease-in-out infinite;
+    }
+    @keyframes spotlightPulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(208, 188, 255, 0.35), 0 0 30px rgba(208, 188, 255, 0.7); }
+      50% { box-shadow: 0 0 0 6px rgba(208, 188, 255, 0.55), 0 0 45px rgba(208, 188, 255, 0.9); }
+    }
+    .onboarding-target-elevated {
+      position: relative !important;
+      z-index: 99996 !important;
+      pointer-events: auto !important;
+    }
+    .onboarding-guide-tooltip {
+      position: fixed;
+      z-index: 99999;
+      background: rgba(24, 16, 42, 0.97);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 20px;
+      padding: 16px 18px;
+      max-width: 330px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(208, 188, 255, 0.45);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+      transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1), left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .onboarding-guide-tooltip.tooltip-shake {
+      animation: guideShake 0.4s ease-in-out;
+    }
+    @keyframes guideShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .onboarding-chibi-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .onboarding-chibi-left { display: flex; align-items: center; gap: 10px; }
+    .onboarding-chibi-img { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(208, 188, 255, 0.5)); animation: bokuBounce 2s ease-in-out infinite; }
+    .onboarding-title { font-size: 13.5px; font-weight: 800; color: #fff; line-height: 1.25; }
+    .onboarding-text {
+      font-size: 12px;
+      color: var(--color-variant);
+      line-height: 1.5;
+      min-height: 36px;
+    }
+    .onboarding-text.typing::after {
+      content: '▋';
+      margin-left: 2px;
+      color: var(--color-primary);
+      animation: blinkCursor 0.7s infinite;
+    }
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .onboarding-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(208, 188, 255, 0.15);
+      padding-top: 8px;
+      margin-top: 2px;
+    }
+    .onboarding-step-indicator {
+      font-size: 11px;
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+    .onboarding-skip-btn {
+      background: none;
+      border: none;
+      color: rgba(208, 188, 255, 0.6);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .onboarding-skip-btn:hover {
+      color: #fff;
+      background: rgba(208, 188, 255, 0.12);
     }
 
     .komboko-toast {
@@ -961,60 +1112,95 @@
 
     @media (max-width: 768px) {
       .nav-rail {
-        top: auto !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-        width: 100% !important; height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom)) !important;
-        padding: 6px 8px env(safe-area-inset-bottom) !important;
-        flex-direction: row !important; justify-content: space-around !important;
-        border-right: none !important; border-top: 1px solid var(--glass-border);
+        width: 100%;
+        height: var(--bottom-nav-height);
+        top: auto;
+        bottom: 0;
+        border-right: none;
+        border-top: 1px solid var(--glass-border);
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0 10px;
+        z-index: 1000;
       }
-      .nav-items { flex-direction: row !important; justify-content: space-around !important; gap: 0 !important; }
-      .nav-rail .header-profile-btn { display: none !important; }
-      .app-main {
-        margin-left: 0 !important; width: 100% !important;
-        padding: calc(16px + env(safe-area-inset-top)) 14px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 24px) !important;
-      }
-      .cards-collection-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 12px; }
+      .nav-destinations { flex-direction: row; justify-content: space-around; width: 100%; }
+      .header-profile-btn, .tg-header-btn { display: none; }
+      .main-viewport { margin-left: 0; width: 100%; padding: 18px 16px calc(var(--bottom-nav-height) + 24px) 16px; }
+      .app-header-brand { margin-bottom: 18px; }
+      .brand-title-text { font-size: 21px; }
+      .cards-collection-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .quests-summary-banner { flex-direction: column; align-items: flex-start; padding: 18px; }
       .quests-grid { grid-template-columns: 1fr; }
       .card-info-header-row { gap: 12px; }
-      .card-info-thumb { width: 76px; height: 110px; }
+      .card-info-thumb { width: 80px; height: 116px; }
       .card-info-title { font-size: 15px; }
       .card-info-desc-box { min-height: 170px; max-height: 38dvh; font-size: 13px; padding: 12px 14px; }
+      .onboarding-guide-tooltip { max-width: 290px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Навигация -->
+  <!-- SVG Градиенты для колеса -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <linearGradient id="wheelGradientWin" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#EADDFF" />
+        <stop offset="50%" stop-color="#D0BCFF" />
+        <stop offset="100%" stop-color="#9A75F0" />
+      </linearGradient>
+      <linearGradient id="wheelGradientDanger" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f87171" />
+        <stop offset="100%" stop-color="#ef4444" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Боковая / Нижняя навигация -->
   <nav class="nav-rail">
     <div class="header-profile-btn" id="sidebarAuthLogo" onclick="handleAuthLogoClick()" title="Профиль Shikimori">
       <span class="material-symbols-rounded">account_circle</span>
     </div>
-    <div class="nav-items">
-      <button class="nav-item active" id="nav-collection" onclick="switchView('collection')">
-        <div class="nav-pill"><span class="material-symbols-rounded">style</span></div>
-        <span>Коллекция</span>
-      </button>
-      <button class="nav-item" id="nav-upgrade" onclick="switchView('upgrade')">
-        <div class="nav-pill"><span class="material-symbols-rounded">upgrade</span></div>
-        <span>Апгрейд</span>
-      </button>
-      <button class="nav-item" id="nav-quests" onclick="switchView('quests')">
-        <div class="nav-pill">
-          <span class="material-symbols-rounded">task_alt</span>
-          <span class="quest-badge-dot" id="navQuestDot"></span>
+
+    <div class="nav-destinations">
+      <button class="nav-btn active" id="nav-collection" onclick="switchView('collection')">
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">view_carousel</span>
         </div>
-        <span>Задания</span>
+        <span class="nav-label">Коллекция</span>
       </button>
-      <a href="/" class="nav-item" title="Кинотеатр">
-        <div class="nav-pill"><span class="material-symbols-rounded">movie</span></div>
-        <span>Кинотеатр</span>
+
+      <button class="nav-btn" id="nav-upgrade" onclick="switchView('upgrade')">
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">upgrade</span>
+        </div>
+        <span class="nav-label">Апгрейд</span>
+      </button>
+
+      <button class="nav-btn" id="nav-quests" onclick="switchView('quests')">
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">task_alt</span>
+          <div class="nav-badge-dot" id="navQuestDot"></div>
+        </div>
+        <span class="nav-label">Задания</span>
+      </button>
+
+      <a href="/" class="nav-btn" id="nav-cinema">
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">smart_display</span>
+        </div>
+        <span class="nav-label">Кинотеатр</span>
       </a>
     </div>
+
+    <a href="https://t.me/komboko_media" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko" style="margin-top: auto;">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.24-3.55 3.93-1.63 4.74-1.92 5.27-1.93.12 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.19-.04.28z"/></svg>
+    </a>
   </nav>
 
-  <!-- Основной контейнер -->
-  <main class="app-main animate-fade">
-    <div class="app-header-brand">
+  <!-- Главный контейнер -->
+  <main class="main-viewport">
+    <header class="app-header-brand">
       <div class="brand-group">
         <div class="brand-row">
           <a href="/" class="brand-title-text">KombokoWatch</a>
@@ -1023,104 +1209,76 @@
       </div>
 
       <div class="header-right-tools">
-        <div class="bokocoin-pill" onclick="switchView('quests')" title="Бококойны для апгрейда">
-          <span class="bokocoin-icon">B</span>
-          <span class="bokocoin-amount" id="headerCoinBalance">0</span>
+        <!-- Кнопка смены скина Боку -->
+        <button class="md-btn md-btn-tonal" id="btnBokuSkinPicker" onclick="openBokuSkinModal()" style="height: 44px; padding: 0 14px; gap: 6px;" title="Сменить скин Боку">
+          <img id="headerBokuChibi" src="/assets/sprite_01.webp" style="width: 24px; height: 24px; object-fit: contain;" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+          <span style="font-size: 12.5px;" id="headerSkinLabel">Скин</span>
+        </button>
+
+        <div class="bokocoin-pill" onclick="switchView('quests')" title="Ваш баланс Бококойнов. Нажмите для перехода к заданиям!">
+          <div class="bokocoin-icon">B</div>
+          <span class="bokocoin-amount" id="balanceDisplayCoins">0</span>
           <span class="bokocoin-label">БК</span>
         </div>
 
-        <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram канал">
-          <span class="material-symbols-rounded">send</span>
-        </a>
-
-        <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Профиль Shikimori">
+        <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" style="display: none;" title="Профиль Shikimori">
           <span class="material-symbols-rounded">account_circle</span>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- ==========================================
-         ВКЛАДКА 1: КОЛЛЕКЦИЯ
-         ========================================== -->
+    <!-- РАЗДЕЛ 1: КОЛЛЕКЦИЯ КАРТОЧЕК -->
     <section id="view-collection" class="animate-fade">
       <div class="section-header">
-        <div>
-          <h2 class="section-title">Моя коллекция (<span id="collectionCount">0</span>)</h2>
-          <p style="font-size: 12px; color: var(--color-variant); margin-top: 2px;">
-            Нажми на любую карточку, чтобы открыть описание аниме. Карточки выдаются за просмотр 60% тайтла и из списка «Просмотрено» на Shikimori.
-          </p>
-        </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="md-btn md-btn-tonal" id="btnSyncShikiCompleted" onclick="syncCompletedFromShikimori(true)" title="Подтянуть карточки за просмотренные на Shikimori аниме">
-            <span class="material-symbols-rounded" style="font-size: 18px; color: var(--color-primary);">sync</span>
-            <span>Из «Просмотрено» Shikimori</span>
-          </button>
-          <button class="md-btn md-btn-filled" onclick="switchView('upgrade')">
-            <span class="material-symbols-rounded" style="font-size: 18px;">upgrade</span>
-            <span>Апгрейдер</span>
-          </button>
+        <h2 class="section-title">Ваша коллекция</h2>
+        <div class="rarity-filter-bar">
+          <div class="rarity-chip active" data-filter="all" onclick="filterCards('all')">Все карточки (<span id="count-all">0</span>)</div>
+          <div class="rarity-chip" data-filter="common" onclick="filterCards('common')">Обычные (<span id="count-common">0</span>)</div>
+          <div class="rarity-chip" data-filter="rare" onclick="filterCards('rare')">Редкие (<span id="count-rare">0</span>)</div>
+          <div class="rarity-chip" data-filter="epic" onclick="filterCards('epic')">Эпические (<span id="count-epic">0</span>)</div>
+          <div class="rarity-chip" data-filter="legendary" onclick="filterCards('legendary')">Легендарные (<span id="count-legendary">0</span>)</div>
         </div>
       </div>
 
-      <div class="rarity-filter-bar">
-        <button class="rarity-chip active" onclick="setRarityFilter('all', this)">Все подряд</button>
-        <button class="rarity-chip" onclick="setRarityFilter('legendary', this)">★ Легендарные</button>
-        <button class="rarity-chip" onclick="setRarityFilter('epic', this)">✦ Эпические</button>
-        <button class="rarity-chip" onclick="setRarityFilter('rare', this)">◆ Редкие</button>
-        <button class="rarity-chip" onclick="setRarityFilter('common', this)">● Обычные</button>
-      </div>
+      <div id="cardsCollectionGrid" class="cards-collection-grid"></div>
 
-      <div id="collectionGrid" class="cards-collection-grid"></div>
+      <div id="emptyCollectionPlaceholder" style="display: none; text-align: center; padding: 60px 20px; color: var(--color-variant);">
+        <img id="emptyChibiImg" src="/assets/sprite_02.webp" style="width: 84px; height: 84px; object-fit: contain; margin-bottom: 12px;" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" alt="Боку" />
+        <h3 style="font-size: 18px; color: #fff; margin-bottom: 6px;">У вас пока нет карточек в этом разделе</h3>
+        <p style="font-size: 13px; max-width: 420px; margin: 0 auto 18px auto; line-height: 1.5;">
+          Смотрите аниме от 60% времени в плеере или заберите приветственный бонус в разделе «Задания», чтобы получить стартовую карточку Боку!
+        </p>
+        <div style="display: inline-flex; gap: 10px;">
+          <button class="md-btn md-btn-filled" onclick="switchView('quests')">Забрать бонус новичка</button>
+          <a href="/" class="md-btn md-btn-tonal">В каталог аниме</a>
+        </div>
+      </div>
     </section>
 
-    <!-- ==========================================
-         ВКЛАДКА 2: АПГРЕЙДЕР (ДВУХЭТАПНЫЙ РОЛЛ)
-         ========================================== -->
+    <!-- РАЗДЕЛ 2: КУЗНИЦА АПГРЕЙДА -->
     <section id="view-upgrade" class="animate-fade" style="display: none;">
       <div class="section-header">
-        <div>
-          <h2 class="section-title" style="display:flex; align-items:center; gap:8px;">
-            <span class="material-symbols-rounded" style="color:var(--color-primary);">keyboard_double_arrow_up</span>
-            <span>Апгрейдер карточек</span>
-          </h2>
-          <p style="font-size: 12px; color: var(--color-variant); margin-top: 2px;">
-            Колесо №1 — шанс апгрейда. Если промах на Редкой/Эпической — сразу запускается Колесо №2 на откат (20% → 40% → 80% → 100%)!
-          </p>
-        </div>
+        <h2 class="section-title">Кузница рангов</h2>
+        <div style="font-size: 12.5px; color: var(--color-variant);">Повышай ранг карточек за Бококойны</div>
       </div>
 
       <div class="upgrader-arena">
         <div class="upgrader-slot" id="upgraderLeftSlot">
           <div id="leftSlotEmptyState">
-            <div class="slot-header-label">Выберите карточку для апгрейда</div>
-            <div class="slot-sub-label">Зажмите и перетащите карточку из списка внизу</div>
+            <div class="slot-header-label">Исходная карточка</div>
+            <div class="slot-sub-label">Выберите карточку из карусели внизу для улучшения</div>
             <div class="slot-placeholder-arrows">
-              <span class="material-symbols-rounded">keyboard_arrow_down</span>
-              <span class="material-symbols-rounded">keyboard_arrow_down</span>
-              <span class="material-symbols-rounded">keyboard_arrow_down</span>
+              <span class="material-symbols-rounded">touch_app</span>
             </div>
           </div>
           <div id="leftSlotCardContainer" style="display: none;"></div>
         </div>
 
-        <!-- ЦЕНТР: ДВУХЭТАПНОЕ КОЛЕСО -->
-        <div class="upgrader-center-column">
-          <div class="wheel-container" id="wheelContainer">
+        <div class="wheel-column">
+          <div class="wheel-svg-container" id="wheelContainer">
             <svg class="wheel-svg" viewBox="0 0 220 220">
-              <defs>
-                <linearGradient id="purpleChanceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#EADDFF" />
-                  <stop offset="50%" stop-color="#D0BCFF" />
-                  <stop offset="100%" stop-color="#7C3AED" />
-                </linearGradient>
-                <linearGradient id="redDangerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FDA4AF" />
-                  <stop offset="50%" stop-color="#F43F5E" />
-                  <stop offset="100%" stop-color="#9F1239" />
-                </linearGradient>
-              </defs>
               <circle class="wheel-track" cx="110" cy="110" r="100"></circle>
-              <circle class="wheel-Ticks" cx="110" cy="110" r="88"></circle>
+              <circle class="wheel-ticks" cx="110" cy="110" r="88"></circle>
               <circle id="wheelChanceArc" class="wheel-chance-arc" cx="110" cy="110" r="100"></circle>
             </svg>
 
@@ -1160,51 +1318,79 @@
       </div>
 
       <div class="upgrader-tray-box">
-        <div class="tray-header">
-          <div class="tray-title">
-            <span class="material-symbols-rounded">inventory_2</span>
-            <span>Ваши карточки в коллекции</span>
-          </div>
-          <div class="tray-hint">Зажмите карточку и перетащите в левое окно (или нажмите на неё)</div>
+        <div class="tray-title-row">
+          <div class="tray-title">Доступные для улучшения карточки:</div>
+          <div style="font-size: 12px; color: var(--color-variant);" id="trayCardCountLabel">0 карточек</div>
         </div>
-        <div id="upgraderTrayStrip" class="tray-scroll-strip"></div>
+        <div class="tray-carousel" id="upgraderTrayCarousel"></div>
       </div>
     </section>
 
-    <!-- ==========================================
-         ВКЛАДКА 3: ЗАДАНИЯ
-         ========================================== -->
+    <!-- РАЗДЕЛ 3: ЗАДАНИЯ И БОКОКОЙНЫ -->
     <section id="view-quests" class="animate-fade" style="display: none;">
       <div class="quests-summary-banner">
         <div class="quests-banner-left">
-          <img src="/assets/sprite_07_bc5cc640.webp" class="quests-banner-chibi" alt="Боку" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
+          <img id="chibiBannerImg" src="/assets/sprite_01.webp" class="boku-mascot-chibi-badge" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
           <div>
-            <h2 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px;">Задания от Боку 💜</h2>
-            <p style="font-size: 12.5px; color: var(--color-variant); line-height: 1.45; max-width: 540px;">
-              Забирай бонус новичка (+500 БК), выполняй ежедневные задания в кинотеатре и получай Бококойны на прокачку карточек до Легендарного ранга!
-            </p>
+            <div class="quests-banner-title">Задания от Боку 💜</div>
+            <div class="quests-banner-desc">
+              Забирай бонус новичка (+1000 БК и карточку Боку), выполняй ежедневные задания и получай Бококойны на прокачку карточек до Легендарного ранга!
+            </div>
           </div>
         </div>
-        <div class="bokocoin-pill" style="cursor: default;">
-          <span class="bokocoin-icon">B</span>
-          <span class="bokocoin-amount" id="questsBannerBalance">0</span>
+        <div class="bokocoin-pill" style="flex-shrink: 0;">
+          <div class="bokocoin-icon">B</div>
+          <span class="bokocoin-amount" id="bannerCoinsDisplay">0</span>
           <span class="bokocoin-label">Бококойнов</span>
         </div>
       </div>
 
-      <div class="quests-section-title">
-        <span class="material-symbols-rounded">verified</span>
-        <span>Постоянные награды</span>
+      <div class="section-header" style="margin-top: 10px;">
+        <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-rounded" style="color: var(--color-primary); font-size: 20px;">verified</span>
+          <span>Постоянные награды</span>
+        </h3>
       </div>
       <div id="coreQuestsGrid" class="quests-grid"></div>
 
-      <div class="quests-section-title">
-        <span class="material-symbols-rounded">casino</span>
-        <span>Ежедневные задания (3 случайных на сегодня)</span>
+      <div class="section-header" style="margin-top: 16px;">
+        <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-rounded" style="color: var(--color-primary); font-size: 20px;">casino</span>
+          <span>Ежедневные задания (3 случайных на сегодня)</span>
+        </h3>
       </div>
       <div id="dailyQuestsGrid" class="quests-grid"></div>
     </section>
   </main>
+
+  <!-- ПОЛНОЭКРАННЫЙ ЗАТЕМНЯЮЩИЙ И БЛЮРЯЩИЙ ОВЕРЛЕЙ ОНБОРДИНГА -->
+  <div id="onboardingBackdrop" class="onboarding-backdrop" style="display: none;" onclick="OnboardingGuide.handleBackdropClick(event)">
+    <svg class="onboarding-spotlight-svg" width="100%" height="100%">
+      <defs>
+        <mask id="spotlightHoleMask">
+          <rect width="100%" height="100%" fill="white" />
+          <rect id="spotlightHoleCutout" x="0" y="0" width="0" height="0" rx="14" ry="14" fill="black" />
+        </mask>
+      </defs>
+      <rect width="100%" height="100%" fill="rgba(6, 4, 14, 0.78)" mask="url(#spotlightHoleMask)" />
+    </svg>
+    <div id="spotlightFrame" class="spotlight-glowing-frame"></div>
+  </div>
+
+  <!-- ПЛАВАЮЩИЙ ГАЙД ОБУЧЕНИЯ ОТ БОКУ -->
+  <div id="onboardingGuideTooltip" class="onboarding-guide-tooltip">
+    <div class="onboarding-chibi-row">
+      <div class="onboarding-chibi-left">
+        <img id="onboardingChibiImg" src="/assets/sprite_01.webp" class="onboarding-chibi-img" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+        <div class="onboarding-title" id="onboardingGuideTitle">Привет! Я Боку 💜</div>
+      </div>
+    </div>
+    <div class="onboarding-text" id="onboardingGuideText"></div>
+    <div class="onboarding-actions-row">
+      <span class="onboarding-step-indicator" id="onboardingStepIndicator">Шаг 1 из 4</span>
+      <button class="onboarding-skip-btn" onclick="OnboardingGuide.finish()">Пропустить обучение</button>
+    </div>
+  </div>
 
   <!-- Модальное окно описания аниме -->
   <div id="cardDetailsModal" class="modal-overlay" onclick="if(event.target.id==='cardDetailsModal') closeCardDetailsModal()">
@@ -1223,7 +1409,7 @@
       </div>
 
       <div class="card-info-desc-box" id="modalAnimeDescription">
-        Загружаем описание с Shikimori...
+        Загружаем описание...
       </div>
 
       <div style="display: flex; gap: 10px; width: 100%; margin-top: 4px; flex-wrap: wrap; flex-shrink: 0;">
@@ -1239,13 +1425,34 @@
     </div>
   </div>
 
+  <!-- Модальное окно смены скина Боку -->
+  <div id="bokuSkinModal" class="modal-overlay" onclick="if(event.target.id==='bokuSkinModal') closeBokuSkinModal()">
+    <div class="modal-content animate-fade" style="max-width: 480px;">
+      <button class="modal-close" onclick="closeBokuSkinModal()">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <div style="text-align: center;">
+        <h3 style="font-size: 19px; font-weight: 800; color: #fff;">Скин Боку</h3>
+        <p style="font-size: 12px; color: var(--color-variant); margin-top: 4px;">
+          Боку может выглядеть по-разному! Выбери образ, и он применится везде на сайте.
+        </p>
+      </div>
+
+      <div class="skins-grid" id="bokuSkinsGrid"></div>
+
+      <button class="md-btn md-btn-filled" style="width: 100%; margin-top: 6px;" onclick="closeBokuSkinModal()">
+        Готово
+      </button>
+    </div>
+  </div>
+
   <!-- Модальное окно результата апгрейда -->
   <div id="upgradeResultModal" class="modal-overlay" onclick="if(event.target.id==='upgradeResultModal') closeUpgradeResultModal()">
     <div class="modal-content animate-fade" style="text-align: center; align-items: center;">
       <button class="modal-close" onclick="closeUpgradeResultModal()">
         <span class="material-symbols-rounded">close</span>
       </button>
-      <img id="resultChibiImg" src="/assets/sprite_11_8ea686eb.webp" style="width: 96px; height: 96px; object-fit: contain;" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" alt="Боку" />
+      <img id="resultChibiImg" src="/assets/sprite_05.webp" style="width: 96px; height: 96px; object-fit: contain;" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" alt="Боку" />
       <h3 id="resultModalTitle" style="font-size: 20px; font-weight: 800; color: var(--color-primary);">Успех!</h3>
       <p id="resultModalDesc" style="font-size: 13.5px; color: var(--color-surface); line-height: 1.5;"></p>
       <button class="md-btn md-btn-filled" style="width: 100%; margin-top: 6px;" onclick="closeUpgradeResultModal()">
@@ -1311,26 +1518,123 @@
       </svg>
     `);
 
+    // =========================================================================
+    // СИСТЕМА СКИНОВ БОКУ
+    // =========================================================================
+    const BOKU_SKINS = {
+      default: { id: 'default', name: 'Оригинал', desc: 'Классическая фиолетовая Боку в худи', path: '/assets/skins/default' },
+      skin_1: { id: 'skin_1', name: 'Готка', desc: 'Мрачная и стильная готическая Боку', path: '/assets/skins/skin_1' },
+      skin_2: { id: 'skin_2', name: 'Андроид', desc: 'Киберпанковая высокотехнологичная Боку', path: '/assets/skins/skin_2' }
+    };
+
+    function getBokuSkin() {
+      return localStorage.getItem('komboko_boku_skin') || 'default';
+    }
+
+    function getBokuSpriteUrl(spriteNum) {
+      const skin = getBokuSkin();
+      const numStr = String(spriteNum).replace(/[^0-9]/g, '').padStart(2, '0');
+      if (skin === 'skin_1') return `/assets/skins/skin_1/sprite_${numStr}.webp`;
+      if (skin === 'skin_2') return `/assets/skins/skin_2/sprite_${numStr}.webp`;
+      return `/assets/skins/default/sprite_${numStr}.webp`;
+    }
+
+    function applyCurrentSkinToDOM() {
+      const skin = getBokuSkin();
+      const meta = BOKU_SKINS[skin] || BOKU_SKINS.default;
+      const lbl = document.getElementById('headerSkinLabel');
+      if (lbl) lbl.textContent = meta.name;
+
+      const headerChibi = document.getElementById('headerBokuChibi');
+      if (headerChibi) headerChibi.src = getBokuSpriteUrl(1);
+
+      const bannerChibi = document.getElementById('chibiBannerImg');
+      if (bannerChibi) bannerChibi.src = getBokuSpriteUrl(1);
+
+      const onbChibi = document.getElementById('onboardingChibiImg');
+      if (onbChibi && OnboardingGuide.activeSprite) {
+        onbChibi.src = getBokuSpriteUrl(OnboardingGuide.activeSprite);
+      }
+
+      // Обновляем постер маскота Боку в коллекции
+      appState.cards.forEach(c => {
+        if (c.animeId === 'boku_mascot' || c.uid === 'card_boku_mascot') {
+          c.poster = getBokuSpriteUrl(5);
+        }
+      });
+    }
+
+    function openBokuSkinModal() {
+      const grid = document.getElementById('bokuSkinsGrid');
+      const curSkin = getBokuSkin();
+      if (grid) {
+        grid.innerHTML = Object.values(BOKU_SKINS).map(s => {
+          const numStr = '01';
+          const preview = s.id === 'default' ? `/assets/skins/default/sprite_${numStr}.webp` : `/assets/skins/${s.id}/sprite_${numStr}.webp`;
+          const isActive = s.id === curSkin;
+          return `
+            <div class="skin-card ${isActive ? 'active' : ''}" onclick="selectBokuSkin('${s.id}')">
+              <img src="${preview}" class="skin-preview-img" alt="${s.name}" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+              <div class="skin-name">${s.name}</div>
+              <div class="skin-desc">${s.desc}</div>
+            </div>
+          `;
+        }).join('');
+      }
+      document.getElementById('bokuSkinModal').style.display = 'flex';
+    }
+
+    function closeBokuSkinModal() {
+      document.getElementById('bokuSkinModal').style.display = 'none';
+    }
+
+    function selectBokuSkin(skinId) {
+      if (!BOKU_SKINS[skinId]) return;
+      localStorage.setItem('komboko_boku_skin', skinId);
+      applyCurrentSkinToDOM();
+      renderCollection();
+      renderUpgraderTray();
+      openBokuSkinModal(); // re-render selection in modal
+      showToast(`Скин «${BOKU_SKINS[skinId].name}» активирован! ✨`);
+    }
+
+    // =========================================================================
+    // ОБНОВЛЕННАЯ ЭКОНОМИКА (60% / 25% / 12% | Цены: 50 / 150 / 300)
+    // =========================================================================
     const DOWNGRADE_CHANCES_SEQUENCE = [0.20, 0.40, 0.80, 1.00];
     const RARITY_ORDER = { legendary: 4, epic: 3, rare: 2, common: 1 };
 
     const RARITY_META = {
       common: {
-        nameRu: 'Обычная', next: 'rare', cost: 50, chance: 0.50,
-        failTarget: 'common', hasDowngradeProtection: false, riskText: 'Базовый ранг (без отката)'
+        nameRu: 'Обычная', next: 'rare', cost: 50, chance: 0.60,
+        failTarget: 'common', hasDowngradeProtection: false, riskText: 'Базовый ранг (без отката, +5% при промахе)'
       },
       rare: {
-        nameRu: 'Редкая', next: 'epic', cost: 200, chance: 0.20,
+        nameRu: 'Редкая', next: 'epic', cost: 150, chance: 0.25,
         failTarget: 'common', hasDowngradeProtection: true, riskText: 'Откат при провале 2-го колеса'
       },
       epic: {
-        nameRu: 'Эпическая', next: 'legendary', cost: 500, chance: 0.08,
+        nameRu: 'Эпическая', next: 'legendary', cost: 300, chance: 0.12,
         failTarget: 'rare', hasDowngradeProtection: true, riskText: 'Откат при провале 2-го колеса'
       },
       legendary: {
         nameRu: 'Легендарная', next: null, cost: 0, chance: 0,
         failTarget: null, hasDowngradeProtection: false, riskText: 'Максимальный уровень'
       }
+    };
+
+    const BOKU_MASCOT_CARD = {
+      uid: "card_boku_mascot",
+      animeId: "boku_mascot",
+      title: "Боку (Маскот Komboko)",
+      titleEn: "Boku Mascot",
+      poster: "/assets/sprite_05.webp",
+      rarity: "common",
+      fails: 0,
+      streakBonus: 0,
+      isMascot: true,
+      description: "Боку — фирменный маскот сайта KombokoWatch! Жизнерадостный чибик, который всегда подскажет годный тайтл, поддержит при рисковом апгрейде и щедро насыплет Бококойнов за просмотр аниме.",
+      obtainedAt: Date.now()
     };
 
     let appState = {
@@ -1349,23 +1653,24 @@
     const animeDetailsCache = {};
 
     function safeGet(key) {
-      return localStorage.getItem(key) || sessionStorage.getItem(key);
+      try { return localStorage.getItem(key) || sessionStorage.getItem(key) || ''; }
+      catch (_) { return ''; }
     }
 
     function getDeviceId() {
       let devId = localStorage.getItem('komboko_device_id');
       if (!devId) {
-        devId = 'dev_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36);
+        devId = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
         localStorage.setItem('komboko_device_id', devId);
       }
       return devId;
     }
 
+    // Автоматический выбор backend API: на komboko.fun запросы строго идут на api.komboko.fun
     const IS_DEV_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    // На komboko.fun бэкенд находится на отдельном сервере https://api.komboko.fun
     const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
       ? 'https://api.komboko.fun'
-      : (IS_DEV_HOST ? '' : 'https://api.komboko.fun');
+      : (IS_DEV_HOST ? '' : '');
 
     function apiUrl(path) {
       if (!path) return '';
@@ -1374,108 +1679,18 @@
     }
 
     function getAuthHeaders() {
-      const headers = {
-        'Content-Type': 'application/json'
-      };
+      const headers = { 'Content-Type': 'application/json' };
       const token = safeGet('shiki_token');
       if (token) headers['Authorization'] = `Bearer ${token}`;
       return headers;
     }
 
-    function showToast(message) {
-      const toast = document.getElementById('kombokoToast');
-      const text = document.getElementById('kombokoToastText');
-      if (!toast || !text) return;
-      text.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    // =========================================================================
-    // СКИНОПАТИЯ БОКУ (ВЕЗДЕ НА САЙТЕ)
-    // =========================================================================
-    const BOKU_SKINS = {
-      default: { id: 'default', name: 'Оригинал', path: '/assets/skins/default' },
-      skin_1: { id: 'skin_1', name: 'Готка', path: '/assets/skins/skin_1' },
-      skin_2: { id: 'skin_2', name: 'Андроид', path: '/assets/skins/skin_2' }
-    };
-
-    function getBokuSkin() {
-      return localStorage.getItem('komboko_boku_skin') || 'default';
-    }
-
-    function getBokuSpriteUrl(spriteNum) {
-      const skin = getBokuSkin();
-      const numStr = String(spriteNum).replace(/[^0-9]/g, '').padStart(2, '0');
-      if (skin === 'skin_1') return `/assets/skins/skin_1/sprite_${numStr}.webp`;
-      if (skin === 'skin_2') return `/assets/skins/skin_2/sprite_${numStr}.webp`;
-      return `/assets/skins/default/sprite_${numStr}.webp`;
-    }
-
-    function applyBokuSkinToCollectionPage() {
-      const bannerChibi = document.querySelector('.quests-banner-chibi');
-      if (bannerChibi) bannerChibi.src = getBokuSpriteUrl(7);
-      const resImg = document.getElementById('resultChibiImg');
-      if (resImg) resImg.src = getBokuSpriteUrl(11);
-      const emptyChibi = document.querySelector('.empty-chibi-img');
-      if (emptyChibi) emptyChibi.src = getBokuSpriteUrl(13);
-      const successChibi = document.querySelector('.quest-success-chibi');
-      if (successChibi) successChibi.src = getBokuSpriteUrl(11);
-    }
-
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'komboko_boku_skin') {
-        applyBokuSkinToCollectionPage();
-      }
-    });
-
-    let questBannerTimeout = null;
-    function showQuestSuccessBanner(reward, questTitle) {
-      let banner = document.getElementById('questSuccessBanner');
-      if (!banner) return;
-
-      const titleText = 'Задание выполнено!';
-      const questMsg = `Задание выполнено! Начислено ${reward} бококойнов`;
-
-      banner.innerHTML = `
-        <div class="quest-success-inner">
-          <div class="quest-success-avatar-wrap">
-            <img src="${getBokuSpriteUrl(11)}" class="quest-success-chibi" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
-          </div>
-          <div class="quest-success-content">
-            <div class="quest-success-badge">✨ ${titleText}</div>
-            <div class="quest-success-msg">${questMsg}</div>
-            ${questTitle ? `<div class="quest-success-sub">«${questTitle}»</div>` : ''}
-          </div>
-          <div class="quest-success-coin-badge">
-            <span class="quest-coin-icon">🪙</span>
-            <span class="quest-coin-val">+${reward}</span>
-          </div>
-        </div>
-        <div class="quest-success-progress-track">
-          <div class="quest-success-progress-fill" style="animation: questTimerBar 5s linear forwards;"></div>
-        </div>
-      `;
-
-      banner.classList.remove('hiding');
-      banner.classList.add('visible');
-      banner.style.display = 'block';
-
-      if (questBannerTimeout) clearTimeout(questBannerTimeout);
-      questBannerTimeout = setTimeout(() => {
-        banner.classList.remove('visible');
-        banner.classList.add('hiding');
-        setTimeout(() => {
-          banner.classList.remove('hiding');
-          banner.style.display = 'none';
-        }, 400);
-      }, 5000);
-    }
-
-    function cleanShikiText(raw) {
+    function cleanDescriptionText(raw) {
       if (!raw) return '';
       return String(raw)
+        .replace(/\[character=[^\]]*\]([^\[]*)\[\/character\]/gi, '$1')
+        .replace(/\[anime=[^\]]*\]([^\[]*)\[\/anime\]/gi, '$1')
+        .replace(/\[manga=[^\]]*\]([^\[]*)\[\/manga\]/gi, '$1')
         .replace(/\[spoiler(?:=[^\]]*)?\]([\s\S]*?)\[\/spoiler\]/gi, '\n[Спойлер: $1]\n')
         .replace(/\[[^\]]+\]/g, '')
         .replace(/\n{3,}/g, '\n\n')
@@ -1489,7 +1704,291 @@
     }
 
     // =========================================================================
-    // 1. ХРАНИЛИЩЕ И СИНХРОНИЗАЦИЯ С СЕРВЕРОМ
+    // ПЕЧАТНАЯ АНИМАЦИЯ (TYPEWRITER) ДЛЯ ТЕКСТА БОКУ
+    // =========================================================================
+    let typewriterTimer = null;
+    function typewriteSpeech(text, onComplete) {
+      const textEl = document.getElementById('onboardingGuideText');
+      if (!textEl) return;
+      if (typewriterTimer) {
+        clearInterval(typewriterTimer);
+        typewriterTimer = null;
+      }
+      textEl.textContent = '';
+      textEl.classList.add('typing');
+      let i = 0;
+      typewriterTimer = setInterval(() => {
+        if (i < text.length) {
+          textEl.textContent += text.charAt(i);
+          i++;
+        } else {
+          clearInterval(typewriterTimer);
+          typewriterTimer = null;
+          textEl.classList.remove('typing');
+          if (typeof onComplete === 'function') onComplete();
+        }
+      }, 20);
+    }
+
+    // =========================================================================
+    // ОНБОРДИНГ: СВЕТОВОЙ ПРОЖЕКТОР, БЛЮР-ЗАТЕМНЕНИЕ И НАДЕЖНЫЕ ШАГИ
+    // =========================================================================
+    const OnboardingGuide = {
+      step: 0,
+      activeTarget: null,
+      activeSprite: 1,
+
+      hasCompleted() {
+        return localStorage.getItem('komboko_onboarding_completed') === 'true';
+      },
+
+      finish() {
+        localStorage.setItem('komboko_onboarding_completed', 'true');
+        const tooltip = document.getElementById('onboardingGuideTooltip');
+        const backdrop = document.getElementById('onboardingBackdrop');
+        const frame = document.getElementById('spotlightFrame');
+        if (tooltip) tooltip.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+        if (frame) frame.classList.remove('active');
+        this.clearTargetHighlight();
+        showToast('Обучение завершено! Добро пожаловать в KombokoWatch ✨');
+      },
+
+      clearTargetHighlight() {
+        if (this.activeTarget) {
+          this.activeTarget.classList.remove('onboarding-target-elevated');
+          this.activeTarget = null;
+        }
+        document.querySelectorAll('.onboarding-target-elevated').forEach(el => el.classList.remove('onboarding-target-elevated'));
+      },
+
+      handleBackdropClick(e) {
+        // Запрещаем кликать мимо подсвеченной кнопки!
+        e.stopPropagation();
+        e.preventDefault();
+        const tooltip = document.getElementById('onboardingGuideTooltip');
+        const frame = document.getElementById('spotlightFrame');
+        if (tooltip) {
+          tooltip.classList.remove('tooltip-shake');
+          void tooltip.offsetWidth; // trigger reflow
+          tooltip.classList.add('tooltip-shake');
+        }
+        if (frame) {
+          frame.style.transform = 'scale(1.04)';
+          setTimeout(() => { frame.style.transform = 'scale(1)'; }, 220);
+        }
+        showToast('Боку подсказывает, куда нажать! Смотри на подсвеченную кнопку ✨');
+      },
+
+      updateSpotlight(targetEl, padding = 8) {
+        const backdrop = document.getElementById('onboardingBackdrop');
+        const cutout = document.getElementById('spotlightHoleCutout');
+        const frame = document.getElementById('spotlightFrame');
+        if (!targetEl || !backdrop || !cutout || !frame) return;
+
+        this.clearTargetHighlight();
+        targetEl.classList.add('onboarding-target-elevated');
+        this.activeTarget = targetEl;
+
+        const rect = targetEl.getBoundingClientRect();
+        const x = Math.max(0, rect.left - padding);
+        const y = Math.max(0, rect.top - padding);
+        const width = rect.width + (padding * 2);
+        const height = rect.height + (padding * 2);
+        const rx = Math.min(18, Math.max(10, parseInt(window.getComputedStyle(targetEl).borderRadius) || 12));
+
+        backdrop.style.display = 'block';
+        cutout.setAttribute('x', String(x));
+        cutout.setAttribute('y', String(y));
+        cutout.setAttribute('width', String(width));
+        cutout.setAttribute('height', String(height));
+        cutout.setAttribute('rx', String(rx));
+        cutout.setAttribute('ry', String(rx));
+
+        frame.style.left = `${x}px`;
+        frame.style.top = `${y}px`;
+        frame.style.width = `${width}px`;
+        frame.style.height = `${height}px`;
+        frame.style.borderRadius = `${rx}px`;
+        frame.classList.add('active');
+      },
+
+      setSpeech(title, text, spriteNum = 1, stepNumber = 1) {
+        this.activeSprite = spriteNum;
+        const titleEl = document.getElementById('onboardingGuideTitle');
+        const chibiImg = document.getElementById('onboardingChibiImg');
+        const stepInd = document.getElementById('onboardingStepIndicator');
+
+        if (titleEl) titleEl.textContent = title;
+        if (chibiImg) chibiImg.src = getBokuSpriteUrl(spriteNum);
+        if (stepInd) stepInd.textContent = `Шаг ${stepNumber} из 4`;
+
+        typewriteSpeech(text);
+      },
+
+      positionTooltip(targetEl, preferredSide = 'bottom') {
+        const tooltip = document.getElementById('onboardingGuideTooltip');
+        if (!tooltip || !targetEl) return;
+        const rect = targetEl.getBoundingClientRect();
+        tooltip.style.display = 'flex';
+
+        const ttWidth = 320;
+        const ttHeight = 150;
+        let top = rect.bottom + 14;
+        let left = Math.max(16, Math.min(window.innerWidth - ttWidth - 16, rect.left));
+
+        if (preferredSide === 'top' || (top + ttHeight > window.innerHeight && rect.top > ttHeight + 20)) {
+          top = Math.max(16, rect.top - ttHeight - 14);
+        } else if (top + ttHeight > window.innerHeight) {
+          top = window.innerHeight - ttHeight - 16;
+        }
+
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
+      },
+
+      init() {
+        if (this.hasCompleted()) return;
+
+        const isWelcomeClaimed = Boolean(appState.questsClaimedAt['welcome_bonus']);
+        const hasCards = appState.cards.length > 0;
+
+        // ЗАЩИТА ОТ СБРОСА: если бонус уже забран, никогда не заставляем жать на него снова!
+        if (isWelcomeClaimed) {
+          if (window.location.hash === '#upgrade' || appState.selectedCardUid) {
+            this.setStep(4);
+          } else {
+            this.setStep(2);
+          }
+        } else {
+          this.setStep(0);
+        }
+      },
+
+      setStep(s) {
+        if (this.hasCompleted()) return;
+        this.step = s;
+        this.render();
+      },
+
+      render() {
+        if (this.hasCompleted()) return;
+
+        if (this.step === 0) {
+          // ШАГ 1: Забрать приветственный бонус
+          const isWelcomeClaimed = Boolean(appState.questsClaimedAt['welcome_bonus']);
+          if (isWelcomeClaimed) {
+            this.setStep(2);
+            return;
+          }
+
+          const currentView = document.getElementById('view-quests').style.display !== 'none' ? 'quests' : 'other';
+          if (currentView !== 'quests') {
+            const target = document.getElementById('nav-quests');
+            if (target) {
+              this.updateSpotlight(target);
+              this.positionTooltip(target, 'bottom');
+              this.setSpeech(
+                'Привет! Я Боку 💜',
+                'Добро пожаловать в KombokoWatch! Загляни в раздел «Задания» и забери приветственный бонус новичка!',
+                1,
+                1
+              );
+            }
+          } else {
+            const claimBtn = document.querySelector('.quest-card.ready-to-claim .md-btn-claim-active') ||
+                             document.querySelector('.md-btn-claim-active') ||
+                             document.querySelector('.quest-card');
+            if (claimBtn) {
+              this.updateSpotlight(claimBtn);
+              this.positionTooltip(claimBtn, 'top');
+              this.setSpeech(
+                'Приветственный подарок! 🎁',
+                'Жми «Забрать»! Ты получишь +1000 Бококойнов и мою фирменную коллекционную карточку!',
+                3,
+                1
+              );
+            }
+          }
+        } else if (this.step === 1) {
+          // ШАГ 2: Бонус получен, идем в коллекцию
+          const navCol = document.getElementById('nav-collection');
+          if (navCol) {
+            this.updateSpotlight(navCol);
+            this.positionTooltip(navCol, 'bottom');
+            this.setSpeech(
+              'Ура! +1000 БК и карточка! 💜',
+              'Подарок получен! Теперь давай посмотрим на твою новую карточку в разделе «Коллекция»!',
+              3,
+              2
+            );
+          }
+        } else if (this.step === 2) {
+          // ШАГ 3: В коллекции, изучаем карточку
+          if (document.getElementById('view-collection').style.display === 'none') {
+            switchView('collection');
+          }
+          setTimeout(() => {
+            const bokuCard = document.querySelector('.collectible-card[data-anime-id="boku_mascot"]') ||
+                             document.querySelector('.collectible-card');
+            if (bokuCard) {
+              this.updateSpotlight(bokuCard);
+              this.positionTooltip(bokuCard, 'bottom');
+              this.setSpeech(
+                'Твоя карточка здесь! ✨',
+                'Вот и я! Нажми на карточку, чтобы открыть описание и узнать мои секреты.',
+                2,
+                3
+              );
+            } else {
+              // Если карточек нет по какой-то причине
+              const navQ = document.getElementById('nav-quests');
+              if (navQ) {
+                this.updateSpotlight(navQ);
+                this.positionTooltip(navQ, 'bottom');
+                this.setSpeech('Сначала заберем бонус', 'Перейди в «Задания» и забери стартовый дроп!', 1, 1);
+              }
+            }
+          }, 200);
+        } else if (this.step === 3) {
+          // ШАГ 4: В модалке карточки, нажимаем "В апгрейдер"
+          const btnUp = document.getElementById('modalBtnUpgrade');
+          if (btnUp && document.getElementById('cardDetailsModal').style.display === 'flex') {
+            this.updateSpotlight(btnUp);
+            this.positionTooltip(btnUp, 'top');
+            this.setSpeech(
+              'Кузница карточек ⚡',
+              'Отлично! Теперь давай прокачаем ранг карточки. Нажми «В апгрейдер»!',
+              7,
+              3
+            );
+          } else {
+            this.setStep(4);
+          }
+        } else if (this.step === 4) {
+          // ШАГ 5: В апгрейдере, нажимаем "Прокачать"
+          if (document.getElementById('view-upgrade').style.display === 'none') {
+            switchView('upgrade');
+          }
+          setTimeout(() => {
+            const btnRun = document.getElementById('btnRunUpgrade');
+            if (btnRun) {
+              this.updateSpotlight(btnRun);
+              this.positionTooltip(btnRun, 'top');
+              this.setSpeech(
+                'Первый апгрейд! 🍀',
+                'Жми «Прокачать»! Базовый шанс — 60%, а если не повезет — карточка не откатится и шанс вырастет на +5%!',
+                4,
+                4
+              );
+            }
+          }, 200);
+        }
+      }
+    };
+
+    // =========================================================================
+    // 1. ХРАНИЛИЩЕ И СИНХРОНИЗАЦИЯ С СЕРВЕРОМ (СЕРВЕРНЫЙ ПРИОРИТЕТ)
     // =========================================================================
     const CardsStorage = {
       storageKey: 'komboko_cards_prod_v1',
@@ -1499,24 +1998,16 @@
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
-            if (typeof parsed.bokocoins === 'number') appState.bokocoins = Math.max(0, parsed.bokocoins);
+            if (typeof parsed.bokocoins === 'number') appState.bokocoins = parsed.bokocoins;
             if (Array.isArray(parsed.cards)) {
               appState.cards = parsed.cards.map(c => ({
                 ...c,
-                fails: Number(c.fails ?? c.downgradeFailsCount ?? 0)
+                fails: Number(c.fails ?? 0),
+                streakBonus: Number(c.streakBonus ?? 0)
               }));
             }
             appState.questsClaimedAt = parsed.questsClaimedAt || {};
           } catch (_) {}
-        }
-
-        // Запасные задания если оффлайн или задержка сети
-        if (!appState.dailyQuests || appState.dailyQuests.length === 0) {
-          appState.dailyQuests = [
-            { id: 'quest_watch_party', reward: 80, titleRu: 'Создать комнату Watch Party', descRu: 'Создай комнату и пригласи друга для совместного просмотра аниме.', icon: 'group', isDaily: true, actionUrl: '/' },
-            { id: 'quest_boku_roulette', reward: 80, titleRu: 'Посмотреть рандомное аниме от Боку', descRu: 'Испытай удачу в «Рулетке от Боку» в правом нижнем углу сайта.', icon: 'casino', isDaily: true, actionUrl: '/#roulette' },
-            { id: 'quest_search_catalog', reward: 50, titleRu: 'Исследовать каталог', descRu: 'Найди новый интересный тайтл через поиск или фильтры жанров.', icon: 'search', isDaily: true, actionUrl: '/' }
-          ];
         }
 
         const devId = getDeviceId();
@@ -1528,21 +2019,21 @@
           });
           if (res.ok) {
             const data = await res.json();
+            // БАЛАНС СЕРВЕРА ЯВЛЯЕТСЯ СТРОГО АВТОРИТЕТНЫМ!
+            // Если администратор или скрипт изменили баланс на сервере, строго принимаем его:
             if (typeof data.bokocoins === 'number') {
-              appState.bokocoins = Math.max(appState.bokocoins, data.bokocoins);
+              appState.bokocoins = data.bokocoins;
             }
             if (Array.isArray(data.cards)) {
-              const localMap = new Map(appState.cards.map(c => [String(c.animeId), c]));
+              const localMap = new Map(appState.cards.map(c => [String(c.animeId || c.uid), c]));
               data.cards.forEach(sc => {
-                const aId = String(sc.animeId);
+                const aId = String(sc.animeId || sc.uid);
                 const ex = localMap.get(aId);
                 if (!ex) {
-                  localMap.set(aId, { ...sc, fails: Number(sc.fails ?? 0) });
+                  localMap.set(aId, { ...sc, fails: Number(sc.fails ?? 0), streakBonus: Number(sc.streakBonus ?? 0) });
                 } else {
-                  if (isPlaceholderTitle(sc.title) && !isPlaceholderTitle(ex.title)) {
-                    sc.title = ex.title;
-                  }
-                  localMap.set(aId, { ...ex, ...sc, fails: Number(sc.fails ?? ex.fails ?? 0) });
+                  if (isPlaceholderTitle(sc.title) && !isPlaceholderTitle(ex.title)) sc.title = ex.title;
+                  localMap.set(aId, { ...ex, ...sc, fails: Number(sc.fails ?? ex.fails ?? 0), streakBonus: Number(sc.streakBonus ?? ex.streakBonus ?? 0) });
                 }
               });
               appState.cards = Array.from(localMap.values());
@@ -1556,17 +2047,22 @@
             this.saveLocal();
           }
 
-          // Двусторонняя синхронизация: отправляем локальные карточки и баланс на сервер
+          // Фоновая синхронизация карточек (НЕ перетирая серверные коины)
           fetch(apiUrl('/api/cards/sync'), {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
-              bokocoins: appState.bokocoins,
               cards: appState.cards,
               questsClaimedAt: appState.questsClaimedAt,
               deviceId: devId,
               userId: userId
             })
+          }).then(r => r.json()).then(data => {
+            if (data && typeof data.bokocoins === 'number') {
+              appState.bokocoins = data.bokocoins;
+              this.saveLocal();
+              updateBalancesUI();
+            }
           }).catch(() => {});
         } catch (_) {}
       },
@@ -1583,15 +2079,16 @@
     };
 
     // =========================================================================
-    // 2. АВТОПОЧИНКА НАЗВАНИЙ АНИМЕ С SHIKIMORI
+    // 2. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И СИНХРОНИЗАЦИЯ SHIKIMORI
     // =========================================================================
     async function fetchAnimeMetadataBatch(animeIds) {
-      if (!animeIds.length) return [];
+      const cleanIds = animeIds.filter(id => id && id !== 'boku_mascot');
+      if (!cleanIds.length) return [];
       const results = [];
       const chunkSize = 50;
 
-      for (let i = 0; i < animeIds.length; i += chunkSize) {
-        const chunk = animeIds.slice(i, i + chunkSize);
+      for (let i = 0; i < cleanIds.length; i += chunkSize) {
+        const chunk = cleanIds.slice(i, i + chunkSize);
         try {
           const restRes = await fetch(`https://shikimori.io/api/animes?ids=${chunk.join(',')}&limit=50`);
           if (restRes.ok) {
@@ -1610,41 +2107,12 @@
             }
           }
         } catch (_) {}
-
-        // Фоллбэк на GraphQL
-        const query = `{
-          animes(ids: "${chunk.join(',')}", limit: 50) {
-            id
-            name
-            russian
-            poster { originalUrl mainUrl }
-          }
-        }`;
-        try {
-          const r = await fetch('https://shikimori.io/api/graphql', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ query })
-          });
-          if (r.ok) {
-            const j = await r.json();
-            const list = j?.data?.animes || [];
-            list.forEach(a => {
-              results.push({
-                animeId: String(a.id),
-                title: a.russian || a.name || `Тайтл #${a.id}`,
-                titleEn: a.name || '',
-                poster: a.poster?.originalUrl || a.poster?.mainUrl || `https://shikimori.one/system/animes/original/${a.id}.jpg`
-              });
-            });
-          }
-        } catch (_) {}
       }
       return results;
     }
 
     async function repairMissingCardTitles() {
-      const brokenCards = appState.cards.filter(c => isPlaceholderTitle(c.title));
+      const brokenCards = appState.cards.filter(c => c.animeId !== 'boku_mascot' && isPlaceholderTitle(c.title));
       if (brokenCards.length === 0) return;
 
       const brokenIds = brokenCards.map(c => String(c.animeId));
@@ -1652,7 +2120,6 @@
       if (enriched.length === 0) return;
 
       const enrichedMap = new Map(enriched.map(item => [String(item.animeId), item]));
-      const titlesPayload = {};
       let updated = false;
 
       appState.cards.forEach(card => {
@@ -1661,7 +2128,6 @@
           card.title = info.title;
           if (info.titleEn) card.titleEn = info.titleEn;
           if (info.poster) card.poster = info.poster;
-          titlesPayload[card.animeId] = { title: info.title, titleEn: info.titleEn, poster: info.poster };
           updated = true;
         }
       });
@@ -1670,151 +2136,147 @@
         CardsStorage.saveLocal();
         renderCollection();
         renderUpgraderTray();
-        if (appState.selectedCardUid) updateUpgraderArenaUI();
 
-        // Синхронизируем починенные названия на сервере
+        const titleMap = {};
+        enriched.forEach(item => {
+          titleMap[item.animeId] = { title: item.title, titleEn: item.titleEn, poster: item.poster };
+        });
         fetch(apiUrl('/api/cards/update_titles'), {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({
-            titles: titlesPayload,
-            deviceId: getDeviceId(),
-            userId: safeGet('shiki_user_id') || ''
-          })
+          body: JSON.stringify({ titles: titleMap, deviceId: getDeviceId() })
         }).catch(() => {});
       }
     }
 
-    async function syncCompletedFromShikimori(showFeedback = false) {
+    async function syncCompletedFromShikimori(showFeedback = true) {
       const token = safeGet('shiki_token');
       if (!token) {
-        if (showFeedback) showToast('Сначала войдите через Shikimori в кинотеатре!');
+        if (showFeedback) showToast('Вы не авторизованы через Shikimori');
         return;
       }
-
-      const btn = document.getElementById('btnSyncShikiCompleted');
-      if (btn && showFeedback) {
-        btn.disabled = true;
-        btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;"></div><span>Синхронизация...</span>';
-      }
+      if (showFeedback) showToast('Синхронизируем просмотренные аниме...');
 
       try {
-        let userId = appState.currentUser?.id || safeGet('shiki_user_id');
-        if (!userId) {
-          const whoRes = await fetch('https://shikimori.io/api/users/whoami', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (whoRes.ok) {
-            const u = await whoRes.json();
-            userId = u.id;
-            appState.currentUser = u;
-            localStorage.setItem('shiki_user_id', String(u.id));
-          }
-        }
-
-        if (!userId) {
-          if (showFeedback) showToast('Не удалось определить профиль Shikimori');
-          return;
-        }
+        const userRes = await fetch('https://shikimori.io/api/users/whoami', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!userRes.ok) throw new Error('Auth failed');
+        const user = await userRes.json();
+        const userId = user.id;
 
         const ratesRes = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&status=completed&limit=500`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-
-        if (!ratesRes.ok) {
-          if (showFeedback) showToast('Ошибка при загрузке списка с Shikimori');
-          return;
-        }
-
+        if (!ratesRes.ok) throw new Error('Rates failed');
         const rates = await ratesRes.json();
-        if (!Array.isArray(rates) || rates.length === 0) {
-          if (showFeedback) showToast('В вашем списке «Просмотрено» на Shikimori пока нет тайтлов.');
+
+        const animeIds = rates.map(r => String(r.target_id)).filter(Boolean);
+        if (animeIds.length === 0) {
+          if (showFeedback) showToast('В вашем списке Shikimori пока нет просмотренных аниме');
           return;
         }
+
+        const enrichedItems = await fetchAnimeMetadataBatch(animeIds);
+        const map = new Map(enrichedItems.map(item => [item.animeId, item]));
 
         const existingMap = new Map(appState.cards.map(c => [String(c.animeId), c]));
-        const idsToFetchMeta = [];
+        let addedCount = 0;
 
-        rates.forEach(r => {
-          const aId = String(r.target_id || r.anime?.id || '');
-          if (!aId) return;
-          const existingCard = existingMap.get(aId);
-          if (!existingCard || isPlaceholderTitle(existingCard.title)) {
-            idsToFetchMeta.push(aId);
-          }
-        });
-
-        const enrichedItems = await fetchAnimeMetadataBatch(idsToFetchMeta);
-        const enrichedMap = new Map(enrichedItems.map(item => [String(item.animeId), item]));
-
-        const newCards = [];
-        let repairedCount = 0;
-
-        rates.forEach(r => {
-          const aId = String(r.target_id || r.anime?.id || '');
-          if (!aId) return;
-          const meta = enrichedMap.get(aId);
-          const existingCard = existingMap.get(aId);
-
-          if (!existingCard) {
-            const cardObj = {
-              uid: `card_${aId}`,
-              animeId: aId,
-              title: meta?.title || (r.anime?.russian || r.anime?.name) || `Тайтл #${aId}`,
-              titleEn: meta?.titleEn || r.anime?.name || '',
-              poster: meta?.poster || (r.anime?.image?.original ? `https://shikimori.one${r.anime.image.original}` : `https://shikimori.one/system/animes/original/${aId}.jpg`),
+        animeIds.forEach(id => {
+          if (!existingMap.has(id)) {
+            const info = map.get(id);
+            const newCard = {
+              uid: `card_${id}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+              animeId: id,
+              title: info ? info.title : `Тайтл #${id}`,
+              titleEn: info ? info.titleEn : '',
+              poster: info ? info.poster : `https://shikimori.one/system/animes/original/${id}.jpg`,
               rarity: 'common',
               fails: 0,
+              streakBonus: 0,
               obtainedAt: Date.now()
             };
-            appState.cards.push(cardObj);
-            existingMap.set(aId, cardObj);
-            newCards.push(cardObj);
-          } else if (isPlaceholderTitle(existingCard.title) && meta && !isPlaceholderTitle(meta.title)) {
-            existingCard.title = meta.title;
-            existingCard.titleEn = meta.titleEn || '';
-            if (meta.poster) existingCard.poster = meta.poster;
-            repairedCount++;
+            appState.cards.push(newCard);
+            existingMap.set(id, newCard);
+            addedCount++;
           }
         });
 
-        CardsStorage.saveLocal();
-        renderCollection();
-        renderUpgraderTray();
-        renderQuests();
-
-        if (newCards.length > 0) {
-          showToast(`Добавлено карточек из «Просмотрено»: +${newCards.length}! ✨`);
-        } else if (repairedCount > 0) {
-          showToast(`Обновлены названия для ${repairedCount} карточек! ✨`);
-        } else if (showFeedback) {
-          showToast('Все просмотренные аниме с Shikimori уже есть в вашей коллекции!');
+        if (addedCount > 0) {
+          CardsStorage.saveLocal();
+          renderCollection();
+          renderUpgraderTray();
+          if (showFeedback) showToast(`Добавлено ${addedCount} новых карточек из Shikimori! ✨`);
+        } else {
+          if (showFeedback) showToast('Все просмотренные тайтлы уже есть в вашей коллекции!');
         }
 
-        if (newCards.length > 0) {
-          fetch(apiUrl('/api/cards/import_completed'), {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify({
-              items: newCards,
-              userId: userId,
-              deviceId: getDeviceId()
-            })
-          }).catch(() => {});
-        }
+        fetch(apiUrl('/api/cards/sync'), {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            cards: appState.cards,
+            questsClaimedAt: appState.questsClaimedAt,
+            deviceId: getDeviceId(),
+            userId: String(userId)
+          })
+        }).catch(() => {});
       } catch (err) {
-        console.error('Sync Shikimori error:', err);
-        if (showFeedback) showToast('Ошибка синхронизации с Shikimori');
-      } finally {
-        if (btn && showFeedback) {
-          btn.disabled = false;
-          btn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px; color: var(--color-primary);">sync</span><span>Из «Просмотрено» Shikimori</span>';
-        }
+        if (showFeedback) showToast('Ошибка синхронизации списка Shikimori');
       }
     }
 
     // =========================================================================
-    // 3. ПРОСТОРНОЕ МОДАЛЬНОЕ ОКНО ОПИСАНИЯ АНИМЕ
+    // 3. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК И МОДАЛОК
+    // =========================================================================
+    function switchView(viewName) {
+      ['collection', 'upgrade', 'quests'].forEach(name => {
+        const sec = document.getElementById(`view-${name}`);
+        const nav = document.getElementById(`nav-${name}`);
+        if (sec) sec.style.display = (name === viewName) ? 'block' : 'none';
+        if (nav) nav.classList.toggle('active', name === viewName);
+      });
+      window.location.hash = viewName;
+
+      if (viewName === 'upgrade') {
+        renderUpgraderTray();
+        updateUpgraderArenaUI();
+      }
+
+      // Продвижение онбординга при кликах на вкладки
+      if (!OnboardingGuide.hasCompleted()) {
+        if (viewName === 'quests' && OnboardingGuide.step === 0) {
+          setTimeout(() => OnboardingGuide.render(), 180);
+        } else if (viewName === 'collection' && OnboardingGuide.step === 1) {
+          OnboardingGuide.setStep(2);
+        } else if (viewName === 'upgrade' && (OnboardingGuide.step === 2 || OnboardingGuide.step === 3)) {
+          OnboardingGuide.setStep(4);
+        }
+      }
+    }
+
+    function updateBalancesUI() {
+      const formatted = appState.bokocoins.toLocaleString('ru-RU');
+      const bCoins = document.getElementById('balanceDisplayCoins');
+      const bBanner = document.getElementById('bannerCoinsDisplay');
+      if (bCoins) bCoins.textContent = formatted;
+      if (bBanner) bBanner.textContent = formatted;
+    }
+
+    let toastTimer = null;
+    function showToast(text) {
+      const t = document.getElementById('kombokoToast');
+      const txt = document.getElementById('kombokoToastText');
+      if (!t || !txt) return;
+      txt.textContent = text;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    // =========================================================================
+    // 4. ДЕТАЛЬНОЕ МОДАЛЬНОЕ ОКНО ТАЙТЛА
     // =========================================================================
     async function openCardDetailsModal(uid) {
       const card = appState.cards.find(c => c.uid === uid);
@@ -1829,64 +2291,63 @@
       const btnUpgrade = document.getElementById('modalBtnUpgrade');
       const btnWatch = document.getElementById('modalBtnWatch');
 
-      const meta = RARITY_META[card.rarity] || RARITY_META.common;
-
       thumbEl.src = card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
       titleEl.textContent = card.title;
-      origTitleEl.textContent = card.titleEn || `Shikimori ID: #${card.animeId}`;
-      badgesEl.innerHTML = `<span class="card-info-pill rarity-pill">Ранг: ${meta.nameRu}</span>`;
-      descEl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;color:var(--color-variant);"><div class="spinner" style="width:20px;height:20px;"></div><span>Загружаем описание аниме с Shikimori...</span></div>';
+      origTitleEl.textContent = card.titleEn || '';
+
+      const meta = RARITY_META[card.rarity] || RARITY_META.common;
+      let badgeHtml = `<span class="card-info-pill" style="color:var(--color-primary); background:rgba(208, 188, 255, 0.2);">${meta.nameRu} ранг</span>`;
+      if (card.streakBonus > 0) {
+        badgeHtml += `<span class="card-info-pill" style="color:#D0BCFF; background:rgba(154, 117, 240, 0.35);">+${Math.round(card.streakBonus * 100)}% к шансу</span>`;
+      }
+      if (card.fails > 0 && meta.hasDowngradeProtection) {
+        badgeHtml += `<span class="card-info-pill" style="color:#f87171; background:rgba(239, 68, 68, 0.2);">Защит: ${card.fails}/3</span>`;
+      }
+      badgesEl.innerHTML = badgeHtml;
 
       btnUpgrade.onclick = () => {
         closeCardDetailsModal();
         selectCardAndGoToUpgrader(card.uid);
       };
-      btnWatch.href = `/#${card.animeId}`;
+
+      if (card.isMascot || card.animeId === 'boku_mascot') {
+        btnWatch.style.display = 'none';
+        descEl.textContent = card.description || BOKU_MASCOT_CARD.description;
+        modal.style.display = 'flex';
+        if (OnboardingGuide.step === 2) {
+          OnboardingGuide.setStep(3);
+        }
+        return;
+      }
+
+      btnWatch.style.display = 'inline-flex';
+      btnWatch.href = `/?animeId=${encodeURIComponent(card.animeId)}`;
 
       modal.style.display = 'flex';
 
+      if (OnboardingGuide.step === 2) {
+        OnboardingGuide.setStep(3);
+      }
+
+      const cached = animeDetailsCache[card.animeId];
+      if (cached) {
+        descEl.textContent = cached.description || 'Описание отсутствует.';
+        return;
+      }
+
+      descEl.textContent = 'Загрузка подробного описания из базы...';
       try {
-        let details = animeDetailsCache[card.animeId];
-        if (!details) {
-          const res = await fetch(`https://shikimori.io/api/animes/${card.animeId}`);
-          if (res.ok) {
-            details = await res.json();
-            animeDetailsCache[card.animeId] = details;
-          }
-        }
-
-        if (details) {
-          const realTitle = details.russian || details.name || card.title;
-          titleEl.textContent = realTitle;
-          origTitleEl.textContent = details.name || '';
-
-          if (isPlaceholderTitle(card.title) && !isPlaceholderTitle(realTitle)) {
-            card.title = realTitle;
-            CardsStorage.saveLocal();
-            renderCollection();
-            renderUpgraderTray();
-          }
-
-          const year = details.aired_on ? details.aired_on.split('-')[0] : '';
-          const kindMap = { tv: 'ТВ Сериал', movie: 'Фильм', ova: 'OVA', ona: 'ONA', special: 'Спэшл' };
-          const kindStr = kindMap[details.kind] || details.kind || 'Аниме';
-          const eps = details.episodes || details.episodes_aired || '?';
-          const score = details.score && Number(details.score) > 0 ? `★ ${details.score}` : '';
-
-          badgesEl.innerHTML = [
-            `<span class="card-info-pill rarity-pill">Ранг: ${meta.nameRu}</span>`,
-            score ? `<span class="card-info-pill score">${score}</span>` : '',
-            year ? `<span class="card-info-pill">${year} г.</span>` : '',
-            `<span class="card-info-pill">${kindStr} (${eps} эп.)</span>`
-          ].filter(Boolean).join('');
-
-          const cleanDesc = cleanShikiText(details.description);
-          descEl.textContent = cleanDesc || 'Описание для этого тайтла пока отсутствует на Shikimori.';
+        const res = await fetch(`https://shikimori.io/api/animes/${card.animeId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const cleanDesc = cleanDescriptionText(data.description_html || data.description) || 'Описание тайтла пока не добавлено.';
+          animeDetailsCache[card.animeId] = { description: cleanDesc };
+          descEl.textContent = cleanDesc;
         } else {
-          descEl.textContent = 'Не удалось загрузить описание тайтла с Shikimori.';
+          descEl.textContent = 'Описание пока не добавлено.';
         }
-      } catch (_) {
-        descEl.textContent = 'Не удалось загрузить описание тайтла.';
+      } catch (err) {
+        descEl.textContent = 'Не удалось загрузить описание.';
       }
     }
 
@@ -1895,242 +2356,237 @@
     }
 
     // =========================================================================
-    // 4. ОТОБРАЖЕНИЕ КАРТОЧЕК И АПГРЕЙДЕР
+    // 5. ОТОБРАЖЕНИЕ КАРТОЧЕК И АПГРЕЙДЕР
     // =========================================================================
-    function sortCardsByRarity(cardsArray) {
-      return [...cardsArray].sort((a, b) => {
-        const diff = (RARITY_ORDER[b.rarity] || 0) - (RARITY_ORDER[a.rarity] || 0);
-        if (diff !== 0) return diff;
-        return (a.title || '').localeCompare(b.title || '', 'ru');
-      });
-    }
-
-    function updateBalancesUI() {
-      const formatted = appState.bokocoins.toLocaleString('ru-RU');
-      const hBal = document.getElementById('headerCoinBalance');
-      const qBal = document.getElementById('questsBannerBalance');
-      if (hBal) hBal.textContent = formatted;
-      if (qBal) qBal.textContent = formatted;
-    }
-
-    function setRarityFilter(rarity, btnEl) {
+    function filterCards(rarity) {
       appState.selectedFilter = rarity;
-      document.querySelectorAll('.rarity-chip').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
+      document.querySelectorAll('.rarity-chip').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-filter') === rarity);
+      });
       renderCollection();
     }
 
-    function renderAttemptsIndicatorHTML(card) {
-      const meta = RARITY_META[card.rarity];
-      if (!meta || !meta.hasDowngradeProtection) return '';
-      const fails = Math.min(DOWNGRADE_CHANCES_SEQUENCE.length - 1, Number(card.fails ?? 0));
-      const curChance = Math.round(DOWNGRADE_CHANCES_SEQUENCE[fails] * 100);
-      return `
-        <div class="attempts-pill" title="Риск отката на 2-м колесе: ${curChance}%">
-          <span class="material-symbols-rounded" style="font-size:12px; color:#D0BCFF;">shield</span>
-          <span>Откат: ${curChance}%</span>
-        </div>
-      `;
-    }
-
-    function createCardHTML(card, options = {}) {
-      const meta = RARITY_META[card.rarity] || RARITY_META.common;
-      const showUpgradeBtn = options.showUpgradeBtn !== false;
-      const disableClick = options.disableClick === true;
-      const attemptsBadge = renderAttemptsIndicatorHTML(card);
-      const clickAttr = disableClick ? '' : `onclick="openCardDetailsModal('${card.uid}')"`;
-
-      return `
-        <div class="collectible-card rarity-${card.rarity}" data-uid="${card.uid}" ${clickAttr}>
-          <div class="card-poster-box">
-            <span class="rarity-badge">${meta.nameRu}</span>
-            ${attemptsBadge}
-            <img src="${card.poster}" alt="${card.title}" loading="lazy" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
-          </div>
-          <div class="card-caption">
-            <div class="card-anime-title" title="${card.title}">${card.title}</div>
-            ${showUpgradeBtn ? `
-              <button class="card-go-upgrade-btn" onclick="event.stopPropagation(); selectCardAndGoToUpgrader('${card.uid}')">
-                <span class="material-symbols-rounded" style="font-size: 15px;">upgrade</span>
-                <span>В апгрейдер</span>
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    }
-
     function renderCollection() {
-      const grid = document.getElementById('collectionGrid');
-      const sorted = sortCardsByRarity(appState.cards);
-      document.getElementById('collectionCount').textContent = sorted.length;
+      const grid = document.getElementById('cardsCollectionGrid');
+      const emptyState = document.getElementById('emptyCollectionPlaceholder');
+      if (!grid) return;
 
-      if (sorted.length === 0) {
-        grid.innerHTML = `
-          <div class="empty-collection-card animate-fade">
-            <img src="/assets/sprite_13_19327248.webp" class="empty-chibi-img" alt="Пусто" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
-            <h3 style="font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px;">В вашей коллекции пока нет карточек</h3>
-            <p style="font-size: 13px; color: var(--color-variant); margin-bottom: 18px; line-height: 1.5;">
-              Нажмите «Из «Просмотрено» Shikimori», чтобы подтянуть карточки за все тайтлы, или посмотрите от 60% любого аниме в плеере!
-            </p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-              <button class="md-btn md-btn-filled" onclick="syncCompletedFromShikimori(true)">
-                <span class="material-symbols-rounded" style="font-size: 18px;">sync</span>
-                <span>Подтянуть из Shikimori</span>
-              </button>
-              <a href="/" class="md-btn md-btn-tonal">
-                <span class="material-symbols-rounded" style="font-size: 18px;">play_arrow</span>
-                <span>Смотреть аниме</span>
-              </a>
+      const counts = { all: appState.cards.length, common: 0, rare: 0, epic: 0, legendary: 0 };
+      appState.cards.forEach(c => {
+        if (counts[c.rarity] !== undefined) counts[c.rarity]++;
+      });
+
+      ['all', 'common', 'rare', 'epic', 'legendary'].forEach(r => {
+        const el = document.getElementById(`count-${r}`);
+        if (el) el.textContent = counts[r];
+      });
+
+      const filtered = appState.selectedFilter === 'all'
+        ? appState.cards
+        : appState.cards.filter(c => c.rarity === appState.selectedFilter);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+      }
+
+      if (emptyState) emptyState.style.display = 'none';
+
+      grid.innerHTML = filtered.map(card => {
+        const meta = RARITY_META[card.rarity] || RARITY_META.common;
+        const streakBonus = Number(card.streakBonus || 0);
+
+        let pityPill = '';
+        if (streakBonus > 0) {
+          pityPill = `<div class="pity-pill">+${Math.round(streakBonus * 100)}%</div>`;
+        }
+
+        let attemptsBadge = '';
+        if (meta.hasDowngradeProtection) {
+          attemptsBadge = `
+            <div class="attempts-pill" title="Попытки до отката">
+              <span class="material-symbols-rounded" style="font-size:12px; color:#f87171;">shield</span>
+              <span>${card.fails || 0}/3</span>
+            </div>
+          `;
+        }
+
+        const isMax = !meta.next;
+        const upgradeBtnHtml = isMax
+          ? `<div class="card-go-upgrade-btn" style="opacity: 0.55; cursor: default;">Макс. ранг</div>`
+          : `<button class="card-go-upgrade-btn" onclick="event.stopPropagation(); selectCardAndGoToUpgrader('${card.uid}')">
+               <span class="material-symbols-rounded" style="font-size: 16px;">upgrade</span>
+               <span>Прокачать</span>
+             </button>`;
+
+        const posterSrc = (card.isMascot || card.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+
+        return `
+          <div class="collectible-card rarity-${card.rarity}" data-anime-id="${card.animeId}" onclick="openCardDetailsModal('${card.uid}')">
+            <div class="card-poster-box">
+              <img src="${posterSrc}" alt="${card.title}" loading="lazy" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
+              <div class="rarity-badge">${meta.nameRu}</div>
+              ${pityPill}
+              ${attemptsBadge}
+            </div>
+            <div class="card-caption">
+              <div class="card-anime-title" title="${card.title}">${card.title}</div>
+              ${upgradeBtnHtml}
             </div>
           </div>
         `;
-        return;
-      }
-
-      const filtered = appState.selectedFilter === 'all'
-        ? sorted
-        : sorted.filter(c => c.rarity === appState.selectedFilter);
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--color-variant);">
-            Карточек выбранной редкости пока нет в вашей коллекции.
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(c => createCardHTML(c, { showUpgradeBtn: true })).join('');
+      }).join('');
     }
 
     function selectCardAndGoToUpgrader(uid) {
+      appState.selectedCardUid = uid;
       switchView('upgrade');
-      placeCardInUpgrader(uid);
     }
 
     function renderUpgraderTray() {
-      const strip = document.getElementById('upgraderTrayStrip');
-      const sorted = sortCardsByRarity(appState.cards);
+      const carousel = document.getElementById('upgraderTrayCarousel');
+      const countLabel = document.getElementById('trayCardCountLabel');
+      if (!carousel) return;
 
-      if (sorted.length === 0) {
-        strip.innerHTML = `
-          <div style="width: 100%; display: flex; align-items: center; justify-content: center; color: var(--color-variant); font-size: 13px; padding: 24px; text-align: center;">
-            У вас пока нет карточек для апгрейда. Подтяните их из списка «Просмотрено» Shikimori или посмотрите аниме!
-          </div>
-        `;
+      const upgradeable = appState.cards.filter(c => RARITY_META[c.rarity]?.next !== null);
+      if (countLabel) countLabel.textContent = `${upgradeable.length} шт.`;
+
+      if (upgradeable.length === 0) {
+        carousel.innerHTML = '<div style="color:var(--color-variant); font-size:12px; padding:12px;">Нет карточек для апгрейда. Получите карточки за просмотр или задания!</div>';
         return;
       }
 
-      strip.innerHTML = sorted.map(card => `
-        <div class="tray-card-item ${appState.selectedCardUid === card.uid ? 'in-slot' : ''}"
-             data-uid="${card.uid}" onclick="placeCardInUpgrader('${card.uid}')">
-          ${createCardHTML(card, { showUpgradeBtn: false, disableClick: true })}
-        </div>
-      `).join('');
-      initTrayDragAndDrop();
+      if (!appState.selectedCardUid && upgradeable.length > 0) {
+        appState.selectedCardUid = upgradeable[0].uid;
+      }
+
+      carousel.innerHTML = upgradeable.map(c => {
+        const isSel = c.uid === appState.selectedCardUid;
+        const posterSrc = (c.isMascot || c.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (c.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+        return `
+          <div class="tray-card-mini ${isSel ? 'selected' : ''}" onclick="selectUpgraderCard('${c.uid}')">
+            <img class="tray-card-poster" src="${posterSrc}" alt="${c.title}" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
+            <div class="tray-card-caption">${c.title}</div>
+          </div>
+        `;
+      }).join('');
     }
 
-    function placeCardInUpgrader(uid) {
+    function selectUpgraderCard(uid) {
       if (appState.isSpinning) return;
       appState.selectedCardUid = uid;
-      updateUpgraderArenaUI();
       renderUpgraderTray();
-    }
+      updateUpgraderArenaUI();
 
-    function clearUpgraderSlot() {
-      if (appState.isSpinning) return;
-      appState.selectedCardUid = null;
-      updateUpgraderArenaUI();
-      renderUpgraderTray();
+      if (OnboardingGuide.step === 4) {
+        setTimeout(() => OnboardingGuide.render(), 150);
+      }
     }
 
     function updateUpgraderArenaUI() {
+      const card = appState.cards.find(c => c.uid === appState.selectedCardUid);
+      const leftSlotEmpty = document.getElementById('leftSlotEmptyState');
+      const leftSlotContainer = document.getElementById('leftSlotCardContainer');
+      const rightSlotEmpty = document.getElementById('rightSlotEmptyState');
+      const rightSlotContainer = document.getElementById('rightSlotCardContainer');
+
       const wheelContainer = document.getElementById('wheelContainer');
+      const arc = document.getElementById('wheelChanceArc');
       const stageBadge = document.getElementById('wheelStageBadge');
       const chevrons = document.getElementById('wheelChevrons');
-      const leftSlot = document.getElementById('upgraderLeftSlot');
-      const leftEmpty = document.getElementById('leftSlotEmptyState');
-      const leftCardBox = document.getElementById('leftSlotCardContainer');
-
-      const rightSlot = document.getElementById('upgraderRightSlot');
-      const rightEmpty = document.getElementById('rightSlotEmptyState');
-      const rightCardBox = document.getElementById('rightSlotCardContainer');
-
-      const arc = document.getElementById('wheelChanceArc');
       const chanceText = document.getElementById('wheelChanceText');
       const costText = document.getElementById('wheelCostText');
       const riskText = document.getElementById('wheelRiskText');
       const btnRun = document.getElementById('btnRunUpgrade');
+
       const circumference = 2 * Math.PI * 100;
+
+      if (!card) {
+        leftSlotEmpty.style.display = 'block';
+        leftSlotContainer.style.display = 'none';
+        rightSlotEmpty.style.display = 'block';
+        rightSlotContainer.style.display = 'none';
+
+        wheelContainer.classList.remove('downgrade-mode');
+        stageBadge.textContent = 'Колесо апгрейда';
+        chevrons.innerHTML = '︿<br>︿';
+        arc.style.strokeDasharray = `0 ${circumference}`;
+        chanceText.textContent = '0%';
+        costText.textContent = 'Выберите карточку';
+        riskText.textContent = 'Выберите карточку в карусели';
+        btnRun.disabled = true;
+        return;
+      }
+
+      const meta = RARITY_META[card.rarity];
+      if (!meta || !meta.next) {
+        leftSlotEmpty.style.display = 'none';
+        leftSlotContainer.style.display = 'block';
+        leftSlotContainer.innerHTML = renderSlotCardHTML(card, meta.nameRu);
+
+        rightSlotEmpty.style.display = 'block';
+        rightSlotContainer.style.display = 'none';
+
+        chanceText.textContent = 'MAX';
+        costText.textContent = 'Максимальный ранг';
+        riskText.textContent = 'Дальнейший апгрейд недоступен';
+        btnRun.disabled = true;
+        return;
+      }
+
+      leftSlotEmpty.style.display = 'none';
+      leftSlotContainer.style.display = 'block';
+      leftSlotContainer.innerHTML = renderSlotCardHTML(card, meta.nameRu);
+
+      const nextMeta = RARITY_META[meta.next];
+      rightSlotEmpty.style.display = 'none';
+      rightSlotContainer.style.display = 'block';
+      rightSlotContainer.innerHTML = renderSlotCardHTML({ ...card, rarity: meta.next }, nextMeta.nameRu);
 
       wheelContainer.classList.remove('downgrade-mode');
       stageBadge.textContent = 'Колесо апгрейда';
       chevrons.innerHTML = '︿<br>︿';
 
-      const card = appState.cards.find(c => c.uid === appState.selectedCardUid);
+      const streakBonus = Number(card.streakBonus || 0);
+      const totalChance = Math.min(0.95, meta.chance + streakBonus);
+      const arcLen = (totalChance * circumference).toFixed(2);
+      arc.style.strokeDasharray = `${arcLen} ${circumference}`;
 
-      if (!card) {
-        leftSlot.classList.remove('has-card'); rightSlot.classList.remove('has-card');
-        leftEmpty.style.display = 'block'; leftCardBox.style.display = 'none';
-        rightEmpty.style.display = 'block'; rightCardBox.style.display = 'none';
-
-        arc.style.strokeDasharray = `0 ${circumference}`;
-        chanceText.textContent = '0%';
-        costText.textContent = 'Выберите карточку';
-        riskText.textContent = 'Перетащите карточку в левое окно';
-        btnRun.disabled = true;
-        return;
+      chanceText.textContent = `${Math.round(totalChance * 100)}%`;
+      if (streakBonus > 0) {
+        chanceText.innerHTML = `${Math.round(totalChance * 100)}% <span style="font-size:12px;color:#D0BCFF;">(+${Math.round(streakBonus * 100)}%)</span>`;
       }
-
-      const meta = RARITY_META[card.rarity];
-
-      leftSlot.classList.add('has-card');
-      leftEmpty.style.display = 'none'; leftCardBox.style.display = 'block';
-      leftCardBox.innerHTML = `
-        <div class="slot-card-wrapper animate-fade">
-          <button class="slot-remove-btn" onclick="clearUpgraderSlot()"><span class="material-symbols-rounded" style="font-size: 16px;">close</span></button>
-          ${createCardHTML(card, { showUpgradeBtn: false })}
-        </div>
-      `;
-
-      if (card.rarity === 'legendary' || !meta.next) {
-        rightSlot.classList.add('has-card'); rightEmpty.style.display = 'none'; rightCardBox.style.display = 'block';
-        rightCardBox.innerHTML = `
-          <div class="animate-fade" style="padding: 18px; max-width: 245px; font-size: 14px; font-weight: 800; color: #fde68a; line-height: 1.45;">
-            Апгрейдить дальше не надо. У вас уже максимальный уровень карточки.
-          </div>
-        `;
-        arc.style.strokeDasharray = `${circumference} ${circumference}`;
-        chanceText.textContent = 'MAX';
-        costText.textContent = 'Легендарный ранг';
-        riskText.textContent = 'Максимальный уровень достигнут';
-        btnRun.disabled = true;
-        return;
-      }
-
-      const nextCardPreview = { ...card, rarity: meta.next, fails: 0 };
-      rightSlot.classList.add('has-card'); rightEmpty.style.display = 'none'; rightCardBox.style.display = 'block';
-      rightCardBox.innerHTML = `<div class="slot-card-wrapper animate-fade">${createCardHTML(nextCardPreview, { showUpgradeBtn: false })}</div>`;
-
-      const arcLength = (meta.chance * circumference).toFixed(2);
-      arc.style.strokeDasharray = `${arcLength} ${circumference}`;
-      chanceText.textContent = `${Math.round(meta.chance * 100)}%`;
       costText.textContent = `Цена: ${meta.cost} БК`;
 
       if (meta.hasDowngradeProtection) {
         const fails = Math.min(DOWNGRADE_CHANCES_SEQUENCE.length - 1, Number(card.fails ?? 0));
         const curChance = Math.round(DOWNGRADE_CHANCES_SEQUENCE[fails] * 100);
-        riskText.textContent = `При промахе: 2-е колесо на откат (${curChance}%)`;
+        riskText.textContent = `При промахе: колесо отката (${curChance}%). Защита дает +5% к шансу!`;
       } else {
-        riskText.textContent = meta.riskText;
+        riskText.textContent = `Без отката. При промахе шанс вырастет на +5%!`;
       }
 
       btnRun.disabled = appState.bokocoins < meta.cost;
     }
 
+    function renderSlotCardHTML(card, rarityName) {
+      const posterSrc = (card.isMascot || card.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+      return `
+        <div class="collectible-card rarity-${card.rarity}" style="width: 170px; cursor: default;">
+          <div class="card-poster-box">
+            <img src="${posterSrc}" alt="${card.title}" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
+            <div class="rarity-badge">${rarityName}</div>
+          </div>
+          <div class="card-caption" style="padding: 10px;">
+            <div class="card-anime-title" style="min-height: auto; font-size: 12.5px;">${card.title}</div>
+          </div>
+        </div>
+      `;
+    }
+
     // =========================================================================
-    // 5. ДВУХЭТАПНЫЙ СЕРВЕРНЫЙ АПГРЕЙД (С ВАЛИДАЦИЕЙ И ТОЧНЫМ ОТКАТОМ)
+    // 6. ДВУХЭТАПНЫЙ СЕРВЕРНЫЙ АПГРЕЙД
     // =========================================================================
     async function runCardUpgrade() {
       if (appState.isSpinning) return;
@@ -2148,7 +2604,6 @@
       appState.isSpinning = true;
       document.getElementById('btnRunUpgrade').disabled = true;
 
-      // Запрашиваем серверный авторитетный расчёт
       let serverOutcome = null;
       try {
         const res = await fetch(apiUrl('/api/cards/upgrade'), {
@@ -2156,8 +2611,7 @@
           headers: getAuthHeaders(),
           body: JSON.stringify({
             uid: card.uid,
-            card: card,
-            bokocoins: appState.bokocoins,
+            card: card, // Передаем полный объект карточки чтобы сервер гарантированно нашел / восстановил
             deviceId: getDeviceId(),
             userId: safeGet('shiki_user_id') || ''
           })
@@ -2177,9 +2631,9 @@
         return;
       }
 
-      const { isWin, didDowngrade, targetDegree1, targetDegree2, downgradeChancePct, nextDowngradeChancePct, oldRarity, newRarity, bokocoins, cards } = serverOutcome;
+      const { isWin, didDowngrade, targetDegree1, targetDegree2, downgradeChancePct, oldRarity, newRarity, bokocoins, cards } = serverOutcome;
 
-      // Списываем монеты на клиенте синхронно с сервером
+      // Приоритетно обновляем коины с сервера
       appState.bokocoins = bokocoins;
       updateBalancesUI();
 
@@ -2193,9 +2647,7 @@
       const costText = document.getElementById('wheelCostText');
       const riskText = document.getElementById('wheelRiskText');
 
-      // =========================================================
-      // ЭТАП 1: КРУТИМ КОЛЕСО АПГРЕЙДА (3.2 секунды)
-      // =========================================================
+      // ЭТАП 1: КРУТИМ КОЛЕСО АПГРЕЙДА (3.2 сек)
       const base1 = appState.wheelRotation - (appState.wheelRotation % 360);
       appState.wheelRotation = base1 + (360 * 5) + targetDegree1;
       pointerRing.style.transform = `rotate(${appState.wheelRotation}deg)`;
@@ -2209,14 +2661,18 @@
         showUpgradeOutcomeModal(
           true,
           'Апгрейд успешен! ✨',
-          `Карточка «${card.title}» прокачана с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}»! Шкала риска отката сброшена до 20%.`,
-          getBokuSpriteUrl(11)
+          `«${card.title}» прокачана с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}»! Бонусы шанса сброшены.`,
+          getBokuSpriteUrl(8)
         );
 
         appState.isSpinning = false;
         updateUpgraderArenaUI();
         renderUpgraderTray();
         renderCollection();
+
+        if (!OnboardingGuide.hasCompleted()) {
+          OnboardingGuide.finish();
+        }
         return;
       }
 
@@ -2226,21 +2682,20 @@
 
         showUpgradeOutcomeModal(
           false,
-          'Не повезло...',
-          `Шанс ${Math.round(meta.chance * 100)}% не сыграл. Карточка «${card.title}» осталась Обычной.`,
-          getBokuSpriteUrl(13)
+          'Удача копится! 🍀',
+          `Апгрейд не удался, но карточка осталась на месте! Шанс следующей попытки увеличен на +5%!`,
+          getBokuSpriteUrl(9)
         );
         appState.isSpinning = false;
         updateUpgraderArenaUI();
         renderUpgraderTray();
         renderCollection();
+        if (!OnboardingGuide.hasCompleted()) OnboardingGuide.finish();
         return;
       }
 
-      // =========================================================
-      // ЭТАП 2: ПЕРЕКЛЮЧАЕМ НА КОЛЕСО ОТКАТА (ДАНГЕР-ЗОНА)
-      // =========================================================
-      showToast(`Апгрейд сорвался! Запускаем колесо отката (${downgradeChancePct}%)...`);
+      // ЭТАП 2: КОЛЕСО ОТКАТА
+      showToast(`Апгрейд сорвался! Запускаем защитное колесо (${downgradeChancePct}%)...`);
       wheelContainer.classList.add('downgrade-mode');
       stageBadge.textContent = '⚠️ Колесо отката';
       chevrons.innerHTML = '﹀<br>﹀';
@@ -2250,9 +2705,7 @@
       arc.style.strokeDasharray = `${dangerArcLen} ${circumference}`;
       chanceText.textContent = `${downgradeChancePct}%`;
       costText.textContent = 'Красная зона = Откат';
-      riskText.textContent = downgradeChancePct >= 100
-        ? '4-й промах подряд: 100% зона отката!'
-        : 'Стрелка мимо красной дуги = Ранг спасён!';
+      riskText.textContent = downgradeChancePct >= 100 ? 'Зона отката 100%!' : 'Стрелка мимо красной зоны = ранг спасен и +5% к шансу!';
 
       await new Promise(r => setTimeout(r, 1100));
 
@@ -2269,15 +2722,15 @@
         showUpgradeOutcomeModal(
           false,
           'Откат ранга! 💥',
-          `Стрелка остановилась в красной зоне (${downgradeChancePct}%). Карточка «${card.title}» откатилась с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}». Следующий риск снова 20%.`,
-          getBokuSpriteUrl(14)
+          `Стрелка попала в красную зону! Карточка «${card.title}» откатилась до «${RARITY_META[newRarity].nameRu}». Накопленный шанс сброшен.`,
+          getBokuSpriteUrl(10)
         );
       } else {
         showUpgradeOutcomeModal(
           false,
-          'Ранг спасён на 2-м колесе! 🛡️',
-          `Стрелка остановилась мимо красной зоны (${downgradeChancePct}%)! Карточка осталась «${RARITY_META[oldRarity].nameRu}». Следующий риск отката: ${nextDowngradeChancePct}%.`,
-          getBokuSpriteUrl(13)
+          'Ранг спасен! 🛡️',
+          `Стрелка мимо зоны отката! Ранг удержан, а к следующему апгрейду добавлено +5% шанса!`,
+          getBokuSpriteUrl(4)
         );
       }
 
@@ -2285,97 +2738,54 @@
       updateUpgraderArenaUI();
       renderUpgraderTray();
       renderCollection();
+
+      if (!OnboardingGuide.hasCompleted()) {
+        OnboardingGuide.finish();
+      }
     }
 
-    function showUpgradeOutcomeModal(isWin, title, desc, chibiSrc) {
-      document.getElementById('resultModalTitle').textContent = title;
-      document.getElementById('resultModalTitle').style.color = isWin ? '#D0BCFF' : '#F43F5E';
-      document.getElementById('resultModalDesc').textContent = desc;
-      document.getElementById('resultChibiImg').src = chibiSrc;
-      document.getElementById('upgradeResultModal').style.display = 'flex';
+    function showUpgradeOutcomeModal(isSuccess, title, desc, spriteImg) {
+      const modal = document.getElementById('upgradeResultModal');
+      const titleEl = document.getElementById('resultModalTitle');
+      const descEl = document.getElementById('resultModalDesc');
+      const chibiEl = document.getElementById('resultChibiImg');
+
+      titleEl.textContent = title;
+      titleEl.style.color = isSuccess ? 'var(--color-primary)' : '#f87171';
+      descEl.textContent = desc;
+      chibiEl.src = spriteImg || getBokuSpriteUrl(5);
+
+      modal.style.display = 'flex';
     }
 
     function closeUpgradeResultModal() {
       document.getElementById('upgradeResultModal').style.display = 'none';
     }
 
-    function initTrayDragAndDrop() {
-      const items = document.querySelectorAll('.tray-card-item');
-      const dropZone = document.getElementById('upgraderLeftSlot');
-
-      items.forEach(item => {
-        let holdTimer = null;
-        let ghostEl = null;
-        let startX = 0, startY = 0;
-        const uid = item.getAttribute('data-uid');
-
-        item.addEventListener('pointerdown', (e) => {
-          if (appState.isSpinning) return;
-          startX = e.clientX; startY = e.clientY;
-          holdTimer = setTimeout(() => {
-            ghostEl = document.createElement('div');
-            ghostEl.className = 'drag-ghost-card';
-            ghostEl.innerHTML = item.innerHTML;
-            ghostEl.style.left = `${e.clientX}px`; ghostEl.style.top = `${e.clientY}px`;
-            document.body.appendChild(ghostEl);
-            dropZone.classList.add('drag-over');
-          }, 160);
-        });
-
-        window.addEventListener('pointermove', (e) => {
-          if (!ghostEl && holdTimer) {
-            if (Math.hypot(e.clientX - startX, e.clientY - startY) > 12) {
-              clearTimeout(holdTimer); holdTimer = null;
-            }
-            return;
-          }
-          if (ghostEl) { e.preventDefault(); ghostEl.style.left = `${e.clientX}px`; ghostEl.style.top = `${e.clientY}px`; }
-        }, { passive: false });
-
-        const finishDrag = (e) => {
-          clearTimeout(holdTimer); holdTimer = null;
-          if (!ghostEl) return;
-          const rect = dropZone.getBoundingClientRect();
-          const isInside = e.clientX >= rect.left - 30 && e.clientX <= rect.right + 30 && e.clientY >= rect.top - 30 && e.clientY <= rect.bottom + 30;
-          ghostEl.remove(); ghostEl = null; dropZone.classList.remove('drag-over');
-          if (isInside) placeCardInUpgrader(uid);
-        };
-        window.addEventListener('pointerup', finishDrag);
-        window.addEventListener('pointercancel', finishDrag);
-      });
-    }
-
     // =========================================================================
-    // 6. ЗАДАНИЯ С 3 СЛУЧАЙНЫМИ КАЖДЫЙ ДЕНЬ И 5-СЕКУНДНЫМ БАННЕРОМ
+    // 7. СИСТЕМА ЗАДАНИЙ (1000 БК + КАРТОЧКА БОКУ ЗА ПРИВЕТСТВЕННЫЙ БОНУС)
     // =========================================================================
-    const DAY_MS = 24 * 60 * 60 * 1000;
-
     function getQuestStatus(quest) {
-      const lastClaim = Number(appState.questsClaimedAt[quest.id]) || 0;
+      const lastClaim = appState.questsClaimedAt[quest.id] || 0;
       const now = Date.now();
+      const DAY_MS = 24 * 60 * 60 * 1000;
 
       if (quest.isOneTime) {
-        if (lastClaim > 0) return { canClaim: false, isCompleted: true, remainingHours: 0 };
-        return { canClaim: true, isCompleted: false, remainingHours: 0 };
+        const isCompleted = lastClaim > 0;
+        return { isCompleted, canClaim: !isCompleted, remainingHours: 0 };
       }
 
       if (quest.isDaily) {
-        const onCooldown = (now - lastClaim) < DAY_MS;
-        if (onCooldown) {
-          return {
-            canClaim: false,
-            isCompleted: true,
-            remainingHours: Math.ceil((DAY_MS - (now - lastClaim)) / (1000 * 60 * 60))
-          };
+        if (lastClaim === 0) return { isCompleted: false, canClaim: true, remainingHours: 0 };
+        const elapsed = now - lastClaim;
+        if (elapsed < DAY_MS) {
+          const remainingHours = Math.ceil((DAY_MS - elapsed) / 3600000);
+          return { isCompleted: true, canClaim: false, remainingHours };
         }
-        // Для ежедневного входа кнопка забрать активна сразу
-        if (quest.id === 'daily_login') {
-          return { canClaim: true, isCompleted: false, remainingHours: 0 };
-        }
-        return { canClaim: true, isCompleted: false, remainingHours: 0 };
+        return { isCompleted: false, canClaim: true, remainingHours: 0 };
       }
 
-      return { canClaim: true, isCompleted: false, remainingHours: 0 };
+      return { isCompleted: false, canClaim: false, remainingHours: 0 };
     }
 
     function renderQuestCardHTML(q) {
@@ -2390,23 +2800,25 @@
           </button>
         `;
       } else if (st.canClaim && (q.id === 'welcome_bonus' || q.id === 'daily_login')) {
+        // КНОПКА ГОТОВА К ЗАБОРУ
         btnHtml = `
-          <button class="md-btn md-btn-filled" style="height: 36px; padding: 0 16px; font-size: 12px;" onclick="claimQuestReward('${q.id}')">
+          <button class="md-btn md-btn-claim-active" style="height: 36px; padding: 0 16px; font-size: 12px;" onclick="claimQuestReward('${q.id}')">
             <span class="material-symbols-rounded" style="font-size: 16px;">redeem</span>
             <span>Забрать +${q.reward}</span>
           </button>
         `;
+      } else if (q.actionUrl) {
+        btnHtml = `
+          <a href="${q.actionUrl}" class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 11.5px;">
+            <span class="material-symbols-rounded" style="font-size: 16px;">open_in_new</span>
+            <span>Выполнить</span>
+          </a>
+        `;
       } else {
         btnHtml = `
-          <div style="display: flex; gap: 8px;">
-            <a href="${q.actionUrl || '/'}" class="md-btn md-btn-tonal" style="height: 36px; padding: 0 12px; font-size: 11.5px;">
-              <span>Выполнить</span>
-              <span class="material-symbols-rounded" style="font-size: 15px;">arrow_outward</span>
-            </a>
-            <button class="md-btn md-btn-filled" style="height: 36px; padding: 0 12px; font-size: 11.5px;" onclick="claimQuestReward('${q.id}')">
-              <span>Забрать</span>
-            </button>
-          </div>
+          <button class="md-btn md-btn-tonal md-btn-claim-disabled" style="height: 36px; padding: 0 14px; font-size: 11.5px;" onclick="claimQuestReward('${q.id}')">
+            <span>Забрать</span>
+          </button>
         `;
       }
 
@@ -2420,7 +2832,9 @@
             </div>
           </div>
           <div class="quest-bottom">
-            <div class="quest-reward-tag"><span class="bokocoin-icon">B</span><span>+${q.reward} БК</span></div>
+            <div class="quest-reward-pill">
+              <span>+${q.reward} БК</span>
+            </div>
             ${btnHtml}
           </div>
         </div>
@@ -2432,9 +2846,9 @@
       const dailyGrid = document.getElementById('dailyQuestsGrid');
 
       const coreList = appState.coreQuests.length > 0 ? appState.coreQuests : [
-        { id: 'welcome_bonus', reward: 500, titleRu: 'Приветственный бонус от Боку 💜', descRu: 'Единоразовый подарок новичку на знакомство с коллекцией и прокачку первых карточек.', icon: 'card_giftcard', isOneTime: true },
-        { id: 'daily_login', reward: 100, titleRu: 'Ежедневный вход в коллекцию', descRu: 'Заходи на страницу карточек каждый день и забирай 100 Бококойнов.', icon: 'calendar_month', isDaily: true },
-        { id: 'watch_anime_60', reward: 200, titleRu: 'Просмотр тайтла (60%+ хронометража)', descRu: 'Посмотри от 60% любого аниме в плеере — получи карточку тайтла и 200 Бококойнов.', icon: 'play_circle', isDaily: false, actionUrl: '/' }
+        { id: 'welcome_bonus', reward: 1000, titleRu: 'Приветственный бонус от Боку 💜', descRu: 'Единоразовый подарок новичку: +1000 Бококойнов и стартовая коллекционная карточка маскота Боку!', icon: 'card_giftcard', isOneTime: true },
+        { id: 'daily_login', reward: 150, titleRu: 'Ежедневный вход в коллекцию', descRu: 'Заходи на страницу карточек каждый день и забирай 150 Бококойнов.', icon: 'calendar_month', isDaily: true },
+        { id: 'watch_anime_60', reward: 230, titleRu: 'Просмотр тайтла (60%+ хронометража)', descRu: 'Посмотри от 60% любого аниме в плеере — получи карточку тайтла и 230 Бококойнов.', icon: 'play_circle', isDaily: false, actionUrl: '/' }
       ];
 
       coreGrid.innerHTML = coreList.map(q => renderQuestCardHTML(q)).join('');
@@ -2450,6 +2864,22 @@
       if (dot) dot.style.display = hasReadyCore ? 'block' : 'none';
     }
 
+    let questBannerTimeout = null;
+    function showQuestSuccessBanner(reward, title) {
+      const banner = document.getElementById('questSuccessBanner');
+      if (!banner) return;
+      banner.innerHTML = `
+        <img src="${getBokuSpriteUrl(3)}" style="width: 38px; height: 38px; object-fit: contain;" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+        <div>
+          <div style="font-size: 14px; font-weight: 800; color: #fff;">+${reward} Бококойнов! 💜</div>
+          <div style="font-size: 11.5px; color: var(--color-primary);">${title || 'Задание выполнено'}</div>
+        </div>
+      `;
+      banner.classList.add('show');
+      if (questBannerTimeout) clearTimeout(questBannerTimeout);
+      questBannerTimeout = setTimeout(() => banner.classList.remove('show'), 5000);
+    }
+
     async function claimQuestReward(questId) {
       try {
         const res = await fetch(apiUrl('/api/cards/claim_quest'), {
@@ -2457,44 +2887,57 @@
           headers: getAuthHeaders(),
           body: JSON.stringify({
             questId,
-            bokocoins: appState.bokocoins,
             deviceId: getDeviceId(),
             userId: safeGet('shiki_user_id') || ''
           })
         });
+
         const data = await res.json();
-        if (res.ok && data.success) {
+        if (data.success) {
           appState.bokocoins = data.bokocoins;
           appState.questsClaimedAt[questId] = Date.now();
+
+          // Добавление карточки Боку при приветственном бонусе
+          if (data.card) {
+            const exIdx = appState.cards.findIndex(c => c.uid === data.card.uid || c.animeId === data.card.animeId);
+            if (exIdx >= 0) appState.cards[exIdx] = data.card;
+            else appState.cards.unshift(data.card);
+          } else if (questId === 'welcome_bonus') {
+            const hasBoku = appState.cards.some(c => c.animeId === 'boku_mascot' || c.uid === 'card_boku_mascot');
+            if (!hasBoku) {
+              appState.cards.unshift({
+                ...BOKU_MASCOT_CARD,
+                poster: getBokuSpriteUrl(5)
+              });
+            }
+          }
+
+          if (Array.isArray(data.cards) && data.cards.length > 0) {
+            appState.cards = data.cards;
+          }
+
           CardsStorage.saveLocal();
           updateBalancesUI();
           renderQuests();
+          renderCollection();
           updateUpgraderArenaUI();
 
-          // 5-секундный всплывающий баннер
           showQuestSuccessBanner(data.reward, data.questTitle);
+
+          if (!OnboardingGuide.hasCompleted() && questId === 'welcome_bonus') {
+            OnboardingGuide.setStep(1);
+          }
         } else {
-          showToast(data.message || (data.alreadyClaimed ? 'Задание уже выполнено сегодня!' : 'Не удалось забрать награду'));
+          showToast(data.message || 'Не удалось забрать награду');
         }
       } catch (err) {
-        showToast('Ошибка сети при заборе задания');
+        showToast('Ошибка сети при получении награды');
       }
     }
 
-    function switchView(viewName) {
-      document.getElementById('view-collection').style.display = viewName === 'collection' ? 'block' : 'none';
-      document.getElementById('view-upgrade').style.display = viewName === 'upgrade' ? 'block' : 'none';
-      document.getElementById('view-quests').style.display = viewName === 'quests' ? 'block' : 'none';
-
-      document.getElementById('nav-collection').classList.toggle('active', viewName === 'collection');
-      document.getElementById('nav-upgrade').classList.toggle('active', viewName === 'upgrade');
-      document.getElementById('nav-quests').classList.toggle('active', viewName === 'quests');
-
-      if (viewName === 'upgrade') { renderUpgraderTray(); updateUpgraderArenaUI(); }
-      else if (viewName === 'quests') { renderQuests(); }
-      else { renderCollection(); }
-    }
-
+    // =========================================================================
+    // 8. ПРОФИЛЬ SHIKIMORI
+    // =========================================================================
     async function syncShikimoriProfile() {
       const token = safeGet('shiki_token');
       if (!token) return;
@@ -2545,20 +2988,37 @@
       window.location.href = '/';
     }
 
+    // =========================================================================
+    // 9. ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ
+    // =========================================================================
     window.addEventListener('DOMContentLoaded', async () => {
-      applyBokuSkinToCollectionPage();
+      applyCurrentSkinToDOM();
+
       await CardsStorage.load();
       updateBalancesUI();
       renderCollection();
       renderUpgraderTray();
       renderQuests();
 
-      // Автоматическая починка названий вида "Тайтл #..."
       await repairMissingCardTitles();
       syncShikimoriProfile();
 
       if (window.location.hash === '#quests') switchView('quests');
       else if (window.location.hash === '#upgrade') switchView('upgrade');
+
+      // Старт гайда для новых пользователей с надежным определением шага
+      if (!OnboardingGuide.hasCompleted()) {
+        setTimeout(() => OnboardingGuide.init(), 600);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (!OnboardingGuide.hasCompleted() && document.getElementById('onboardingBackdrop').style.display === 'block') {
+        if (OnboardingGuide.activeTarget) {
+          OnboardingGuide.updateSpotlight(OnboardingGuide.activeTarget);
+          OnboardingGuide.positionTooltip(OnboardingGuide.activeTarget, 'bottom');
+        }
+      }
     });
   </script>
 </body>

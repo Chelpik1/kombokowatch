@@ -1383,6 +1383,44 @@
       toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
+    // =========================================================================
+    // СКИНОПАТИЯ БОКУ (ВЕЗДЕ НА САЙТЕ)
+    // =========================================================================
+    const BOKU_SKINS = {
+      default: { id: 'default', name: 'Оригинал', path: '/assets/skins/default' },
+      skin_1: { id: 'skin_1', name: 'Готка', path: '/assets/skins/skin_1' },
+      skin_2: { id: 'skin_2', name: 'Андроид', path: '/assets/skins/skin_2' }
+    };
+
+    function getBokuSkin() {
+      return localStorage.getItem('komboko_boku_skin') || 'default';
+    }
+
+    function getBokuSpriteUrl(spriteNum) {
+      const skin = getBokuSkin();
+      const numStr = String(spriteNum).replace(/[^0-9]/g, '').padStart(2, '0');
+      if (skin === 'skin_1') return `/assets/skins/skin_1/sprite_${numStr}.webp`;
+      if (skin === 'skin_2') return `/assets/skins/skin_2/sprite_${numStr}.webp`;
+      return `/assets/skins/default/sprite_${numStr}.webp`;
+    }
+
+    function applyBokuSkinToCollectionPage() {
+      const bannerChibi = document.querySelector('.quests-banner-chibi');
+      if (bannerChibi) bannerChibi.src = getBokuSpriteUrl(7);
+      const resImg = document.getElementById('resultChibiImg');
+      if (resImg) resImg.src = getBokuSpriteUrl(11);
+      const emptyChibi = document.querySelector('.empty-chibi-img');
+      if (emptyChibi) emptyChibi.src = getBokuSpriteUrl(13);
+      const successChibi = document.querySelector('.quest-success-chibi');
+      if (successChibi) successChibi.src = getBokuSpriteUrl(11);
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'komboko_boku_skin') {
+        applyBokuSkinToCollectionPage();
+      }
+    });
+
     let questBannerTimeout = null;
     function showQuestSuccessBanner(reward, questTitle) {
       let banner = document.getElementById('questSuccessBanner');
@@ -1394,7 +1432,7 @@
       banner.innerHTML = `
         <div class="quest-success-inner">
           <div class="quest-success-avatar-wrap">
-            <img src="/assets/sprite_11_8ea686eb.webp" class="quest-success-chibi" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+            <img src="${getBokuSpriteUrl(11)}" class="quest-success-chibi" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
           </div>
           <div class="quest-success-content">
             <div class="quest-success-badge">✨ ${titleText}</div>
@@ -1463,12 +1501,24 @@
           } catch (_) {}
         }
 
+        // Запасные задания если оффлайн или задержка сети
+        if (!appState.dailyQuests || appState.dailyQuests.length === 0) {
+          appState.dailyQuests = [
+            { id: 'quest_watch_party', reward: 80, titleRu: 'Создать комнату Watch Party', descRu: 'Создай комнату и пригласи друга для совместного просмотра аниме.', icon: 'group', isDaily: true, actionUrl: '/' },
+            { id: 'quest_boku_roulette', reward: 80, titleRu: 'Посмотреть рандомное аниме от Боку', descRu: 'Испытай удачу в «Рулетке от Боку» в правом нижнем углу сайта.', icon: 'casino', isDaily: true, actionUrl: '/#roulette' },
+            { id: 'quest_search_catalog', reward: 50, titleRu: 'Исследовать каталог', descRu: 'Найди новый интересный тайтл через поиск или фильтры жанров.', icon: 'search', isDaily: true, actionUrl: '/' }
+          ];
+        }
+
         try {
-          const res = await fetch('/api/cards/state', { headers: getAuthHeaders() });
+          const res = await fetch('/api/cards/state', {
+            headers: getAuthHeaders(),
+            signal: AbortSignal.timeout(6000)
+          });
           if (res.ok) {
             const data = await res.json();
             if (typeof data.bokocoins === 'number') {
-              appState.bokocoins = data.bokocoins;
+              appState.bokocoins = Math.max(appState.bokocoins, data.bokocoins);
             }
             if (Array.isArray(data.cards)) {
               const localMap = new Map(appState.cards.map(c => [String(c.animeId), c]));
@@ -1486,12 +1536,25 @@
               });
               appState.cards = Array.from(localMap.values());
             }
-            if (data.questsClaimedAt) appState.questsClaimedAt = data.questsClaimedAt;
-            if (Array.isArray(data.coreQuests)) appState.coreQuests = data.coreQuests;
-            if (Array.isArray(data.dailyQuests)) appState.dailyQuests = data.dailyQuests;
+            if (data.questsClaimedAt) {
+              appState.questsClaimedAt = { ...appState.questsClaimedAt, ...data.questsClaimedAt };
+            }
+            if (Array.isArray(data.coreQuests) && data.coreQuests.length > 0) appState.coreQuests = data.coreQuests;
+            if (Array.isArray(data.dailyQuests) && data.dailyQuests.length > 0) appState.dailyQuests = data.dailyQuests;
 
             this.saveLocal();
           }
+
+          // Двусторонняя синхронизация: отправляем локальные карточки и баланс на сервер
+          fetch('/api/cards/sync', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+              bokocoins: appState.bokocoins,
+              cards: appState.cards,
+              questsClaimedAt: appState.questsClaimedAt
+            })
+          }).catch(() => {});
         } catch (_) {}
       },
 
@@ -2070,7 +2133,7 @@
         const res = await fetch('/api/cards/upgrade', {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ uid: card.uid })
+          body: JSON.stringify({ uid: card.uid, card: card, bokocoins: appState.bokocoins })
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
@@ -2120,7 +2183,7 @@
           true,
           'Апгрейд успешен! ✨',
           `Карточка «${card.title}» прокачана с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}»! Шкала риска отката сброшена до 20%.`,
-          '/assets/sprite_11_8ea686eb.webp'
+          getBokuSpriteUrl(11)
         );
 
         appState.isSpinning = false;
@@ -2138,7 +2201,7 @@
           false,
           'Не повезло...',
           `Шанс ${Math.round(meta.chance * 100)}% не сыграл. Карточка «${card.title}» осталась Обычной.`,
-          '/assets/sprite_13_19327248.webp'
+          getBokuSpriteUrl(13)
         );
         appState.isSpinning = false;
         updateUpgraderArenaUI();
@@ -2180,14 +2243,14 @@
           false,
           'Откат ранга! 💥',
           `Стрелка остановилась в красной зоне (${downgradeChancePct}%). Карточка «${card.title}» откатилась с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}». Следующий риск снова 20%.`,
-          '/assets/sprite_14_eafb0cce.webp'
+          getBokuSpriteUrl(14)
         );
       } else {
         showUpgradeOutcomeModal(
           false,
           'Ранг спасён на 2-м колесе! 🛡️',
           `Стрелка остановилась мимо красной зоны (${downgradeChancePct}%)! Карточка осталась «${RARITY_META[oldRarity].nameRu}». Следующий риск отката: ${nextDowngradeChancePct}%.`,
-          '/assets/sprite_13_19327248.webp'
+          getBokuSpriteUrl(13)
         );
       }
 
@@ -2365,7 +2428,7 @@
         const res = await fetch('/api/cards/claim_quest', {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ questId })
+          body: JSON.stringify({ questId, bokocoins: appState.bokocoins })
         });
         const data = await res.json();
         if (res.ok && data.success) {
@@ -2451,6 +2514,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      applyBokuSkinToCollectionPage();
       await CardsStorage.load();
       updateBalancesUI();
       renderCollection();

@@ -5251,6 +5251,110 @@
         height: 92px;
       }
     }
+
+    /* === СТИЛИ ВЫБОРА И СМЕНЫ СКИНОВ БОКУ === */
+    .welcome-skin-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 8px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+      position: relative;
+    }
+    .welcome-skin-card:hover {
+      background: rgba(208, 188, 255, 0.08);
+      border-color: rgba(208, 188, 255, 0.35);
+      transform: translateY(-2px);
+    }
+    .welcome-skin-card.active {
+      background: rgba(208, 188, 255, 0.16);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 16px rgba(208, 188, 255, 0.35);
+    }
+    .welcome-skin-avatar-wrap {
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .welcome-skin-avatar-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+      transition: transform 0.2s ease;
+    }
+    .welcome-skin-card:hover .welcome-skin-avatar-wrap img {
+      transform: scale(1.08);
+    }
+    .welcome-skin-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .welcome-skin-badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(208, 188, 255, 0.2);
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Модальное окно гардероба Боку */
+    .boku-skin-modal-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .boku-skin-modal-card:hover {
+      background: rgba(208, 188, 255, 0.07);
+      border-color: rgba(208, 188, 255, 0.35);
+      transform: translateY(-3px);
+    }
+    .boku-skin-modal-card.active {
+      background: rgba(208, 188, 255, 0.12);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 20px rgba(208, 188, 255, 0.35);
+    }
+    .boku-skin-modal-avatar {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+      transition: transform 0.25s ease;
+    }
+    .boku-skin-modal-card:hover .boku-skin-modal-avatar {
+      transform: scale(1.08);
+    }
+    .boku-skin-active-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--color-primary);
+      color: #1a102f;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
     .chibi-sitting-corner {
       position: absolute;
       top: -38px;
@@ -6194,7 +6298,7 @@
       <!-- Шаг 1: Выбор языка / Choose language -->
       <div id="welcomeStep-1" class="welcome-step-pane">
         <div style="text-align: center; margin-bottom: 12px;">
-          <img src="/assets/sprite_07_bc5cc640.webp" class="chibi-welcome-hero" alt="Привет!" />
+          <img src="/assets/skins/default/sprite_07.webp" data-boku-sprite="7" class="chibi-welcome-hero" alt="Привет!" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;">Выберите язык / Choose language</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;">
             Выберите предпочитаемый язык интерфейса / Select your preferred interface language
@@ -6214,35 +6318,63 @@
         </div>
       </div>
 
-      <!-- Шаг 2: Знакомство с Боку -->
+      <!-- Шаг 2: Знакомство с Боку и выбор её образа -->
       <div id="welcomeStep-2" class="welcome-step-pane" style="display: none;">
-        <div style="text-align: center; margin-bottom: 12px;">
-          <img src="/assets/sprite_07_bc5cc640.webp" class="chibi-welcome-hero" alt="Привет от Боку!" />
+        <div style="text-align: center; margin-bottom: 10px;">
+          <img id="welcomeBokuHeroImg" data-boku-sprite="7" src="/assets/skins/default/sprite_07.webp" class="chibi-welcome-hero" alt="Привет от Боку!" />
           <h3 style="font-size: 20px; font-weight: 800; color: #fff;">Привет! Я Боку 💜</h3>
-          <p style="font-size: 13px; color: var(--color-primary); margin-top: 3px; font-weight: 700;">
+          <p style="font-size: 13px; color: var(--color-primary); margin-top: 2px; font-weight: 700;">
             Твоя путеводительница по сайту Komboko
           </p>
-          <p style="font-size: 12.5px; color: var(--color-variant); margin-top: 6px; line-height: 1.45;">
-            Я помогу тебе находить лучшие тайтлы, подскажу, если плеер закапризничает, и подберу аниме точно под твой вкус!
-          </p>
+          <div style="background: rgba(208, 188, 255, 0.08); border: 1px solid var(--glass-border-glow); border-radius: var(--radius-md); padding: 8px 12px; margin: 8px 0 10px; font-size: 12px; color: #fff; line-height: 1.45; text-align: left;">
+            «Я помогу тебе находить лучшие тайтлы и подскажу полезные фишки. А ещё <strong>я могу выглядеть по-разному!</strong> Выбери образ, который тебе по душе — его всегда можно поменять в моём меню ✨»
+          </div>
         </div>
+
+        <!-- Выбор скина Боку на шаге 2 -->
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 11.5px; font-weight: 700; color: var(--color-surface); text-transform: uppercase; letter-spacing: 0.04em;">
+              👗 Выбери скин для Боку:
+            </span>
+            <span style="font-size: 11px; color: var(--color-variant);">всегда можно изменить</span>
+          </div>
+          <div id="welcomeSkinPicker" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <div class="welcome-skin-card active" onclick="selectBokuSkinFromOnboarding('default')" data-skin-id="default">
+              <div class="welcome-skin-avatar-wrap">
+                <img src="/assets/skins/default/sprite_07.webp" alt="Оригинал" />
+              </div>
+              <span class="welcome-skin-name">Оригинал</span>
+              <span class="welcome-skin-badge">Классика</span>
+            </div>
+            <div class="welcome-skin-card" onclick="selectBokuSkinFromOnboarding('skin_1')" data-skin-id="skin_1">
+              <div class="welcome-skin-avatar-wrap">
+                <img src="/assets/skins/skin_1/sprite_07.webp" alt="Готка" />
+              </div>
+              <span class="welcome-skin-name">Готка</span>
+              <span class="welcome-skin-badge" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">Гранж</span>
+            </div>
+            <div class="welcome-skin-card" onclick="selectBokuSkinFromOnboarding('skin_2')" data-skin-id="skin_2">
+              <div class="welcome-skin-avatar-wrap">
+                <img src="/assets/skins/skin_2/sprite_07.webp" alt="Андроид" />
+              </div>
+              <span class="welcome-skin-name">Андроид</span>
+              <span class="welcome-skin-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">Кибер</span>
+            </div>
+          </div>
+        </div>
+
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <div class="welcome-feature-box">
             <span class="material-symbols-rounded" style="color: #c084fc; font-size: 22px;">auto_awesome</span>
             <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-              <strong>Умный подбор от Боку:</strong> Подбираю тайтлы по твоим спискам Shikimori, любимым жанрам и рейтингу.
+              <strong>Умный подбор:</strong> Подбираю тайтлы по твоим спискам Shikimori, любимым жанрам и рулетке.
             </div>
           </div>
           <div class="welcome-feature-box">
             <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">support_agent</span>
             <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-              <strong>Всегда на связи:</strong> Я живу в правом нижнем углу сайта — нажми на меня за подсказкой или советом.
-            </div>
-          </div>
-          <div class="welcome-feature-box">
-            <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">mood</span>
-            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-              <strong>Живые эмоции:</strong> Делюсь настроением, показываю статус серии и предупреждаю об ограничениях.
+              <strong>Всегда на связи:</strong> Живу в правом нижнем углу сайта — нажми за подсказкой или сменой скина.
             </div>
           </div>
         </div>
@@ -6251,7 +6383,7 @@
       <!-- Шаг 3: Плееры и советы -->
       <div id="welcomeStep-3" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 12px;">
-          <img src="/assets/sprite_05_d78e1470.webp" class="chibi-welcome-hero" alt="Советы" />
+          <img src="/assets/skins/default/sprite_05.webp" data-boku-sprite="5" class="chibi-welcome-hero" alt="Советы" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;" data-i18n="welcomeTitle2">Плееры и источники</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;" data-i18n="welcomeDesc2">
             В тайтлах доступно сразу 4 источника видео. Если плеер не грузит — воспользуйтесь советами:
@@ -6260,14 +6392,14 @@
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <div class="welcome-feature-box">
             <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">swap_horiz</span>
-            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;" data-i18n="welcomeTip1">
-              <strong>Смените источник:</strong> переключитесь на АниЛибрию, Kodik или MegaPlay прямо над видео.
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="welcomeTip1">Смените источник:</strong> переключитесь на АниЛибрию, Kodik или MegaPlay прямо над видео.
             </div>
           </div>
           <div class="welcome-feature-box">
             <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">vpn_key_off</span>
-            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;" data-i18n="welcomeTip2">
-              <strong>Отключите VPN:</strong> некоторые провайдеры VPN блокируют доступ к серверам раздачи потоков.
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="welcomeTip2">Отключите VPN:</strong> некоторые провайдеры VPN блокируют доступ к серверам раздачи потоков.
             </div>
           </div>
         </div>
@@ -6276,7 +6408,7 @@
       <!-- Шаг 4: Списки, Манга и Совместный просмотр -->
       <div id="welcomeStep-4" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 12px;">
-          <img src="/assets/sprite_11_8ea686eb.webp" class="chibi-welcome-hero" alt="Синхронизация" />
+          <img src="/assets/skins/default/sprite_11.webp" data-boku-sprite="11" class="chibi-welcome-hero" alt="Синхронизация" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;" data-i18n="welcomeTitle3">Синхронизация и фичи</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;" data-i18n="welcomeDesc3">
             Войдите через Shikimori, чтобы синхронизировать списки, отмечать просмотренные серии в один клик и смотреть аниме вместе с друзьями в комнатах.
@@ -6301,7 +6433,7 @@
       <!-- Шаг 5: Подписка на Telegram -->
       <div id="welcomeStep-5" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 14px;">
-          <img src="/assets/sprite_04_afb8ee73.webp" class="chibi-welcome-hero" alt="Telegram" />
+          <img src="/assets/skins/default/sprite_04.webp" data-boku-sprite="4" class="chibi-welcome-hero" alt="Telegram" />
           <h3 style="font-size: 19px; font-weight: 700; color: #fff;" data-i18n="welcomeTitle4">Мы в Telegram</h3>
           <p style="font-size: 13px; color: var(--color-variant); margin-top: 6px; line-height: 1.5;" data-i18n="welcomeDesc4">
             Перед тем как перейти к просмотру, подпишитесь на наш официальный Telegram-канал, чтобы первыми узнавать об обновлениях и зеркалах сайта!
@@ -6316,7 +6448,7 @@
       <!-- Шаг 6: Вход через Shikimori -->
       <div id="welcomeStep-6" class="welcome-step-pane" style="display: none;">
         <div style="text-align: center; margin-bottom: 12px;">
-          <img src="/assets/sprite_11_8ea686eb.webp" class="chibi-welcome-hero" alt="Вход через Shikimori" />
+          <img src="/assets/skins/default/sprite_11.webp" data-boku-sprite="11" class="chibi-welcome-hero" alt="Вход через Shikimori" />
           <h3 style="font-size: 19px; font-weight: 800; color: #fff;">Войдите через Shikimori</h3>
           <p style="font-size: 12.5px; color: var(--color-primary); margin-top: 3px; font-weight: 700;">
             Откройте все возможности сайта
@@ -6428,11 +6560,60 @@
       </div>
 
       <div style="display: flex; gap: 8px; width: 100%;">
-        <button class="md-btn md-btn-tonal" style="flex: 1; height: 40px; font-size: 12px;" onclick="cycleChibiMascotEmotion()">
-          <span class="material-symbols-rounded" style="font-size: 16px;">mood</span> <span data-i18n="bokuMoodBtn">Настроение Боку</span>
+        <button class="md-btn md-btn-tonal" id="bokuSkinSwitchBtn" style="flex: 1; height: 40px; font-size: 12px;" onclick="openBokuSkinModal()">
+          <span class="material-symbols-rounded" style="font-size: 16px;">checkroom</span> <span>Скин Боку 👗</span>
         </button>
         <button class="md-btn md-btn-filled" id="bokuRandomBtn" style="flex: 1.2; height: 40px; font-size: 12px;" onclick="closeChibiGuideModal(); startBokuRoulette();">
           <span class="material-symbols-rounded" style="font-size: 16px;">casino</span> <span data-i18n="bokuRouletteBtn">Рулетка от Боку ✨</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно гардероба скинов Боку -->
+  <div id="bokuSkinModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='bokuSkinModal') closeBokuSkinModal()">
+    <div class="modal-content animate-fade" style="max-width: 480px; text-align: center; position: relative;">
+      <button class="promo-close-btn" onclick="closeBokuSkinModal()"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 4px;">
+        <span class="material-symbols-rounded" style="color: var(--color-primary); font-size: 26px;">checkroom</span>
+        <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin: 0;">Гардероб Боку 👗</h3>
+      </div>
+      <p style="font-size: 12.5px; color: var(--color-variant); margin-top: 4px; margin-bottom: 16px; line-height: 1.45;">
+        Выбери любимый облик для своей спутницы! Выбранный скин применится ко всем эмоциям Боку и на всех страницах сайта.
+      </p>
+
+      <div id="bokuSkinModalList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;">
+        <!-- Карточка 1: Оригинал -->
+        <div class="boku-skin-modal-card active" data-skin-card="default" onclick="setBokuSkin('default')">
+          <span class="boku-skin-active-tag" style="display: block;">Активен</span>
+          <img src="/assets/skins/default/sprite_07.webp" class="boku-skin-modal-avatar" alt="Оригинал" />
+          <strong style="font-size: 13px; color: #fff; margin-bottom: 2px;">Оригинал</strong>
+          <span class="welcome-skin-badge" style="background: rgba(208, 188, 255, 0.2); color: var(--color-primary); margin-bottom: 6px;">Классика</span>
+          <span style="font-size: 11px; color: var(--color-variant); line-height: 1.3;">Фирменный фиолетовый образ</span>
+        </div>
+
+        <!-- Карточка 2: Готка -->
+        <div class="boku-skin-modal-card" data-skin-card="skin_1" onclick="setBokuSkin('skin_1')">
+          <span class="boku-skin-active-tag" style="display: none;">Активен</span>
+          <img src="/assets/skins/skin_1/sprite_07.webp" class="boku-skin-modal-avatar" alt="Готка" />
+          <strong style="font-size: 13px; color: #fff; margin-bottom: 2px;">Готка</strong>
+          <span class="welcome-skin-badge" style="background: rgba(244, 63, 94, 0.2); color: #fb7185; margin-bottom: 6px;">Гранж</span>
+          <span style="font-size: 11px; color: var(--color-variant); line-height: 1.3;">Дерзкий темный стиль с чокером</span>
+        </div>
+
+        <!-- Карточка 3: Андроид -->
+        <div class="boku-skin-modal-card" data-skin-card="skin_2" onclick="setBokuSkin('skin_2')">
+          <span class="boku-skin-active-tag" style="display: none;">Активен</span>
+          <img src="/assets/skins/skin_2/sprite_07.webp" class="boku-skin-modal-avatar" alt="Андроид" />
+          <strong style="font-size: 13px; color: #fff; margin-bottom: 2px;">Андроид</strong>
+          <span class="welcome-skin-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; margin-bottom: 6px;">Кибер</span>
+          <span style="font-size: 11px; color: var(--color-variant); line-height: 1.3;">Футуристичный неоновый киберпанк</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="md-btn md-btn-filled" style="flex: 1; height: 38px; font-size: 13px; font-weight: 700;" onclick="closeBokuSkinModal()">
+          Готово ✨
         </button>
       </div>
     </div>
@@ -7201,15 +7382,181 @@
     let activeKodikToken = KODIK_TOKENS[0];
 
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
-    const PYTHON_BACKEND_URL = 'https://api.komboko.fun';
-    const IS_DEV_ORIGIN = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') || window.location.origin.includes('ais-');
-    const API_BASE = IS_DEV_ORIGIN ? '' : 'https://api.komboko.fun';
+    const PYTHON_BACKEND_URL = '';
+    const IS_DEV_ORIGIN = true;
+    // Always use relative API calls to target the local full-stack server and prevent CORS errors
+    const API_BASE = '';
 
     function apiUrl(path) {
       if (!path) return '';
       const clean = path.startsWith('/') ? path : '/' + path;
       return `${API_BASE}${clean}`;
     }
+
+    // =========================================================================
+    // ГАРДЕРОБ И СКИНОПАТИЯ БОКУ (ВЕЗДЕ НА ВСЕМ САЙТЕ)
+    // =========================================================================
+    const BOKU_SKINS = {
+      default: {
+        id: 'default',
+        name: 'Оригинал',
+        desc: 'Классический фиолетовый образ',
+        badge: 'Классика',
+        color: '#D0BCFF',
+        path: '/assets/skins/default'
+      },
+      skin_1: {
+        id: 'skin_1',
+        name: 'Готка',
+        desc: 'Гранж стиль с темными прядями и чокером',
+        badge: 'Гранж',
+        color: '#f43f5e',
+        path: '/assets/skins/skin_1'
+      },
+      skin_2: {
+        id: 'skin_2',
+        name: 'Андроид',
+        desc: 'Футуристичный киберпанк с неоновым жакетом',
+        badge: 'Кибер',
+        color: '#38bdf8',
+        path: '/assets/skins/skin_2'
+      }
+    };
+
+    function getBokuSkin() {
+      return localStorage.getItem('komboko_boku_skin') || 'default';
+    }
+
+    function getBokuSpriteUrl(spriteNum, skinId = null) {
+      const skin = skinId || getBokuSkin();
+      const numStr = String(spriteNum).replace(/[^0-9]/g, '').padStart(2, '0');
+      if (skin === 'skin_1') return `/assets/skins/skin_1/sprite_${numStr}.webp`;
+      if (skin === 'skin_2') return `/assets/skins/skin_2/sprite_${numStr}.webp`;
+      return `/assets/skins/default/sprite_${numStr}.webp`;
+    }
+
+    function setBokuSkin(skinId, showNotification = true) {
+      if (!BOKU_SKINS[skinId]) skinId = 'default';
+      localStorage.setItem('komboko_boku_skin', skinId);
+      applyBokuSkinEverywhere(skinId);
+
+      // Синхронизируем состояние карточек в модалках
+      document.querySelectorAll('[data-skin-card]').forEach(card => {
+        const id = card.getAttribute('data-skin-card');
+        const isActive = (id === skinId);
+        card.classList.toggle('active', isActive);
+        const tag = card.querySelector('.boku-skin-active-tag');
+        if (tag) tag.style.display = isActive ? 'block' : 'none';
+      });
+
+      document.querySelectorAll('#welcomeSkinPicker .welcome-skin-card').forEach(card => {
+        const id = card.getAttribute('data-skin-id');
+        card.classList.toggle('active', id === skinId);
+      });
+
+      if (showNotification && typeof showToast === 'function') {
+        showToast(`Образ «${BOKU_SKINS[skinId].name}» активирован для Боку! ✨`);
+      }
+    }
+
+    function selectBokuSkinFromOnboarding(skinId) {
+      setBokuSkin(skinId, false);
+      const hero = document.getElementById('welcomeBokuHeroImg');
+      if (hero) {
+        hero.style.transform = 'scale(0.85)';
+        setTimeout(() => {
+          hero.src = getBokuSpriteUrl(7, skinId);
+          hero.style.transform = 'scale(1)';
+        }, 120);
+      }
+    }
+
+    function openBokuSkinModal() {
+      const current = getBokuSkin();
+      document.querySelectorAll('[data-skin-card]').forEach(card => {
+        const id = card.getAttribute('data-skin-card');
+        const isActive = (id === current);
+        card.classList.toggle('active', isActive);
+        const tag = card.querySelector('.boku-skin-active-tag');
+        if (tag) tag.style.display = isActive ? 'block' : 'none';
+      });
+      const modal = document.getElementById('bokuSkinModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeBokuSkinModal() {
+      closeModalWithAnim('bokuSkinModal');
+    }
+
+    function applyBokuSkinEverywhere(skinId = null) {
+      const activeSkin = skinId || getBokuSkin();
+
+      // 1. Обновляем базовые спрайты в CHIBI_MASCOTS
+      if (typeof CHIBI_MASCOTS !== 'undefined' && Array.isArray(CHIBI_MASCOTS)) {
+        CHIBI_MASCOTS.forEach(m => {
+          m.src = getBokuSpriteUrl(m.id, activeSkin);
+        });
+      }
+
+      // 2. Обновляем плавающего чибика и аватар в окне помощника
+      const floatImg = document.getElementById('chibiFloatingImg');
+      if (floatImg) {
+        const currentId = (typeof CHIBI_MASCOTS !== 'undefined' && CHIBI_MASCOTS[currentChibiIndex]) ? CHIBI_MASCOTS[currentChibiIndex].id : 10;
+        floatImg.src = getBokuSpriteUrl(currentId, activeSkin);
+      }
+      const guideImg = document.getElementById('guideModalChibiImg');
+      if (guideImg) {
+        const currentId = (typeof CHIBI_MASCOTS !== 'undefined' && CHIBI_MASCOTS[currentChibiIndex]) ? CHIBI_MASCOTS[currentChibiIndex].id : 10;
+        guideImg.src = getBokuSpriteUrl(currentId, activeSkin);
+      }
+
+      // 3. Обновляем элементы с data-boku-sprite
+      document.querySelectorAll('[data-boku-sprite]').forEach(el => {
+        const num = el.getAttribute('data-boku-sprite');
+        if (num) el.src = getBokuSpriteUrl(num, activeSkin);
+      });
+
+      // 4. Обновляем специфичные места
+      const welcomeHero = document.getElementById('welcomeBokuHeroImg');
+      if (welcomeHero) welcomeHero.src = getBokuSpriteUrl(7, activeSkin);
+
+      const rouletteMascot = document.getElementById('bokuRouletteMascot');
+      if (rouletteMascot) rouletteMascot.src = getBokuSpriteUrl(10, activeSkin);
+
+      const winnerChibi = document.getElementById('rouletteWinnerChibi');
+      if (winnerChibi) winnerChibi.src = getBokuSpriteUrl(11, activeSkin);
+
+      document.querySelectorAll('.chibi-rate-avatar').forEach(img => {
+        img.src = getBokuSpriteUrl(9, activeSkin);
+      });
+      document.querySelectorAll('.chibi-shocked').forEach(img => {
+        img.src = getBokuSpriteUrl(14, activeSkin);
+      });
+      document.querySelectorAll('.chibi-promo-lying').forEach(img => {
+        img.src = getBokuSpriteUrl(2, activeSkin);
+      });
+      document.querySelectorAll('.quest-success-chibi').forEach(img => {
+        img.src = getBokuSpriteUrl(11, activeSkin);
+      });
+      document.querySelectorAll('.chibi-empty-mascot').forEach(img => {
+        img.src = getBokuSpriteUrl(13, activeSkin);
+      });
+      document.querySelectorAll('.chibi-error-avatar').forEach(img => {
+        img.src = getBokuSpriteUrl(13, activeSkin);
+      });
+
+      // Обновляем мини-аватары в шаге 2 онбординга
+      document.querySelectorAll('#welcomeSkinPicker .welcome-skin-card').forEach(card => {
+        const id = card.getAttribute('data-skin-id');
+        card.classList.toggle('active', id === activeSkin);
+      });
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'komboko_boku_skin') {
+        applyBokuSkinEverywhere(e.newValue);
+      }
+    });
     const SHIKI_CLIENT_ID = '2gnAwexNcV7ENj62zeIAvBI9q7c63O9z5mWSR6k5oRo';
 
     const PLAYER_SOURCES = ['exo', 'anilibria', 'kodik', 'megaplay'];
@@ -7765,6 +8112,15 @@
         const dot = document.getElementById(`welcomeDot-${i}`);
         if (pane) pane.style.display = i === step ? 'block' : 'none';
         if (dot) dot.classList.toggle('active', i === step);
+      }
+      if (step === 2) {
+        const curSkin = getBokuSkin();
+        document.querySelectorAll('#welcomeSkinPicker .welcome-skin-card').forEach(card => {
+          const id = card.getAttribute('data-skin-id');
+          card.classList.toggle('active', id === curSkin);
+        });
+        const hero = document.getElementById('welcomeBokuHeroImg');
+        if (hero) hero.src = getBokuSpriteUrl(7, curSkin);
       }
       const backBtn = document.getElementById('welcomeBackBtn');
       const nextBtn = document.getElementById('welcomeNextBtn');
@@ -9152,6 +9508,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      applyBokuSkinEverywhere();
       setLanguage(currentLang);
       updatePlayerSourceBarOrder();
       checkWelcomeModal();
@@ -15979,7 +16336,7 @@
     const CHIBI_MASCOTS = [
       {
         id: 10,
-        src: '/assets/sprite_10_bcbb0cee.webp',
+        src: getBokuSpriteUrl(10),
         quoteRu: '«Боку на связи! Если плеер завис — попробуйте переключить источник на Анилибрию или отключить VPN!»',
         quoteEn: '“Boku here! If the player gets stuck, try switching source to AniLibria or turning off your VPN!”',
         bubbleRu: '💡 Совет от Боку!',
@@ -15987,7 +16344,7 @@
       },
       {
         id: 7,
-        src: '/assets/sprite_07_bc5cc640.webp',
+        src: getBokuSpriteUrl(7),
         quoteRu: '«Привет-привет! Я Боку, рада видеть тебя на Komboko! Приятного просмотра аниме!»',
         quoteEn: '“Hey there! I’m Boku, so happy to see you on Komboko! Enjoy watching anime!”',
         bubbleRu: '👋 Привет от Боку!',
@@ -15995,7 +16352,7 @@
       },
       {
         id: 11,
-        src: '/assets/sprite_11_8ea686eb.webp',
+        src: getBokuSpriteUrl(11),
         quoteRu: '«Урааа! Не забудь позвать друзей в комнату Watch Party для синхронного просмотра!»',
         quoteEn: '“Yay! Don’t forget to invite friends to a Watch Party room for synced streaming!”',
         bubbleRu: '🎉 Зови друзей в комнату!',
@@ -16003,7 +16360,7 @@
       },
       {
         id: 4,
-        src: '/assets/sprite_04_afb8ee73.webp',
+        src: getBokuSpriteUrl(4),
         quoteRu: '«Стильный выбор! Загляни в наш Telegram за актуальными новостями и новыми зеркалами!»',
         quoteEn: '“Stylish choice! Check out our Telegram for latest news and fresh mirrors!”',
         bubbleRu: '😎 Мы в Telegram!',
@@ -16011,7 +16368,7 @@
       },
       {
         id: 9,
-        src: '/assets/sprite_09_d0967fec.webp',
+        src: getBokuSpriteUrl(9),
         quoteRu: '«Оценивай просмотренные тайтлы в Shikimori, мне очень интересно твое мнение... 👉👈»',
         quoteEn: '“Rate watched titles on Shikimori, I really care about your taste... 👉👈”',
         bubbleRu: '😳 Оценивай в Shikimori',
@@ -16019,7 +16376,7 @@
       },
       {
         id: 5,
-        src: '/assets/sprite_05_d78e1470.webp',
+        src: getBokuSpriteUrl(5),
         quoteRu: '«Лайфхак: двойной тап по краям плеера перематывает видео на 10 секунд вперед или назад!»',
         quoteEn: '“Pro tip: double tap video edges to seek 10 seconds forward or backward!”',
         bubbleRu: '⚡ Быстрая перемотка',
@@ -16027,7 +16384,7 @@
       },
       {
         id: 1,
-        src: '/assets/sprite_01_c06825a2.webp',
+        src: getBokuSpriteUrl(1),
         quoteRu: '«Уютного вечера с чашкой вкусного чая и любимым тайтлом!»',
         quoteEn: '“Have a cozy evening with a cup of warm tea and your favorite anime!”',
         bubbleRu: '☕ Уютного просмотра!',
@@ -16035,7 +16392,7 @@
       },
       {
         id: 8,
-        src: '/assets/sprite_08_6ae8b0cc.webp',
+        src: getBokuSpriteUrl(8),
         quoteRu: '«На Komboko собраны тысячи тайтлов и озвучек в высоком качестве!»',
         quoteEn: '“Komboko features thousands of titles and voice tracks in crisp HD quality!”',
         bubbleRu: '✨ 4 источника видео',
@@ -16043,7 +16400,7 @@
       },
       {
         id: 12,
-        src: '/assets/sprite_12_1144c06a.webp',
+        src: getBokuSpriteUrl(12),
         quoteRu: '«Смотри аниме от 60% хронометража, получай коллекционные карточки и прокачивай их в апгрейдере!»',
         quoteEn: '“Watch 60%+ of any anime to unlock collectible cards and upgrade them in the upgrader!”',
         bubbleRu: '🎴 Карточки и апгрейдер',
@@ -16079,6 +16436,7 @@
       }
 
       const mascot = CHIBI_MASCOTS[currentChibiIndex];
+      const targetSpriteUrl = getBokuSpriteUrl(mascot.id);
       const modalImg = document.getElementById('guideModalChibiImg');
       const floatImg = document.getElementById('chibiFloatingImg');
       const speech = document.getElementById('guideSpeechBubble');
@@ -16088,14 +16446,14 @@
       if (modalImg) {
         modalImg.style.transform = 'scale(0.85)';
         setTimeout(() => {
-          modalImg.src = mascot.src;
+          modalImg.src = targetSpriteUrl;
           modalImg.style.transform = 'scale(1)';
         }, 120);
       }
       if (floatImg) {
         floatImg.style.transform = 'scale(0.85)';
         setTimeout(() => {
-          floatImg.src = mascot.src;
+          floatImg.src = targetSpriteUrl;
           floatImg.style.transform = 'scale(1)';
         }, 120);
       }

@@ -12044,31 +12044,23 @@
       }
     }
 
-async function triggerQuest(questId) {
-  try {
-    // 1. Сохраняем локально, чтобы cards.html сразу увидел выполненный квест
-    localStorage.setItem(`komboko_quest_${questId}`, 'true');
-    const flags = JSON.parse(localStorage.getItem('komboko_quest_flags') || '{}');
-    flags[questId] = true;
-    localStorage.setItem('komboko_quest_flags', JSON.stringify(flags));
-
-    // 2. Отправляем на VPS через apiUrl()
-    const headers = getCardApiHeaders();
-    const res = await fetch(apiUrl('/api/cards/complete_quest'), {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ questId })
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data && data.success && data.reward > 0) {
-      showQuestSuccessBanner(data.reward, data.questTitle || data.quest?.title);
+    async function triggerQuest(questId) {
+      try {
+        const headers = getCardApiHeaders();
+        const res = await fetch('/api/cards/complete_quest', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ questId })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.success && data.reward > 0) {
+          showQuestSuccessBanner(data.reward, data.questTitle || data.quest?.title);
+        }
+      } catch (e) {
+        console.warn('triggerQuest error:', e);
+      }
     }
-  } catch (e) {
-    console.warn('triggerQuest error:', e);
-  }
-}
-
 
     let isImportingCompletedCards = false;
     async function importCompletedShikimoriCards(completedRates, token, userId) {
@@ -12143,7 +12135,7 @@ async function triggerQuest(questId) {
         });
 
         const headers = getCardApiHeaders();
-        const res = await fetch(apiUrl('/api/cards/import_completed')), {
+        const res = await fetch('/api/cards/import_completed', {
           method: 'POST',
           headers,
           body: JSON.stringify({ items, userId: uId })

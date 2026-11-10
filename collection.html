@@ -6,10 +6,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>KombokoWatch -- Коллекция и Апгрейд</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./site.webmanifest">
 
   <!-- Google Fonts: Comfortaa & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -467,7 +467,7 @@
     }
     .empty-chibi-img { width: 105px; height: 105px; object-fit: contain; margin-bottom: 14px; filter: drop-shadow(0 8px 22px rgba(208, 188, 255, 0.3)); animation: chibiGentleFloat 3s ease-in-out infinite; }
 
-    /* === АПГРЕЙДЕР С АНИМИРОВАННЫМ МАСКОТОМ БОКУ В ЦЕНТРЕ === */
+    /* === АПГРЕЙДЕР С КРУТИЛКОЙ (ДВА КОЛЕСА ПОДРЯД: АПГРЕЙД И ОТКАТ) === */
     .upgrader-arena {
       display: grid;
       grid-template-columns: 1fr 310px 1fr;
@@ -522,61 +522,113 @@
 
     .upgrader-center-column { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
 
-    .boku-arena-circle {
-      width: 280px;
-      height: 280px;
+    .wheel-container {
+      width: 270px;
+      height: 270px;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(28, 22, 45, 0.95) 0%, rgba(10, 8, 18, 0.98) 72%);
+      box-shadow: 0 0 45px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(208, 188, 255, 0.12);
+      border: 1.5px solid rgba(208, 188, 255, 0.25);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .wheel-container.downgrade-mode {
+      border-color: rgba(244, 63, 94, 0.65);
+      box-shadow: 0 0 55px rgba(244, 63, 94, 0.35), inset 0 0 30px rgba(244, 63, 94, 0.22);
+    }
+
+    .wheel-svg { width: 250px; height: 250px; transform: rotate(-90deg); overflow: visible; }
+    .wheel-track { fill: none; stroke: rgba(255, 255, 255, 0.06); stroke-width: 14; }
+    .wheel-Ticks { fill: none; stroke: rgba(208, 188, 255, 0.18); stroke-width: 4; stroke-dasharray: 2 10.04; }
+    .wheel-chance-arc {
+      fill: none;
+      stroke: url(#purpleChanceGrad);
+      stroke-width: 14;
+      stroke-linecap: butt;
+      stroke-dasharray: 0 628.32;
+      transition: stroke-dasharray 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      filter: drop-shadow(0 0 10px rgba(154, 117, 240, 0.7));
+    }
+    .wheel-container.downgrade-mode .wheel-chance-arc {
+      stroke: url(#redDangerGrad);
+      filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.85));
+    }
+
+    .wheel-pointer-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      transition: transform 3.2s cubic-bezier(0.12, 0.82, 0.18, 1);
+      will-change: transform;
+    }
+    .wheel-pointer-arrow {
+      position: absolute;
+      top: -6px; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 18px solid #D0BCFF;
+      filter: drop-shadow(0 0 10px #D0BCFF) drop-shadow(0 0 4px #ffffff);
+      transition: border-top-color 0.3s ease;
+    }
+    .wheel-container.downgrade-mode .wheel-pointer-arrow {
+      border-top-color: #F43F5E;
+      filter: drop-shadow(0 0 10px #F43F5E) drop-shadow(0 0 4px #ffffff);
+    }
+
+    .wheel-center-info {
+      position: absolute;
+      inset: 36px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(40, 30, 66, 0.82) 0%, rgba(16, 12, 28, 0.96) 100%);
+      border: 1px solid rgba(208, 188, 255, 0.22);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(58, 40, 95, 0.92) 0%, rgba(16, 12, 28, 0.98) 74%);
-      box-shadow: 0 0 55px rgba(154, 117, 240, 0.35), inset 0 0 32px rgba(208, 188, 255, 0.22);
-      border: 2px solid rgba(208, 188, 255, 0.45);
-      padding: 16px;
+      padding: 10px;
       text-align: center;
-      overflow: hidden;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      z-index: 4;
+      transition: background 0.4s ease, border-color 0.4s ease;
     }
-    .boku-arena-circle.spinning-glow {
-      border-color: #EADDFF;
-      box-shadow: 0 0 70px rgba(208, 188, 255, 0.75), inset 0 0 40px rgba(154, 117, 240, 0.45);
+    .wheel-container.downgrade-mode .wheel-center-info {
+      background: radial-gradient(circle, rgba(88, 20, 42, 0.88) 0%, rgba(20, 10, 18, 0.97) 100%);
+      border-color: rgba(244, 63, 94, 0.45);
     }
 
-    .boku-mascot-stage {
-      width: 104px;
-      height: 104px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .wheel-stage-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(208, 188, 255, 0.15);
+      color: var(--color-primary);
       margin-bottom: 4px;
     }
-
-    .boku-arena-chibi {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 20px rgba(208, 188, 255, 0.55));
-      animation: chibiGentleFloat 3s ease-in-out infinite;
-      display: block;
-    }
-    .boku-arena-chibi.is-thinking {
-      animation: chibiThinkingShake 0.36s ease-in-out infinite !important;
-    }
-    @keyframes chibiThinkingShake {
-      0%, 100% { transform: translateY(0) rotate(0deg) scale(1.04); }
-      25% { transform: translateY(-5px) rotate(-5deg) scale(1.06); }
-      75% { transform: translateY(-2px) rotate(5deg) scale(1.06); }
+    .wheel-container.downgrade-mode .wheel-stage-badge {
+      background: rgba(244, 63, 94, 0.25);
+      color: #FDA4AF;
     }
 
-    .boku-chance-display { font-size: 25px; font-weight: 800; color: #fff; letter-spacing: -0.5px; line-height: 1.1; }
-    .boku-cost-tag {
-      font-size: 11px; font-weight: 700; color: var(--color-primary); margin-top: 4px;
-      background: rgba(208, 188, 255, 0.16); padding: 3px 12px; border-radius: var(--radius-full); border: 1px solid rgba(208, 188, 255, 0.3);
+    .wheel-chevrons { color: var(--color-primary); font-size: 24px; line-height: 0.55; margin-bottom: 4px; filter: drop-shadow(0 0 12px rgba(208, 188, 255, 0.5)); }
+    .wheel-container.downgrade-mode .wheel-chevrons { color: #F43F5E; filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.7)); }
+
+    .wheel-chance-pct { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .wheel-cost-tag {
+      font-size: 11px; font-weight: 700; color: var(--color-primary); margin-top: 3px;
+      background: rgba(208, 188, 255, 0.12); padding: 3px 10px; border-radius: var(--radius-full); border: 1px solid rgba(208, 188, 255, 0.25);
     }
-    .boku-risk-hint { font-size: 10.5px; color: var(--color-variant); margin-top: 5px; opacity: 0.95; max-width: 205px; line-height: 1.3; font-weight: 600; }
+    .wheel-container.downgrade-mode .wheel-cost-tag {
+      color: #FDA4AF; background: rgba(244, 63, 94, 0.18); border-color: rgba(244, 63, 94, 0.4);
+    }
+    .wheel-risk-hint { font-size: 10px; color: var(--color-variant); margin-top: 5px; opacity: 0.9; max-width: 160px; line-height: 1.25; }
 
     .btn-roll-upgrade {
       width: 100%;
@@ -794,7 +846,7 @@
         </div>
         <span>Задания</span>
       </button>
-      <a href="/index.html" class="nav-item" title="Кинотеатр">
+      <a href="./index.html" class="nav-item" title="Кинотеатр">
         <div class="nav-pill"><span class="material-symbols-rounded">movie</span></div>
         <span>Кинотеатр</span>
       </a>
@@ -806,7 +858,7 @@
     <div class="app-header-brand">
       <div class="brand-group">
         <div class="brand-row">
-          <a href="/index.html" class="brand-title-text">KombokoWatch</a>
+          <a href="./index.html" class="brand-title-text">KombokoWatch</a>
         </div>
         <div class="brand-subtitle">коллекция карточек и апгрейдер</div>
       </div>
@@ -863,17 +915,17 @@
     </section>
 
     <!-- ==========================================
-         ВКЛАДКА 2: АПГРЕЙДЕР С БОКУ В ЦЕНТРЕ
+         ВКЛАДКА 2: АПГРЕЙДЕР (ДВА КОЛЕСА ПОДРЯД: АПГРЕЙД И ОТКАТ)
          ========================================== -->
     <section id="view-upgrade" class="animate-fade" style="display: none;">
       <div class="section-header">
         <div>
           <h2 class="section-title" style="display:flex; align-items:center; gap:8px;">
             <span class="material-symbols-rounded" style="color:var(--color-primary);">keyboard_double_arrow_up</span>
-            <span>Апгрейдер карточек с Боку</span>
+            <span>Апгрейдер карточек</span>
           </h2>
           <p style="font-size: 12px; color: var(--color-variant); margin-top: 2px;">
-            Сначала идёт бросок на апгрейд, а при промахе -- проверка отката: 20% → 40% → 80% → 100%. Победа сбрасывает риск обратно до 20%!
+            Колесо №1 -- шанс апгрейда. Если промах на Редкой/Эпической -- сразу запускается Колесо №2 на откат (20% → 40% → 80% → 100%)!
           </p>
         </div>
       </div>
@@ -892,23 +944,45 @@
           <div id="leftSlotCardContainer" style="display: none;"></div>
         </div>
 
+        <!-- ЦЕНТР: ДВУХЭТАПНОЕ КОЛЕСО (АПГРЕЙД -> ПРОВЕРКА ОТКАТА) -->
         <div class="upgrader-center-column">
-          <div class="boku-arena-circle" id="bokuArenaCircle">
-            <div class="boku-mascot-stage">
-              <img id="bokuArenaMascot"
-                   src="/assets/sprite_07_bc5cc640.webp"
-                   class="boku-arena-chibi"
-                   alt="Боку"
-                   onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
+          <div class="wheel-container" id="wheelContainer">
+            <svg class="wheel-svg" viewBox="0 0 220 220">
+              <defs>
+                <linearGradient id="purpleChanceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#EADDFF" />
+                  <stop offset="50%" stop-color="#D0BCFF" />
+                  <stop offset="100%" stop-color="#7C3AED" />
+                </linearGradient>
+                <linearGradient id="redDangerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FDA4AF" />
+                  <stop offset="50%" stop-color="#F43F5E" />
+                  <stop offset="100%" stop-color="#9F1239" />
+                </linearGradient>
+              </defs>
+              <circle class="wheel-track" cx="110" cy="110" r="100"></circle>
+              <circle class="wheel-Ticks" cx="110" cy="110" r="88"></circle>
+              <circle id="wheelChanceArc" class="wheel-chance-arc" cx="110" cy="110" r="100"></circle>
+            </svg>
+
+            <!-- Вращающаяся стрелка -->
+            <div class="wheel-pointer-ring" id="wheelPointerRing">
+              <div class="wheel-pointer-arrow"></div>
             </div>
-            <div class="boku-chance-display" id="bokuChanceText">0%</div>
-            <div class="boku-cost-tag" id="bokuCostText">Выберите карточку</div>
-            <div class="boku-risk-hint" id="bokuRiskText">Перетащите карточку в левое окно</div>
+
+            <!-- Информация внутри колеса -->
+            <div class="wheel-center-info">
+              <div class="wheel-stage-badge" id="wheelStageBadge">Колесо апгрейда</div>
+              <div class="wheel-chevrons" id="wheelChevrons">︿<br>︿</div>
+              <div class="wheel-chance-pct" id="wheelChanceText">0%</div>
+              <div class="wheel-cost-tag" id="wheelCostText">Выберите карточку</div>
+              <div class="wheel-risk-hint" id="wheelRiskText">Перетащите карточку в левое окно</div>
+            </div>
           </div>
 
           <button class="btn-roll-upgrade" id="btnRunUpgrade" onclick="runCardUpgrade()" disabled>
             <span class="material-symbols-rounded">keyboard_double_arrow_up</span>
-            <span id="btnRunUpgradeText">Испытать удачу с Боку!</span>
+            <span id="btnRunUpgradeText">Прокачать</span>
           </button>
         </div>
 
@@ -944,11 +1018,11 @@
     <section id="view-quests" class="animate-fade" style="display: none;">
       <div class="quests-summary-banner">
         <div class="quests-banner-left">
-          <img src="/assets/sprite_07_bc5cc640.webp" class="quests-banner-chibi" alt="Боку" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
+          <img src="./assets/sprite_07_bc5cc640.webp" class="quests-banner-chibi" alt="Боку" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
           <div>
             <h2 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px;">Задания от Боку 💜</h2>
             <p style="font-size: 12.5px; color: var(--color-variant); line-height: 1.45; max-width: 520px;">
-              Выполняй задания в кинотеатре KombokoWatch -- награда начисляется автоматически или забирается здесь!
+              Выполняй задания в кинотеатре KombokoWatch -- забирай Бококойны на прокачку карточек до Легендарного ранга!
             </p>
           </div>
         </div>
@@ -989,7 +1063,7 @@
           <span class="material-symbols-rounded" style="font-size: 18px;">upgrade</span>
           <span>В апгрейдер</span>
         </button>
-        <a href="/index.html" class="md-btn md-btn-filled" style="flex: 1.2;" id="modalBtnWatch">
+        <a href="./index.html" class="md-btn md-btn-filled" style="flex: 1.2;" id="modalBtnWatch">
           <span class="material-symbols-rounded" style="font-size: 18px;">play_arrow</span>
           <span>Смотреть аниме</span>
         </a>
@@ -1003,7 +1077,7 @@
       <button class="modal-close" onclick="closeUpgradeResultModal()">
         <span class="material-symbols-rounded">close</span>
       </button>
-      <img id="resultChibiImg" src="/assets/sprite_11_8ea686eb.webp" style="width: 96px; height: 96px; object-fit: contain;" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" alt="Боку" />
+      <img id="resultChibiImg" src="./assets/sprite_11_8ea686eb.webp" style="width: 96px; height: 96px; object-fit: contain;" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" alt="Боку" />
       <h3 id="resultModalTitle" style="font-size: 20px; font-weight: 800; color: var(--color-primary);">Успех!</h3>
       <p id="resultModalDesc" style="font-size: 13.5px; color: var(--color-surface); line-height: 1.5;"></p>
       <button class="md-btn md-btn-filled" style="width: 100%; margin-top: 6px;" onclick="closeUpgradeResultModal()">
@@ -1028,7 +1102,7 @@
           <span class="material-symbols-rounded" style="font-size: 18px;">sync</span>
           <span>Подтянуть просмотренные аниме</span>
         </button>
-        <a href="/index.html" class="md-btn md-btn-tonal" style="width: 100%;">
+        <a href="./index.html" class="md-btn md-btn-tonal" style="width: 100%;">
           <span class="material-symbols-rounded" style="font-size: 18px;">movie</span>
           <span>Перейти в каталог аниме</span>
         </a>
@@ -1046,6 +1120,17 @@
   </div>
 
   <script>
+    // =========================================================================
+    // 0. АДРЕС ТВОЕГО БОЕВОГО VPS БЭКЕНДА (ЧТОБЫ РАБОТАЛО С KOMBOKO.FUN)
+    // =========================================================================
+    const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_BASE = IS_LOCAL ? '' : 'https://api.komboko.fun';
+
+    function apiUrl(path) {
+      const clean = path.startsWith('/') ? path : '/' + path;
+      return `${API_BASE}${clean}`;
+    }
+
     window.BOKU_FALLBACK_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
         <defs>
@@ -1063,8 +1148,6 @@
         <circle cx="43" cy="59" r="2" fill="#ffffff"/>
         <circle cx="73" cy="59" r="2" fill="#ffffff"/>
         <path d="M52 76 Q60 83 68 76" fill="none" stroke="#1e0b4b" stroke-width="3.2" stroke-linecap="round"/>
-        <ellipse cx="34" cy="70" rx="5" ry="2.8" fill="#ec4899" opacity="0.55"/>
-        <ellipse cx="86" cy="70" rx="5" ry="2.8" fill="#ec4899" opacity="0.55"/>
       </svg>
     `);
 
@@ -1078,11 +1161,11 @@
       },
       rare: {
         nameRu: 'Редкая', next: 'epic', cost: 200, chance: 0.20,
-        failTarget: 'common', hasDowngradeProtection: true, riskText: 'Откат при провале проверки'
+        failTarget: 'common', hasDowngradeProtection: true, riskText: 'Откат при провале 2-го колеса'
       },
       epic: {
         nameRu: 'Эпическая', next: 'legendary', cost: 500, chance: 0.08,
-        failTarget: 'rare', hasDowngradeProtection: true, riskText: 'Откат при провале проверки'
+        failTarget: 'rare', hasDowngradeProtection: true, riskText: 'Откат при провале 2-го колеса'
       },
       legendary: {
         nameRu: 'Легендарная', next: null, cost: 0, chance: 0,
@@ -1092,15 +1175,14 @@
 
     const QUESTS_CONFIG = [
       { id: 'daily_login', title: 'Ежедневный вход в коллекцию', desc: 'Заходи на страницу карточек каждый день и забирай бонусные Бококойны.', reward: 50, icon: 'calendar_month', type: 'daily' },
-      { id: 'watch_anime_60', title: 'Посмотреть тайтл (60%+ хронометража)', desc: 'Посмотри минимум 60% аниме в плеере KombokoWatch -- получи карточку и Бококойны.', reward: 150, icon: 'play_circle', type: 'repeatable_flag', flagKey: 'komboko_quest_watched_title', actionUrl: '/index.html', actionText: 'Смотреть аниме' },
-      { id: 'add_shiki_list', title: 'Добавить тайтл в список Shikimori', desc: 'Добавь любое аниме в свой список («Смотрю», «В планах», «Просмотрено») на сайте.', reward: 100, icon: 'bookmark_add', type: 'daily_flag', flagKey: 'komboko_quest_added_list', actionUrl: '/index.html', actionText: 'В каталог' },
-      { id: 'search_catalog', title: 'Найти аниме через поиск', desc: 'Воспользуйся поиском по названию или Shikimori ID в каталоге.', reward: 40, icon: 'search', type: 'daily_flag', flagKey: 'komboko_quest_searched', actionUrl: '/index.html#search', actionText: 'Найти тайтл' },
-      { id: 'boku_roulette', title: 'Посмотреть рандомное аниме от Боку', desc: 'Испытай удачу в «Рулетке от Боку» в правом нижнем углу сайта.', reward: 80, icon: 'casino', type: 'daily_flag', flagKey: 'komboko_quest_roulette', actionUrl: '/index.html#roulette', actionText: 'Крутить рулетку' },
-      { id: 'rate_anime', title: 'Поставить оценку тайтлу', desc: 'Оцени любое аниме от 1 до 10 баллов через окно прогресса Shikimori.', reward: 75, icon: 'star', type: 'daily_flag', flagKey: 'komboko_quest_rated', actionUrl: '/index.html', actionText: 'Оценить аниме' },
-      { id: 'watch_party', title: 'Совместный просмотр с другом', desc: 'Создай комнату совместного просмотра или подключись по коду друга.', reward: 120, icon: 'groups', type: 'daily_flag', flagKey: 'komboko_quest_watch_party', actionUrl: '/index.html', actionText: 'Открыть плеер' }
+      { id: 'watch_anime_60', title: 'Посмотреть тайтл (60%+ хронометража)', desc: 'Посмотри минимум 60% аниме в плеере KombokoWatch -- получи карточку и Бококойны.', reward: 150, icon: 'play_circle', type: 'repeatable_flag', flagKey: 'komboko_quest_watched_title', actionUrl: './index.html', actionText: 'Смотреть аниме' },
+      { id: 'add_shiki_list', title: 'Добавить тайтл в список Shikimori', desc: 'Добавь любое аниме в свой список («Смотрю», «В планах», «Просмотрено») на сайте.', reward: 100, icon: 'bookmark_add', type: 'daily_flag', flagKey: 'komboko_quest_added_list', actionUrl: './index.html', actionText: 'В каталог' },
+      { id: 'search_catalog', title: 'Найти аниме через поиск', desc: 'Воспользуйся поиском по названию или Shikimori ID в каталоге.', reward: 40, icon: 'search', type: 'daily_flag', flagKey: 'komboko_quest_searched', actionUrl: './index.html#search', actionText: 'Найти тайтл' },
+      { id: 'boku_roulette', title: 'Посмотреть рандомное аниме от Боку', desc: 'Испытай удачу в «Рулетке от Боку» в правом нижнем углу сайта.', reward: 80, icon: 'casino', type: 'daily_flag', flagKey: 'komboko_quest_roulette', actionUrl: './index.html#roulette', actionText: 'Крутить рулетку' },
+      { id: 'rate_anime', title: 'Поставить оценку тайтлу', desc: 'Оцени любое аниме от 1 до 10 баллов через окно прогресса Shikimori.', reward: 75, icon: 'star', type: 'daily_flag', flagKey: 'komboko_quest_rated', actionUrl: './index.html', actionText: 'Оценить аниме' },
+      { id: 'watch_party', title: 'Совместный просмотр с другом', desc: 'Создай комнату совместного просмотра или подключись по коду друга.', reward: 120, icon: 'groups', type: 'daily_flag', flagKey: 'komboko_quest_watch_party', actionUrl: './index.html', actionText: 'Открыть плеер' }
     ];
 
-    // Чистое боевое состояние: 0 Бококойнов и пустой массив карточек на старте
     let appState = {
       bokocoins: 0,
       cards: [],
@@ -1109,6 +1191,7 @@
       selectedFilter: 'all',
       selectedCardUid: null,
       isSpinning: false,
+      wheelRotation: 0,
       currentUser: null
     };
 
@@ -1159,7 +1242,7 @@
     }
 
     // =========================================================================
-    // ХРАНИЛИЩЕ И СИНХРОНИЗАЦИЯ С БЭКЕНДОМ (server.js)
+    // 1. ХРАНИЛИЩЕ И СИНХРОНИЗАЦИЯ С VPS (https://api.komboko.fun)
     // =========================================================================
     const CardsStorage = {
       storageKey: 'komboko_cards_prod_v1',
@@ -1182,15 +1265,21 @@
         }
 
         try {
-          const res = await fetch('/api/cards/state', { headers: getAuthHeaders() });
+          const res = await fetch(apiUrl('/api/cards/state'), { headers: getAuthHeaders() });
           if (res.ok) {
             const data = await res.json();
-            if (typeof data.bokocoins === 'number') appState.bokocoins = data.bokocoins;
-            if (Array.isArray(data.cards)) {
-              appState.cards = data.cards.map(c => ({
-                ...c,
-                downgradeFailsCount: Number(c.downgradeFailsCount ?? c.fails ?? 0)
-              }));
+            if (typeof data.bokocoins === 'number') {
+              appState.bokocoins = Math.max(appState.bokocoins, data.bokocoins);
+            }
+            if (Array.isArray(data.cards) && data.cards.length > 0) {
+              const localById = new Map(appState.cards.map(c => [String(c.animeId), c]));
+              data.cards.forEach(sc => {
+                localById.set(String(sc.animeId), {
+                  ...sc,
+                  downgradeFailsCount: Number(sc.downgradeFailsCount ?? sc.fails ?? 0)
+                });
+              });
+              appState.cards = Array.from(localById.values());
             }
             if (data.questsClaimedAt) appState.questsClaimedAt = { ...appState.questsClaimedAt, ...data.questsClaimedAt };
             if (data.questsProgress) appState.questsProgress = { ...appState.questsProgress, ...data.questsProgress };
@@ -1212,13 +1301,50 @@
     };
 
     // =========================================================================
-    // ПОДТЯГИВАНИЕ КАРТОЧЕК ИЗ СПИСКА «ПРОСМОТРЕНО» НА SHIKIMORI
+    // 2. НАДЁЖНОЕ ПОДТЯГИВАНИЕ «ПРОСМОТРЕНО» ЧЕРЕЗ SHIKIMORI GRAPHQL + REST
     // =========================================================================
+    async function fetchAnimeMetadataBatch(animeIds) {
+      if (!animeIds.length) return [];
+      const results = [];
+      const chunkSize = 50;
+      for (let i = 0; i < animeIds.length; i += chunkSize) {
+        const chunk = animeIds.slice(i, i + chunkSize);
+        const query = `{
+          animes(ids: "${chunk.join(',')}", limit: 50) {
+            id
+            name
+            russian
+            poster { originalUrl mainUrl }
+          }
+        }`;
+        try {
+          const r = await fetch('https://shikimori.io/api/graphql', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ query })
+          });
+          if (r.ok) {
+            const j = await r.json();
+            const list = j?.data?.animes || [];
+            list.forEach(a => {
+              results.push({
+                animeId: String(a.id),
+                title: a.russian || a.name || `Тайтл #${a.id}`,
+                titleEn: a.name || '',
+                poster: a.poster?.originalUrl || a.poster?.mainUrl || `https://shikimori.one/system/animes/original/${a.id}.jpg`
+              });
+            });
+          }
+        } catch (_) {}
+      }
+      return results;
+    }
+
     async function syncCompletedFromShikimori(showFeedback = false) {
       const token = safeGet('shiki_token');
       if (!token) {
         if (showFeedback) {
-          showToast('Войдите через Shikimori в кинотеатре, чтобы подтянуть просмотренные тайтлы!');
+          showToast('Сначала войдите через Shikimori в кинотеатре!');
         }
         return;
       }
@@ -1248,7 +1374,8 @@
           return;
         }
 
-        const ratesRes = await fetch(`https://shikimori.io/api/users/${userId}/anime_rates?status=completed&limit=100`, {
+        // Запрашиваем список completed через v2 user_rates
+        const ratesRes = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&status=completed&limit=500`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -1258,54 +1385,73 @@
         }
 
         const rates = await ratesRes.json();
-        if (!Array.isArray(rates)) return;
+        if (!Array.isArray(rates) || rates.length === 0) {
+          if (showFeedback) showToast('В вашем списке «Просмотрено» на Shikimori пока нет тайтлов.');
+          return;
+        }
 
-        const itemsToImport = [];
-        rates.forEach(rate => {
-          const anime = rate.anime;
-          const aId = String(rate.target_id || anime?.id || '');
-          if (!aId) return;
-          const posterPath = anime?.image?.original || anime?.image?.preview || '';
-          const posterUrl = posterPath.startsWith('http')
-            ? posterPath
-            : (posterPath ? `https://shikimori.one${posterPath}` : `https://shikimori.one/system/animes/original/${aId}.jpg`);
+        const existingIds = new Set(appState.cards.map(c => String(c.animeId)));
+        const missingIds = [];
 
-          itemsToImport.push({
-            animeId: aId,
-            title: anime?.russian || anime?.name || `Тайтл #${aId}`,
-            titleEn: anime?.name || '',
-            poster: posterUrl
-          });
+        rates.forEach(r => {
+          const aId = String(r.target_id || r.anime?.id || '');
+          if (aId && !existingIds.has(aId)) {
+            missingIds.push(aId);
+          }
         });
 
-        if (itemsToImport.length > 0) {
-          const res = await fetch('/api/cards/import_completed', {
+        if (missingIds.length === 0) {
+          if (showFeedback) showToast('Все просмотренные аниме с Shikimori уже есть в вашей коллекции!');
+          return;
+        }
+
+        // Подтягиваем названия и постеры через GraphQL Shikimori
+        const enrichedItems = await fetchAnimeMetadataBatch(missingIds);
+        const enrichedMap = new Map(enrichedItems.map(item => [item.animeId, item]));
+
+        const newCards = [];
+        missingIds.forEach(aId => {
+          const meta = enrichedMap.get(aId);
+          const cardObj = {
+            uid: `card_${aId}`,
+            animeId: aId,
+            title: meta?.title || `Тайтл #${aId}`,
+            titleEn: meta?.titleEn || '',
+            poster: meta?.poster || `https://shikimori.one/system/animes/original/${aId}.jpg`,
+            rarity: 'common',
+            fails: 0,
+            downgradeFailsCount: 0,
+            obtainedAt: Date.now()
+          };
+          appState.cards.push(cardObj);
+          newCards.push(cardObj);
+        });
+
+        // Засчитываем квесты за списки и оценки
+        appState.questsProgress['add_shiki_list'] = true;
+        if (rates.some(r => Number(r.score) > 0)) {
+          appState.questsProgress['rate_anime'] = true;
+        }
+
+        CardsStorage.saveLocal();
+        renderCollection();
+        renderUpgraderTray();
+        renderQuests();
+
+        showToast(`Добавлено карточек из «Просмотрено»: +${newCards.length}! ✨`);
+
+        // Синхронизируем с VPS в фоне
+        try {
+          await fetch(apiUrl('/api/cards/import_completed'), {
             method: 'POST',
             headers: getAuthHeaders(),
-            body: JSON.stringify({ items: itemsToImport, userId })
+            body: JSON.stringify({ items: newCards, userId })
           });
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data.cards)) {
-              appState.cards = data.cards.map(c => ({
-                ...c,
-                downgradeFailsCount: Number(c.downgradeFailsCount ?? c.fails ?? 0)
-              }));
-              CardsStorage.saveLocal();
-            }
-            renderCollection();
-            renderUpgraderTray();
-            if (data.importedCount > 0) {
-              showToast(`Добавлено карточек из «Просмотрено»: +${data.importedCount}! ✨`);
-            } else if (showFeedback) {
-              showToast('Все просмотренные аниме с Shikimori уже в вашей коллекции!');
-            }
-          }
-        } else if (showFeedback) {
-          showToast('В вашем списке «Просмотрено» на Shikimori пока нет тайтлов.');
-        }
+        } catch (_) {}
+
       } catch (err) {
         console.error('Sync Shikimori error:', err);
+        if (showFeedback) showToast('Ошибка синхронизации с Shikimori');
       } finally {
         if (btn && showFeedback) {
           btn.disabled = false;
@@ -1315,7 +1461,7 @@
     }
 
     // =========================================================================
-    // МОДАЛЬНОЕ ОКНО С ОПИСАНИЕМ АНИМЕ ПО КЛИКУ НА КАРТОЧКУ
+    // 3. МОДАЛЬНОЕ ОКНО С ОПИСАНИЕМ АНИМЕ ПО КЛИКУ НА КАРТОЧКУ
     // =========================================================================
     async function openCardDetailsModal(uid) {
       const card = appState.cards.find(c => c.uid === uid);
@@ -1344,7 +1490,7 @@
         closeCardDetailsModal();
         selectCardAndGoToUpgrader(card.uid);
       };
-      btnWatch.href = `/index.html#${card.animeId}`;
+      btnWatch.href = `./index.html#${card.animeId}`;
 
       modal.style.display = 'flex';
 
@@ -1394,7 +1540,7 @@
     }
 
     // =========================================================================
-    // РЕНДЕР КОЛЛЕКЦИИ И АПГРЕЙДЕРА
+    // 4. РЕНДЕР КОЛЛЕКЦИИ И ДВУХЭТАПНОГО КОЛЕСА АПГРЕЙДЕРА
     // =========================================================================
     function sortCardsByRarity(cardsArray) {
       return [...cardsArray].sort((a, b) => {
@@ -1425,7 +1571,7 @@
       const fails = Math.min(DOWNGRADE_CHANCES_SEQUENCE.length - 1, Number(card.downgradeFailsCount ?? card.fails ?? 0));
       const curChance = Math.round(DOWNGRADE_CHANCES_SEQUENCE[fails] * 100);
       return `
-        <div class="attempts-pill" title="Шанс отката при провале: ${curChance}%">
+        <div class="attempts-pill" title="Риск отката на 2-м колесе: ${curChance}%">
           <span class="material-symbols-rounded" style="font-size:12px; color:#D0BCFF;">shield</span>
           <span>Откат: ${curChance}%</span>
         </div>
@@ -1467,7 +1613,7 @@
       if (sorted.length === 0) {
         grid.innerHTML = `
           <div class="empty-collection-card animate-fade">
-            <img src="/assets/sprite_13_19327248.webp" class="empty-chibi-img" alt="Пусто" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
+            <img src="./assets/sprite_13_19327248.webp" class="empty-chibi-img" alt="Пусто" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
             <h3 style="font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px;">В вашей коллекции пока нет карточек</h3>
             <p style="font-size: 13px; color: var(--color-variant); margin-bottom: 18px; line-height: 1.5;">
               Нажмите «Подтянуть из Shikimori», чтобы получить карточки за все тайтлы из вашего списка «Просмотрено», или посмотрите 60% любого аниме в плеере!
@@ -1477,7 +1623,7 @@
                 <span class="material-symbols-rounded" style="font-size: 18px;">sync</span>
                 <span>Подтянуть из Shikimori</span>
               </button>
-              <a href="/index.html" class="md-btn md-btn-tonal">
+              <a href="./index.html" class="md-btn md-btn-tonal">
                 <span class="material-symbols-rounded" style="font-size: 18px;">play_arrow</span>
                 <span>Смотреть аниме</span>
               </a>
@@ -1545,6 +1691,9 @@
     }
 
     function updateUpgraderArenaUI() {
+      const wheelContainer = document.getElementById('wheelContainer');
+      const stageBadge = document.getElementById('wheelStageBadge');
+      const chevrons = document.getElementById('wheelChevrons');
       const leftSlot = document.getElementById('upgraderLeftSlot');
       const leftEmpty = document.getElementById('leftSlotEmptyState');
       const leftCardBox = document.getElementById('leftSlotCardContainer');
@@ -1553,11 +1702,16 @@
       const rightEmpty = document.getElementById('rightSlotEmptyState');
       const rightCardBox = document.getElementById('rightSlotCardContainer');
 
-      const bokuMascot = document.getElementById('bokuArenaMascot');
-      const chanceText = document.getElementById('bokuChanceText');
-      const costText = document.getElementById('bokuCostText');
-      const riskText = document.getElementById('bokuRiskText');
+      const arc = document.getElementById('wheelChanceArc');
+      const chanceText = document.getElementById('wheelChanceText');
+      const costText = document.getElementById('wheelCostText');
+      const riskText = document.getElementById('wheelRiskText');
       const btnRun = document.getElementById('btnRunUpgrade');
+      const circumference = 2 * Math.PI * 100;
+
+      wheelContainer.classList.remove('downgrade-mode');
+      stageBadge.textContent = 'Колесо апгрейда';
+      chevrons.innerHTML = '︿<br>︿';
 
       const card = appState.cards.find(c => c.uid === appState.selectedCardUid);
 
@@ -1566,7 +1720,7 @@
         leftEmpty.style.display = 'block'; leftCardBox.style.display = 'none';
         rightEmpty.style.display = 'block'; rightCardBox.style.display = 'none';
 
-        if (bokuMascot) bokuMascot.src = '/assets/sprite_07_bc5cc640.webp';
+        arc.style.strokeDasharray = `0 ${circumference}`;
         chanceText.textContent = '0%';
         costText.textContent = 'Выберите карточку';
         riskText.textContent = 'Перетащите карточку в левое окно';
@@ -1592,10 +1746,10 @@
             Апгрейдить дальше не надо. У вас уже максимальный уровень карточки.
           </div>
         `;
-        if (bokuMascot) bokuMascot.src = '/assets/sprite_11_8ea686eb.webp';
+        arc.style.strokeDasharray = `${circumference} ${circumference}`;
         chanceText.textContent = 'MAX';
         costText.textContent = 'Легендарный ранг';
-        riskText.textContent = 'Боку восхищена вашей карточкой!';
+        riskText.textContent = 'Максимальный уровень достигнут';
         btnRun.disabled = true;
         return;
       }
@@ -1604,14 +1758,15 @@
       rightSlot.classList.add('has-card'); rightEmpty.style.display = 'none'; rightCardBox.style.display = 'block';
       rightCardBox.innerHTML = `<div class="slot-card-wrapper animate-fade">${createCardHTML(nextCardPreview, { showUpgradeBtn: false })}</div>`;
 
-      if (bokuMascot) bokuMascot.src = '/assets/sprite_07_bc5cc640.webp';
+      const arcLength = (meta.chance * circumference).toFixed(2);
+      arc.style.strokeDasharray = `${arcLength} ${circumference}`;
       chanceText.textContent = `${Math.round(meta.chance * 100)}%`;
       costText.textContent = `Цена: ${meta.cost} БК`;
 
       if (meta.hasDowngradeProtection) {
         const fails = Math.min(DOWNGRADE_CHANCES_SEQUENCE.length - 1, Number(card.downgradeFailsCount ?? card.fails ?? 0));
         const curChance = Math.round(DOWNGRADE_CHANCES_SEQUENCE[fails] * 100);
-        riskText.textContent = `Риск отката при провале: ${curChance}%`;
+        riskText.textContent = `При промахе: 2-е колесо на откат (${curChance}%)`;
       } else {
         riskText.textContent = meta.riskText;
       }
@@ -1619,6 +1774,7 @@
       btnRun.disabled = appState.bokocoins < meta.cost;
     }
 
+    // ДВУХЭТАПНАЯ ПРОКРУТКА: КОЛЕСО №1 (АПГРЕЙД) -> КОЛЕСО №2 (ОТКАТ)
     async function runCardUpgrade() {
       if (appState.isSpinning) return;
       const card = appState.cards.find(c => c.uid === appState.selectedCardUid);
@@ -1635,86 +1791,164 @@
       appState.isSpinning = true;
       document.getElementById('btnRunUpgrade').disabled = true;
 
-      const arenaCircle = document.getElementById('bokuArenaCircle');
-      const bokuMascot = document.getElementById('bokuArenaMascot');
-      const riskText = document.getElementById('bokuRiskText');
-
-      if (arenaCircle) arenaCircle.classList.add('spinning-glow');
-      if (bokuMascot) {
-        bokuMascot.src = '/assets/sprite_10_bcbb0cee.webp';
-        bokuMascot.classList.add('is-thinking');
-      }
-      if (riskText) riskText.textContent = 'Боку колдует над вашей карточкой... ✨';
+      const circumference = 2 * Math.PI * 100;
+      const wheelContainer = document.getElementById('wheelContainer');
+      const pointerRing = document.getElementById('wheelPointerRing');
+      const arc = document.getElementById('wheelChanceArc');
+      const stageBadge = document.getElementById('wheelStageBadge');
+      const chevrons = document.getElementById('wheelChevrons');
+      const chanceText = document.getElementById('wheelChanceText');
+      const costText = document.getElementById('wheelCostText');
+      const riskText = document.getElementById('wheelRiskText');
 
       const oldRarityName = RARITY_META[card.rarity].nameRu;
+      const failsIdx = Math.min(DOWNGRADE_CHANCES_SEQUENCE.length - 1, Number(card.downgradeFailsCount ?? card.fails ?? 0));
+      const currentDowngradeProb = DOWNGRADE_CHANCES_SEQUENCE[failsIdx];
 
-      let serverOutcome = null;
+      // Списываем Бококойны сразу
+      appState.bokocoins -= meta.cost;
+      updateBalancesUI();
+
+      // Пробуем получить авторитарный результат с VPS (если VPS недоступен -- считаем локально)
+      let isWin = Math.random() < meta.chance;
+      let didDowngrade = false;
+      let downgradeChancePct = Math.round(currentDowngradeProb * 100);
+      let nextDowngradeChancePct = Math.round((DOWNGRADE_CHANCES_SEQUENCE[Math.min(3, failsIdx + 1)]) * 100);
+
       try {
-        const res = await fetch('/api/cards/upgrade', {
+        const res = await fetch(apiUrl('/api/cards/upgrade'), {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({ uid: card.uid, deviceId: getDeviceId() })
         });
         if (res.ok) {
-          serverOutcome = await res.json();
-        } else {
-          const errData = await res.json().catch(() => ({}));
-          showToast(errData.message || 'Ошибка апгрейда');
-          if (arenaCircle) arenaCircle.classList.remove('spinning-glow');
-          if (bokuMascot) bokuMascot.classList.remove('is-thinking');
-          appState.isSpinning = false;
-          updateUpgraderArenaUI();
-          return;
+          const sData = await res.json();
+          if (sData && (sData.ok || sData.success)) {
+            appState.bokocoins = sData.bokocoins;
+            updateBalancesUI();
+            isWin = Boolean(sData.isWin);
+            didDowngrade = Boolean(sData.didDowngrade || sData.downgraded);
+            if (sData.downgradeChancePct) downgradeChancePct = sData.downgradeChancePct;
+            if (sData.nextDowngradeChancePct) nextDowngradeChancePct = sData.nextDowngradeChancePct;
+          }
         }
       } catch (_) {
-        showToast('Ошибка соединения с сервером');
-        if (arenaCircle) arenaCircle.classList.remove('spinning-glow');
-        if (bokuMascot) bokuMascot.classList.remove('is-thinking');
+        // Оффлайн-расчет второго колеса
+        if (!isWin && meta.hasDowngradeProtection) {
+          didDowngrade = Math.random() < currentDowngradeProb;
+        }
+      }
+
+      // =========================================================
+      // ЭТАП 1: КРУТИМ КОЛЕСО АПГРЕЙДА
+      // =========================================================
+      const winAngleMax = meta.chance * 360;
+      let targetDegree1;
+      if (isWin) {
+        const margin = Math.min(4, winAngleMax * 0.15);
+        targetDegree1 = margin + Math.random() * (winAngleMax - margin * 2);
+      } else {
+        const loseRange = 360 - winAngleMax - 8;
+        targetDegree1 = winAngleMax + 4 + Math.random() * loseRange;
+      }
+
+      const base1 = appState.wheelRotation - (appState.wheelRotation % 360);
+      appState.wheelRotation = base1 + (360 * 5) + targetDegree1;
+      pointerRing.style.transform = `rotate(${appState.wheelRotation}deg)`;
+
+      await new Promise(r => setTimeout(r, 3300));
+
+      if (isWin) {
+        card.rarity = meta.next;
+        card.downgradeFailsCount = 0;
+        card.fails = 0;
+        CardsStorage.saveLocal();
+
+        showUpgradeOutcomeModal(
+          true,
+          'Апгрейд успешен! ✨',
+          `Карточка «${card.title}» прокачана с «${oldRarityName}» до «${RARITY_META[card.rarity].nameRu}»! Шкала риска отката сброшена до 20%.`,
+          './assets/sprite_11_8ea686eb.webp'
+        );
+
         appState.isSpinning = false;
         updateUpgraderArenaUI();
+        renderUpgraderTray();
+        renderCollection();
         return;
       }
 
-      await new Promise(r => setTimeout(r, 1750));
+      // Если карточка Обычная -- второго колеса нет
+      if (!meta.hasDowngradeProtection) {
+        CardsStorage.saveLocal();
+        showUpgradeOutcomeModal(
+          false,
+          'Не повезло...',
+          `Шанс ${Math.round(meta.chance * 100)}% не сыграл. Карточка «${card.title}» осталась Обычной.`,
+          './assets/sprite_13_19327248.webp'
+        );
+        appState.isSpinning = false;
+        updateUpgraderArenaUI();
+        renderUpgraderTray();
+        renderCollection();
+        return;
+      }
 
-      if (arenaCircle) arenaCircle.classList.remove('spinning-glow');
-      if (bokuMascot) bokuMascot.classList.remove('is-thinking');
+      // =========================================================
+      // ЭТАП 2: ПЕРЕКЛЮЧАЕМ НА ВТОРОЕ КОЛЕСО (КОЛЕСО ОТКАТА!)
+      // =========================================================
+      showToast(`Апгрейд сорвался! Запускаем колесо отката (${downgradeChancePct}%)...`);
+      wheelContainer.classList.add('downgrade-mode');
+      stageBadge.textContent = '⚠️ Колесо отката';
+      chevrons.innerHTML = '﹀<br>﹀';
 
-      if (serverOutcome && (serverOutcome.ok || serverOutcome.success)) {
-        appState.bokocoins = serverOutcome.bokocoins;
-        card.rarity = serverOutcome.card.rarity;
-        card.downgradeFailsCount = Number(serverOutcome.card.downgradeFailsCount ?? serverOutcome.card.fails ?? 0);
-        updateBalancesUI();
+      const dangerFraction = downgradeChancePct / 100;
+      const dangerArcLen = (dangerFraction * circumference).toFixed(2);
+      arc.style.strokeDasharray = `${dangerArcLen} ${circumference}`;
+      chanceText.textContent = `${downgradeChancePct}%`;
+      costText.textContent = 'Красная зона = Откат';
+      riskText.textContent = 'Стрелка мимо красной дуги = Ранг спасён!';
 
-        if (serverOutcome.isWin) {
-          showUpgradeOutcomeModal(
-            true,
-            'Успех! Боку счастлива! ✨',
-            `Карточка «${card.title}» прокачана с «${oldRarityName}» до «${RARITY_META[card.rarity].nameRu}»!`,
-            '/assets/sprite_11_8ea686eb.webp'
-          );
-        } else if (serverOutcome.didDowngrade || serverOutcome.downgraded) {
-          showUpgradeOutcomeModal(
-            false,
-            'Откат ранга... 💥',
-            `Апгрейд не удался, и вторая прокрутка на сохранение (${serverOutcome.downgradeChancePct || 20}%) сорвалась. Карточка откатилась до «${RARITY_META[card.rarity].nameRu}».`,
-            '/assets/sprite_14_eafb0cce.webp'
-          );
-        } else if (meta.hasDowngradeProtection) {
-          showUpgradeOutcomeModal(
-            false,
-            'Боку спасла вашу карточку! 🛡️',
-            `Апгрейд не удался, но проверка отката (${serverOutcome.downgradeChancePct || 20}%) устояла! Ранг сохранён. Следующий риск отката: ${serverOutcome.nextDowngradeChancePct || 40}%.`,
-            '/assets/sprite_13_19327248.webp'
-          );
-        } else {
-          showUpgradeOutcomeModal(
-            false,
-            'Не повезло...',
-            `Шанс ${Math.round(meta.chance * 100)}% не сыграл. Карточка осталась Обычной.`,
-            '/assets/sprite_13_19327248.webp'
-          );
-        }
+      // Пауза 1 секунда, чтобы пользователь увидел перестройку колеса на колесо отката
+      await new Promise(r => setTimeout(r, 1050));
+
+      const dangerAngleMax = dangerFraction * 360;
+      let targetDegree2;
+      if (didDowngrade) {
+        // Попадание в красную зону отката
+        const margin = Math.min(5, dangerAngleMax * 0.15);
+        targetDegree2 = margin + Math.random() * Math.max(1, dangerAngleMax - margin * 2);
+      } else {
+        // Остановка в безопасной зоне (мимо красной дуги)
+        const safeRange = Math.max(10, 360 - dangerAngleMax - 10);
+        targetDegree2 = dangerAngleMax + 5 + Math.random() * safeRange;
+      }
+
+      const base2 = appState.wheelRotation - (appState.wheelRotation % 360);
+      appState.wheelRotation = base2 + (360 * 5) + targetDegree2;
+      pointerRing.style.transform = `rotate(${appState.wheelRotation}deg)`;
+
+      await new Promise(r => setTimeout(r, 3300));
+
+      if (didDowngrade) {
+        card.rarity = meta.failTarget;
+        card.downgradeFailsCount = 0;
+        card.fails = 0;
+        showUpgradeOutcomeModal(
+          false,
+          'Откат ранга! 💥',
+          `Стрелка попала в красную зону (${downgradeChancePct}%). Карточка «${card.title}» откатилась с «${oldRarityName}» до «${RARITY_META[card.rarity].nameRu}».`,
+          './assets/sprite_14_eafb0cce.webp'
+        );
+      } else {
+        card.downgradeFailsCount = failsIdx + 1;
+        card.fails = card.downgradeFailsCount;
+        showUpgradeOutcomeModal(
+          false,
+          'Ранг спасён на 2-м колесе! 🛡️',
+          `Стрелка остановилась мимо красной зоны (${downgradeChancePct}%)! Карточка осталась «${oldRarityName}». Следующий риск отката: ${nextDowngradeChancePct}%.`,
+          './assets/sprite_13_19327248.webp'
+        );
       }
 
       CardsStorage.saveLocal();
@@ -1783,7 +2017,7 @@
     }
 
     // =========================================================================
-    // ЗАДАНИЯ (С ОТОБРАЖЕНИЕМ АВТОНАЧИСЛЕННЫХ ИЗ INDEX.HTML И РУЧНОГО СБОРА)
+    // 5. ЗАДАНИЯ (СВЯЗКА С KOMBOKO.FUN И API.KOMBOKO.FUN)
     // =========================================================================
     const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -1791,6 +2025,16 @@
       if (appState.questsProgress && appState.questsProgress[quest.id]) return true;
       if (quest.flagKey && localStorage.getItem(quest.flagKey) === 'true') return true;
       if (localStorage.getItem(`komboko_quest_${quest.id}`) === 'true') return true;
+
+      try {
+        const flags = JSON.parse(localStorage.getItem('komboko_quest_flags') || '{}');
+        if (flags[quest.id] || (quest.flagKey && flags[quest.flagKey])) return true;
+      } catch (_) {}
+
+      if (quest.id === 'watch_anime_60') {
+        const history = JSON.parse(localStorage.getItem('kodik_history') || '[]');
+        if (history.length > 0) return true;
+      }
       return false;
     }
 
@@ -1844,12 +2088,12 @@
           btnHtml = `
             <button class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 11.5px; color: #4ade80; border-color: rgba(74, 222, 128, 0.35);" disabled>
               <span class="material-symbols-rounded" style="font-size: 16px;">check_circle</span>
-              <span>Выполнено (через ~${st.remainingHours} ч.)</span>
+              <span>Выполнено (~${st.remainingHours} ч.)</span>
             </button>
           `;
         } else {
           btnHtml = `
-            <button class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 12px;" onclick="window.location.href='${q.actionUrl || '/index.html'}'">
+            <button class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 12px;" onclick="startQuestInCinema('${q.id}', '${q.actionUrl || './index.html'}', '${q.flagKey || ''}')">
               <span>${q.actionText || 'Выполнить'}</span>
               <span class="material-symbols-rounded" style="font-size: 16px;">arrow_outward</span>
             </button>
@@ -1877,43 +2121,48 @@
       if (dot) dot.style.display = anyReady ? 'block' : 'none';
     }
 
+    function startQuestInCinema(questId, url, flagKey) {
+      // Ставим метку активного задания, чтобы при возвращении из кинотеатра кнопка «Забрать» сразу горела
+      appState.questsProgress[questId] = true;
+      if (flagKey) localStorage.setItem(flagKey, 'true');
+      localStorage.setItem(`komboko_quest_${questId}`, 'true');
+      CardsStorage.saveLocal();
+      window.location.href = url;
+    }
+
     async function claimQuestReward(questId) {
       const quest = QUESTS_CONFIG.find(q => q.id === questId);
       if (!quest) return;
       const st = getQuestStatus(quest);
       if (!st.canClaim) return;
 
+      appState.bokocoins += quest.reward;
+      appState.questsClaimedAt[quest.id] = Date.now();
+      delete appState.questsProgress[quest.id];
+
+      if (quest.flagKey) localStorage.removeItem(quest.flagKey);
+      localStorage.removeItem(`komboko_quest_${quest.id}`);
+      CardsStorage.saveLocal();
+
       try {
-        const res = await fetch('/api/cards/claim_quest', {
+        const res = await fetch(apiUrl('/api/cards/claim_quest'), {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({ questId: quest.id, deviceId: getDeviceId() })
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.success || data.ok) {
-            appState.bokocoins = data.bokocoins;
-            appState.questsClaimedAt = data.questsClaimedAt || appState.questsClaimedAt;
-            appState.questsClaimedAt[quest.id] = Date.now();
-            if (quest.flagKey) localStorage.removeItem(quest.flagKey);
-            updateBalancesUI();
-            renderQuests();
-            updateUpgraderArenaUI();
-            showToast(`Получено +${quest.reward} Бококойнов! 💜`);
+          if (typeof data.bokocoins === 'number') {
+            appState.bokocoins = Math.max(appState.bokocoins, data.bokocoins);
             CardsStorage.saveLocal();
-            return;
           }
         }
       } catch (_) {}
 
-      appState.bokocoins += quest.reward;
-      appState.questsClaimedAt[quest.id] = Date.now();
-      if (quest.flagKey) localStorage.removeItem(quest.flagKey);
       updateBalancesUI();
       renderQuests();
       updateUpgraderArenaUI();
       showToast(`Получено +${quest.reward} Бококойнов! 💜`);
-      CardsStorage.saveLocal();
     }
 
     function switchView(viewName) {
@@ -1965,7 +2214,7 @@
         }
         document.getElementById('logoutModal').style.display = 'flex';
       } else {
-        window.location.href = '/index.html';
+        window.location.href = './index.html';
       }
     }
 

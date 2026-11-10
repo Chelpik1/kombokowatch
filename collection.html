@@ -1361,15 +1361,24 @@
       return devId;
     }
 
+    const IS_DEV_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // На komboko.fun бэкенд находится на отдельном сервере https://api.komboko.fun
+    const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
+      ? 'https://api.komboko.fun'
+      : (IS_DEV_HOST ? '' : 'https://api.komboko.fun');
+
+    function apiUrl(path) {
+      if (!path) return '';
+      const clean = path.startsWith('/') ? path : '/' + path;
+      return `${API_BASE}${clean}`;
+    }
+
     function getAuthHeaders() {
       const headers = {
-        'Content-Type': 'application/json',
-        'x-device-id': getDeviceId()
+        'Content-Type': 'application/json'
       };
       const token = safeGet('shiki_token');
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const userId = safeGet('shiki_user_id') || (appState.currentUser ? String(appState.currentUser.id) : '');
-      if (userId) headers['x-user-id'] = String(userId);
       return headers;
     }
 
@@ -1510,8 +1519,10 @@
           ];
         }
 
+        const devId = getDeviceId();
+        const userId = safeGet('shiki_user_id') || (appState.currentUser ? String(appState.currentUser.id) : '');
         try {
-          const res = await fetch('/api/cards/state', {
+          const res = await fetch(apiUrl(`/api/cards/state?deviceId=${encodeURIComponent(devId)}&userId=${encodeURIComponent(userId)}`), {
             headers: getAuthHeaders(),
             signal: AbortSignal.timeout(6000)
           });
@@ -1546,13 +1557,15 @@
           }
 
           // Двусторонняя синхронизация: отправляем локальные карточки и баланс на сервер
-          fetch('/api/cards/sync', {
+          fetch(apiUrl('/api/cards/sync'), {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
               bokocoins: appState.bokocoins,
               cards: appState.cards,
-              questsClaimedAt: appState.questsClaimedAt
+              questsClaimedAt: appState.questsClaimedAt,
+              deviceId: devId,
+              userId: userId
             })
           }).catch(() => {});
         } catch (_) {}
@@ -1660,10 +1673,14 @@
         if (appState.selectedCardUid) updateUpgraderArenaUI();
 
         // Синхронизируем починенные названия на сервере
-        fetch('/api/cards/update_titles', {
+        fetch(apiUrl('/api/cards/update_titles'), {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ titles: titlesPayload })
+          body: JSON.stringify({
+            titles: titlesPayload,
+            deviceId: getDeviceId(),
+            userId: safeGet('shiki_user_id') || ''
+          })
         }).catch(() => {});
       }
     }
@@ -1775,10 +1792,14 @@
         }
 
         if (newCards.length > 0) {
-          fetch('/api/cards/import_completed', {
+          fetch(apiUrl('/api/cards/import_completed'), {
             method: 'POST',
             headers: getAuthHeaders(),
-            body: JSON.stringify({ items: newCards, userId })
+            body: JSON.stringify({
+              items: newCards,
+              userId: userId,
+              deviceId: getDeviceId()
+            })
           }).catch(() => {});
         }
       } catch (err) {
@@ -2130,10 +2151,16 @@
       // Запрашиваем серверный авторитетный расчёт
       let serverOutcome = null;
       try {
-        const res = await fetch('/api/cards/upgrade', {
+        const res = await fetch(apiUrl('/api/cards/upgrade'), {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ uid: card.uid, card: card, bokocoins: appState.bokocoins })
+          body: JSON.stringify({
+            uid: card.uid,
+            card: card,
+            bokocoins: appState.bokocoins,
+            deviceId: getDeviceId(),
+            userId: safeGet('shiki_user_id') || ''
+          })
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
@@ -2425,10 +2452,15 @@
 
     async function claimQuestReward(questId) {
       try {
-        const res = await fetch('/api/cards/claim_quest', {
+        const res = await fetch(apiUrl('/api/cards/claim_quest'), {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ questId, bokocoins: appState.bokocoins })
+          body: JSON.stringify({
+            questId,
+            bokocoins: appState.bokocoins,
+            deviceId: getDeviceId(),
+            userId: safeGet('shiki_user_id') || ''
+          })
         });
         const data = await res.json();
         if (res.ok && data.success) {

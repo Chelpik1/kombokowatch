@@ -7382,10 +7382,12 @@
     let activeKodikToken = KODIK_TOKENS[0];
 
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
-    const PYTHON_BACKEND_URL = 'api.komboko.fun';
-    const IS_DEV_ORIGIN = true;
-    // Always use relative API calls to target the local full-stack server and prevent CORS errors
-    const API_BASE = 'api.komboko.fun';
+    const PYTHON_BACKEND_URL = 'https://api.komboko.fun';
+    const IS_LOCAL_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // На komboko.fun бэкенд находится на отдельном сервере https://api.komboko.fun
+    const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
+      ? 'https://api.komboko.fun'
+      : (IS_LOCAL_DEV ? '' : 'https://api.komboko.fun');
 
     function apiUrl(path) {
       if (!path) return '';
@@ -11444,13 +11446,11 @@
       if (dur >= 60) {
         const shikiUid = safeGet('shiki_user_id') || (state.currentUser ? String(state.currentUser.id) : '');
         const cardHeaders = {
-          'Content-Type': 'application/json',
-          'x-device-id': devId
+          'Content-Type': 'application/json'
         };
         if (token) cardHeaders['Authorization'] = `Bearer ${token}`;
-        if (shikiUid) cardHeaders['x-user-id'] = shikiUid;
 
-        fetch('/api/cards/track_watch', {
+        fetch(apiUrl('/api/cards/track_watch'), {
           method: 'POST',
           headers: cardHeaders,
           body: JSON.stringify({
@@ -11463,7 +11463,8 @@
             episode: state.currentEpisodeNum || 1,
             currentTime: Math.floor(cur),
             duration: Math.floor(dur),
-            deviceId: devId
+            deviceId: devId,
+            userId: shikiUid
           })
         }).then(r => r.json()).then(data => {
           if (data && data.success && data.newlyAwarded && data.card) {
@@ -12335,15 +12336,11 @@
 
     // === КАРТОЧНАЯ СИСТЕМА, 5-СЕКУНДНЫЙ БАННЕР И ТРЕКИНГ ЗАДАНИЙ ===
     function getCardApiHeaders() {
-      const devId = getDeviceId();
       const token = safeGet('shiki_token');
-      const shikiUid = safeGet('shiki_user_id') || (state.currentUser ? String(state.currentUser.id) : '');
       const headers = {
-        'Content-Type': 'application/json',
-        'x-device-id': devId
+        'Content-Type': 'application/json'
       };
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      if (shikiUid) headers['x-user-id'] = shikiUid;
       return headers;
     }
 
@@ -12365,7 +12362,7 @@
       banner.innerHTML = `
         <div class="quest-success-inner">
           <div class="quest-success-avatar-wrap">
-            <img src="/assets/sprite_11_8ea686eb.webp" class="quest-success-chibi" alt="Boku" />
+            <img src="${getBokuSpriteUrl(11)}" class="quest-success-chibi" alt="Boku" />
           </div>
           <div class="quest-success-content">
             <div class="quest-success-badge">✨ ${titleText}</div>
@@ -12404,10 +12401,14 @@
     async function triggerQuest(questId) {
       try {
         const headers = getCardApiHeaders();
-        const res = await fetch('/api/cards/complete_quest', {
+        const res = await fetch(apiUrl('/api/cards/complete_quest'), {
           method: 'POST',
           headers,
-          body: JSON.stringify({ questId })
+          body: JSON.stringify({
+            questId,
+            deviceId: getDeviceId(),
+            userId: safeGet('shiki_user_id') || ''
+          })
         });
         if (!res.ok) return;
         const data = await res.json();
@@ -12492,10 +12493,14 @@
         });
 
         const headers = getCardApiHeaders();
-        const res = await fetch('/api/cards/import_completed', {
+        const res = await fetch(apiUrl('/api/cards/import_completed'), {
           method: 'POST',
           headers,
-          body: JSON.stringify({ items, userId: uId })
+          body: JSON.stringify({
+            items,
+            userId: uId,
+            deviceId: getDeviceId()
+          })
         });
 
         if (res.ok) {

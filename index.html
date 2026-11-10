@@ -5528,6 +5528,118 @@
     .boku-bubble-btn:active {
       transform: scale(0.92);
     }
+
+    /* === 5-СЕКУНДНЫЙ БАННЕР ВЫПОЛНЕНИЯ ЗАДАНИЯ === */
+    .quest-success-banner {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      z-index: 100000;
+      min-width: 320px;
+      max-width: 92vw;
+      background: linear-gradient(135deg, rgba(26, 18, 44, 0.98), rgba(16, 12, 28, 0.99));
+      border: 1.5px solid rgba(168, 85, 247, 0.65);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 35px rgba(168, 85, 247, 0.4);
+      border-radius: 20px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .quest-success-banner.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .quest-success-banner.hiding {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    .quest-success-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+    }
+    .quest-success-avatar-wrap {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.1) 70%);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+    }
+    .quest-success-chibi {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(168, 85, 247, 0.45));
+      animation: bokuBounce 1.6s ease-in-out infinite;
+    }
+    .quest-success-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .quest-success-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #c084fc;
+      margin-bottom: 2px;
+    }
+    .quest-success-msg {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+    .quest-success-sub {
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .quest-success-coin-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(202, 138, 4, 0.12));
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .quest-coin-icon {
+      font-size: 16px;
+    }
+    .quest-coin-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fef08a;
+    }
+    .quest-success-progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .quest-success-progress-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #a855f7, #ec4899, #eab308);
+    }
+    @keyframes questTimerBar {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
   </style>
 </head>
 <body>
@@ -7701,6 +7813,7 @@
 
     function performLogout() {
       localStorage.removeItem('shiki_token');
+      localStorage.removeItem('shiki_user_id');
       state.currentUser = null;
       state.userRates = {};
       ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
@@ -9484,6 +9597,10 @@
           updateDetailsStatusButton();
           updateAllCardsForRate(activeRateAnimeId, data);
           closeShikiRateModal();
+          triggerQuest('add_shiki_list');
+          if (activeRateState.score > 0) {
+            triggerQuest('rate_anime');
+          }
         } else {
           alert('Не удалось сохранить изменения на Shikimori');
         }
@@ -10884,6 +11001,7 @@
         const user = await res.json();
         if (user && user.id) {
           state.currentUser = user;
+          localStorage.setItem('shiki_user_id', String(user.id));
           const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
           ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
             const el = document.getElementById(id);
@@ -10894,6 +11012,7 @@
                 e.preventDefault();
                 if (confirm('Выйти из аккаунта Shikimori?')) {
                   localStorage.removeItem('shiki_token');
+                  localStorage.removeItem('shiki_user_id');
                   location.reload();
                 }
               };
@@ -10913,7 +11032,10 @@
             }, 400);
           }
         }
-      } catch (_) { localStorage.removeItem('shiki_token'); }
+      } catch (_) {
+        localStorage.removeItem('shiki_token');
+        localStorage.removeItem('shiki_user_id');
+      }
     }
 
     // === КРОСС-ДЕВАЙС СИНХРОНИЗАЦИЯ ПРОГРЕССА С СЕРВЕРОМ ===
@@ -10963,11 +11085,13 @@
 
       // 2. Честный трекинг 60% хронометража для выдачи карточки тайтла и Бококойнов
       if (dur >= 60) {
+        const shikiUid = safeGet('shiki_user_id') || (state.currentUser ? String(state.currentUser.id) : '');
         const cardHeaders = {
           'Content-Type': 'application/json',
           'x-device-id': devId
         };
         if (token) cardHeaders['Authorization'] = `Bearer ${token}`;
+        if (shikiUid) cardHeaders['x-user-id'] = shikiUid;
 
         fetch('/api/cards/track_watch', {
           method: 'POST',
@@ -11852,6 +11976,206 @@
       }, 2500);
     }
 
+    // === КАРТОЧНАЯ СИСТЕМА, 5-СЕКУНДНЫЙ БАННЕР И ТРЕКИНГ ЗАДАНИЙ ===
+    function getCardApiHeaders() {
+      const devId = getDeviceId();
+      const token = safeGet('shiki_token');
+      const shikiUid = safeGet('shiki_user_id') || (state.currentUser ? String(state.currentUser.id) : '');
+      const headers = {
+        'Content-Type': 'application/json',
+        'x-device-id': devId
+      };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (shikiUid) headers['x-user-id'] = shikiUid;
+      return headers;
+    }
+
+    let questBannerTimeout = null;
+    function showQuestSuccessBanner(reward, questTitle) {
+      let banner = document.getElementById('questSuccessBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'questSuccessBanner';
+        banner.className = 'quest-success-banner';
+        document.body.appendChild(banner);
+      }
+      const isEn = (currentLang === 'en');
+      const titleText = isEn ? 'Quest completed!' : 'Задание выполнено!';
+      const questMsg = isEn
+        ? `Quest completed! Rewarded with ${reward} Bokocoins`
+        : `Задание выполнено! Начислено ${reward} бококойнов`;
+
+      banner.innerHTML = `
+        <div class="quest-success-inner">
+          <div class="quest-success-avatar-wrap">
+            <img src="/assets/sprite_11_8ea686eb.webp" class="quest-success-chibi" alt="Boku" />
+          </div>
+          <div class="quest-success-content">
+            <div class="quest-success-badge">✨ ${titleText}</div>
+            <div class="quest-success-msg">${questMsg}</div>
+            ${questTitle ? `<div class="quest-success-sub">«${questTitle}»</div>` : ''}
+          </div>
+          <div class="quest-success-coin-badge">
+            <span class="quest-coin-icon">🪙</span>
+            <span class="quest-coin-val">+${reward}</span>
+          </div>
+        </div>
+        <div class="quest-success-progress-track">
+          <div class="quest-success-progress-fill" style="animation: questTimerBar 5s linear forwards;"></div>
+        </div>
+      `;
+
+      banner.classList.remove('hiding');
+      banner.classList.add('visible');
+
+      if (questBannerTimeout) clearTimeout(questBannerTimeout);
+      questBannerTimeout = setTimeout(() => {
+        banner.classList.remove('visible');
+        banner.classList.add('hiding');
+        setTimeout(() => {
+          banner.classList.remove('hiding');
+          banner.style.display = 'none';
+        }, 400);
+      }, 5000);
+      banner.style.display = 'block';
+
+      if (typeof cycleChibiMascotEmotion === 'function') {
+        cycleChibiMascotEmotion(11);
+      }
+    }
+
+async function triggerQuest(questId) {
+  try {
+    // 1. Сохраняем локально, чтобы cards.html сразу увидел выполненный квест
+    localStorage.setItem(`komboko_quest_${questId}`, 'true');
+    const flags = JSON.parse(localStorage.getItem('komboko_quest_flags') || '{}');
+    flags[questId] = true;
+    localStorage.setItem('komboko_quest_flags', JSON.stringify(flags));
+
+    // 2. Отправляем на VPS через apiUrl()
+    const headers = getCardApiHeaders();
+    const res = await fetch(apiUrl('/api/cards/complete_quest'), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ questId })
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.success && data.reward > 0) {
+      showQuestSuccessBanner(data.reward, data.questTitle || data.quest?.title);
+    }
+  } catch (e) {
+    console.warn('triggerQuest error:', e);
+  }
+}
+
+
+    let isImportingCompletedCards = false;
+    async function importCompletedShikimoriCards(completedRates, token, userId) {
+      if (isImportingCompletedCards) return;
+      isImportingCompletedCards = true;
+      try {
+        const uId = String(userId || state.currentUser?.id || safeGet('shiki_user_id') || '');
+        if (!uId) return;
+
+        const sessionKey = `komboko_imported_completed_${uId}`;
+        const lastImported = sessionStorage.getItem(sessionKey);
+        if (lastImported && (Date.now() - Number(lastImported) < 60000)) {
+          return;
+        }
+
+        const items = [];
+        const missingIds = [];
+
+        completedRates.forEach(r => {
+          const aId = String(r.target_id || r.anime?.id || '');
+          if (!aId) return;
+          const reg = state.itemsRegistry[aId];
+          if (reg && (reg.titleRu || reg.russian || reg.name)) {
+            items.push({
+              animeId: aId,
+              title: reg.titleRu || reg.russian || reg.name || 'Аниме',
+              titleEn: reg.titleEn || reg.name || '',
+              poster: reg.poster || (reg.image ? reg.image.original : '') || ''
+            });
+          } else if (r.anime && (r.anime.russian || r.anime.name)) {
+            items.push({
+              animeId: aId,
+              title: r.anime.russian || r.anime.name || 'Аниме',
+              titleEn: r.anime.name || '',
+              poster: r.anime.image?.original ? `https://shikimori.io${r.anime.image.original}` : (r.anime.image?.preview ? `https://shikimori.io${r.anime.image.preview}` : '')
+            });
+          } else {
+            missingIds.push(aId);
+          }
+        });
+
+        if (missingIds.length > 0) {
+          try {
+            const batch = missingIds.slice(0, 50);
+            const gItems = await fetchGraphQLAnimes({ ids: batch.join(','), limit: 50 });
+            if (Array.isArray(gItems)) {
+              gItems.forEach(raw => {
+                const parsed = parseAnimeItem(raw);
+                if (parsed && parsed.id) {
+                  state.itemsRegistry[parsed.id] = parsed;
+                  items.push({
+                    animeId: String(parsed.id),
+                    title: parsed.titleRu || parsed.russian || parsed.name || 'Аниме',
+                    titleEn: parsed.titleEn || parsed.name || '',
+                    poster: parsed.poster || ''
+                  });
+                }
+              });
+            }
+          } catch (_) {}
+        }
+
+        missingIds.forEach(id => {
+          if (!items.some(x => x.animeId === String(id))) {
+            items.push({
+              animeId: String(id),
+              title: 'Аниме',
+              titleEn: '',
+              poster: 'https://shikimori.io/favicons/apple-touch-icon-180x180.png'
+            });
+          }
+        });
+
+        const headers = getCardApiHeaders();
+        const res = await fetch(apiUrl('/api/cards/import_completed')), {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ items, userId: uId })
+        });
+
+        if (res.ok) {
+          sessionStorage.setItem(sessionKey, String(Date.now()));
+          const data = await res.json();
+          if (data && data.success && data.importedCount > 0) {
+            try {
+              const localCache = JSON.parse(localStorage.getItem('komboko_cards_prod_v1') || '{}');
+              localCache.cards = data.cards;
+              localStorage.setItem('komboko_cards_prod_v1', JSON.stringify(localCache));
+            } catch (_) {}
+
+            const isEn = (currentLang === 'en');
+            const msg = isEn
+              ? `🎴 Boku: Automatically added ${data.importedCount} collectible cards from your "Completed" Shikimori list!`
+              : `🎴 Боку: Автоматически добавлено ${data.importedCount} карточек из твоего списка «Просмотрено» на Shikimori!`;
+            showToast(msg);
+            if (typeof cycleChibiMascotEmotion === 'function') {
+              cycleChibiMascotEmotion(11);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to import completed anime cards:', err);
+      } finally {
+        isImportingCompletedCards = false;
+      }
+    }
+
     async function fetchAllUserRates(userId, token) {
       try {
         const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
@@ -11870,6 +12194,12 @@
           });
 
           updateFavIconState();
+
+          // Автоматический импорт карточек из списка «Просмотрено»
+          const completedRates = rates.filter(r => r.status === 'completed' && r.target_id);
+          if (completedRates.length > 0) {
+            importCompletedShikimoriCards(completedRates, token, userId);
+          }
 
           if (watchingRates.length > 0) {
             watchingRates.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));

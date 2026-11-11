@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Пользовательское соглашение — Комбоко Апгрейдер</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+
+  <style>
+    :root {
+      --color-primary: #D0BCFF;
+      --color-on-primary: #381E72;
+      --color-surface: #E6E0E9;
+      --color-variant: #CAC4D0;
+      --glass-bg: rgba(22, 18, 34, 0.85);
+      --glass-border: rgba(208, 188, 255, 0.2);
+      --glass-border-glow: rgba(208, 188, 255, 0.35);
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Comfortaa', cursive, sans-serif;
+    }
+
+    body {
+      background-color: #08060f;
+      color: var(--color-surface);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 80px 20px;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(147, 51, 234, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .terms-container {
+      max-width: 820px;
+      width: 100%;
+      background: var(--glass-bg);
+      border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(208, 188, 255, 0.15);
+      backdrop-filter: blur(25px);
+    }
+
+    .terms-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .terms-title {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #D0BCFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      background: rgba(208, 188, 255, 0.12);
+      border: 1px solid var(--glass-border);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: rgba(208, 188, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .terms-section {
+      margin-bottom: 24px;
+    }
+
+    .terms-section h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .terms-section p {
+      font-size: 13.5px;
+      color: var(--color-variant);
+      margin-bottom: 8px;
+    }
+
+    .terms-section ul {
+      margin-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .terms-section li {
+      font-size: 13px;
+      color: var(--color-variant);
+      margin-bottom: 6px;
+    }
+
+    .highlight-card {
+      background: rgba(14, 11, 24, 0.6);
+      border: 1px solid var(--glass-border-glow);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="terms-container">
+    <div class="terms-header">
+      <div>
+        <h1 class="terms-title">Пользовательское соглашение</h1>
+        <div style="font-size: 12px; color: var(--color-variant); margin-top: 2px;">Комбоко Апгрейдер и Коллекция карточек</div>
+      </div>
+      <a href="/collection.html" class="back-btn">
+        <span class="material-symbols-rounded" style="font-size: 18px;">arrow_back</span>
+        <span>Вернуться в Коллекцию</span>
+      </a>
+    </div>
+
+    <div class="highlight-card">
+      <p style="font-weight: 700; color: #fff; margin-bottom: 4px;">Важное уведомление:</p>
+      <p>Используя функции раздела «Коллекция» и «Кузница рангов» (Комбоко Апгрейдер) на сайте komboko.fun, вы безоговорочно принимаете условия настоящего соглашения.</p>
+    </div>
+
+    <div class="terms-section">
+      <h2>1. Общие положения</h2>
+      <p>1.1. Комбоко Апгрейдер — это интерактивный игровой сервис для коллекционирования виртуальных карточек аниме-тайтлов и повышения их ранга.</p>
+      <p>1.2. Сервис носит исключительно развлекательный характер и предназначен для личного некоммерческого использования пользователями онлайн-кинотеатра KombokoWatch.</p>
+    </div>
+
+    <div class="terms-section">
+      <h2>2. Виртуальная валюта (Бококойны)</h2>
+      <p>2.1. «Бококойны» (БК) являются исключительно виртуальными игровыми очками сервиса KombokoWatch.</p>
+      <p>2.2. Бококойны не имеют реальной денежной стоимости, не подлежат обмену на реальную валюту, выводу или передаче третьим лицам за реальные денежные средства.</p>
+      <p>2.3. Пользователи получают Бококойны бесплатно за активность: просмотр аниме (от 60% времени), ежедневный вход в коллекцию и выполнение игровых квестов.</p>
+    </div>
+
+    <div class="terms-section">
+      <h2>3. Механика апгрейда и шансы</h2>
+      <p>3.1. Апгрейд карточек основан на честном сервером алгоритме псевдослучайных чисел со следующими базовыми вероятностями:</p>
+      <ul>
+        <li><strong>Обычная ➔ Редкая:</strong> стоимость 50 БК, шанс 60% (без отката при неудаче).</li>
+        <li><strong>Редкая ➔ Эпическая:</strong> стоимость 150 БК, шанс 25% (защита отката со 2-м колесом).</li>
+        <li><strong>Эпическая ➔ Легендарная:</strong> стоимость 300 БК, шанс 12% (защита отката со 2-м колесом).</li>
+      </ul>
+      <p>3.2. Система честного накопления удачи (Pity streak): при каждой неудачной попытке без отката ранг не падает, а шанс следующей попытки возрастает на +5%.</p>
+      <p>3.3. Результаты каждого апгрейда рассчитываются и сохраняются на сервере KombokoWatch для исключения подкрутки и читерства.</p>
+    </div>
+
+    <div class="terms-section">
+      <h2>4. Интеллектуальная собственность</h2>
+      <p>4.1. Персонаж и маскот «Боку», фирменные скины («Оригинал», «Готка», «Андроид») и оформление являются собственностью KombokoWatch.</p>
+      <p>4.2. Изображения постеров аниме и описания тайтлов загружаются через открытые API (включая Shikimori) исключительно в ознакомительных целях.</p>
+    </div>
+
+    <div class="terms-section">
+      <h2>5. Контакты и обратная связь</h2>
+      <p>Официальный Telegram-канал: <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" style="color:var(--color-primary);">@KOMBOKO_SQUAD</a></p>
+      <p>Связь с администрацией: <a href="mailto:chebik2010@mail.ru" style="color:var(--color-primary);">chebik2010@mail.ru</a> или в Telegram: <a href="https://t.me/sol1tre" target="_blank" style="color:var(--color-primary);">@sol1tre</a></p>
+    </div>
+
+    <div class="footer-note">
+      © 2026 KombokoWatch. Все права защищены.
+    </div>
+  </div>
+</body>
+</html>

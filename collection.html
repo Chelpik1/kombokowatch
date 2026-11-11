@@ -19,6 +19,11 @@
 
   <style>
     :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+
       --glass-bg: rgba(18, 15, 28, 0.75);
       --glass-surface: rgba(32, 26, 48, 0.55);
       --glass-surface-high: rgba(50, 40, 75, 0.65);
@@ -73,6 +78,7 @@
       color: var(--color-surface);
       width: 100%;
       min-height: 100dvh;
+      min-height: -webkit-fill-available;
       display: flex;
       overflow-x: hidden;
       position: relative;
@@ -115,13 +121,6 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner {
-      width: 34px; height: 34px;
-      border: 3px solid rgba(255, 255, 255, 0.12);
-      border-top-color: var(--color-primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
 
     /* === НАВИГАЦИЯ === */
     .nav-rail {
@@ -241,15 +240,16 @@
       display: none;
     }
 
+    /* === ГЛАВНЫЙ ВЬЮПОРТ — НА ВЕСЬ ЭКРАН НА ПК БЕЗ ПУСТОТЫ === */
     .main-viewport {
       margin-left: 92px;
       flex: 1;
       min-height: 100dvh;
-      padding: 24px 36px 60px 36px;
+      padding: max(24px, calc(var(--safe-top) + 16px)) max(36px, calc(var(--safe-right) + 20px)) 60px max(36px, calc(var(--safe-left) + 20px));
       display: flex;
       flex-direction: column;
-      max-width: 1400px;
       width: calc(100% - 92px);
+      max-width: none; /* Занимает весь экран */
     }
 
     .app-header-brand {
@@ -257,7 +257,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 24px;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .brand-group { display: flex; flex-direction: column; gap: 0; }
@@ -271,7 +271,9 @@
       letter-spacing: -0.5px;
       text-decoration: none;
       cursor: pointer;
+      transition: opacity 0.2s;
     }
+    .brand-title-text:hover { opacity: 0.85; }
     .brand-subtitle {
       font-size: 10px;
       font-weight: 500;
@@ -365,7 +367,6 @@
       border-color: var(--glass-border-glow);
     }
 
-    /* Статусы кнопок забора награды */
     .md-btn-claim-active {
       background: linear-gradient(135deg, #D0BCFF 0%, #9A75F0 100%) !important;
       color: #1e0b4b !important;
@@ -427,8 +428,9 @@
 
     .cards-collection-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
     }
 
     .collectible-card {
@@ -526,7 +528,7 @@
       transform: translateY(-1px);
     }
 
-    /* === КУЗНИЦА АПГРЕЙДА (UPGRADER ARENA) === */
+    /* === КУЗНИЦА АПГРЕЙДА (UPGRADER ARENA) — ШИРОКИЙ ЭКРАН НА ПК === */
     .upgrader-arena {
       background: var(--glass-surface);
       backdrop-filter: blur(28px);
@@ -536,12 +538,13 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
       padding: 28px 24px;
       display: grid;
-      grid-template-columns: 260px 1fr 260px;
-      gap: 24px;
+      grid-template-columns: minmax(260px, 340px) 1fr minmax(260px, 340px);
+      gap: 28px;
       align-items: center;
       margin-bottom: 24px;
       position: relative;
       overflow: hidden;
+      width: 100%;
     }
 
     .upgrader-slot {
@@ -557,6 +560,7 @@
       background: rgba(14, 11, 24, 0.45);
       position: relative;
       transition: all 0.3s;
+      width: 100%;
     }
     .slot-header-label { font-size: 12px; font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
     .slot-sub-label { font-size: 11.5px; color: var(--color-variant); max-width: 180px; line-height: 1.35; }
@@ -567,8 +571,49 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 14px;
       position: relative;
+    }
+
+    /* Плашка «Колесо апгрейда» вынесена НАД колесом */
+    .wheel-stage-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .wheel-stage-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      background: rgba(208, 188, 255, 0.16);
+      border: 1px solid rgba(208, 188, 255, 0.3);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 0 14px rgba(208, 188, 255, 0.2);
+    }
+    .wheel-terms-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(208, 188, 255, 0.15);
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .wheel-terms-btn:hover {
+      background: var(--color-primary);
+      color: #1e0b4b;
+      transform: scale(1.15);
+      box-shadow: 0 0 12px var(--color-primary);
     }
 
     .wheel-svg-container {
@@ -613,6 +658,7 @@
       filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 18px var(--color-primary));
     }
 
+    /* Текст внутри колеса смещен вверх для идеального центрирования */
     .wheel-center-info {
       position: absolute;
       display: flex;
@@ -622,22 +668,11 @@
       text-align: center;
       pointer-events: none;
       padding: 0 12px;
+      transform: translateY(-8px);
     }
-    .wheel-stage-badge {
-      font-size: 10.5px;
-      font-weight: 800;
-      color: var(--color-primary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: rgba(208, 188, 255, 0.14);
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      margin-bottom: 2px;
-    }
-    .wheel-chevrons { font-size: 16px; color: var(--color-primary); line-height: 10px; margin-bottom: 4px; }
-    .wheel-chance-pct { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.5px; }
-    .wheel-cost-tag { font-size: 12px; font-weight: 700; color: var(--color-variant); margin-top: 4px; }
-    .wheel-risk-hint { font-size: 10px; color: rgba(255,255,255,0.45); max-width: 140px; margin-top: 2px; line-height: 1.25; }
+    .wheel-chance-pct { font-size: 34px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.5px; }
+    .wheel-cost-tag { font-size: 12.5px; font-weight: 700; color: var(--color-variant); margin-top: 5px; }
+    .wheel-risk-hint { font-size: 10px; color: rgba(255,255,255,0.48); max-width: 140px; margin-top: 3px; line-height: 1.25; }
 
     .btn-roll-upgrade {
       background: linear-gradient(135deg, #D0BCFF 0%, #9A75F0 100%);
@@ -665,6 +700,7 @@
       border-radius: var(--radius-lg);
       border: 1.5px solid var(--glass-border);
       padding: 20px 22px;
+      width: 100%;
     }
     .tray-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .tray-title { font-size: 15px; font-weight: 700; color: #fff; }
@@ -726,7 +762,7 @@
       filter: drop-shadow(0 4px 14px rgba(208, 188, 255, 0.45));
     }
     .quests-banner-title { font-size: 18px; font-weight: 800; color: #fff; }
-    .quests-banner-desc { font-size: 12.5px; color: var(--color-variant); max-width: 520px; line-height: 1.4; margin-top: 4px; }
+    .quests-banner-desc { font-size: 12.5px; color: var(--color-variant); max-width: 540px; line-height: 1.4; margin-top: 4px; }
 
     .quests-grid {
       display: grid;
@@ -871,16 +907,8 @@
       color: #fff;
       line-height: 1.3;
     }
-    .card-info-sub {
-      font-size: 12px;
-      color: var(--color-variant);
-    }
-    .card-info-pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
+    .card-info-sub { font-size: 12px; color: var(--color-variant); }
+    .card-info-pills-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .card-info-pill {
       padding: 3px 8px;
       border-radius: var(--radius-full);
@@ -904,72 +932,82 @@
       user-select: text;
     }
 
-    /* Модалка смены скина Боку */
+    /* === МОДАЛКА СКИНОВ С ШИРОКИМ ПОЛЕМ ОПИСАНИЯ === */
     .skins-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .skin-card {
       background: rgba(14, 11, 24, 0.55);
       border: 2px solid var(--glass-border);
       border-radius: var(--radius-md);
-      padding: 14px 10px;
+      padding: 12px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
     }
-    .skin-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--color-primary);
-    }
+    .skin-card:hover { transform: translateY(-3px); border-color: var(--color-primary); }
     .skin-card.active {
       border-color: var(--color-primary);
-      background: rgba(208, 188, 255, 0.12);
+      background: rgba(208, 188, 255, 0.14);
       box-shadow: 0 0 20px rgba(208, 188, 255, 0.35);
     }
     .skin-preview-img {
-      width: 64px;
-      height: 64px;
+      width: 58px;
+      height: 58px;
       object-fit: contain;
       filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
     }
     .skin-name { font-size: 13px; font-weight: 700; color: #fff; }
-    .skin-desc { font-size: 10px; color: var(--color-variant); line-height: 1.25; }
-
-    /* 5-секундный всплывающий баннер выполнения задания */
-    .quest-success-banner {
-      position: fixed;
-      top: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      z-index: 9999;
-      background: rgba(30, 20, 50, 0.95);
+    .skin-select-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
       border: 1.5px solid var(--color-primary);
-      border-radius: var(--radius-full);
-      padding: 12px 24px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75), 0 0 30px rgba(208, 188, 255, 0.5);
-      backdrop-filter: blur(25px);
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #fff;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      justify-content: center;
+      margin-top: 2px;
     }
-    .quest-success-banner.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
+    .skin-card.active .skin-select-dot::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 6px var(--color-primary);
+    }
+
+    /* Широкое поле описания скина между выбором и кнопкой */
+    .skin-selected-desc-box {
+      background: rgba(14, 11, 24, 0.7);
+      border: 1.5px solid var(--glass-border-glow);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 72px;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    .skin-desc-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .skin-desc-text {
+      font-size: 12px;
+      color: var(--color-surface);
+      line-height: 1.45;
     }
 
     /* === ОНБОРДИНГ: СВЕТОВОЙ ПРОЖЕКТОР, ЗАТЕМНЕНИЕ И БЛЮР === */
@@ -1040,9 +1078,7 @@
       pointer-events: auto;
       transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1), left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .onboarding-guide-tooltip.tooltip-shake {
-      animation: guideShake 0.4s ease-in-out;
-    }
+    .onboarding-guide-tooltip.tooltip-shake { animation: guideShake 0.4s ease-in-out; }
     @keyframes guideShake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
@@ -1076,11 +1112,7 @@
       padding-top: 8px;
       margin-top: 2px;
     }
-    .onboarding-step-indicator {
-      font-size: 11px;
-      color: var(--color-primary);
-      font-weight: 700;
-    }
+    .onboarding-step-indicator { font-size: 11px; color: var(--color-primary); font-weight: 700; }
     .onboarding-skip-btn {
       background: none;
       border: none;
@@ -1091,9 +1123,45 @@
       border-radius: 6px;
       transition: all 0.2s;
     }
-    .onboarding-skip-btn:hover {
+    .onboarding-skip-btn:hover { color: #fff; background: rgba(208, 188, 255, 0.12); }
+
+    /* === ПЛАВАЮЩИЙ МИНИ-ЧИБИК БОКУ В КОЛЛЕКЦИИ === */
+    .chibi-floating-guide {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 990;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .chibi-floating-guide:hover { transform: scale(1.08) translateY(-4px); }
+    .chibi-floating-guide:active { transform: scale(0.94); }
+    .chibi-floating-img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(208, 188, 255, 0.5));
+      animation: bokuBounce 3.2s ease-in-out infinite;
+    }
+    .chibi-floating-bubble {
+      background: rgba(26, 18, 44, 0.95);
+      border: 1.5px solid var(--color-primary);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(16px);
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
+      font-weight: 700;
       color: #fff;
-      background: rgba(208, 188, 255, 0.12);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .komboko-toast {
@@ -1105,6 +1173,7 @@
     }
     .komboko-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* === МОБИЛЬНАЯ АДАПТАЦИЯ (IPHONE / SMARTPHONES) === */
     @media (max-width: 940px) {
       .upgrader-arena { grid-template-columns: 1fr; gap: 18px; padding: 18px 14px; }
       .upgrader-slot { min-height: 270px; }
@@ -1113,19 +1182,26 @@
     @media (max-width: 768px) {
       .nav-rail {
         width: 100%;
-        height: var(--bottom-nav-height);
+        height: calc(var(--bottom-nav-height) + var(--safe-bottom));
+        padding-bottom: var(--safe-bottom);
         top: auto;
         bottom: 0;
         border-right: none;
         border-top: 1px solid var(--glass-border);
         flex-direction: row;
         justify-content: space-around;
-        padding: 0 10px;
+        padding-left: 10px;
+        padding-right: 10px;
         z-index: 1000;
       }
       .nav-destinations { flex-direction: row; justify-content: space-around; width: 100%; }
       .header-profile-btn, .tg-header-btn { display: none; }
-      .main-viewport { margin-left: 0; width: 100%; padding: 18px 16px calc(var(--bottom-nav-height) + 24px) 16px; }
+
+      .main-viewport {
+        margin-left: 0;
+        width: 100%;
+        padding: calc(var(--safe-top) + 20px) 16px calc(var(--bottom-nav-height) + var(--safe-bottom) + 24px) 16px;
+      }
       .app-header-brand { margin-bottom: 18px; }
       .brand-title-text { font-size: 21px; }
       .cards-collection-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -1136,6 +1212,11 @@
       .card-info-title { font-size: 15px; }
       .card-info-desc-box { min-height: 170px; max-height: 38dvh; font-size: 13px; padding: 12px 14px; }
       .onboarding-guide-tooltip { max-width: 290px; }
+      .chibi-floating-guide {
+        bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px);
+        right: 14px;
+      }
+      .chibi-floating-bubble { display: none; } /* скрываем длинный бабл на узких экранах, оставляем чибика */
     }
   </style>
 </head>
@@ -1193,17 +1274,17 @@
       </a>
     </div>
 
-    <a href="https://t.me/komboko_media" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko" style="margin-top: auto;">
+    <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko" style="margin-top: auto;">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.24-3.55 3.93-1.63 4.74-1.92 5.27-1.93.12 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.19-.04.28z"/></svg>
     </a>
   </nav>
 
-  <!-- Главный контейнер -->
+  <!-- Главный контейнер (на весь экран на ПК) -->
   <main class="main-viewport">
     <header class="app-header-brand">
       <div class="brand-group">
         <div class="brand-row">
-          <a href="/" class="brand-title-text">KombokoWatch</a>
+          <a class="brand-title-text" onclick="openSocialModal()" title="Наши соцсети и соглашение">KombokoWatch</a>
         </div>
         <div class="brand-subtitle">коллекция карточек и апгрейдер</div>
       </div>
@@ -1245,7 +1326,7 @@
       <div id="emptyCollectionPlaceholder" style="display: none; text-align: center; padding: 60px 20px; color: var(--color-variant);">
         <img id="emptyChibiImg" src="/assets/sprite_02.webp" style="width: 84px; height: 84px; object-fit: contain; margin-bottom: 12px;" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" alt="Боку" />
         <h3 style="font-size: 18px; color: #fff; margin-bottom: 6px;">У вас пока нет карточек в этом разделе</h3>
-        <p style="font-size: 13px; max-width: 420px; margin: 0 auto 18px auto; line-height: 1.5;">
+        <p style="font-size: 13px; max-width: 440px; margin: 0 auto 18px auto; line-height: 1.5;">
           Смотрите аниме от 60% времени в плеере или заберите приветственный бонус в разделе «Задания», чтобы получить стартовую карточку Боку!
         </p>
         <div style="display: inline-flex; gap: 10px;">
@@ -1275,6 +1356,12 @@
         </div>
 
         <div class="wheel-column">
+          <!-- Плашка вынесена НАД крутилкой с кнопкой (?) -->
+          <div class="wheel-stage-header">
+            <div class="wheel-stage-badge" id="wheelStageBadge">Колесо апгрейда</div>
+            <button class="wheel-terms-btn" onclick="openSocialModal()" title="Пользовательское соглашение и правила Комбоко Апгрейдера">?</button>
+          </div>
+
           <div class="wheel-svg-container" id="wheelContainer">
             <svg class="wheel-svg" viewBox="0 0 220 220">
               <circle class="wheel-track" cx="110" cy="110" r="100"></circle>
@@ -1287,13 +1374,11 @@
               <div class="wheel-pointer-arrow"></div>
             </div>
 
-            <!-- Информация внутри колеса -->
+            <!-- Чистая информация по центру круга (без стрелочек и вынесенной плашки) -->
             <div class="wheel-center-info">
-              <div class="wheel-stage-badge" id="wheelStageBadge">Колесо апгрейда</div>
-              <div class="wheel-chevrons" id="wheelChevrons">︿<br>︿</div>
               <div class="wheel-chance-pct" id="wheelChanceText">0%</div>
               <div class="wheel-cost-tag" id="wheelCostText">Выберите карточку</div>
-              <div class="wheel-risk-hint" id="wheelRiskText">Перетащите карточку в левое окно</div>
+              <div class="wheel-risk-hint" id="wheelRiskText">Выберите карточку в карусели</div>
             </div>
           </div>
 
@@ -1363,6 +1448,12 @@
     </section>
   </main>
 
+  <!-- ПЛАВАЮЩИЙ МИНИ-ЧИБИК БОКУ — ПОМОЩНИК В КОЛЛЕКЦИИ -->
+  <div id="chibiFloatingGuide" class="chibi-floating-guide" onclick="openBokuCollectionAssistantModal()" title="Боку — подсказки по коллекции и апгрейду">
+    <div class="chibi-floating-bubble">💡 Подсказки Боку</div>
+    <img id="chibiFloatingImg" src="/assets/sprite_01.webp" class="chibi-floating-img" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+  </div>
+
   <!-- ПОЛНОЭКРАННЫЙ ЗАТЕМНЯЮЩИЙ И БЛЮРЯЩИЙ ОВЕРЛЕЙ ОНБОРДИНГА -->
   <div id="onboardingBackdrop" class="onboarding-backdrop" style="display: none;" onclick="OnboardingGuide.handleBackdropClick(event)">
     <svg class="onboarding-spotlight-svg" width="100%" height="100%">
@@ -1389,6 +1480,36 @@
     <div class="onboarding-actions-row">
       <span class="onboarding-step-indicator" id="onboardingStepIndicator">Шаг 1 из 4</span>
       <button class="onboarding-skip-btn" onclick="OnboardingGuide.finish()">Пропустить обучение</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ШАГА 0 ОНБОРДИНГА: СОГЛАШЕНИЕ С КОМБОКО АПГРЕЙДЕРОМ -->
+  <div id="onboardingTermsModal" class="modal-overlay" style="display: none; z-index: 99998;">
+    <div class="modal-content animate-fade" style="max-width: 460px; text-align: center; align-items: center;">
+      <img id="termsChibiImg" src="/assets/sprite_01.webp" style="width: 76px; height: 76px; object-fit: contain;" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+      <h3 style="font-size: 19px; font-weight: 800; color: #fff;">Добро пожаловать в Комбоко Апгрейдер! 💜</h3>
+      <p style="font-size: 13px; color: var(--color-surface); line-height: 1.5; margin-top: -4px;">
+        Привет! Прежде чем приступить к прокачке карточек и забрать приветственный бонус новичка, подтверди согласие с правилами сервиса.
+      </p>
+
+      <div style="background: rgba(14, 11, 24, 0.7); border: 1.5px solid var(--glass-border-glow); border-radius: var(--radius-md); padding: 14px 16px; width: 100%; text-align: left;">
+        <div style="font-size: 12.5px; color: var(--color-variant); line-height: 1.45; margin-bottom: 8px;">
+          Используя Комбоко Апгрейдер вы соглашаетесь с данным соглашением:
+        </div>
+        <a href="https://komboko.fun/collection_terms" target="_blank" style="color: var(--color-primary); font-size: 13px; font-weight: 700; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+          <span>Пользовательское соглашение Komboko</span>
+          <span class="material-symbols-rounded" style="font-size: 15px;">open_in_new</span>
+        </a>
+      </div>
+
+      <div style="display: flex; gap: 10px; width: 100%; margin-top: 6px;">
+        <button class="md-btn md-btn-tonal" style="flex: 1;" onclick="OnboardingGuide.finish()">
+          Пропустить
+        </button>
+        <button class="md-btn md-btn-filled" style="flex: 1.6;" onclick="OnboardingGuide.acceptTermsAndProceed()">
+          Принять и начать ✨
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1425,7 +1546,7 @@
     </div>
   </div>
 
-  <!-- Модальное окно смены скина Боку -->
+  <!-- Модальное окно смены скина Боку с широким полем описания -->
   <div id="bokuSkinModal" class="modal-overlay" onclick="if(event.target.id==='bokuSkinModal') closeBokuSkinModal()">
     <div class="modal-content animate-fade" style="max-width: 480px;">
       <button class="modal-close" onclick="closeBokuSkinModal()">
@@ -1440,9 +1561,86 @@
 
       <div class="skins-grid" id="bokuSkinsGrid"></div>
 
-      <button class="md-btn md-btn-filled" style="width: 100%; margin-top: 6px;" onclick="closeBokuSkinModal()">
+      <!-- Широкое поле описания скина между выбором и кнопкой -->
+      <div class="skin-selected-desc-box" id="skinSelectedDescriptionBox">
+        <div class="skin-desc-header">
+          <span class="material-symbols-rounded" style="font-size:18px; color:var(--color-primary);">palette</span>
+          <span id="skinActiveNameDisplay">Скин «Оригинал»</span>
+        </div>
+        <div class="skin-desc-text" id="skinActiveDescDisplay">
+          Классическая фиолетовая Боку в худи! Жизнерадостный чибик, который всегда подскажет годный тайтл.
+        </div>
+      </div>
+
+      <button class="md-btn md-btn-filled" style="width: 100%; margin-top: 4px;" onclick="closeBokuSkinModal()">
         Готово
       </button>
+    </div>
+  </div>
+
+  <!-- Модальное окно мини-чибика Боку: подсказки и советы по коллекции -->
+  <div id="bokuAssistantModal" class="modal-overlay" onclick="if(event.target.id==='bokuAssistantModal') closeBokuAssistantModal()">
+    <div class="modal-content animate-fade" style="max-width: 440px; text-align: center; align-items: center;">
+      <button class="modal-close" onclick="closeBokuAssistantModal()">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <img id="assistantChibiImg" src="/assets/sprite_01.webp" style="width: 80px; height: 80px; object-fit: contain; cursor: pointer; filter: drop-shadow(0 4px 14px rgba(208, 188, 255, 0.4));" onclick="cycleBokuAdvice()" title="Нажми для новой подсказки!" alt="Боку" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
+      <h3 style="font-size: 18px; font-weight: 800; color: #fff;" id="assistantTitleDisplay">Боку подсказывает 💜</h3>
+      <div id="assistantAdviceBox" style="background: rgba(14, 11, 24, 0.65); border: 1.5px solid var(--glass-border-glow); border-radius: var(--radius-md); padding: 14px 16px; font-size: 13px; color: var(--color-surface); line-height: 1.5; text-align: left; width: 100%;">
+      </div>
+
+      <div style="display: flex; gap: 10px; width: 100%; margin-top: 4px;">
+        <button class="md-btn md-btn-tonal" style="flex: 1;" onclick="cycleBokuAdvice()">
+          <span class="material-symbols-rounded" style="font-size: 18px;">casino</span>
+          <span>Другой совет</span>
+        </button>
+        <button class="md-btn md-btn-filled" style="flex: 1.2;" onclick="closeBokuAssistantModal()">
+          Понятно, спасибо!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно соцсетей и соглашения (при клике на KombokoWatch) -->
+  <div id="infoModal" class="modal-overlay" onclick="if(event.target.id==='infoModal') closeSocialModal()">
+    <div class="modal-content animate-fade">
+      <button class="modal-close" onclick="closeSocialModal()">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="material-symbols-rounded" style="color: var(--color-primary); font-size: 26px;">info</span>
+        <h3 style="font-size: 19px; font-weight: 700; color: #fff;">Информация и соглашение</h3>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 4px;">
+        <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="md-btn md-btn-filled" style="width: 100%; justify-content: flex-start; padding: 0 20px;">
+          <span class="material-symbols-rounded" style="font-size: 20px;">send</span>
+          <span>Telegram канал Komboko</span>
+        </a>
+
+        <div style="background: rgba(14, 11, 24, 0.55); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;">
+          <h4 style="font-size: 13px; font-weight: 700; color: #fff;">Связаться с нами:</h4>
+          <a href="mailto:chebik2010@mail.ru" style="color: var(--color-primary); font-size: 13px; text-decoration: none;">chebik2010@mail.ru</a>
+          <a href="https://t.me/sol1tre" target="_blank" class="md-btn md-btn-tonal" style="height: 38px; width: 100%; justify-content: flex-start; font-size: 12px; padding: 0 14px;">
+            <span class="material-symbols-rounded" style="font-size: 18px;">chat</span>
+            <span>Личный Telegram (@sol1tre)</span>
+          </a>
+        </div>
+
+        <div style="text-align: center; padding: 14px; background: rgba(14, 11, 24, 0.65); border: 1.5px solid var(--glass-border-glow); border-radius: var(--radius-md);">
+          <p style="font-size: 12.5px; color: var(--color-variant); margin-bottom: 8px; line-height: 1.45;">
+            Используя Комбоко Апгрейдер вы соглашаетесь с данным соглашением:
+          </p>
+          <a href="https://komboko.fun/collection_terms" target="_blank" style="color: var(--color-primary); font-weight: 700; text-decoration: underline; font-size: 13px; display: inline-flex; align-items: center; gap: 4px;">
+            <span>Пользовательское соглашение Komboko</span>
+            <span class="material-symbols-rounded" style="font-size: 15px;">open_in_new</span>
+          </a>
+        </div>
+
+        <div style="text-align: center; font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px;">
+          Komboko 2026
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1522,9 +1720,24 @@
     // СИСТЕМА СКИНОВ БОКУ
     // =========================================================================
     const BOKU_SKINS = {
-      default: { id: 'default', name: 'Оригинал', desc: 'Классическая фиолетовая Боку в худи', path: '/assets/skins/default' },
-      skin_1: { id: 'skin_1', name: 'Готка', desc: 'Мрачная и стильная готическая Боку', path: '/assets/skins/skin_1' },
-      skin_2: { id: 'skin_2', name: 'Андроид', desc: 'Киберпанковая высокотехнологичная Боку', path: '/assets/skins/skin_2' }
+      default: {
+        id: 'default',
+        name: 'Оригинал',
+        desc: 'Классическая фиолетовая Боку в худи! Жизнерадостный чибик, который всегда подскажет годный тайтл, поддержит при апгрейде и щедро насыплет Бококойнов.',
+        path: '/assets/skins/default'
+      },
+      skin_1: {
+        id: 'skin_1',
+        name: 'Готка',
+        desc: 'Мрачная и стильная готическая Боку! Не любит лишних слов, но обожает психологические триллеры, темные истории и рискованные апгрейды.',
+        path: '/assets/skins/skin_1'
+      },
+      skin_2: {
+        id: 'skin_2',
+        name: 'Андроид',
+        desc: 'Высокотехнологичная киберпанковая Боку из будущего! Оснащена нейроинтерфейсом для идеального расчета шансов в Кузнице рангов.',
+        path: '/assets/skins/skin_2'
+      }
     };
 
     function getBokuSkin() {
@@ -1551,12 +1764,17 @@
       const bannerChibi = document.getElementById('chibiBannerImg');
       if (bannerChibi) bannerChibi.src = getBokuSpriteUrl(1);
 
+      const floatingChibi = document.getElementById('chibiFloatingImg');
+      if (floatingChibi) floatingChibi.src = getBokuSpriteUrl(1);
+
+      const termsChibi = document.getElementById('termsChibiImg');
+      if (termsChibi) termsChibi.src = getBokuSpriteUrl(1);
+
       const onbChibi = document.getElementById('onboardingChibiImg');
       if (onbChibi && OnboardingGuide.activeSprite) {
         onbChibi.src = getBokuSpriteUrl(OnboardingGuide.activeSprite);
       }
 
-      // Обновляем постер маскота Боку в коллекции
       appState.cards.forEach(c => {
         if (c.animeId === 'boku_mascot' || c.uid === 'card_boku_mascot') {
           c.poster = getBokuSpriteUrl(5);
@@ -1576,12 +1794,23 @@
             <div class="skin-card ${isActive ? 'active' : ''}" onclick="selectBokuSkin('${s.id}')">
               <img src="${preview}" class="skin-preview-img" alt="${s.name}" onerror="this.src=window.BOKU_FALLBACK_SVG;" />
               <div class="skin-name">${s.name}</div>
-              <div class="skin-desc">${s.desc}</div>
+              <div class="skin-select-dot"></div>
             </div>
           `;
         }).join('');
       }
+
+      // Обновляем широкое поле описания
+      updateSkinDescriptionBox(curSkin);
       document.getElementById('bokuSkinModal').style.display = 'flex';
+    }
+
+    function updateSkinDescriptionBox(skinId) {
+      const meta = BOKU_SKINS[skinId] || BOKU_SKINS.default;
+      const nameEl = document.getElementById('skinActiveNameDisplay');
+      const descEl = document.getElementById('skinActiveDescDisplay');
+      if (nameEl) nameEl.textContent = `Скин «${meta.name}»`;
+      if (descEl) descEl.textContent = meta.desc;
     }
 
     function closeBokuSkinModal() {
@@ -1594,12 +1823,85 @@
       applyCurrentSkinToDOM();
       renderCollection();
       renderUpgraderTray();
-      openBokuSkinModal(); // re-render selection in modal
+
+      document.querySelectorAll('.skin-card').forEach(el => el.classList.remove('active'));
+      const activeEl = document.querySelector(`.skin-card[onclick*="'${skinId}'"]`);
+      if (activeEl) activeEl.classList.add('active');
+
+      updateSkinDescriptionBox(skinId);
       showToast(`Скин «${BOKU_SKINS[skinId].name}» активирован! ✨`);
     }
 
     // =========================================================================
-    // ОБНОВЛЕННАЯ ЭКОНОМИКА (60% / 25% / 12% | Цены: 50 / 150 / 300)
+    // ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ И СОЦСЕТИ
+    // =========================================================================
+    function openSocialModal() {
+      document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeSocialModal() {
+      document.getElementById('infoModal').style.display = 'none';
+    }
+
+    // =========================================================================
+    // МИНИ-ЧИБИК БОКУ В КОЛЛЕКЦИИ (ИНТЕРАКТИВНЫЙ ПОМОЩНИК)
+    // =========================================================================
+    const BOKU_ADVICES = [
+      {
+        title: 'Как получать карточки?',
+        text: 'Смотри от 60% любого аниме в плеере KombokoWatch — карточка тайтла сразу появится в твоей коллекции, плюс ты получишь 230 Бококойнов!',
+        sprite: 3
+      },
+      {
+        title: 'Шансы в Кузнице рангов',
+        text: 'Обычная ➔ Редкая: 60%. Редкая ➔ Эпическая: 25%. Эпическая ➔ Легендарная: 12%. Чем выше ранг, тем ярче сияние!',
+        sprite: 7
+      },
+      {
+        title: 'Защита от отката и удача',
+        text: 'У Редких и Эпических карточек есть колесо отката. Если стрелка миновала красную зону, ранг спасен, а карточка получает +5% к шансу на следующую попытку!',
+        sprite: 4
+      },
+      {
+        title: 'Как фармить Бококойны?',
+        text: 'Заходи на страницу карточек каждый день и забирай 150 БК за вход. Также выполняй 3 ежедневных задания!',
+        sprite: 8
+      },
+      {
+        title: 'Смена скина Боку',
+        text: 'Нажми на кнопку скина сверху, чтобы переодеть меня в образ мрачной Готки или высокотехнологичного Андроида!',
+        sprite: 1
+      }
+    ];
+    let currentAdviceIdx = 0;
+
+    function openBokuCollectionAssistantModal() {
+      currentAdviceIdx = Math.floor(Math.random() * BOKU_ADVICES.length);
+      renderBokuAssistantUI();
+      document.getElementById('bokuAssistantModal').style.display = 'flex';
+    }
+
+    function closeBokuAssistantModal() {
+      document.getElementById('bokuAssistantModal').style.display = 'none';
+    }
+
+    function cycleBokuAdvice() {
+      currentAdviceIdx = (currentAdviceIdx + 1) % BOKU_ADVICES.length;
+      renderBokuAssistantUI();
+    }
+
+    function renderBokuAssistantUI() {
+      const adv = BOKU_ADVICES[currentAdviceIdx];
+      const titleEl = document.getElementById('assistantTitleDisplay');
+      const boxEl = document.getElementById('assistantAdviceBox');
+      const imgEl = document.getElementById('assistantChibiImg');
+      if (titleEl) titleEl.textContent = adv.title;
+      if (boxEl) boxEl.innerHTML = `<span style="color:var(--color-primary); font-weight:700;">«</span>${adv.text}<span style="color:var(--color-primary); font-weight:700;">»</span>`;
+      if (imgEl) imgEl.src = getBokuSpriteUrl(adv.sprite);
+    }
+
+    // =========================================================================
+    // ЭКОНОМИКА (60% / 25% / 12% | Цены: 50 / 150 / 300)
     // =========================================================================
     const DOWNGRADE_CHANCES_SEQUENCE = [0.20, 0.40, 0.80, 1.00];
     const RARITY_ORDER = { legendary: 4, epic: 3, rare: 2, common: 1 };
@@ -1666,7 +1968,6 @@
       return devId;
     }
 
-    // Автоматический выбор backend API: на komboko.fun запросы строго идут на api.komboko.fun
     const IS_DEV_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
       ? 'https://api.komboko.fun'
@@ -1731,7 +2032,7 @@
     }
 
     // =========================================================================
-    // ОНБОРДИНГ: СВЕТОВОЙ ПРОЖЕКТОР, БЛЮР-ЗАТЕМНЕНИЕ И НАДЕЖНЫЕ ШАГИ
+    // ОНБОРДИНГ: СВЕТОВОЙ ПРОЖЕКТОР, СОГЛАШЕНИЕ И НАДЕЖНЫЕ ШАГИ
     // =========================================================================
     const OnboardingGuide = {
       step: 0,
@@ -1742,16 +2043,32 @@
         return localStorage.getItem('komboko_onboarding_completed') === 'true';
       },
 
+      hasAcceptedTerms() {
+        return localStorage.getItem('komboko_terms_accepted') === 'true';
+      },
+
       finish() {
         localStorage.setItem('komboko_onboarding_completed', 'true');
+        localStorage.setItem('komboko_terms_accepted', 'true');
         const tooltip = document.getElementById('onboardingGuideTooltip');
         const backdrop = document.getElementById('onboardingBackdrop');
         const frame = document.getElementById('spotlightFrame');
+        const termsModal = document.getElementById('onboardingTermsModal');
         if (tooltip) tooltip.style.display = 'none';
         if (backdrop) backdrop.style.display = 'none';
         if (frame) frame.classList.remove('active');
+        if (termsModal) termsModal.style.display = 'none';
         this.clearTargetHighlight();
         showToast('Обучение завершено! Добро пожаловать в KombokoWatch ✨');
+      },
+
+      acceptTermsAndProceed() {
+        localStorage.setItem('komboko_terms_accepted', 'true');
+        const termsModal = document.getElementById('onboardingTermsModal');
+        if (termsModal) termsModal.style.display = 'none';
+
+        // Переходим к шагу 1: забрать приветственный бонус
+        this.setStep(1);
       },
 
       clearTargetHighlight() {
@@ -1763,14 +2080,13 @@
       },
 
       handleBackdropClick(e) {
-        // Запрещаем кликать мимо подсвеченной кнопки!
         e.stopPropagation();
         e.preventDefault();
         const tooltip = document.getElementById('onboardingGuideTooltip');
         const frame = document.getElementById('spotlightFrame');
         if (tooltip) {
           tooltip.classList.remove('tooltip-shake');
-          void tooltip.offsetWidth; // trigger reflow
+          void tooltip.offsetWidth;
           tooltip.classList.add('tooltip-shake');
         }
         if (frame) {
@@ -1850,10 +2166,13 @@
       init() {
         if (this.hasCompleted()) return;
 
-        const isWelcomeClaimed = Boolean(appState.questsClaimedAt['welcome_bonus']);
-        const hasCards = appState.cards.length > 0;
+        // ШАГ 0: Если соглашение еще не принято — показываем модалку соглашения
+        if (!this.hasAcceptedTerms()) {
+          this.setStep(0);
+          return;
+        }
 
-        // ЗАЩИТА ОТ СБРОСА: если бонус уже забран, никогда не заставляем жать на него снова!
+        const isWelcomeClaimed = Boolean(appState.questsClaimedAt['welcome_bonus']);
         if (isWelcomeClaimed) {
           if (window.location.hash === '#upgrade' || appState.selectedCardUid) {
             this.setStep(4);
@@ -1861,7 +2180,7 @@
             this.setStep(2);
           }
         } else {
-          this.setStep(0);
+          this.setStep(1);
         }
       },
 
@@ -1875,27 +2194,28 @@
         if (this.hasCompleted()) return;
 
         if (this.step === 0) {
-          // ШАГ 1: Забрать приветственный бонус
+          // ШАГ 0: ПРИНЯТИЕ ПОЛЬЗОВАТЕЛЬСКОГО СОГЛАШЕНИЯ
+          const termsModal = document.getElementById('onboardingTermsModal');
+          if (termsModal) {
+            const termsChibi = document.getElementById('termsChibiImg');
+            if (termsChibi) termsChibi.src = getBokuSpriteUrl(1);
+            termsModal.style.display = 'flex';
+          }
+          return;
+        }
+
+        if (this.step === 1) {
+          // ШАГ 1: Забрать приветственный бонус (1000 БК + карточка)
           const isWelcomeClaimed = Boolean(appState.questsClaimedAt['welcome_bonus']);
           if (isWelcomeClaimed) {
             this.setStep(2);
             return;
           }
 
-          const currentView = document.getElementById('view-quests').style.display !== 'none' ? 'quests' : 'other';
-          if (currentView !== 'quests') {
-            const target = document.getElementById('nav-quests');
-            if (target) {
-              this.updateSpotlight(target);
-              this.positionTooltip(target, 'bottom');
-              this.setSpeech(
-                'Привет! Я Боку 💜',
-                'Добро пожаловать в KombokoWatch! Загляни в раздел «Задания» и забери приветственный бонус новичка!',
-                1,
-                1
-              );
-            }
-          } else {
+          // Автоматически переключаем во вкладку заданий для идеального UX
+          switchView('quests');
+
+          setTimeout(() => {
             const claimBtn = document.querySelector('.quest-card.ready-to-claim .md-btn-claim-active') ||
                              document.querySelector('.md-btn-claim-active') ||
                              document.querySelector('.quest-card');
@@ -1909,25 +2229,11 @@
                 1
               );
             }
-          }
-        } else if (this.step === 1) {
-          // ШАГ 2: Бонус получен, идем в коллекцию
-          const navCol = document.getElementById('nav-collection');
-          if (navCol) {
-            this.updateSpotlight(navCol);
-            this.positionTooltip(navCol, 'bottom');
-            this.setSpeech(
-              'Ура! +1000 БК и карточка! 💜',
-              'Подарок получен! Теперь давай посмотрим на твою новую карточку в разделе «Коллекция»!',
-              3,
-              2
-            );
-          }
+          }, 250);
         } else if (this.step === 2) {
-          // ШАГ 3: В коллекции, изучаем карточку
-          if (document.getElementById('view-collection').style.display === 'none') {
-            switchView('collection');
-          }
+          // ШАГ 2: В коллекции, нажимаем на карточку Боку
+          switchView('collection');
+
           setTimeout(() => {
             const bokuCard = document.querySelector('.collectible-card[data-anime-id="boku_mascot"]') ||
                              document.querySelector('.collectible-card');
@@ -1938,20 +2244,15 @@
                 'Твоя карточка здесь! ✨',
                 'Вот и я! Нажми на карточку, чтобы открыть описание и узнать мои секреты.',
                 2,
-                3
+                2
               );
             } else {
-              // Если карточек нет по какой-то причине
-              const navQ = document.getElementById('nav-quests');
-              if (navQ) {
-                this.updateSpotlight(navQ);
-                this.positionTooltip(navQ, 'bottom');
-                this.setSpeech('Сначала заберем бонус', 'Перейди в «Задания» и забери стартовый дроп!', 1, 1);
-              }
+              // Если карточка еще не добавлена
+              this.setStep(1);
             }
-          }, 200);
+          }, 250);
         } else if (this.step === 3) {
-          // ШАГ 4: В модалке карточки, нажимаем "В апгрейдер"
+          // ШАГ 3: В модалке описания карточки нажимаем «В апгрейдер»
           const btnUp = document.getElementById('modalBtnUpgrade');
           if (btnUp && document.getElementById('cardDetailsModal').style.display === 'flex') {
             this.updateSpotlight(btnUp);
@@ -1966,10 +2267,17 @@
             this.setStep(4);
           }
         } else if (this.step === 4) {
-          // ШАГ 5: В апгрейдере, нажимаем "Прокачать"
-          if (document.getElementById('view-upgrade').style.display === 'none') {
-            switchView('upgrade');
+          // ШАГ 4: В апгрейдере нажимаем «Прокачать»
+          switchView('upgrade');
+
+          // Автоматически подставляем карточку Боку в левый слот если не выбрана
+          if (!appState.selectedCardUid && appState.cards.length > 0) {
+            const bokuCard = appState.cards.find(c => c.animeId === 'boku_mascot' || c.uid === 'card_boku_mascot') || appState.cards[0];
+            appState.selectedCardUid = bokuCard.uid;
+            renderUpgraderTray();
+            updateUpgraderArenaUI();
           }
+
           setTimeout(() => {
             const btnRun = document.getElementById('btnRunUpgrade');
             if (btnRun) {
@@ -1982,7 +2290,7 @@
                 4
               );
             }
-          }, 200);
+          }, 250);
         }
       }
     };
@@ -2019,8 +2327,7 @@
           });
           if (res.ok) {
             const data = await res.json();
-            // БАЛАНС СЕРВЕРА ЯВЛЯЕТСЯ СТРОГО АВТОРИТЕТНЫМ!
-            // Если администратор или скрипт изменили баланс на сервере, строго принимаем его:
+            // БАЛАНС СЕРВЕРА ЯВЛЯЕТСЯ СТРОГО АВТОРИТЕТНЫМ
             if (typeof data.bokocoins === 'number') {
               appState.bokocoins = data.bokocoins;
             }
@@ -2047,7 +2354,7 @@
             this.saveLocal();
           }
 
-          // Фоновая синхронизация карточек (НЕ перетирая серверные коины)
+          // Фоновая синхронизация карточек (НЕ перетирая серверный баланс)
           fetch(apiUrl('/api/cards/sync'), {
             method: 'POST',
             headers: getAuthHeaders(),
@@ -2228,7 +2535,7 @@
     }
 
     // =========================================================================
-    // 3. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК И МОДАЛОК
+    // 3. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
     // =========================================================================
     function switchView(viewName) {
       ['collection', 'upgrade', 'quests'].forEach(name => {
@@ -2242,17 +2549,6 @@
       if (viewName === 'upgrade') {
         renderUpgraderTray();
         updateUpgraderArenaUI();
-      }
-
-      // Продвижение онбординга при кликах на вкладки
-      if (!OnboardingGuide.hasCompleted()) {
-        if (viewName === 'quests' && OnboardingGuide.step === 0) {
-          setTimeout(() => OnboardingGuide.render(), 180);
-        } else if (viewName === 'collection' && OnboardingGuide.step === 1) {
-          OnboardingGuide.setStep(2);
-        } else if (viewName === 'upgrade' && (OnboardingGuide.step === 2 || OnboardingGuide.step === 3)) {
-          OnboardingGuide.setStep(4);
-        }
       }
     }
 
@@ -2291,7 +2587,7 @@
       const btnUpgrade = document.getElementById('modalBtnUpgrade');
       const btnWatch = document.getElementById('modalBtnWatch');
 
-      thumbEl.src = card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png';
+      thumbEl.src = (card.isMascot || card.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
       titleEl.textContent = card.title;
       origTitleEl.textContent = card.titleEn || '';
 
@@ -2308,6 +2604,9 @@
       btnUpgrade.onclick = () => {
         closeCardDetailsModal();
         selectCardAndGoToUpgrader(card.uid);
+        if (OnboardingGuide.step === 3) {
+          OnboardingGuide.setStep(4);
+        }
       };
 
       if (card.isMascot || card.animeId === 'boku_mascot') {
@@ -2494,7 +2793,6 @@
       const wheelContainer = document.getElementById('wheelContainer');
       const arc = document.getElementById('wheelChanceArc');
       const stageBadge = document.getElementById('wheelStageBadge');
-      const chevrons = document.getElementById('wheelChevrons');
       const chanceText = document.getElementById('wheelChanceText');
       const costText = document.getElementById('wheelCostText');
       const riskText = document.getElementById('wheelRiskText');
@@ -2509,8 +2807,7 @@
         rightSlotContainer.style.display = 'none';
 
         wheelContainer.classList.remove('downgrade-mode');
-        stageBadge.textContent = 'Колесо апгрейда';
-        chevrons.innerHTML = '︿<br>︿';
+        if (stageBadge) stageBadge.textContent = 'Колесо апгрейда';
         arc.style.strokeDasharray = `0 ${circumference}`;
         chanceText.textContent = '0%';
         costText.textContent = 'Выберите карточку';
@@ -2545,8 +2842,7 @@
       rightSlotContainer.innerHTML = renderSlotCardHTML({ ...card, rarity: meta.next }, nextMeta.nameRu);
 
       wheelContainer.classList.remove('downgrade-mode');
-      stageBadge.textContent = 'Колесо апгрейда';
-      chevrons.innerHTML = '︿<br>︿';
+      if (stageBadge) stageBadge.textContent = 'Колесо апгрейда';
 
       const streakBonus = Number(card.streakBonus || 0);
       const totalChance = Math.min(0.95, meta.chance + streakBonus);
@@ -2611,7 +2907,7 @@
           headers: getAuthHeaders(),
           body: JSON.stringify({
             uid: card.uid,
-            card: card, // Передаем полный объект карточки чтобы сервер гарантированно нашел / восстановил
+            card: card,
             deviceId: getDeviceId(),
             userId: safeGet('shiki_user_id') || ''
           })
@@ -2633,7 +2929,6 @@
 
       const { isWin, didDowngrade, targetDegree1, targetDegree2, downgradeChancePct, oldRarity, newRarity, bokocoins, cards } = serverOutcome;
 
-      // Приоритетно обновляем коины с сервера
       appState.bokocoins = bokocoins;
       updateBalancesUI();
 
@@ -2642,7 +2937,6 @@
       const pointerRing = document.getElementById('wheelPointerRing');
       const arc = document.getElementById('wheelChanceArc');
       const stageBadge = document.getElementById('wheelStageBadge');
-      const chevrons = document.getElementById('wheelChevrons');
       const chanceText = document.getElementById('wheelChanceText');
       const costText = document.getElementById('wheelCostText');
       const riskText = document.getElementById('wheelRiskText');
@@ -2697,8 +2991,7 @@
       // ЭТАП 2: КОЛЕСО ОТКАТА
       showToast(`Апгрейд сорвался! Запускаем защитное колесо (${downgradeChancePct}%)...`);
       wheelContainer.classList.add('downgrade-mode');
-      stageBadge.textContent = '⚠️ Колесо отката';
-      chevrons.innerHTML = '﹀<br>﹀';
+      if (stageBadge) stageBadge.textContent = '⚠️ Колесо отката';
 
       const dangerFraction = downgradeChancePct / 100;
       const dangerArcLen = (dangerFraction * circumference).toFixed(2);
@@ -2800,7 +3093,6 @@
           </button>
         `;
       } else if (st.canClaim && (q.id === 'welcome_bonus' || q.id === 'daily_login')) {
-        // КНОПКА ГОТОВА К ЗАБОРУ
         btnHtml = `
           <button class="md-btn md-btn-claim-active" style="height: 36px; padding: 0 16px; font-size: 12px;" onclick="claimQuestReward('${q.id}')">
             <span class="material-symbols-rounded" style="font-size: 16px;">redeem</span>
@@ -2897,7 +3189,6 @@
           appState.bokocoins = data.bokocoins;
           appState.questsClaimedAt[questId] = Date.now();
 
-          // Добавление карточки Боку при приветственном бонусе
           if (data.card) {
             const exIdx = appState.cards.findIndex(c => c.uid === data.card.uid || c.animeId === data.card.animeId);
             if (exIdx >= 0) appState.cards[exIdx] = data.card;
@@ -2925,7 +3216,7 @@
           showQuestSuccessBanner(data.reward, data.questTitle);
 
           if (!OnboardingGuide.hasCompleted() && questId === 'welcome_bonus') {
-            OnboardingGuide.setStep(1);
+            OnboardingGuide.setStep(2);
           }
         } else {
           showToast(data.message || 'Не удалось забрать награду');
@@ -3006,20 +3297,23 @@
       if (window.location.hash === '#quests') switchView('quests');
       else if (window.location.hash === '#upgrade') switchView('upgrade');
 
-      // Старт гайда для новых пользователей с надежным определением шага
       if (!OnboardingGuide.hasCompleted()) {
         setTimeout(() => OnboardingGuide.init(), 600);
       }
     });
 
-    window.addEventListener('resize', () => {
+    // Реакция на изменение размера экрана и скролл для точного прожектора
+    function handleSpotlightResizeOrScroll() {
       if (!OnboardingGuide.hasCompleted() && document.getElementById('onboardingBackdrop').style.display === 'block') {
         if (OnboardingGuide.activeTarget) {
           OnboardingGuide.updateSpotlight(OnboardingGuide.activeTarget);
           OnboardingGuide.positionTooltip(OnboardingGuide.activeTarget, 'bottom');
         }
       }
-    });
+    }
+
+    window.addEventListener('resize', handleSpotlightResizeOrScroll);
+    window.addEventListener('scroll', handleSpotlightResizeOrScroll, { passive: true });
   </script>
 </body>
 </html>

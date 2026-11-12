@@ -670,6 +670,54 @@
       position: relative;
       z-index: 50;
     }
+    .player-section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+    .player-top-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+    .player-title-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      padding: 0 2px;
+    }
+    .player-title-row #watchTitle {
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.2px;
+      line-height: 1.35;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 0;
+    }
+    .player-header-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    @media (max-width: 640px) {
+      .player-title-row #watchTitle {
+        font-size: 16.5px !important;
+      }
+      .player-header-btn-text {
+        display: none !important;
+      }
+    }
     .section-title {
       font-size: 22px;
       font-weight: 600;
@@ -5744,6 +5792,572 @@
       from { width: 100%; }
       to { width: 0%; }
     }
+
+    /* ===== BOKU GROQ AI ASSISTANT STYLES ===== */
+    .boku-modal-wrapper {
+      max-width: 520px !important;
+      width: 95% !important;
+      height: min(680px, 88vh) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      border-radius: 24px !important;
+      border: 1px solid var(--glass-border-glow) !important;
+      background: linear-gradient(180deg, rgba(26, 20, 38, 0.98) 0%, rgba(14, 11, 22, 0.98) 100%) !important;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 32px rgba(154, 117, 240, 0.25) !important;
+    }
+    .boku-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    .boku-header-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      min-width: 0;
+      flex: 1;
+    }
+    .boku-header-avatar-wrap {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+    .boku-header-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(208, 188, 255, 0.4));
+    }
+    .boku-online-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 9px;
+      height: 9px;
+      background: #4ade80;
+      border: 2px solid #1a1426;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #4ade80;
+    }
+    .boku-header-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.2;
+    }
+    .boku-ai-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #9a75f0 0%, #ec4899 100%);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(154, 117, 240, 0.4);
+    }
+    .boku-header-sub {
+      font-size: 11px;
+      color: var(--color-variant);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .boku-header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .boku-modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      color: var(--color-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .boku-modal-close-btn:hover {
+      background: rgba(208, 188, 255, 0.2);
+      color: var(--color-primary);
+      border-color: var(--glass-border-glow);
+    }
+    .boku-tab-pills {
+      display: flex;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 4px;
+      border-radius: 12px;
+      margin: 8px 16px 4px 16px;
+      gap: 4px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .boku-tab-pill {
+      flex: 1;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--color-variant);
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .boku-tab-pill.active {
+      background: rgba(208, 188, 255, 0.18);
+      color: #fff;
+      border: 1px solid rgba(208, 188, 255, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    .boku-active-context-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: rgba(154, 117, 240, 0.12);
+      border: 1px solid rgba(208, 188, 255, 0.2);
+      border-radius: 10px;
+      padding: 6px 12px;
+      margin: 4px 16px 6px 16px;
+      font-size: 11.5px;
+      color: #D0BCFF;
+      flex-shrink: 0;
+    }
+    .boku-quick-chips-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 16px 8px 16px;
+      flex-shrink: 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .boku-quick-chips-row::-webkit-scrollbar {
+      display: none;
+    }
+    .boku-chip-btn {
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      color: #e2d9f3;
+      padding: 5px 11px;
+      border-radius: 14px;
+      font-size: 11.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .boku-chip-btn:hover {
+      background: rgba(208, 188, 255, 0.16);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    .boku-chip-btn.highlight {
+      background: linear-gradient(135deg, rgba(154, 117, 240, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+      border-color: rgba(208, 188, 255, 0.45);
+      color: #fff;
+      font-weight: 600;
+    }
+    .boku-ai-chat-history {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 10px 16px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+    .boku-ai-chat-history::-webkit-scrollbar {
+      width: 6px;
+    }
+    .boku-ai-chat-history::-webkit-scrollbar-thumb {
+      background: rgba(208, 188, 255, 0.2);
+      border-radius: 4px;
+    }
+    .boku-msg-bubble {
+      max-width: 88%;
+      padding: 9px 13px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-break: break-word;
+      animation: fadeIn 0.2s ease;
+    }
+    .boku-msg-bubble.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(154, 117, 240, 0.4) 0%, rgba(120, 80, 210, 0.35) 100%);
+      border: 1px solid rgba(208, 188, 255, 0.35);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .boku-msg-bubble.bot {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: #eee;
+      border-bottom-left-radius: 4px;
+      position: relative;
+    }
+    .boku-msg-sender {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .boku-title-highlight {
+      display: inline;
+      color: #D0BCFF;
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: rgba(208, 188, 255, 0.4);
+      cursor: pointer;
+    }
+    .boku-title-highlight:hover {
+      color: #fff;
+      text-decoration-color: #D0BCFF;
+    }
+    .boku-rec-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .boku-rec-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(20, 16, 28, 0.7);
+      border: 1px solid rgba(208, 188, 255, 0.22);
+      border-radius: 12px;
+      padding: 7px 10px;
+      transition: all 0.2s ease;
+    }
+    .boku-rec-card:hover {
+      background: rgba(208, 188, 255, 0.12);
+      border-color: rgba(208, 188, 255, 0.45);
+    }
+    .boku-rec-poster {
+      width: 38px;
+      height: 52px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .boku-rec-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .boku-rec-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .boku-rec-sub {
+      font-size: 11px;
+      color: var(--color-variant);
+      margin-top: 2px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .boku-rec-play-btn {
+      background: linear-gradient(135deg, #9a75f0 0%, #7c3aed 100%);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(154, 117, 240, 0.3);
+      flex-shrink: 0;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .boku-rec-play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 14px rgba(154, 117, 240, 0.5);
+    }
+    .boku-ai-input-form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px 14px 16px;
+      background: rgba(10, 8, 16, 0.6);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+    .boku-ai-input {
+      flex: 1;
+      min-width: 0;
+      height: 42px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .boku-ai-input:focus {
+      border-color: var(--color-primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 12px rgba(208, 188, 255, 0.2);
+    }
+    .boku-ai-send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #9a75f0 0%, #7c3aed 100%);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(154, 117, 240, 0.35);
+      transition: transform 0.15s ease;
+    }
+    .boku-ai-send-btn:hover {
+      transform: scale(1.05);
+    }
+    .boku-ai-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .boku-ai-attach-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(208, 188, 255, 0.12);
+      border: 1px solid rgba(208, 188, 255, 0.25);
+      color: #D0BCFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .boku-ai-attach-btn:hover {
+      background: rgba(208, 188, 255, 0.22);
+      border-color: rgba(208, 188, 255, 0.45);
+      transform: scale(1.05);
+    }
+    .boku-ai-attach-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .boku-attached-image-bar {
+      padding: 6px 12px;
+      background: rgba(26, 22, 38, 0.95);
+      border-top: 1px solid rgba(208, 188, 255, 0.15);
+    }
+    .boku-attached-preview-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(154, 117, 240, 0.15);
+      border: 1px solid rgba(208, 188, 255, 0.3);
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+    .boku-attached-thumb {
+      width: 38px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(208, 188, 255, 0.4);
+      flex-shrink: 0;
+    }
+    .boku-attached-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .boku-attached-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .boku-attached-hint {
+      font-size: 11px;
+      color: var(--color-variant);
+    }
+    .boku-attached-remove-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fca5a5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s ease;
+    }
+    .boku-attached-remove-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fff;
+    }
+    .boku-msg-bubble .boku-user-attached-img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      display: block;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .boku-scene-moment-card {
+      margin-top: 10px;
+      background: rgba(18, 14, 28, 0.9);
+      border: 1px solid rgba(74, 222, 128, 0.4);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+    .boku-scene-moment-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: #fff;
+    }
+    .boku-scene-similarity {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .boku-scene-preview-wrap {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      max-height: 150px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .boku-scene-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .boku-scene-preview-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px 8px;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+      font-size: 11px;
+      color: #eee;
+    }
+    .boku-ai-quota-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #D0BCFF;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(154, 117, 240, 0.12);
+      border: 1px solid rgba(208, 188, 255, 0.2);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Стрип в деталях плеера */
+    .boku-ai-player-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(154, 117, 240, 0.12) 0%, rgba(20, 16, 32, 0.7) 100%);
+      border: 1px solid rgba(208, 188, 255, 0.25);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      flex-wrap: wrap;
+    }
+    .boku-ai-player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .boku-strip-avatar {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(208, 188, 255, 0.4));
+      cursor: pointer;
+    }
+    .boku-strip-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -6507,66 +7121,184 @@
     </div>
   </div>
 
-  <!-- Модальное окно путеводителя Боку -->
+  <!-- Модальное окно путеводителя и ИИ-помощницы Боку -->
   <div id="chibiGuideModal" class="modal-overlay" style="display: none;" onclick="if(event.target.id==='chibiGuideModal') closeChibiGuideModal()">
-    <div class="modal-content animate-fade" style="max-width: 440px; text-align: center; position: relative;">
-      <button class="promo-close-btn" onclick="closeChibiGuideModal()"><span class="material-symbols-rounded" style="font-size: 20px;">close</span></button>
-      <img id="guideModalChibiImg" src="/assets/sprite_10_bcbb0cee.webp" class="chibi-modal-avatar" alt="Боку" onclick="cycleChibiMascotEmotion()" style="cursor: pointer;" title="Нажми на меня!" />
-      <h3 style="font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px;" data-i18n="bokuGuideTitle">Боку — твоя путеводительница</h3>
-      <p id="guideSpeechBubble" style="font-size: 13px; color: var(--color-primary); background: rgba(208, 188, 255, 0.1); border: 1px solid var(--glass-border-glow); padding: 8px 14px; border-radius: var(--radius-md); margin: 8px 0 16px; font-weight: 600; line-height: 1.45;">
-        «Привет! Я Боку, твоя путеводительница по сайту Komboko! 💜»
-      </p>
-
-      <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 16px;">
-        <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(5)" style="cursor: pointer;">
-          <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">swap_horiz</span>
-          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong data-i18n="bokuFeat1Strong">4 источника видео:</strong> <span data-i18n="bokuFeat1Desc">Komboko, АниЛибрия, Kodik и MegaPlay переключаются прямо над плеером.</span>
+    <div class="modal-content animate-fade boku-modal-wrapper" style="position: relative;">
+      
+      <!-- Шапка модального окна -->
+      <div class="boku-modal-header">
+        <div class="boku-header-profile" onclick="cycleChibiMascotEmotion()" title="Нажми, чтобы сменить эмоцию Боку!">
+          <div class="boku-header-avatar-wrap">
+            <img id="guideModalChibiImg" src="/assets/sprite_10_bcbb0cee.webp" class="boku-header-avatar" alt="Боку" />
+            <span class="boku-online-dot" title="Боку онлайн ✨"></span>
+          </div>
+          <div style="min-width: 0; overflow: hidden;">
+            <div class="boku-header-title">
+              <span>Боку AI</span>
+            </div>
+            <div class="boku-header-sub">
+              <span class="material-symbols-rounded" style="font-size: 13px; color: #4ade80; flex-shrink: 0;">bolt</span>
+              <span>Твоя аниме-помощница</span>
+            </div>
           </div>
         </div>
-        <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(11)" style="cursor: pointer;">
-          <span class="material-symbols-rounded" style="color: #c084fc; font-size: 22px;">groups</span>
-          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong data-i18n="bokuFeat2Strong">Совместный просмотр:</strong> <span data-i18n="bokuFeat2Desc">Жми кнопку «Комната» в плеере и смотри аниме синхронно с друзьями!</span>
-          </div>
+        <div class="boku-header-right">
+          <div id="bokuAiQuotaBadge" class="boku-ai-quota-badge" title="Дневной лимит сообщений">10 из 10</div>
+          <button type="button" class="boku-modal-close-btn" onclick="closeChibiGuideModal()" title="Закрыть">
+            <span class="material-symbols-rounded" style="font-size: 19px;">close</span>
+          </button>
         </div>
-        <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(9)" style="cursor: pointer;">
-          <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">stars</span>
-          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong data-i18n="bokuFeat3Strong">Синхронизация Shikimori:</strong> <span data-i18n="bokuFeat3Desc">Авторизуйся, чтобы вести списки «Смотрю/В планах» и ставить оценки.</span>
-          </div>
-        </div>
-        <a href="/collection" class="welcome-feature-box" style="cursor: pointer; text-decoration: none;">
-          <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 22px;">style</span>
-          <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-            <strong data-i18n="bokuFeatureCardsTitle">Коллекция карточек:</strong> <span data-i18n="bokuFeatureCardsDesc">Смотри от 60% тайтла, получай карточки и прокачивай их в апгрейдере!</span>
-          </div>
-        </a>
       </div>
 
-      <!-- Блок предложения авторизации для незарегистрированных пользователей -->
-      <div id="bokuAuthSuggestionBox" style="display: none; background: rgba(208, 188, 255, 0.08); border: 1px dashed var(--color-primary); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px; text-align: center;">
-        <p id="bokuAuthSuggestionText" style="font-size: 12.5px; color: #fff; line-height: 1.45; margin-bottom: 10px;" data-i18n="bokuAuthNotice">
-          Чтобы я могла подбирать аниме точно под твой вкус по спискам Shikimori, авторизуйся на сайте! А пока держи шедевр с высоким рейтингом:
+      <!-- Переключатель вкладок (Чат / Возможности) -->
+      <div class="boku-tab-pills">
+        <button type="button" id="bokuTabBtnChat" class="boku-tab-pill active" onclick="switchBokuModalTab('chat')">
+          <span class="material-symbols-rounded" style="font-size: 16px;">chat</span>
+          <span>Чат с Боку</span>
+        </button>
+        <button type="button" id="bokuTabBtnFeatures" class="boku-tab-pill" onclick="switchBokuModalTab('features')">
+          <span class="material-symbols-rounded" style="font-size: 16px;">casino</span>
+          <span>Рулетка & Фичи</span>
+        </button>
+      </div>
+
+      <!-- Вкладка 1: ИИ-Чат Боку -->
+      <div id="bokuTabChat" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;">
+        
+        <!-- Контекстная плашка открытого аниме (если мы на странице плеера) -->
+        <div id="bokuAnimeContextBar" class="boku-active-context-bar" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 0; flex: 1;">
+            <span class="material-symbols-rounded" style="font-size: 15px; color: #D0BCFF; flex-shrink: 0;">movie</span>
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px;">
+              Открыто: <strong id="bokuContextAnimeTitle" style="color: #fff;">—</strong>
+            </span>
+          </div>
+          <button type="button" class="boku-chip-btn highlight" style="padding: 3px 9px; font-size: 11px; margin: 0; flex-shrink: 0;" onclick="requestQuickPlotSummary()">
+            <span class="material-symbols-rounded" style="font-size: 13px;">auto_awesome</span>
+            <span>Пересказ сюжета</span>
+          </button>
+        </div>
+
+        <!-- Быстрые подсказки-чипсы -->
+        <div class="boku-quick-chips-row" id="bokuQuickChips">
+          <button type="button" class="boku-chip-btn highlight" id="bokuChipPlotRecap" style="display: none;" onclick="requestQuickPlotSummary()">
+            <span class="material-symbols-rounded" style="font-size: 14px;">auto_awesome</span>
+            <span>Краткий пересказ сюжета</span>
+          </button>
+          <button type="button" class="boku-chip-btn" onclick="triggerBokuAiPrompt('Посоветуй мне аниме под мой личный вкус на основе моих списков Shikimori!')">
+            <span>🎲 Подбери под мой вкус</span>
+          </button>
+          <button type="button" class="boku-chip-btn" onclick="triggerBokuAiPrompt('Найди аниме по описанию: ')">
+            <span>🔍 Найти по описанию</span>
+          </button>
+          <button type="button" class="boku-chip-btn" onclick="triggerBokuAiPrompt('Посоветуй захватывающее аниме на один вечер!')">
+            <span>🍿 Что глянуть на вечер?</span>
+          </button>
+          <button type="button" class="boku-chip-btn" id="bokuChipSimilar" style="display: none;" onclick="triggerBokuAiPrompt('Посоветуй аниме, максимально похожие на текущий открытый тайтл!')">
+            <span>💖 Похожие тайтлы</span>
+          </button>
+          <button type="button" class="boku-chip-btn" onclick="document.getElementById('bokuAiFileInput').click()">
+            <span>📷 Найти по фото</span>
+          </button>
+        </div>
+
+        <!-- История диалога -->
+        <div id="bokuAiChatHistory" class="boku-ai-chat-history">
+          <!-- Стартовое сообщение от Боку -->
+          <div class="boku-msg-bubble bot">
+            <div class="boku-msg-sender">
+              <span style="font-size: 14px; color: var(--color-primary);">✨</span>
+              <span>Боку AI</span>
+            </div>
+            Привет! Я Боку — твоя аниме-помощница 💜 Могу найти тайтл по смутному описанию, подобрать аниме под твои списки на Shikimori, распознать персонажа по картинке или сделать краткий пересказ сюжета без спойлеров. Спроси меня о чём угодно!
+          </div>
+        </div>
+
+        <!-- Панель прикрепленного фото -->
+        <div id="bokuAttachedImageBar" class="boku-attached-image-bar" style="display: none;">
+          <div class="boku-attached-preview-wrap">
+            <img id="bokuAttachedThumb" class="boku-attached-thumb" src="" alt="Прикрепленное фото" />
+            <div class="boku-attached-info">
+              <span class="boku-attached-label">Фото прикреплено 📷</span>
+              <span class="boku-attached-hint">Боку определит персонажа и тайтл</span>
+            </div>
+            <button type="button" class="boku-attached-remove-btn" onclick="clearBokuAttachedImage()" title="Удалить фото">
+              <span class="material-symbols-rounded" style="font-size: 18px;">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Поле ввода сообщения -->
+        <form id="bokuAiChatForm" class="boku-ai-input-form" onsubmit="sendBokuAiMessage(event)">
+          <input type="file" id="bokuAiFileInput" accept="image/*" style="display: none;" onchange="handleBokuImageSelected(event)" />
+          <button type="button" id="bokuAiAttachBtn" class="boku-ai-attach-btn" onclick="document.getElementById('bokuAiFileInput').click()" title="Прикрепить фото или скриншот персонажа">
+            <span class="material-symbols-rounded" style="font-size: 20px;">add_photo_alternate</span>
+          </button>
+          <input type="text" id="bokuAiInput" class="boku-ai-input" placeholder="Спроси о сюжете, опиши аниме или прикрепи фото..." maxlength="600" autocomplete="off" />
+          <button type="submit" id="bokuAiSendBtn" class="boku-ai-send-btn" title="Отправить">
+            <span class="material-symbols-rounded" style="font-size: 19px;">send</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Вкладка 2: Фичи и Рулетка -->
+      <div id="bokuTabFeatures" style="display: none; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; padding: 16px; text-align: center;">
+        <p id="guideSpeechBubble" style="font-size: 13px; color: var(--color-primary); background: rgba(208, 188, 255, 0.1); border: 1px solid var(--glass-border-glow); padding: 8px 14px; border-radius: var(--radius-md); margin: 0 0 14px; font-weight: 600; line-height: 1.45;">
+          «Привет! Я Боку, твоя путеводительница по сайту Komboko! 💜»
         </p>
-        <div style="display: flex; gap: 8px;">
-          <button class="md-btn md-btn-filled" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="redirectToShikimoriLogin()">
-            <span class="material-symbols-rounded" style="font-size: 15px;">login</span> <span data-i18n="bokuAuthLogin">Войти</span>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 14px;">
+          <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(5)" style="cursor: pointer;">
+            <span class="material-symbols-rounded" style="color: #4ade80; font-size: 22px;">swap_horiz</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="bokuFeat1Strong">4 источника видео:</strong> <span data-i18n="bokuFeat1Desc">Komboko, АниЛибрия, Kodik и MegaPlay переключаются прямо над плеером.</span>
+            </div>
+          </div>
+          <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(11)" style="cursor: pointer;">
+            <span class="material-symbols-rounded" style="color: #c084fc; font-size: 22px;">groups</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="bokuFeat2Strong">Совместный просмотр:</strong> <span data-i18n="bokuFeat2Desc">Жми кнопку «Комната» в плеере и смотри аниме синхронно с друзьями!</span>
+            </div>
+          </div>
+          <div class="welcome-feature-box" onclick="cycleChibiMascotEmotion(9)" style="cursor: pointer;">
+            <span class="material-symbols-rounded" style="color: #60a5fa; font-size: 22px;">stars</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="bokuFeat3Strong">Синхронизация Shikimori:</strong> <span data-i18n="bokuFeat3Desc">Авторизуйся, чтобы вести списки «Смотрю/В планах» и ставить оценки.</span>
+            </div>
+          </div>
+          <a href="/collection" class="welcome-feature-box" style="cursor: pointer; text-decoration: none;">
+            <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 22px;">style</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="bokuFeatureCardsTitle">Коллекция карточек:</strong> <span data-i18n="bokuFeatureCardsDesc">Смотри от 60% тайтла, получай карточки и прокачивай их в апгрейдере!</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Блок предложения авторизации для незарегистрированных пользователей -->
+        <div id="bokuAuthSuggestionBox" style="display: none; background: rgba(208, 188, 255, 0.08); border: 1px dashed var(--color-primary); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px; text-align: center;">
+          <p id="bokuAuthSuggestionText" style="font-size: 12.5px; color: #fff; line-height: 1.45; margin-bottom: 10px;" data-i18n="bokuAuthNotice">
+            Чтобы я могла подбирать аниме точно под твой вкус по спискам Shikimori, авторизуйся на сайте! А пока держи шедевр с высоким рейтингом:
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <button class="md-btn md-btn-filled" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="redirectToShikimoriLogin()">
+              <span class="material-symbols-rounded" style="font-size: 15px;">login</span> <span data-i18n="bokuAuthLogin">Войти</span>
+            </button>
+            <button class="md-btn md-btn-tonal" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="startBokuRoulette()">
+              <span class="material-symbols-rounded" style="font-size: 15px;">casino</span> <span data-i18n="bokuAuthRoulette">Рулетка</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; width: 100%; margin-top: auto;">
+          <button class="md-btn md-btn-tonal" id="bokuSkinSwitchBtn" style="flex: 1; height: 40px; font-size: 12px;" onclick="openBokuSkinModal()">
+            <span class="material-symbols-rounded" style="font-size: 16px;">checkroom</span> <span>Скин Боку 👗</span>
           </button>
-          <button class="md-btn md-btn-tonal" style="flex: 1; height: 36px; font-size: 11.5px; padding: 0 10px;" onclick="startBokuRoulette()">
-            <span class="material-symbols-rounded" style="font-size: 15px;">casino</span> <span data-i18n="bokuAuthRoulette">Рулетка</span>
+          <button class="md-btn md-btn-filled" id="bokuRandomBtn" style="flex: 1.2; height: 40px; font-size: 12px;" onclick="closeChibiGuideModal(); startBokuRoulette();">
+            <span class="material-symbols-rounded" style="font-size: 16px;">casino</span> <span data-i18n="bokuRouletteBtn">Рулетка от Боку ✨</span>
           </button>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px; width: 100%;">
-        <button class="md-btn md-btn-tonal" id="bokuSkinSwitchBtn" style="flex: 1; height: 40px; font-size: 12px;" onclick="openBokuSkinModal()">
-          <span class="material-symbols-rounded" style="font-size: 16px;">checkroom</span> <span>Скин Боку 👗</span>
-        </button>
-        <button class="md-btn md-btn-filled" id="bokuRandomBtn" style="flex: 1.2; height: 40px; font-size: 12px;" onclick="closeChibiGuideModal(); startBokuRoulette();">
-          <span class="material-symbols-rounded" style="font-size: 16px;">casino</span> <span data-i18n="bokuRouletteBtn">Рулетка от Боку ✨</span>
-        </button>
-      </div>
     </div>
   </div>
 
@@ -6805,26 +7537,30 @@
 
     <!-- Плеер аниме -->
     <section id="view-watch" class="view-tab" style="display: none;">
-      <div class="section-header">
-        <button class="md-btn md-btn-tonal" onclick="goBackFromWatch()">
-          <span class="material-symbols-rounded">arrow_back</span> <span data-i18n="backBtn">Назад</span>
-        </button>
-        <h2 class="section-title" id="watchTitle" style="flex:1; min-width:0; margin-left: 12px; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Тайтл</h2>
-        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">
-          <button class="md-btn md-btn-tonal" id="btnCreateWatchParty" onclick="createWatchPartyRoom()" title="Создать комнату совместного просмотра" style="height:38px; padding:0 10px; font-size:11.5px; gap:5px; flex-shrink:0;">
-            <span class="material-symbols-rounded" style="font-size:18px; color:var(--color-primary);">group_add</span>
-            <span>Комната</span>
+      <div class="section-header player-section-header">
+        <div class="player-top-nav-bar">
+          <button class="md-btn md-btn-tonal" onclick="goBackFromWatch()" style="flex-shrink: 0;">
+            <span class="material-symbols-rounded">arrow_back</span> <span data-i18n="backBtn">Назад</span>
           </button>
-          <button class="md-btn md-btn-tonal" id="btnJoinWatchParty" onclick="openJoinRoomModal()" title="Войти в комнату по коду" style="height:38px; padding:0 10px; font-size:11.5px; gap:5px; flex-shrink:0;">
-            <span class="material-symbols-rounded" style="font-size:18px;">meeting_room</span>
-            <span>Код</span>
-          </button>
-          <button class="md-btn md-btn-tonal" onclick="shareCurrentAnime()" title="Поделиться" style="width:38px; height:38px; padding:0; justify-content:center; flex-shrink:0;">
-            <span class="material-symbols-rounded" style="font-size:18px">share</span>
-          </button>
-          <button class="md-btn md-btn-tonal" id="playerBookmarkBtn" onclick="openPlayerListDropdown(event)" style="width:38px; height:38px; padding:0; justify-content:center; flex-shrink:0;">
-            <span class="material-symbols-rounded" id="favIcon">bookmark_add</span>
-          </button>
+          <div class="player-header-actions">
+            <button class="md-btn md-btn-tonal" id="btnCreateWatchParty" onclick="createWatchPartyRoom()" title="Создать комнату совместного просмотра" style="height:36px; padding:0 10px; font-size:11.5px; gap:4px; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:17px; color:var(--color-primary);">group_add</span>
+              <span class="player-header-btn-text">Комната</span>
+            </button>
+            <button class="md-btn md-btn-tonal" id="btnJoinWatchParty" onclick="openJoinRoomModal()" title="Войти в комнату по коду" style="height:36px; padding:0 10px; font-size:11.5px; gap:4px; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:17px;">meeting_room</span>
+              <span class="player-header-btn-text">Код</span>
+            </button>
+            <button class="md-btn md-btn-tonal" onclick="shareCurrentAnime()" title="Поделиться" style="width:36px; height:36px; padding:0; justify-content:center; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:18px">share</span>
+            </button>
+            <button class="md-btn md-btn-tonal" id="playerBookmarkBtn" onclick="openPlayerListDropdown(event)" style="width:36px; height:36px; padding:0; justify-content:center; flex-shrink:0;">
+              <span class="material-symbols-rounded" id="favIcon">bookmark_add</span>
+            </button>
+          </div>
+        </div>
+        <div class="player-title-row">
+          <h2 class="section-title" id="watchTitle">Тайтл</h2>
         </div>
       </div>
 
@@ -7110,9 +7846,17 @@
                 <span id="currentEpLabel" style="font-size: 14px; font-weight: 600; white-space:nowrap;">Серия 1</span>
                 <button class="md-btn md-btn-tonal" onclick="stepEpisode(1)" data-i18n="epNext">След.</button>
               </div>
-              <a id="openInNewTab" class="md-btn md-btn-tonal" href="#" target="_blank">
-                <span class="material-symbols-rounded" style="font-size:18px">open_in_new</span> <span data-i18n="originalBtn">Оригинал</span>
-              </a>
+              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                <button type="button" class="md-btn md-btn-tonal" id="btnPlayerBokuAi" onclick="openBokuAiChatModal()" title="Спросить Боку AI" style="height:36px; padding:0 12px; font-size:12px; gap:6px; color:#D0BCFF; border-color:rgba(208,188,255,0.35); background:rgba(208,188,255,0.1); border-radius:10px;">
+                  <img src="/assets/sprite_10_bcbb0cee.webp" id="playerBokuChibiImg" class="player-boku-icon" style="width:20px; height:20px; object-fit:contain; border-radius:50%;" alt="Боку" />
+                  <span>Боку AI</span>
+                </button>
+                <button type="button" class="md-btn md-btn-tonal" id="btnQuickPlotSummary" onclick="requestQuickPlotSummary()" title="Краткий пересказ сюжета от Боку" style="height:36px; padding:0 12px; font-size:12px; gap:6px; color:#F0E6FF; border-color:rgba(208,188,255,0.4); background:rgba(154,117,240,0.22); border-radius:10px;">
+                  <span class="material-symbols-rounded" style="font-size:17px; color:var(--color-primary);">auto_awesome</span>
+                  <span>Пересказ сюжета</span>
+                </button>
+                <a id="openInNewTab" href="#" target="_blank" style="display:none;"></a>
+              </div>
             </div>
           </div>
         </div>
@@ -7156,6 +7900,26 @@
             <div style="display:flex; flex-direction:column; gap:12px; flex:1; min-width:0;">
               <div id="detailsMeta" style="font-size:12px; color:var(--color-primary); font-weight: 600;"></div>
               <p id="detailsDesc" style="font-size:13px; line-height:1.6; color:var(--color-variant); word-break: break-word; margin: 0;"></p>
+
+              <!-- БОКУ AI ПЛАШКА В ДЕТАЛЯХ ТАЙТЛА -->
+              <div class="boku-ai-player-strip" id="bokuPlayerStrip">
+                <div class="boku-ai-player-info" onclick="openBokuAiChatModal()" style="cursor: pointer;" title="Открыть чат с Боку">
+                  <img id="bokuPlayerStripChibi" src="/assets/sprite_10_bcbb0cee.webp" class="boku-strip-avatar" alt="Боку" />
+                  <div style="font-size:12px; color:var(--color-variant); line-height:1.4;">
+                    <strong style="color:#fff;">Боку AI:</strong> <span>Краткий пересказ сюжета или подбор похожих</span>
+                  </div>
+                </div>
+                <div class="boku-strip-actions">
+                  <button type="button" class="md-btn md-btn-filled" style="height:32px; padding:0 12px; font-size:11.5px; gap:5px;" onclick="requestQuickPlotSummary()">
+                    <span class="material-symbols-rounded" style="font-size:16px;">auto_awesome</span>
+                    <span>Краткий пересказ</span>
+                  </button>
+                  <button type="button" class="md-btn md-btn-tonal" style="height:32px; padding:0 12px; font-size:11.5px; gap:5px;" onclick="openBokuAiChatModal('Посоветуй похожие на это аниме!')">
+                    <span class="material-symbols-rounded" style="font-size:16px;">chat</span>
+                    <span>Спросить</span>
+                  </button>
+                </div>
+              </div>
               
               <div class="shiki-status-container" id="shikiStatusContainer" style="display: none;">
                 <span style="font-size:12px; color:var(--color-primary);" data-i18n="shikiStatusLabel">Статус на Shikimori:</span>
@@ -7384,10 +8148,12 @@
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
     const PYTHON_BACKEND_URL = 'https://api.komboko.fun';
     const IS_LOCAL_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const IS_AISTUDIO_PREVIEW = window.location.hostname.includes('run.app') || window.location.hostname.includes('aistudio') || window.location.hostname.includes('googleusercontent');
     // На komboko.fun бэкенд находится на отдельном сервере https://api.komboko.fun
-    const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
-      ? 'https://api.komboko.fun'
-      : (IS_LOCAL_DEV ? '' : 'https://api.komboko.fun');
+    // В локалке или в превью AI Studio запросы идут к текущему серверу ('')
+    const API_BASE = (IS_LOCAL_DEV || IS_AISTUDIO_PREVIEW)
+      ? ''
+      : ((window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun')) ? 'https://api.komboko.fun' : '');
 
     function apiUrl(path) {
       if (!path) return '';
@@ -7546,6 +8312,12 @@
       document.querySelectorAll('.chibi-error-avatar').forEach(img => {
         img.src = getBokuSpriteUrl(13, activeSkin);
       });
+
+      const playerBoku = document.getElementById('playerBokuChibiImg');
+      if (playerBoku) playerBoku.src = getBokuSpriteUrl(10, activeSkin);
+
+      const stripChibi = document.getElementById('bokuPlayerStripChibi');
+      if (stripChibi) stripChibi.src = getBokuSpriteUrl(10, activeSkin);
 
       // Обновляем мини-аватары в шаге 2 онбординга
       document.querySelectorAll('#welcomeSkinPicker .welcome-skin-card').forEach(card => {
@@ -16414,18 +17186,509 @@
     ];
     let currentChibiIndex = 0;
 
-    function openChibiGuideModal() {
+    function switchBokuModalTab(tabName) {
+      const btnChat = document.getElementById('bokuTabBtnChat');
+      const btnFeat = document.getElementById('bokuTabBtnFeatures');
+      const viewChat = document.getElementById('bokuTabChat');
+      const viewFeat = document.getElementById('bokuTabFeatures');
+
+      if (tabName === 'chat') {
+        if (btnChat) btnChat.classList.add('active');
+        if (btnFeat) btnFeat.classList.remove('active');
+        if (viewChat) viewChat.style.display = 'flex';
+        if (viewFeat) viewFeat.style.display = 'none';
+        const input = document.getElementById('bokuAiInput');
+        if (input) setTimeout(() => input.focus(), 60);
+      } else {
+        if (btnChat) btnChat.classList.remove('active');
+        if (btnFeat) btnFeat.classList.add('active');
+        if (viewChat) viewChat.style.display = 'none';
+        if (viewFeat) viewFeat.style.display = 'flex';
+      }
+    }
+
+    function openBokuAiChatModal(presetPrompt = null) {
+      openChibiGuideModal('chat', presetPrompt);
+    }
+
+    function openChibiGuideModal(initialTab = 'chat', presetPrompt = null) {
       const modal = document.getElementById('chibiGuideModal');
       if (modal) modal.style.display = 'flex';
+
       const box = document.getElementById('bokuAuthSuggestionBox');
       if (box) {
         box.style.display = state.currentUser ? 'none' : 'block';
       }
+
+      // Обновляем контекст текущего аниме
+      const ctxBar = document.getElementById('bokuAnimeContextBar');
+      const ctxTitle = document.getElementById('bokuContextAnimeTitle');
+      const chipPlot = document.getElementById('bokuChipPlotRecap');
+      const chipSimilar = document.getElementById('bokuChipSimilar');
+
+      const isWatchMode = (state.currentTab === 'watch' && state.currentAnimeFull);
+      if (isWatchMode) {
+        const curTitle = state.currentAnimeFull.titleRu || state.currentAnimeFull.titleEn || '';
+        if (ctxTitle) ctxTitle.textContent = curTitle;
+        if (ctxBar) ctxBar.style.display = 'flex';
+        if (chipPlot) chipPlot.style.display = 'none'; // Уже есть кнопка в контекстной плашке открытого аниме
+        if (chipSimilar) chipSimilar.style.display = 'inline-flex';
+      } else {
+        if (ctxBar) ctxBar.style.display = 'none';
+        if (chipPlot) chipPlot.style.display = 'none';
+        if (chipSimilar) chipSimilar.style.display = 'none';
+      }
+
+      switchBokuModalTab(initialTab);
       cycleChibiMascotEmotion(currentChibiIndex);
+
+      if (presetPrompt) {
+        triggerBokuAiPrompt(presetPrompt);
+      }
     }
 
     function closeChibiGuideModal() {
       closeModalWithAnim('chibiGuideModal');
+    }
+
+    function requestQuickPlotSummary() {
+      if (state.currentTab !== 'watch' || !state.currentAnimeFull) {
+        openBokuAiChatModal();
+        triggerBokuAiPrompt('Сделай краткий пересказ сюжета любого популярного аниме!');
+        return;
+      }
+      const curTitle = state.currentAnimeFull.titleRu || state.currentAnimeFull.titleEn || 'этого аниме';
+      const prompt = `Сделай краткий пересказ сюжета аниме «${curTitle}» без жестких спойлеров к финалу! Расскажи завязку и суть конфликта.`;
+      openBokuAiChatModal('chat');
+      triggerBokuAiPrompt(prompt);
+    }
+
+    let isBokuAiThinking = false;
+    let bokuAiCooldownTimer = null;
+    let bokuAttachedImageDataUrl = null;
+
+    function handleBokuImageSelected(e) {
+      const file = e.target?.files?.[0];
+      if (file) {
+        processBokuImageFile(file);
+      }
+      if (e.target) e.target.value = '';
+    }
+
+    function processBokuImageFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        showToast('Пожалуйста, выбери картинку (PNG, JPG, WEBP)');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (loadEvt) => {
+        const img = new Image();
+        img.onload = () => {
+          // Масштабируем до макс 1024x1024 для мгновенной отправки и высокого качества распознавания
+          const maxDim = 1024;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          width = Math.max(64, width);
+          height = Math.max(64, height);
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          bokuAttachedImageDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+
+          const bar = document.getElementById('bokuAttachedImageBar');
+          const thumb = document.getElementById('bokuAttachedThumb');
+          if (bar && thumb) {
+            thumb.src = bokuAttachedImageDataUrl;
+            bar.style.display = 'block';
+          }
+
+          const input = document.getElementById('bokuAiInput');
+          if (input && !input.value.trim()) {
+            input.value = 'Кто этот персонаж и из какого он аниме?';
+            input.focus();
+            input.select();
+          }
+        };
+        img.onerror = () => {
+          showToast('Не удалось обработать изображение');
+        };
+        img.src = loadEvt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearBokuAttachedImage() {
+      bokuAttachedImageDataUrl = null;
+      const bar = document.getElementById('bokuAttachedImageBar');
+      const thumb = document.getElementById('bokuAttachedThumb');
+      const fileInput = document.getElementById('bokuAiFileInput');
+      if (bar) bar.style.display = 'none';
+      if (thumb) thumb.src = '';
+      if (fileInput) fileInput.value = '';
+    }
+
+    // Поддержка вставки скриншотов из буфера обмена (Ctrl+V / Cmd+V)
+    document.addEventListener('paste', (e) => {
+      const modal = document.getElementById('chibiGuideModal');
+      if (!modal || modal.style.display === 'none') return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.startsWith('image/')) {
+          const blob = items[i].getAsFile();
+          if (blob) {
+            processBokuImageFile(blob);
+            break;
+          }
+        }
+      }
+    });
+
+    function triggerBokuAiPrompt(text) {
+      if (isBokuAiThinking) return;
+      const input = document.getElementById('bokuAiInput');
+      if (input) {
+        input.value = text;
+        switchBokuModalTab('chat');
+        if (text.endsWith(': ') || text.endsWith(' ')) {
+          input.focus();
+          return;
+        }
+      }
+      sendBokuAiMessage();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function sendBokuAiMessage(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      if (isBokuAiThinking) return;
+
+      const input = document.getElementById('bokuAiInput');
+      const historyBox = document.getElementById('bokuAiChatHistory');
+      const sendBtn = document.getElementById('bokuAiSendBtn');
+      const chipsBox = document.getElementById('bokuQuickChips');
+      const text = input?.value?.trim() || '';
+      const currentAttachedImg = bokuAttachedImageDataUrl;
+
+      if ((!text && !currentAttachedImg) || !historyBox) return;
+
+      isBokuAiThinking = true;
+      input.value = '';
+      input.disabled = true;
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = '0.6';
+      }
+      if (chipsBox) {
+        chipsBox.style.pointerEvents = 'none';
+        chipsBox.style.opacity = '0.65';
+      }
+
+      // Сбрасываем панель прикрепленного фото
+      clearBokuAttachedImage();
+
+      // 1. Сообщение пользователя
+      const userBubble = document.createElement('div');
+      userBubble.className = 'boku-msg-bubble user';
+      if (currentAttachedImg) {
+        const imgEl = document.createElement('img');
+        imgEl.src = currentAttachedImg;
+        imgEl.className = 'boku-user-attached-img';
+        imgEl.alt = 'Прикрепленное фото';
+        userBubble.appendChild(imgEl);
+      }
+      const msgText = text || (currentAttachedImg ? 'Кто этот персонаж и из какого он аниме?' : '');
+      if (msgText) {
+        const textDiv = document.createElement('div');
+        textDiv.textContent = msgText;
+        userBubble.appendChild(textDiv);
+      }
+      historyBox.appendChild(userBubble);
+
+      // 2. Индикатор набора текста
+      const typingBubble = document.createElement('div');
+      typingBubble.className = 'boku-msg-bubble bot';
+      typingBubble.style.cssText = 'color: var(--color-variant); font-style: italic; display: flex; align-items: center; gap: 8px;';
+      typingBubble.innerHTML = '<span class="spinner" style="width: 14px; height: 14px; border-width: 2px;"></span> <span>Боку думает... 💭</span>';
+      historyBox.appendChild(typingBubble);
+      historyBox.scrollTop = historyBox.scrollHeight;
+
+      // 3. Контекст открытого тайтла
+      let animeContext = null;
+      if (state.currentTab === 'watch' && state.currentAnimeFull) {
+        const a = state.currentAnimeFull;
+        animeContext = {
+          title: a.titleRu || a.titleEn || '',
+          year: a.year || '',
+          genres: (a.genresRu || a.genres || []).join(', '),
+          description: (a.description || '').slice(0, 700)
+        };
+      }
+
+      // 4. Сбор списков Shikimori из state клиента
+      const watching = [];
+      const favorites = [];
+      const completed = [];
+      const planned = [];
+
+      for (const [animeId, rate] of Object.entries(state.userRates || {})) {
+        const info = state.itemsRegistry[animeId] || rate.anime || {};
+        const title = info.titleRu || info.russian || info.name || rate.animeTitle || '';
+        if (!title) continue;
+
+        const scoreStr = rate.score > 0 ? ` (${rate.score}/10)` : '';
+        if (rate.status === 'watching') watching.push(`${title}${scoreStr}`);
+        else if (rate.status === 'planned') planned.push(title);
+        else if (rate.status === 'completed') {
+          if (rate.score >= 8) favorites.push(`${title} (${rate.score}/10)`);
+          else completed.push(`${title}${scoreStr}`);
+        }
+      }
+
+      const recentHistory = (state.history || [])
+        .slice(0, 8)
+        .map(h => h.titleRu || h.titleEn || h.title)
+        .filter(Boolean);
+
+      const userContext = {
+        nickname: state.currentUser?.nickname || null,
+        watching: watching.slice(0, 12),
+        favorites: favorites.slice(0, 15),
+        completed: completed.slice(0, 15),
+        planned: planned.slice(0, 12),
+        recentHistory
+      };
+
+      try {
+        const res = await fetch(apiUrl('/api/boku/chat'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: msgText,
+            image: currentAttachedImg || undefined,
+            animeContext,
+            userContext,
+            userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
+            deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
+            shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null
+          })
+        });
+
+        const data = await res.json();
+        const replyRaw = data.reply || 'Хм, даже не знаю что ответить...';
+
+        // Обновляем квоту (при КД лимит не тратится!)
+        const quotaBadge = document.getElementById('bokuAiQuotaBadge');
+        if (quotaBadge && data.remaining !== undefined) {
+          quotaBadge.textContent = `${data.remaining} из ${data.limit}`;
+        }
+
+        // Если сработал кулдаун — запускаем визуальный таймер ожидания на кнопке отправки
+        if (data.isCooldown) {
+          const cooldownSec = Math.max(1, Math.ceil((data.cooldownMs || 2500) / 1000));
+          if (sendBtn) {
+            sendBtn.disabled = true;
+            let left = cooldownSec;
+            sendBtn.innerHTML = `<span style="font-size:12px; font-weight:700;">${left}с</span>`;
+            if (bokuAiCooldownTimer) clearInterval(bokuAiCooldownTimer);
+            bokuAiCooldownTimer = setInterval(() => {
+              left -= 1;
+              if (left <= 0) {
+                clearInterval(bokuAiCooldownTimer);
+                bokuAiCooldownTimer = null;
+                if (!isBokuAiThinking && sendBtn) {
+                  sendBtn.disabled = false;
+                  sendBtn.style.opacity = '1';
+                  sendBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 19px;">send</span>';
+                }
+              } else if (sendBtn) {
+                sendBtn.innerHTML = `<span style="font-size:12px; font-weight:700;">${left}с</span>`;
+              }
+            }, 1000);
+          }
+        }
+
+        const cleanTitleFn = (s) => String(s || '').replace(/[\u00A0\u1680\u180e\u2000-\u200b\u202f\u205f\u3000\ufeff]/g, ' ').trim();
+
+        // Парсим и подсвечиваем названия в двойных фигурных скобках {{...}}
+        const rawTitlesFound = [];
+        let renderedHtml = escapeHtml(replyRaw).replace(/\{\{([^}]+)\}\}/g, (match, rawName) => {
+          const cleanName = cleanTitleFn(rawName);
+          if (cleanName) rawTitlesFound.push(cleanName);
+          return `<span class="boku-title-highlight" onclick="openAnimeFromAi(null, '${escapeHtml(cleanName)}')">«${escapeHtml(cleanName)}»</span>`;
+        });
+
+        // Если модель использовала кавычки-ёлочки «...»
+        if (rawTitlesFound.length === 0) {
+          renderedHtml = renderedHtml.replace(/«([^»]{3,45})»/g, (match, rawName) => {
+            const cleanName = cleanTitleFn(rawName);
+            if (cleanName && !['Смотреть', 'В планах', 'Просмотрено', 'Назад', 'Комната', 'Отложено', 'Брошено'].includes(cleanName)) {
+              rawTitlesFound.push(cleanName);
+              return `<span class="boku-title-highlight" onclick="openAnimeFromAi(null, '${escapeHtml(cleanName)}')">«${escapeHtml(cleanName)}»</span>`;
+            }
+            return match;
+          });
+        }
+
+        // Заполняем бабл ответа Боку
+        typingBubble.style.fontStyle = 'normal';
+        typingBubble.style.color = '#eee';
+        typingBubble.style.display = 'block';
+        typingBubble.innerHTML = `
+          <div class="boku-msg-sender">
+            <span style="font-size: 14px; color: var(--color-primary);">✨</span>
+            <span>Боку AI</span>
+          </div>
+          <div style="line-height: 1.5;">${renderedHtml.replace(/\n/g, '<br>')}</div>
+        `;
+
+        // Отображение точного найденного момента из серии (серия, таймкод, превью кадра)
+        if (data.sceneMoment) {
+          const m = data.sceneMoment;
+          const momentCard = document.createElement('div');
+          momentCard.className = 'boku-scene-moment-card animate-fade';
+          momentCard.innerHTML = `
+            <div class="boku-scene-moment-header">
+              <span class="material-symbols-rounded" style="color: #4ade80; font-size: 18px;">movie_filter</span>
+              <strong style="color: #fff; font-size: 13px;">Точный момент: Серия ${escapeHtml(m.episode || 1)} • ${escapeHtml(m.time || '00:00')}</strong>
+              <span class="boku-scene-similarity">${escapeHtml(m.similarity || 85)}% совпадение</span>
+            </div>
+            ${m.image ? `
+              <div class="boku-scene-preview-wrap">
+                <img src="${escapeHtml(m.image)}" class="boku-scene-preview-img" alt="Кадр из аниме" onerror="this.parentElement.style.display='none'" />
+                <div class="boku-scene-preview-overlay">Официальный кадр тайтла 🎬</div>
+              </div>
+            ` : ''}
+          `;
+          typingBubble.appendChild(momentCard);
+        }
+
+        // Объединяем названия от сервера и из парсинга
+        const allRecommendedTitles = [...new Set([...(data.titles || []).map(cleanTitleFn), ...rawTitlesFound])].filter(Boolean).slice(0, 4);
+
+        if (allRecommendedTitles.length > 0) {
+          const recGrid = document.createElement('div');
+          recGrid.className = 'boku-rec-grid';
+          typingBubble.appendChild(recGrid);
+
+          for (const titleStr of allRecommendedTitles) {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'boku-rec-card animate-fade';
+            cardEl.innerHTML = `
+              <div style="width: 38px; height: 52px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span class="material-symbols-rounded" style="font-size: 20px; color: var(--color-variant);">movie</span>
+              </div>
+              <div class="boku-rec-details">
+                <div class="boku-rec-name">${escapeHtml(titleStr)}</div>
+                <div class="boku-rec-sub"><span>Поиск тайтла...</span></div>
+              </div>
+              <button type="button" class="boku-rec-play-btn" onclick="openAnimeFromAi(null, '${escapeHtml(titleStr)}')">
+                <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span>
+                <span>Смотреть</span>
+              </button>
+            `;
+            recGrid.appendChild(cardEl);
+
+            // Асинхронно подгружаем постер, год и точный id с Shikimori
+            fetchGraphQLAnimes({ search: titleStr, limit: 1 }).then(results => {
+              if (results && results.length > 0) {
+                const parsed = parseAnimeItem(results[0]);
+                state.itemsRegistry[parsed.id] = parsed;
+
+                const displayTitle = (currentLang === 'en' ? (parsed.titleEn || parsed.titleRu) : (parsed.titleRu || parsed.titleEn)) || titleStr;
+                const scoreText = parsed.score ? `⭐ ${parsed.score}` : '';
+                const yearText = parsed.year ? `${parsed.year}` : '';
+                const metaParts = [yearText, scoreText].filter(Boolean).join(' • ');
+
+                cardEl.innerHTML = `
+                  <img src="${parsed.poster || '/assets/sprite_10_bcbb0cee.webp'}" class="boku-rec-poster" alt="${escapeHtml(displayTitle)}" onerror="this.src='/assets/sprite_10_bcbb0cee.webp'" />
+                  <div class="boku-rec-details">
+                    <div class="boku-rec-name" title="${escapeHtml(displayTitle)}">${escapeHtml(displayTitle)}</div>
+                    <div class="boku-rec-sub">${escapeHtml(metaParts || 'Аниме')}</div>
+                  </div>
+                  <button type="button" class="boku-rec-play-btn" onclick="openAnimeFromAi('${parsed.id}', '${escapeHtml(displayTitle)}')">
+                    <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span>
+                    <span>Смотреть</span>
+                  </button>
+                `;
+              }
+            }).catch(() => {});
+          }
+        }
+
+      } catch (err) {
+        console.error('Boku chat client error:', err);
+        typingBubble.innerHTML = `
+          <div class="boku-msg-sender" style="color: #f87171;">
+            <span class="material-symbols-rounded" style="font-size: 14px;">error</span>
+            <span>Боку AI</span>
+          </div>
+          <div>Не удалось связаться с сервером 😿 Попробуй ещё разок!</div>
+        `;
+      } finally {
+        isBokuAiThinking = false;
+        if (chipsBox) {
+          chipsBox.style.pointerEvents = 'auto';
+          chipsBox.style.opacity = '1';
+        }
+        input.disabled = false;
+        if (sendBtn && !bokuAiCooldownTimer) {
+          sendBtn.disabled = false;
+          sendBtn.style.opacity = '1';
+          sendBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 19px;">send</span>';
+        }
+        input.focus();
+        historyBox.scrollTop = historyBox.scrollHeight;
+      }
+    }
+
+    async function openAnimeFromAi(animeId, title) {
+      closeChibiGuideModal();
+      if (animeId) {
+        handleCardClick(animeId);
+        showToast(`✨ Боку: «Включаю ${title || 'аниме'}, приятного просмотра! 💜»`);
+        return;
+      }
+      if (!title) return;
+      showToast(`🔍 Боку: «Ищу «${title}»...»`);
+      try {
+        const results = await fetchGraphQLAnimes({ search: title, limit: 1 });
+        if (results && results.length > 0) {
+          const parsed = parseAnimeItem(results[0]);
+          state.itemsRegistry[parsed.id] = parsed;
+          handleCardClick(parsed.id);
+          showToast(`✨ Боку: «Нашла! Включаю «${parsed.titleRu || parsed.titleEn}» 💜»`);
+          return;
+        }
+      } catch (_) {}
+
+      // Fallback: переключаемся на каталог и ищем
+      switchTab('catalog');
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = title;
+      executeSearch(title);
     }
 
     function cycleChibiMascotEmotion(targetId = null, isAuto = false) {

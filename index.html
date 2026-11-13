@@ -2294,9 +2294,18 @@
       font-weight: 600;
       text-align: center;
       width: 100%;
+      min-height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .loader-caption-fade {
+      display: inline-block;
+      animation: bokuCaptionFade 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes bokuCaptionFade {
+      from { opacity: 0; transform: translateY(4px); filter: blur(2px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
     }
 
     .player-stage-error {
@@ -2665,14 +2674,91 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 40px; gap: 16px; color: var(--color-variant); text-align: center;
     }
+    /* Глобальные прыгающие 3 точки вместо кружков прогрузки */
     .spinner {
-      width: 40px; height: 40px;
-      border: 3.5px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--color-primary);
-      border-radius: 50%;
-      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 22px;
+      flex-shrink: 0;
+      color: var(--color-primary);
+      background: radial-gradient(circle, currentColor 4.2px, transparent 4.8px) no-repeat 50% 62%;
+      background-size: 10px 10px;
+      animation: bokuMidDotBounce 1.1s infinite ease-in-out;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner::before,
+    .spinner::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 10px rgba(208, 188, 255, 0.4);
+      animation: bokuSideDotBounce 1.1s infinite ease-in-out;
+    }
+    .spinner::before {
+      left: 5px;
+      animation-delay: -0.32s;
+    }
+    .spinner::after {
+      right: 5px;
+      animation-delay: 0s;
+    }
+    @keyframes bokuSideDotBounce {
+      0%, 80%, 100% {
+        transform: translateY(-50%) scale(0.68);
+        opacity: 0.42;
+      }
+      40% {
+        transform: translateY(calc(-50% - 6px)) scale(1.06);
+        opacity: 1;
+      }
+    }
+    @keyframes bokuMidDotBounce {
+      0%, 60%, 100% {
+        background-position: 50% 65%;
+        opacity: 0.5;
+      }
+      30% {
+        background-position: 50% 12%;
+        opacity: 1;
+      }
+    }
+    .boku-typing-dots {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 18px;
+      padding: 0 2px;
+      flex-shrink: 0;
+    }
+    .boku-typing-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 8px rgba(208, 188, 255, 0.45);
+      display: inline-block;
+      animation: bokuDotWave 1.1s infinite ease-in-out both;
+    }
+    .boku-typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .boku-typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+    .boku-typing-dots span:nth-child(3) { animation-delay: 0s; }
+    @keyframes bokuDotWave {
+      0%, 80%, 100% {
+        transform: translateY(0) scale(0.72);
+        opacity: 0.42;
+      }
+      40% {
+        transform: translateY(-5px) scale(1.08);
+        opacity: 1;
+      }
+    }
 
     /* Экран читалки манги */
     #view-manga-reader {
@@ -5647,6 +5733,50 @@
       align-items: center;
       gap: 12px;
     }
+    .roulette-ai-prep {
+      margin: 16px 0;
+      min-height: 154px;
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at 50% 35%, rgba(154, 117, 240, 0.16) 0%, rgba(14, 10, 22, 0.92) 75%);
+      border: 1.5px solid rgba(208, 188, 255, 0.28);
+      box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px 16px;
+      animation: welcomeStepFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .roulette-ai-avatar-ring {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(208, 188, 255, 0.12);
+      border: 1.5px solid rgba(208, 188, 255, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 24px rgba(154, 117, 240, 0.35);
+      animation: chibiGentleFloat 2s ease-in-out infinite;
+    }
+    .roulette-ai-avatar-ring img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+    }
+    .roulette-ai-prep-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      min-height: 22px;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .roulette-ai-prep-text.launch-burst {
+      color: #FFD54F;
+      font-size: 15.5px;
+      transform: scale(1.04);
+    }
     @keyframes winnerPopOut {
       0% {
         opacity: 0;
@@ -5793,7 +5923,7 @@
       to { width: 0%; }
     }
 
-    /* ===== BOKU GROQ AI ASSISTANT STYLES ===== */
+    /* ===== BOKU AI ASSISTANT STYLES ===== */
     .boku-modal-wrapper {
       max-width: 520px !important;
       width: 95% !important;
@@ -5995,7 +6125,6 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      scroll-behavior: smooth;
     }
     .boku-ai-chat-history::-webkit-scrollbar {
       width: 6px;
@@ -6004,6 +6133,14 @@
       background: rgba(208, 188, 255, 0.2);
       border-radius: 4px;
     }
+    @keyframes bokuBubbleAppear {
+      from { opacity: 0; transform: translateY(8px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes bokuCardSlideIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(3px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
     .boku-msg-bubble {
       max-width: 88%;
       padding: 9px 13px;
@@ -6011,7 +6148,7 @@
       font-size: 13px;
       line-height: 1.5;
       word-break: break-word;
-      animation: fadeIn 0.2s ease;
+      animation: bokuBubbleAppear 0.34s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .boku-msg-bubble.user {
       align-self: flex-end;
@@ -6027,6 +6164,24 @@
       color: #eee;
       border-bottom-left-radius: 4px;
       position: relative;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+    @keyframes bokuCharFadeIn {
+      from {
+        opacity: 0;
+        filter: blur(2.5px);
+      }
+      to {
+        opacity: 1;
+        filter: blur(0);
+      }
+    }
+    .boku-char-live {
+      display: inline;
+      animation: bokuCharFadeIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .boku-card-smooth-in {
+      animation: bokuCardSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .boku-msg-sender {
       font-size: 11px;
@@ -7361,21 +7516,33 @@
         <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px;">
           <img id="bokuRouletteMascot" src="/assets/sprite_10_bcbb0cee.webp" style="width: 48px; height: 48px; object-fit: contain;" alt="Боку" />
           <div style="text-align: left;">
-            <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0;">Рулетка от Боку ✨</h3>
+            <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0;">ИИ-Рулетка от Боку ✨</h3>
             <p id="rouletteSubStatus" style="font-size: 12px; color: var(--color-primary); margin: 2px 0 0; font-weight: 600;">
-              Боку подбирает аниме специально для вас...
+              Подбираю, что может вам подойти...
             </p>
           </div>
         </div>
 
-        <div class="roulette-viewport">
+        <div id="rouletteAiPrepBox" class="roulette-ai-prep" style="display: flex;">
+          <div class="roulette-ai-avatar-ring">
+            <img id="roulettePrepImg" src="/assets/sprite_16_1c0db8e6.webp" alt="Боку думает" />
+          </div>
+          <div class="boku-typing-dots" style="height: 20px; gap: 7px;">
+            <span style="width: 8px; height: 8px;"></span>
+            <span style="width: 8px; height: 8px;"></span>
+            <span style="width: 8px; height: 8px;"></span>
+          </div>
+          <div id="rouletteAiPrepText" class="roulette-ai-prep-text">Подбираю, что может вам подойти...</div>
+        </div>
+
+        <div id="rouletteViewport" class="roulette-viewport" style="display: none;">
           <div class="roulette-pointer">▼</div>
           <div class="roulette-pointer-bottom">▲</div>
           <div id="rouletteStrip" class="roulette-strip"></div>
         </div>
 
         <div id="rouletteTimerText" style="font-size: 12px; color: var(--color-variant); font-weight: 500;">
-          Выбираем среди лучших тайтлов... 🎲
+          Анализируем твои предпочтения...
         </div>
       </div>
 
@@ -7835,8 +8002,8 @@
 
               <!-- Лоадер потока и экран ошибки -->
               <div id="videoStreamLoader" class="video-stream-loader" style="display: none;">
-                <div class="spinner" id="videoLoaderSpinner"></div>
-                <div id="videoLoaderText" class="video-loader-text">Подключаем прямой поток без рекламы...</div>
+                <div class="boku-typing-dots" id="videoLoaderSpinner" style="gap: 8px; height: 26px;"><span style="width: 10px; height: 10px;"></span><span style="width: 10px; height: 10px;"></span><span style="width: 10px; height: 10px;"></span></div>
+                <div id="videoLoaderText" class="video-loader-text">Подгружаем поток без рекламы...</div>
               </div>
             </div>
 
@@ -9887,13 +10054,21 @@
       // Автоматическое устранение зависаний при долгой буферизации или просмотре на 2х скорости
       const streamLoader = document.getElementById('videoStreamLoader');
       video.addEventListener('waiting', () => {
-        if (streamLoader) streamLoader.style.display = 'flex';
+        if (streamLoader && !streamLoader.querySelector('.player-stage-error')) {
+          if (streamLoader.style.display === 'none' && typeof showVideoStreamLoader === 'function') {
+            showVideoStreamLoader(null, activeVideoLoadToken);
+          } else {
+            streamLoader.style.display = 'flex';
+          }
+        }
       });
       video.addEventListener('playing', () => {
-        if (streamLoader) streamLoader.style.display = 'none';
+        if (typeof hideVideoStreamLoader === 'function') hideVideoStreamLoader();
+        else if (streamLoader) streamLoader.style.display = 'none';
       });
       video.addEventListener('canplay', () => {
-        if (streamLoader) streamLoader.style.display = 'none';
+        if (typeof hideVideoStreamLoader === 'function') hideVideoStreamLoader();
+        else if (streamLoader) streamLoader.style.display = 'none';
       });
 
       let stallCounter = 0;
@@ -9908,7 +10083,13 @@
         if (Math.abs(curTime - lastWatchedTime) < 0.05) {
           stallCounter++;
           if (stallCounter >= 2) {
-            if (streamLoader) streamLoader.style.display = 'flex';
+            if (streamLoader && !streamLoader.querySelector('.player-stage-error')) {
+              if (streamLoader.style.display === 'none' && typeof showVideoStreamLoader === 'function') {
+                showVideoStreamLoader('Стабилизируем поток под ваш интернет...', activeVideoLoadToken);
+              } else {
+                streamLoader.style.display = 'flex';
+              }
+            }
           }
           if (stallCounter >= 4) {
             console.warn('Playback stall detected (>4s at rate ' + video.playbackRate + '), auto-recovering...');
@@ -9922,7 +10103,8 @@
           lastWatchedTime = curTime;
           if (stallCounter > 0) {
             stallCounter = 0;
-            if (streamLoader) streamLoader.style.display = 'none';
+            if (typeof hideVideoStreamLoader === 'function') hideVideoStreamLoader();
+            else if (streamLoader) streamLoader.style.display = 'none';
           }
         }
       }, 1000);
@@ -15495,8 +15677,12 @@
       if (prevIframe) {
         prevIframe.src = 'about:blank';
       }
-      const streamLoader = document.getElementById('videoStreamLoader');
-      if (streamLoader) streamLoader.style.display = 'flex';
+      if (typeof showVideoStreamLoader === 'function') {
+        showVideoStreamLoader(null, activeVideoLoadToken);
+      } else {
+        const streamLoader = document.getElementById('videoStreamLoader');
+        if (streamLoader) streamLoader.style.display = 'flex';
+      }
 
       // Плавная анимация перестройки плеера (Morphing transition)
       const stageContainer = document.getElementById('videoStageContainer');
@@ -16409,12 +16595,12 @@
 
       let m3u8Text = '';
       try {
-        const directRes = await fetchWithTimeout(cleanUrl, 5000);
+        const directRes = await fetchWithTimeout(cleanUrl, 10000);
         if (directRes.ok) m3u8Text = await directRes.text();
       } catch (_) {}
 
       if (!m3u8Text || !m3u8Text.includes('#EXTM3U')) {
-        const workerRes = await fetchWithTimeout(`${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(cleanUrl)}`, 6500);
+        const workerRes = await fetchWithTimeout(`${BACKEND_URL}/api/playlist.m3u8?url=${encodeURIComponent(cleanUrl)}`, 12000);
         if (workerRes.ok) m3u8Text = await workerRes.text();
       }
 
@@ -16489,9 +16675,72 @@
       }, 12000);
     }
 
+    let videoLoaderCaptionTimer = null;
+
+    function stopVideoLoaderCaptions() {
+      if (videoLoaderCaptionTimer) {
+        clearInterval(videoLoaderCaptionTimer);
+        videoLoaderCaptionTimer = null;
+      }
+    }
+
+    function showVideoStreamLoader(customFirstMsg = null, loadToken = activeVideoLoadToken) {
+      const loader = document.getElementById('videoStreamLoader');
+      const loaderSpinner = document.getElementById('videoLoaderSpinner');
+      const loaderText = document.getElementById('videoLoaderText');
+      if (!loader) return;
+
+      stopVideoLoaderCaptions();
+      if (loaderSpinner) loaderSpinner.style.display = 'inline-flex';
+      loader.style.display = 'flex';
+
+      const isEn = (typeof currentLang !== 'undefined' && currentLang === 'en');
+      const steps = isEn
+        ? [
+            customFirstMsg || 'Loading ad-free stream...',
+            'Stabilizing stream for your connection...',
+            'Just a little bit more…',
+            'Connection is unstable, still trying...'
+          ]
+        : [
+            customFirstMsg || 'Подгружаем поток без рекламы...',
+            'Стабилизируем поток под ваш интернет...',
+            'Еще немного…',
+            'Подключение нестабильно, но мы пытаемся...'
+          ];
+
+      if (loaderText) {
+        loaderText.innerHTML = `<span class="loader-caption-fade">${escapeHtml(steps[0])}</span>`;
+      }
+
+      let stepIdx = 0;
+      const startedAt = Date.now();
+      videoLoaderCaptionTimer = setInterval(() => {
+        if (loadToken !== activeVideoLoadToken || loader.style.display === 'none' || loader.querySelector('.player-stage-error')) {
+          stopVideoLoaderCaptions();
+          return;
+        }
+        const elapsed = Date.now() - startedAt;
+        let nextIdx = 0;
+        if (elapsed >= 10500) nextIdx = 3;
+        else if (elapsed >= 6500) nextIdx = 2;
+        else if (elapsed >= 3000) nextIdx = 1;
+
+        if (nextIdx !== stepIdx && loaderText) {
+          stepIdx = nextIdx;
+          loaderText.innerHTML = `<span class="loader-caption-fade">${escapeHtml(steps[stepIdx])}</span>`;
+        }
+      }, 450);
+    }
+
+    function hideVideoStreamLoader() {
+      stopVideoLoaderCaptions();
+      const loader = document.getElementById('videoStreamLoader');
+      if (loader) loader.style.display = 'none';
+    }
+
     function attachHlsStreamToExo(streamUrl, startTime = 0, onErrorFallback = null, autoPlay = true) {
       const video = document.getElementById('kombokoCustomVideo');
-      const loader = document.getElementById('videoStreamLoader');
       if (!video) return;
 
       if (currentHlsInstance) {
@@ -16515,10 +16764,13 @@
             xhr.withCredentials = false;
           }
         });
+        const hlsStartedAt = Date.now();
+        let networkRetryCount = 0;
+
         hls.loadSource(streamUrl);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          if (loader) loader.style.display = 'none';
+          hideVideoStreamLoader();
           if (startTime > 0) applyPendingSeek(video, startTime);
           if (autoPlay) video.play().catch(() => {});
         });
@@ -16532,10 +16784,19 @@
             return;
           }
           if (data.fatal) {
+            const httpCode = Number(data.response?.code || 0);
+            const isHardRefusal = [403, 404, 410].includes(httpCode);
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
-                console.warn('HLS network error, attempting recovery...');
-                hls.startLoad();
+                networkRetryCount += 1;
+                if (isHardRefusal || networkRetryCount > 3 || (Date.now() - hlsStartedAt) > 15000) {
+                  console.warn('HLS network fallback triggered:', httpCode || 'timeout');
+                  hls.destroy();
+                  if (onErrorFallback) onErrorFallback();
+                } else {
+                  console.warn('HLS network error, attempting recovery...');
+                  hls.startLoad();
+                }
                 break;
               case Hls.ErrorTypes.MEDIA_ERROR:
                 console.warn('HLS media error, attempting recovery...');
@@ -16553,7 +16814,7 @@
         video.src = streamUrl;
         if (startTime > 0) applyPendingSeek(video, startTime);
         video.addEventListener('loadedmetadata', () => {
-          if (loader) loader.style.display = 'none';
+          hideVideoStreamLoader();
           if (startTime > 0) applyPendingSeek(video, startTime);
           if (autoPlay) video.play().catch(() => {});
         }, { once: true });
@@ -16734,6 +16995,7 @@
 
       function showStreamUnavailableNotice(reason = null) {
         if (myLoadToken !== activeVideoLoadToken || !loader || !loaderText) return;
+        stopVideoLoaderCaptions();
         if (loaderSpinner) loaderSpinner.style.display = 'none';
         loader.style.display = 'flex';
 
@@ -16854,9 +17116,7 @@
       // === 1. ИСТОЧНИК MEGAPLAY (7 СЕРВЕРОВ SUB/DUB ЧЕРЕЗ ANILIST GRAPHQL) ===
       if (state.currentSource === 'megaplay') {
         if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'flex';
-        if (loaderSpinner) loaderSpinner.style.display = 'block';
-        if (loaderText) loaderText.textContent = 'Подключаем международный Sub/Dub сервер...';
+        showVideoStreamLoader('Подключаем международный Sub/Dub сервер...', myLoadToken);
         
         // Разрешаем origin Referer для международных плееров, чтобы MegaPlay не выдавал ошибку 410
         iframe.removeAttribute('referrerpolicy');
@@ -16871,7 +17131,7 @@
         const streamUrl = await buildMegaPlayUrlAsync(state.currentAnimeFull, epNum, lang, mirror);
         if (myLoadToken !== activeVideoLoadToken) return;
 
-        if (loader) loader.style.display = 'none';
+        hideVideoStreamLoader();
         openLink.href = streamUrl;
         iframe.src = streamUrl;
         saveSessionState();
@@ -16883,9 +17143,7 @@
         iframe.style.display = 'none';
         iframe.src = 'about:blank';
         if (exoWrap) exoWrap.style.display = 'flex';
-        if (loader) loader.style.display = 'flex';
-        if (loaderSpinner) loaderSpinner.style.display = 'block';
-        if (loaderText) loaderText.textContent = 'Загружаем прямой поток 1080p с сервера АниЛибрии...';
+        showVideoStreamLoader('Подгружаем поток 1080p без рекламы...', myLoadToken);
 
         const release = await fetchStrictAniLibriaRelease(state.currentAnimeFull);
         if (myLoadToken !== activeVideoLoadToken) return;
@@ -16933,7 +17191,7 @@
       // === 3. ОБЫЧНЫЙ ПЛЕЕР KODIK (IFRAME) ===
       if (state.currentSource === 'kodik') {
         if (exoWrap) exoWrap.style.display = 'none';
-        if (loader) loader.style.display = 'none';
+        hideVideoStreamLoader();
         iframe.referrerPolicy = 'no-referrer';
         iframe.style.display = 'block';
         iframe.src = cleanUrl;
@@ -16944,16 +17202,15 @@
       iframe.style.display = 'none';
       iframe.src = 'about:blank';
       if (exoWrap) exoWrap.style.display = 'flex';
-      if (loader) loader.style.display = 'flex';
-      if (loaderSpinner) loaderSpinner.style.display = 'block';
-      if (loaderText) loaderText.innerHTML = `Подключаем поток «${variant.translation.title}» без рекламы...`;
+      showVideoStreamLoader(`Подгружаем поток «${variant.translation.title}» без рекламы...`, myLoadToken);
 
       const translationId = variant.translation_id || '';
+      let hardRefused = false;
 
-      // 1. Попытка №1: Собственный чистый API-интерфейс дешифровки Caesar Shift Kodik без рекламы
+      // 1. Попытка №1: Собственный чистый API-интерфейс дешифровки Caesar Shift Kodik без рекламы (таймаут до 15 сек)
       try {
         const localApiUrl = `${API_BASE}/api/kodik/extract?link=${encodeURIComponent(cleanUrl)}`;
-        const localResp = await fetchWithTimeout(localApiUrl, 8000);
+        const localResp = await fetchWithTimeout(localApiUrl, 15000);
         if (localResp.ok) {
           const localData = await localResp.json();
           if (myLoadToken === activeVideoLoadToken && localData && localData.success && localData.stream) {
@@ -16964,25 +17221,32 @@
             });
             return;
           }
+        } else if (localResp.status === 403 || localResp.status === 410) {
+          hardRefused = true;
         }
       } catch (err) {
         console.warn('Локальный API дешифровки Kodik:', err);
       }
 
-      // 2. Попытка №2: Резервный Cloudflare Worker
-      const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
+      // 2. Попытка №2: Резервный Cloudflare Worker (до 15 сек, если не было жёсткого отказа)
+      if (!hardRefused) {
+        const streamApiUrl = `${BACKEND_URL}/api/get-stream?shikimori_id=${encodeURIComponent(targetId)}&episode=${encodeURIComponent(epNum)}&translation_id=${encodeURIComponent(translationId)}&link=${encodeURIComponent(cleanUrl)}`;
 
-      try {
-        const streamResp = await fetchWithTimeout(streamApiUrl, 10000);
-        const streamData = await streamResp.json();
-        if (myLoadToken !== activeVideoLoadToken) return;
+        try {
+          const streamResp = await fetchWithTimeout(streamApiUrl, 15000);
+          if (streamResp.status === 403 || streamResp.status === 410) {
+            hardRefused = true;
+          }
+          const streamData = await streamResp.json().catch(() => null);
+          if (myLoadToken !== activeVideoLoadToken) return;
 
-        if (streamData && streamData.success && streamData.stream) {
-          applyStreamToExoPlayer(streamData);
-          return;
+          if (streamData && streamData.success && streamData.stream) {
+            applyStreamToExoPlayer(streamData);
+            return;
+          }
+        } catch (err) {
+          console.warn('Резервный воркер Kodik не отдал поток:', err);
         }
-      } catch (err) {
-        console.warn('Резервный воркер Kodik не отдал поток:', err);
       }
 
       // Если в списке озвучек выбрана АниЛибрия и воркер не ответил — подхватываем точный релиз из АниЛибрии
@@ -16997,7 +17261,9 @@
         }
       }
 
-      showStreamUnavailableNotice('Сервер Kodik ограничил прямой доступ к этой озвучке с IP воркера');
+      showStreamUnavailableNotice(hardRefused
+        ? 'Сервер отклонил прямое подключение к этой озвучке'
+        : 'Сервер Kodik ограничил прямой доступ к этой озвучке с IP воркера');
     }
 
     function stepEpisode(delta) {
@@ -17207,8 +17473,12 @@
       }
     }
 
-    function openBokuAiChatModal(presetPrompt = null) {
-      openChibiGuideModal('chat', presetPrompt);
+    function openBokuAiChatModal(presetPromptOrTab = null) {
+      if (presetPromptOrTab === 'chat' || presetPromptOrTab === 'roulette') {
+        openChibiGuideModal(presetPromptOrTab, null);
+      } else {
+        openChibiGuideModal('chat', presetPromptOrTab);
+      }
     }
 
     function openChibiGuideModal(initialTab = 'chat', presetPrompt = null) {
@@ -17242,8 +17512,10 @@
       switchBokuModalTab(initialTab);
       cycleChibiMascotEmotion(currentChibiIndex);
 
-      if (presetPrompt) {
-        triggerBokuAiPrompt(presetPrompt);
+      if (presetPrompt && presetPrompt !== 'chat' && presetPrompt !== 'roulette') {
+        setTimeout(() => {
+          triggerBokuAiPrompt(presetPrompt);
+        }, 100);
       }
     }
 
@@ -17252,20 +17524,23 @@
     }
 
     function requestQuickPlotSummary() {
-      if (state.currentTab !== 'watch' || !state.currentAnimeFull) {
-        openBokuAiChatModal();
-        triggerBokuAiPrompt('Сделай краткий пересказ сюжета любого популярного аниме!');
-        return;
-      }
-      const curTitle = state.currentAnimeFull.titleRu || state.currentAnimeFull.titleEn || 'этого аниме';
-      const prompt = `Сделай краткий пересказ сюжета аниме «${curTitle}» без жестких спойлеров к финалу! Расскажи завязку и суть конфликта.`;
-      openBokuAiChatModal('chat');
-      triggerBokuAiPrompt(prompt);
+      const curTitle = (state.currentTab === 'watch' && state.currentAnimeFull)
+        ? (state.currentAnimeFull.titleRu || state.currentAnimeFull.titleEn || '')
+        : '';
+      const prompt = curTitle
+        ? `Сделай краткий и захватывающий пересказ сюжета аниме «${curTitle}» без спойлеров к финалу! Расскажи завязку, главных героев и суть конфликта.`
+        : 'Сделай краткий и увлекательный пересказ сюжета любого популярного аниме!';
+
+      openChibiGuideModal('chat', null);
+      setTimeout(() => {
+        triggerBokuAiPrompt(prompt);
+      }, 100);
     }
 
     let isBokuAiThinking = false;
     let bokuAiCooldownTimer = null;
     let bokuAttachedImageDataUrl = null;
+    let bokuChatHistory = [];
 
     function handleBokuImageSelected(e) {
       const file = e.target?.files?.[0];
@@ -17427,13 +17702,38 @@
       }
       historyBox.appendChild(userBubble);
 
-      // 2. Индикатор набора текста
+      // 2. Индикатор набора текста (3 прыгающие точки + сменяющиеся подписи)
       const typingBubble = document.createElement('div');
       typingBubble.className = 'boku-msg-bubble bot';
-      typingBubble.style.cssText = 'color: var(--color-variant); font-style: italic; display: flex; align-items: center; gap: 8px;';
-      typingBubble.innerHTML = '<span class="spinner" style="width: 14px; height: 14px; border-width: 2px;"></span> <span>Боку думает... 💭</span>';
+      typingBubble.style.cssText = 'color: var(--color-variant); display: flex; align-items: center; gap: 10px;';
+      const initialThinkingCaption = currentAttachedImg ? 'Рассматриваю кадр...' : 'Боку думает...';
+      typingBubble.innerHTML = `<span class="boku-typing-dots"><span></span><span></span><span></span></span> <span id="bokuThinkingCaption" class="loader-caption-fade" style="font-style: italic;">${initialThinkingCaption}</span>`;
       historyBox.appendChild(typingBubble);
       historyBox.scrollTop = historyBox.scrollHeight;
+
+      const thinkingSteps = currentAttachedImg
+        ? [
+            'Рассматриваю кадр...',
+            'Изучаю черты персонажа и рисовку...',
+            'Сверяю по базам аниме...',
+            'Почти готово, формулирую ответ ✨'
+          ]
+        : [
+            'Боку думает...',
+            'Вспоминаю тайтлы и детали сюжета...',
+            'Формулирую живой ответ...',
+            'Почти готово ✨'
+          ];
+      let thinkingStepIdx = 0;
+      const bokuThinkingTimer = setInterval(() => {
+        const capEl = typingBubble.querySelector('#bokuThinkingCaption');
+        if (!capEl) {
+          clearInterval(bokuThinkingTimer);
+          return;
+        }
+        thinkingStepIdx = Math.min(thinkingSteps.length - 1, thinkingStepIdx + 1);
+        capEl.outerHTML = `<span id="bokuThinkingCaption" class="loader-caption-fade" style="font-style: italic;">${thinkingSteps[thinkingStepIdx]}</span>`;
+      }, 2400);
 
       // 3. Контекст открытого тайтла
       let animeContext = null;
@@ -17481,13 +17781,136 @@
         recentHistory
       };
 
+      let bokuAutoFollowScroll = true;
+
+      const revealBokuReplySmoothly = (containerEl, finalHtml, scrollContainer, onComplete) => {
+        const parser = document.createElement('div');
+        parser.innerHTML = finalHtml;
+
+        // Разбираем HTML в последовательность инкрементальных операций,
+        // чтобы пузырь сообщения рос плавно по мере появления букв и не растягивался пустым вниз заранее
+        const ops = [];
+        const collectOps = (node, groupMeta = null) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            for (const ch of Array.from(node.nodeValue || '')) {
+              ops.push({ type: 'char', ch, groupMeta });
+            }
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.tagName === 'BR') {
+              ops.push({ type: 'br', groupMeta });
+            } else {
+              const meta = { template: node.cloneNode(false), liveNode: null };
+              for (const child of Array.from(node.childNodes)) {
+                collectOps(child, meta);
+              }
+            }
+          }
+        };
+
+        for (const child of Array.from(parser.childNodes)) {
+          collectOps(child, null);
+        }
+
+        containerEl.innerHTML = '';
+
+        if (ops.length === 0) {
+          containerEl.innerHTML = finalHtml;
+          if (onComplete) onComplete();
+          return;
+        }
+
+        // Если пользователь вручную листает вверх — не мешаем ему автопрокруткой
+        let lastProgrammaticTop = scrollContainer ? scrollContainer.scrollTop : 0;
+        const onUserInteractScroll = () => {
+          if (!scrollContainer) return;
+          const distToBottom = scrollContainer.scrollHeight - scrollContainer.clientHeight - scrollContainer.scrollTop;
+          if (scrollContainer.scrollTop < lastProgrammaticTop - 4 && distToBottom > 36) {
+            bokuAutoFollowScroll = false;
+          } else if (distToBottom <= 16) {
+            bokuAutoFollowScroll = true;
+          }
+        };
+        if (scrollContainer) {
+          scrollContainer.addEventListener('scroll', onUserInteractScroll, { passive: true });
+        }
+
+        const totalOps = ops.length;
+        // Комфортный темп: ~2–4 символа на кадр (~1.3–2.4 сек на обычный ответ)
+        const opsPerTick = Math.max(2, Math.min(4, Math.ceil(totalOps / 110)));
+        let idx = 0;
+        let lastCharTime = 0;
+        let settleFrames = 0;
+
+        const appendOp = (op) => {
+          let targetParent = containerEl;
+          if (op.groupMeta) {
+            if (!op.groupMeta.liveNode) {
+              op.groupMeta.liveNode = op.groupMeta.template;
+              containerEl.appendChild(op.groupMeta.liveNode);
+            }
+            targetParent = op.groupMeta.liveNode;
+          }
+
+          if (op.type === 'br') {
+            targetParent.appendChild(document.createElement('br'));
+          } else {
+            const sp = document.createElement('span');
+            sp.className = 'boku-char-live';
+            sp.textContent = op.ch;
+            targetParent.appendChild(sp);
+          }
+        };
+
+        const step = (ts) => {
+          if (idx < totalOps && (!lastCharTime || ts - lastCharTime >= 16)) {
+            lastCharTime = ts;
+            const end = Math.min(totalOps, idx + opsPerTick);
+            for (let i = idx; i < end; i++) {
+              appendOp(ops[i]);
+            }
+            idx = end;
+          }
+
+          // Плавное интерполированное следование скролла за растущими строками текста
+          let scrollMoving = false;
+          if (scrollContainer && bokuAutoFollowScroll) {
+            const targetBottom = Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight);
+            const diff = targetBottom - scrollContainer.scrollTop;
+            if (diff > 0.8) {
+              scrollContainer.scrollTop += diff <= 1.2 ? diff : Math.max(0.8, diff * 0.16);
+              lastProgrammaticTop = scrollContainer.scrollTop;
+              scrollMoving = true;
+            }
+          }
+
+          if (idx < totalOps || (scrollMoving && settleFrames < 24)) {
+            if (idx >= totalOps) settleFrames++;
+            requestAnimationFrame(step);
+          } else {
+            if (scrollContainer) {
+              scrollContainer.removeEventListener('scroll', onUserInteractScroll);
+            }
+            if (onComplete) onComplete();
+            setTimeout(() => {
+              if (containerEl && containerEl.isConnected) {
+                containerEl.innerHTML = finalHtml;
+              }
+            }, 340);
+          }
+        };
+
+        requestAnimationFrame(step);
+      };
+
       try {
+        const historyPayload = bokuChatHistory.slice(-6);
         const res = await fetch(apiUrl('/api/boku/chat'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: msgText,
             image: currentAttachedImg || undefined,
+            history: historyPayload,
             animeContext,
             userContext,
             userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
@@ -17496,6 +17919,7 @@
           })
         });
 
+        clearInterval(bokuThinkingTimer);
         const data = await res.json();
         const replyRaw = data.reply || 'Хм, даже не знаю что ответить...';
 
@@ -17552,7 +17976,9 @@
           });
         }
 
-        // Заполняем бабл ответа Боку
+        const finalFormattedHtml = renderedHtml.replace(/\n/g, '<br>');
+
+        // Заполняем бабл ответа Боку с плавным проявлением букв
         typingBubble.style.fontStyle = 'normal';
         typingBubble.style.color = '#eee';
         typingBubble.style.display = 'block';
@@ -17561,93 +17987,118 @@
             <span style="font-size: 14px; color: var(--color-primary);">✨</span>
             <span>Боку AI</span>
           </div>
-          <div style="line-height: 1.5;">${renderedHtml.replace(/\n/g, '<br>')}</div>
+          <div class="boku-reply-body" style="line-height: 1.5;"></div>
         `;
 
-        // Отображение точного найденного момента из серии (серия, таймкод, превью кадра)
-        if (data.sceneMoment) {
-          const m = data.sceneMoment;
-          const momentCard = document.createElement('div');
-          momentCard.className = 'boku-scene-moment-card animate-fade';
-          momentCard.innerHTML = `
-            <div class="boku-scene-moment-header">
-              <span class="material-symbols-rounded" style="color: #4ade80; font-size: 18px;">movie_filter</span>
-              <strong style="color: #fff; font-size: 13px;">Точный момент: Серия ${escapeHtml(m.episode || 1)} • ${escapeHtml(m.time || '00:00')}</strong>
-              <span class="boku-scene-similarity">${escapeHtml(m.similarity || 85)}% совпадение</span>
-            </div>
-            ${m.image ? `
-              <div class="boku-scene-preview-wrap">
-                <img src="${escapeHtml(m.image)}" class="boku-scene-preview-img" alt="Кадр из аниме" onerror="this.parentElement.style.display='none'" />
-                <div class="boku-scene-preview-overlay">Официальный кадр тайтла 🎬</div>
-              </div>
-            ` : ''}
-          `;
-          typingBubble.appendChild(momentCard);
-        }
-
-        // Объединяем названия от сервера и из парсинга
+        const replyBodyEl = typingBubble.querySelector('.boku-reply-body');
         const allRecommendedTitles = [...new Set([...(data.titles || []).map(cleanTitleFn), ...rawTitlesFound])].filter(Boolean).slice(0, 4);
 
-        if (allRecommendedTitles.length > 0) {
-          const recGrid = document.createElement('div');
-          recGrid.className = 'boku-rec-grid';
-          typingBubble.appendChild(recGrid);
-
-          for (const titleStr of allRecommendedTitles) {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'boku-rec-card animate-fade';
-            cardEl.innerHTML = `
-              <div style="width: 38px; height: 52px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <span class="material-symbols-rounded" style="font-size: 20px; color: var(--color-variant);">movie</span>
+        const appendExtrasAfterReveal = () => {
+          // Отображение точного найденного момента из серии (серия, таймкод, превью кадра)
+          if (data.sceneMoment) {
+            const m = data.sceneMoment;
+            const momentCard = document.createElement('div');
+            momentCard.className = 'boku-scene-moment-card boku-card-smooth-in';
+            momentCard.innerHTML = `
+              <div class="boku-scene-moment-header">
+                <span class="material-symbols-rounded" style="color: #4ade80; font-size: 18px;">movie_filter</span>
+                <strong style="color: #fff; font-size: 13px;">Точный момент: Серия ${escapeHtml(m.episode || 1)} • ${escapeHtml(m.time || '00:00')}</strong>
+                <span class="boku-scene-similarity">${escapeHtml(m.similarity || 85)}% совпадение</span>
               </div>
-              <div class="boku-rec-details">
-                <div class="boku-rec-name">${escapeHtml(titleStr)}</div>
-                <div class="boku-rec-sub"><span>Поиск тайтла...</span></div>
-              </div>
-              <button type="button" class="boku-rec-play-btn" onclick="openAnimeFromAi(null, '${escapeHtml(titleStr)}')">
-                <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span>
-                <span>Смотреть</span>
-              </button>
+              ${m.image ? `
+                <div class="boku-scene-preview-wrap">
+                  <img src="${escapeHtml(m.image)}" class="boku-scene-preview-img" alt="Кадр из аниме" onerror="this.parentElement.style.display='none'" />
+                  <div class="boku-scene-preview-overlay">Официальный кадр тайтла 🎬</div>
+                </div>
+              ` : ''}
             `;
-            recGrid.appendChild(cardEl);
+            typingBubble.appendChild(momentCard);
+          }
 
-            // Асинхронно подгружаем постер, год и точный id с Shikimori
-            fetchGraphQLAnimes({ search: titleStr, limit: 1 }).then(results => {
-              if (results && results.length > 0) {
-                const parsed = parseAnimeItem(results[0]);
-                state.itemsRegistry[parsed.id] = parsed;
+          if (allRecommendedTitles.length > 0) {
+            const recGrid = document.createElement('div');
+            recGrid.className = 'boku-rec-grid boku-card-smooth-in';
+            typingBubble.appendChild(recGrid);
 
-                const displayTitle = (currentLang === 'en' ? (parsed.titleEn || parsed.titleRu) : (parsed.titleRu || parsed.titleEn)) || titleStr;
-                const scoreText = parsed.score ? `⭐ ${parsed.score}` : '';
-                const yearText = parsed.year ? `${parsed.year}` : '';
-                const metaParts = [yearText, scoreText].filter(Boolean).join(' • ');
+            for (const titleStr of allRecommendedTitles) {
+              const cardEl = document.createElement('div');
+              cardEl.className = 'boku-rec-card boku-card-smooth-in';
+              cardEl.innerHTML = `
+                <div style="width: 38px; height: 52px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <span class="material-symbols-rounded" style="font-size: 20px; color: var(--color-variant);">movie</span>
+                </div>
+                <div class="boku-rec-details">
+                  <div class="boku-rec-name">${escapeHtml(titleStr)}</div>
+                  <div class="boku-rec-sub"><span>Поиск тайтла...</span></div>
+                </div>
+                <button type="button" class="boku-rec-play-btn" onclick="openAnimeFromAi(null, '${escapeHtml(titleStr)}')">
+                  <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span>
+                  <span>Смотреть</span>
+                </button>
+              `;
+              recGrid.appendChild(cardEl);
 
-                cardEl.innerHTML = `
-                  <img src="${parsed.poster || '/assets/sprite_10_bcbb0cee.webp'}" class="boku-rec-poster" alt="${escapeHtml(displayTitle)}" onerror="this.src='/assets/sprite_10_bcbb0cee.webp'" />
-                  <div class="boku-rec-details">
-                    <div class="boku-rec-name" title="${escapeHtml(displayTitle)}">${escapeHtml(displayTitle)}</div>
-                    <div class="boku-rec-sub">${escapeHtml(metaParts || 'Аниме')}</div>
-                  </div>
-                  <button type="button" class="boku-rec-play-btn" onclick="openAnimeFromAi('${parsed.id}', '${escapeHtml(displayTitle)}')">
-                    <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span>
-                    <span>Смотреть</span>
-                  </button>
-                `;
-              }
-            }).catch(() => {});
+              // Асинхронно подгружаем постер, год и точный id с Shikimori
+              fetchGraphQLAnimes({ search: titleStr, limit: 1 }).then(results => {
+                if (results && results.length > 0) {
+                  const parsed = parseAnimeItem(results[0]);
+                  state.itemsRegistry[parsed.id] = parsed;
+
+                  const displayTitle = (currentLang === 'en' ? (parsed.titleEn || parsed.titleRu) : (parsed.titleRu || parsed.titleEn)) || titleStr;
+                  const scoreText = parsed.score ? `⭐ ${parsed.score}` : '';
+                  const yearText = parsed.year ? `${parsed.year}` : '';
+                  const metaParts = [yearText, scoreText].filter(Boolean).join(' • ');
+
+                  cardEl.innerHTML = `
+                    <img src="${parsed.poster || '/assets/sprite_10_bcbb0cee.webp'}" class="boku-rec-poster" alt="${escapeHtml(displayTitle)}" onerror="this.src='/assets/sprite_10_bcbb0cee.webp'" />
+                    <div class="boku-rec-details">
+                      <div class="boku-rec-name" title="${escapeHtml(displayTitle)}">${escapeHtml(displayTitle)}</div>
+                      <div class="boku-rec-sub">${escapeHtml(metaParts || 'Аниме')}</div>
+                    </div>
+                    <button type="button" class="boku-rec-play-btn" onclick="openAnimeFromAi('${parsed.id}', '${escapeHtml(displayTitle)}')">
+                      <span class="material-symbols-rounded" style="font-size: 15px;">play_arrow</span>
+                      <span>Смотреть</span>
+                    </button>
+                  `;
+                }
+              }).catch(() => {});
+            }
+          }
+          if (bokuAutoFollowScroll) {
+            historyBox.scrollTo({ top: historyBox.scrollHeight, behavior: 'smooth' });
+          }
+        };
+
+        await new Promise((resolve) => {
+          revealBokuReplySmoothly(replyBodyEl, finalFormattedHtml, historyBox, () => {
+            appendExtrasAfterReveal();
+            resolve();
+          });
+        });
+
+        // Сохраняем историю сообщений (до 12 реплик в памяти клиента)
+        if (!data.errorOccurred && !data.isCooldown && !data.limitReached && replyRaw) {
+          bokuChatHistory.push({ role: 'user', content: msgText });
+          bokuChatHistory.push({ role: 'assistant', content: replyRaw });
+          if (bokuChatHistory.length > 12) {
+            bokuChatHistory = bokuChatHistory.slice(-12);
           }
         }
 
       } catch (err) {
+        clearInterval(bokuThinkingTimer);
         console.error('Boku chat client error:', err);
+        typingBubble.style.display = 'block';
         typingBubble.innerHTML = `
           <div class="boku-msg-sender" style="color: #f87171;">
             <span class="material-symbols-rounded" style="font-size: 14px;">error</span>
             <span>Боку AI</span>
           </div>
-          <div>Не удалось связаться с сервером 😿 Попробуй ещё разок!</div>
+          <div class="loader-caption-fade">Не удалось связаться с сервером 😿 Попробуй ещё разок!</div>
         `;
+        historyBox.scrollTo({ top: historyBox.scrollHeight, behavior: 'smooth' });
       } finally {
+        clearInterval(bokuThinkingTimer);
         isBokuAiThinking = false;
         if (chipsBox) {
           chipsBox.style.pointerEvents = 'auto';
@@ -17660,7 +18111,6 @@
           sendBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 19px;">send</span>';
         }
         input.focus();
-        historyBox.scrollTop = historyBox.scrollHeight;
       }
     }
 
@@ -17729,10 +18179,11 @@
       if (bubble) bubble.textContent = isEn ? (mascot.bubbleEn || mascot.bubbleRu || mascot.bubble) : (mascot.bubbleRu || mascot.bubble);
     }
 
-    // === РУЛЕТКА И УМНЫЙ ПОДБОР АНИМЕ ОТ БОКУ ===
+    // === РУЛЕТКА И УМНЫЙ ИИ-ПОДБОР АНИМЕ ОТ БОКУ ===
     let lastRouletteWinner = null;
     let isRouletteSpinning = false;
     let rouletteStatusTimer = null;
+    let rouletteHistoryTitles = [];
 
     function openBokuRouletteModal() {
       const modal = document.getElementById('bokuRouletteModal');
@@ -17752,6 +18203,35 @@
       handleCardClick(targetId);
     }
 
+    function collectRouletteUserContext() {
+      const watching = [];
+      const favorites = [];
+      const completed = [];
+      const planned = [];
+      for (const [animeId, rate] of Object.entries(state.userRates || {})) {
+        const info = state.itemsRegistry?.[animeId] || rate.anime || {};
+        const title = info.titleRu || info.russian || info.name || rate.animeTitle || '';
+        if (!title) continue;
+        if (rate.status === 'watching') watching.push(title);
+        else if (rate.status === 'planned') planned.push(title);
+        else if (rate.status === 'completed') {
+          if (rate.score >= 8) favorites.push(`${title} (${rate.score}/10)`);
+          else completed.push(title);
+        }
+      }
+      const recentHistory = (state.history || [])
+        .slice(0, 8)
+        .map(h => h.titleRu || h.titleEn || h.title)
+        .filter(Boolean);
+      return {
+        watching: watching.slice(0, 10),
+        favorites: favorites.slice(0, 12),
+        completed: completed.slice(0, 12),
+        planned: planned.slice(0, 10),
+        recentHistory
+      };
+    }
+
     async function startBokuRoulette() {
       if (isRouletteSpinning) return;
       isRouletteSpinning = true;
@@ -17759,6 +18239,10 @@
       const modal = document.getElementById('bokuRouletteModal');
       const spinView = document.getElementById('rouletteSpinView');
       const winnerView = document.getElementById('rouletteWinnerView');
+      const prepBox = document.getElementById('rouletteAiPrepBox');
+      const prepText = document.getElementById('rouletteAiPrepText');
+      const prepImg = document.getElementById('roulettePrepImg');
+      const viewportEl = document.getElementById('rouletteViewport');
       const strip = document.getElementById('rouletteStrip');
       const subStatus = document.getElementById('rouletteSubStatus');
       const timerText = document.getElementById('rouletteTimerText');
@@ -17768,15 +18252,46 @@
       if (modal) modal.style.display = 'flex';
       if (spinView) spinView.style.display = 'block';
       if (winnerView) winnerView.style.display = 'none';
-      if (mascotImg) mascotImg.src = '/assets/sprite_10_bcbb0cee.webp';
-      if (subStatus) subStatus.textContent = isEn ? 'Boku is spinning the reel and choosing titles... 🎲' : 'Боку запускает барабан и перебирает тайтлы... 🎲';
-      if (timerText) timerText.textContent = isEn ? 'Spinning the anime reel...' : 'Раскручиваем барабан аниме...';
+      if (prepBox) prepBox.style.display = 'flex';
+      if (viewportEl) viewportEl.style.display = 'none';
 
-      // 1. Сбор пула тайтлов для ленты рулетки (34 элемента)
+      if (mascotImg) mascotImg.src = getBokuSpriteUrl(10);
+      if (prepImg) prepImg.src = getBokuSpriteUrl(16);
+      if (prepText) {
+        prepText.classList.remove('launch-burst');
+        prepText.textContent = isEn ? 'Finding what might suit you...' : 'Подбираю, что может вам подойти...';
+      }
+      if (subStatus) subStatus.textContent = isEn ? 'Boku AI is analyzing your tastes...' : 'Боку AI анализирует твои вкусы...';
+      if (timerText) timerText.textContent = isEn ? 'Checking ratings and favorites...' : 'Изучаю оценки, планы и настроение...';
+
+      const stageStep1Timer = setTimeout(() => {
+        if (prepText) {
+          prepText.textContent = isEn ? 'Checking your favorite genres & pacing...' : 'Прикидываю жанры и лучший вайб для тебя...';
+        }
+        if (prepImg) prepImg.src = getBokuSpriteUrl(7);
+      }, 950);
+
+      // 1. Запрос к ИИ-рулетке на сервере + параллельная загрузка пула для ленты
+      const aiPromise = fetch(apiUrl('/api/boku/roulette'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userContext: collectRouletteUserContext(),
+          shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null,
+          userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
+          deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
+          excludeTitles: rouletteHistoryTitles.slice(-12),
+          lang: isEn ? 'en' : 'ru'
+        }),
+        signal: AbortSignal.timeout(11000)
+      }).then(r => r.json()).catch(() => null);
+
+      const minPrepDelay = new Promise(r => setTimeout(r, 1700));
+
       let candidatePool = Object.values(state.itemsRegistry || {}).filter(it => it && it.poster && it.id);
+      let catalogFillPromise = Promise.resolve();
       if (candidatePool.length < 15) {
-        try {
-          const fresh = await fetchGraphQLAnimes({ page: 1, limit: 30, order: 'ranked' });
+        catalogFillPromise = fetchGraphQLAnimes({ page: 1, limit: 30, order: 'ranked' }).then(fresh => {
           if (Array.isArray(fresh)) {
             fresh.forEach(raw => {
               const parsed = parseAnimeItem(raw);
@@ -17784,16 +18299,35 @@
               candidatePool.push(parsed);
             });
           }
-        } catch (e) {}
+        }).catch(() => {});
       }
 
-      // 2. Определение победителя по предпочтениям
+      const [aiData] = await Promise.all([aiPromise, catalogFillPromise, minPrepDelay]);
+      clearTimeout(stageStep1Timer);
+
+      let targetWinner = null;
+      let recommendationReason = isEn ? 'Picked by Boku AI' : 'ИИ-подбор от Боку';
+      let aiWinnerQuote = isEn ? '“Picked by Boku AI just for you 💜”' : '«Подобрала с помощью ИИ специально для вас 💜»';
+
+      if (aiData && aiData.winner && aiData.winner.id) {
+        targetWinner = aiData.winner;
+        state.itemsRegistry[targetWinner.id] = targetWinner;
+        recommendationReason = aiData.reason || recommendationReason;
+        if (aiData.aiQuote) aiWinnerQuote = aiData.aiQuote;
+        if (Array.isArray(aiData.pool)) {
+          aiData.pool.forEach(p => {
+            if (p && p.id) {
+              state.itemsRegistry[p.id] = p;
+              candidatePool.push(p);
+            }
+          });
+        }
+      }
+
+      // 2. Запасной подбор по Shikimori, если ИИ временно не ответил
       const token = safeGet('shiki_token');
       const user = state.currentUser;
-      let targetWinner = null;
-      let recommendationReason = isEn ? 'Boku Recommendation' : 'Рекомендация Боку';
-
-      if (token && user) {
+      if (!targetWinner && token && user) {
         try {
           const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${user.id}&target_type=Anime`, {
             headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
@@ -17803,7 +18337,7 @@
             const planned = rates.filter(r => r.status === 'planned');
             const watching = rates.filter(r => r.status === 'watching');
             let pool = planned.length > 0 ? planned : (watching.length > 0 ? watching : rates);
-            recommendationReason = planned.length > 0 
+            recommendationReason = planned.length > 0
               ? (isEn ? 'From your «Planned» list' : 'Из твоего списка «В планах»')
               : (watching.length > 0 ? (isEn ? 'From your «Watching» list' : 'Из твоего списка «Смотрю»') : (isEn ? 'Based on your interests' : 'По твоим интересам'));
             const chosenRate = pool[Math.floor(Math.random() * pool.length)];
@@ -17824,7 +18358,7 @@
             const highRated = topItems.filter(i => (Number(i.score) || 0) >= 8.0);
             const pool = highRated.length > 0 ? highRated : topItems;
             targetWinner = parseAnimeItem(pool[Math.floor(Math.random() * pool.length)]);
-            recommendationReason = (Number(targetWinner.score || targetWinner.rating) >= 8.0) 
+            recommendationReason = (Number(targetWinner.score || targetWinner.rating) >= 8.0)
               ? (isEn ? 'Acclaimed Masterpiece (Top 8+)' : 'Признанный шедевр (топ 8+)')
               : (isEn ? 'Popular Hit' : 'Популярный хит');
             state.itemsRegistry[targetWinner.id] = targetWinner;
@@ -17847,13 +18381,32 @@
           score: '8.7',
           year: '1999',
           kind: isEn ? 'TV Series' : 'ТВ Сериал',
-          description: isEn 
+          description: isEn
             ? 'Gol D. Roger was known as the Pirate King, the strongest and most infamous being to have sailed the Grand Line...'
             : 'Гол Д. Роджер — король пиратов, стяжавший за свою жизнь богатство, славу и власть...'
         };
       }
 
       lastRouletteWinner = targetWinner;
+      const wTitleRemember = targetWinner.titleRu || targetWinner.russian || targetWinner.name;
+      if (wTitleRemember) {
+        rouletteHistoryTitles.push(wTitleRemember);
+        if (rouletteHistoryTitles.length > 20) rouletteHistoryTitles = rouletteHistoryTitles.slice(-20);
+      }
+
+      // Финальная анимация перед запуском барабана: «Запускаю рулетку!»
+      if (prepImg) prepImg.src = getBokuSpriteUrl(5);
+      if (prepText) {
+        prepText.textContent = isEn ? 'Launching the roulette!' : 'Запускаю рулетку!';
+        prepText.classList.add('launch-burst');
+      }
+      if (subStatus) subStatus.textContent = isEn ? 'Matches found! Spinning the reel! 🎲' : 'Варианты найдены! Запускаю рулетку! 🎲';
+      await new Promise(r => setTimeout(r, 850));
+
+      if (prepBox) prepBox.style.display = 'none';
+      if (viewportEl) viewportEl.style.display = 'block';
+      if (mascotImg) mascotImg.src = getBokuSpriteUrl(10);
+      if (timerText) timerText.textContent = isEn ? 'Spinning the AI anime reel...' : 'Раскручиваем барабан ИИ-подбора...';
 
       // 3. Формирование ленты рулетки: 34 элемента, целевой победитель на позиции TARGET_INDEX = 26
       const TOTAL_ITEMS = 34;
@@ -17864,7 +18417,7 @@
         if (i === TARGET_INDEX) {
           stripItems.push(targetWinner);
         } else {
-          const randItem = (candidatePool.length > 0) 
+          const randItem = (candidatePool.length > 0)
             ? candidatePool[Math.floor(Math.random() * candidatePool.length)]
             : targetWinner;
           stripItems.push(randItem);
@@ -17889,7 +18442,7 @@
       }
 
       // 4. Расчет точной координаты остановки по центру визора
-      const viewport = document.querySelector('.roulette-viewport');
+      const viewport = document.getElementById('rouletteViewport') || document.querySelector('.roulette-viewport');
       const viewportWidth = viewport ? viewport.offsetWidth : 460;
       const ITEM_WIDTH = 90;
       const ITEM_GAP = 12;
@@ -17905,15 +18458,14 @@
         }
       }, 50);
 
-      // Динамические статусы Боку во время вращения
       rouletteStatusTimer = setTimeout(() => {
-        if (subStatus) subStatus.textContent = isEn ? 'Scanning plots, genres, and your taste... ✨' : 'Изучаю сюжеты, жанры и твои вкусы... ✨';
-        if (mascotImg) mascotImg.src = '/assets/sprite_16_1c0db8e6.webp';
+        if (subStatus) subStatus.textContent = isEn ? 'Filtering top picks just for you... ✨' : 'Отсеиваю лишнее — оставляю лучшее... ✨';
+        if (mascotImg) mascotImg.src = getBokuSpriteUrl(16);
       }, 1600);
 
       setTimeout(() => {
         if (subStatus) subStatus.textContent = isEn ? 'The reel is slowing down... Here it is! 🎯' : 'Барабан замедляется... Вот же он! 🎯';
-        if (mascotImg) mascotImg.src = '/assets/sprite_05_d78e1470.webp';
+        if (mascotImg) mascotImg.src = getBokuSpriteUrl(5);
       }, 3400);
 
       // 6. Окончание вращения и карточка победителя
@@ -17940,8 +18492,8 @@
         if (winnerScore) winnerScore.textContent = targetWinner.score || targetWinner.rating || '8.5';
         if (winnerReason) winnerReason.textContent = recommendationReason;
         if (winnerDesc) winnerDesc.textContent = targetWinner.description || (isEn ? 'A thrilling story that will keep you on the edge of your seat!' : 'Захватывающая история, которая не оставит вас равнодушным!');
-        if (winnerChibi) winnerChibi.src = '/assets/sprite_11_8ea686eb.webp';
-        if (winnerQuote) winnerQuote.textContent = isEn ? '“Picked for you with love 💜”' : '«Подобрала для Вас с любовью 💜»';
+        if (winnerChibi) winnerChibi.src = getBokuSpriteUrl(11);
+        if (winnerQuote) winnerQuote.textContent = aiWinnerQuote;
 
         if (winnerView) {
           winnerView.style.display = 'flex';
@@ -17951,7 +18503,7 @@
         }
 
         cycleChibiMascotEmotion(11);
-        showToast(isEn ? '✨ Boku: “Picked for you with love 💜”' : '✨ Боку: «Подобрала для Вас с любовью 💜»');
+        showToast(isEn ? '✨ Boku AI: “Picked for you with love 💜”' : '✨ Боку AI: «Подобрала специально для вас 💜»');
       }, 5150);
     }
 

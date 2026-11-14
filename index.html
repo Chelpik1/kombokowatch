@@ -17902,7 +17902,7 @@
         requestAnimationFrame(step);
       };
 
-      const compressBokuImgToJpeg = (dataUrl, maxSide = 1024, quality = 0.85) => new Promise((resolve) => {
+const compressBokuImgToJpeg = (dataUrl, maxSide = 768, quality = 0.82) => new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
           let { width, height } = img;
@@ -17930,48 +17930,35 @@
 
       try {
         const historyPayload = bokuChatHistory.slice(-6);
-        let finalMessageForServer = msgText;
-        let imageForServer = currentAttachedImg || undefined;
+        let res;
 
         if (currentAttachedImg) {
-          const compressedJpeg = await compressBokuImgToJpeg(currentAttachedImg, 512, 0.78);
-          try {
-            const visionRes = await fetch(`${BACKEND_URL}/ai/vision`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                imageDataUrl: compressedJpeg,
-                question: msgText
-              })
-            });
-            const visionJson = await visionRes.json().catch(() => null);
-            if (visionJson && visionJson.success && visionJson.reply) {
-              finalMessageForServer = `[Пользователь прикрепил картинку. Распознавание определило: ${visionJson.reply}]\nВопрос пользователя: ${msgText}\nОбязательно укажи название аниме в {{Название}}!`;
-              imageForServer = undefined;
-            } else {
-              imageForServer = compressedJpeg;
-            }
-          } catch (visionErr) {
-            console.warn('Direct worker vision error, falling back to compressed server upload:', visionErr);
-            imageForServer = compressedJpeg;
-          }
+          // Сразу получаем готовый ответ от воркера, минуя VPS
+          const compressedJpeg = await compressBokuImgToJpeg(currentAttachedImg, 768, 0.82);
+          res = await fetch(`${BACKEND_URL}/ai/vision`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageDataUrl: compressedJpeg,
+              question: msgText
+            })
+          });
+        } else {
+          // Обычный текстовый запрос идёт на VPS
+          res = await fetch(apiUrl('/api/boku/chat'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: msgText,
+              history: historyPayload,
+              animeContext,
+              userContext,
+              userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
+              deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
+              shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null
+            })
+          });
         }
-
-        const res = await fetch(apiUrl('/api/boku/chat'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: finalMessageForServer,
-            image: imageForServer,
-            history: historyPayload,
-            animeContext,
-            userContext,
-            userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
-            deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
-            shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null
-          })
-        });
-
         clearInterval(bokuThinkingTimer);
         const data = await res.json();
         const replyRaw = data.reply || 'Хм, даже не знаю что ответить...';

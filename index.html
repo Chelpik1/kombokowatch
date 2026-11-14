@@ -3508,6 +3508,82 @@
       color: #FFD54F;
       background: rgba(255, 213, 79, 0.15);
     }
+    .search-history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 10px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 2px;
+    }
+    .search-history-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-variant);
+      opacity: 0.8;
+    }
+    .search-history-clear {
+      background: transparent;
+      border: none;
+      color: var(--color-primary);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .search-history-clear:hover {
+      background: rgba(208, 188, 255, 0.15);
+    }
+    .search-history-item {
+      justify-content: space-between;
+      padding: 8px 10px;
+    }
+    .search-history-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .search-history-icon {
+      font-size: 18px;
+      color: var(--color-primary);
+      opacity: 0.85;
+      flex-shrink: 0;
+    }
+    .search-history-text {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--color-surface);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-history-remove {
+      background: transparent;
+      border: none;
+      color: var(--color-variant);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0.65;
+      flex-shrink: 0;
+      transition: background 0.15s, opacity 0.15s, color 0.15s;
+    }
+    .search-history-remove:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--color-surface);
+      opacity: 1;
+    }
 
     /* === 2. БАННЕР РЕКОМЕНДАЦИЙ === */
     .recommendation-banner {
@@ -7470,6 +7546,10 @@
     html[data-theme-mode="light"] .chibi-floating-bubble {
       background: var(--bg-modal); color: var(--color-surface); box-shadow: 0 20px 55px rgba(20, 19, 18, 0.18);
     }
+    html[data-theme-mode="light"] .search-history-header { border-bottom-color: rgba(20, 19, 18, 0.1); }
+    html[data-theme-mode="light"] .search-history-text { color: var(--text-strong); }
+    html[data-theme-mode="light"] .search-history-remove { color: var(--color-variant); }
+    html[data-theme-mode="light"] .search-history-remove:hover { background: rgba(20, 19, 18, 0.08); color: var(--text-strong); }
     html[data-theme-mode="light"] .modal-overlay,
     html[data-theme-mode="light"] .boku-roulette-modal { background: rgba(20, 19, 18, 0.45); }
     html[data-theme-mode="light"] .boku-modal-wrapper {
@@ -8842,7 +8922,7 @@
       <form class="search-row" onsubmit="handleSearchSubmit(event)">
         <div class="search-container" id="searchContainer">
           <span class="material-symbols-rounded">search</span>
-          <input type="text" id="searchInput" class="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="Название аниме или Shikimori ID..." autocomplete="off" oninput="onSearchInput(this.value)" onkeydown="onSearchKeyDown(event)" />
+          <input type="text" id="searchInput" class="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="Название аниме или Shikimori ID..." autocomplete="off" onfocus="onSearchFocus()" onclick="onSearchFocus()" oninput="onSearchInput(this.value)" onkeydown="onSearchKeyDown(event)" />
           <button type="button" id="searchClearBtn" class="search-clear-btn" style="display: none;" onclick="clearSearchInput()" title="Очистить">
             <span class="material-symbols-rounded" style="font-size: 18px;">close</span>
           </button>
@@ -12334,36 +12414,15 @@
       }
 
       const hash = window.location.hash.replace(/^#\/?/, '');
-      if (/^\d+$/.test(hash)) {
-        await loadAnimeByIdOnStart(hash);
+      const animeIdParam = urlParams.get('animeId') || urlParams.get('anime');
+      const deepLinkId = /^\d+$/.test(hash) ? hash : (/^\d+$/.test(String(animeIdParam || '')) ? String(animeIdParam) : null);
+      if (deepLinkId) {
+        if (animeIdParam) window.history.replaceState({}, document.title, window.location.pathname + `#${deepLinkId}`);
+        await loadAnimeByIdOnStart(deepLinkId);
         return;
       }
 
-      const savedSession = localStorage.getItem('komboko_session');
-      if (savedSession) {
-        try {
-          const session = JSON.parse(savedSession);
-          if (session.currentTab === 'watch' && session.currentAnimeFull) {
-            state.currentAnimeFull = session.currentAnimeFull;
-            ensureVariantsInitialized();
-            state.currentEpisodeNum = session.currentEpisodeNum || 1;
-            state.currentVariantIndex = session.currentVariantIndex || 0;
-            state.currentSource = PLAYER_SOURCES.includes(session.currentSource) ? session.currentSource : 'exo';
-            state.megaplayLang = session.megaplayLang || 'sub';
-            state.megaplayMirror = session.megaplayMirror || 1;
-
-            switchTab('watch', false);
-            await updateWatchDetailsLanguage();
-            updateFavIconState();
-            renderVoiceChips();
-            renderEpisodesGrid();
-            loadAnimeRelations(state.currentAnimeFull.id);
-            loadAnimeCharacters(state.currentAnimeFull.id);
-            switchPlayerSource(state.currentSource);
-            return;
-          }
-        } catch(e) {}
-      }
+      // При свежем запуске сайта или PWA всегда открываем главный каталог (не восстанавливаем автоматически старый плеер)
 
       const pendingRateAnimeId = sessionStorage.getItem('komboko_pending_rate_anime');
       if (pendingRateAnimeId) {
@@ -16516,10 +16575,146 @@
       } catch (_) {}
     }
 
-    // === ЖИВОЙ ПОИСК С ВЫПАДАЮЩИМИ ПОДСКАЗКАМИ (AUTOCOMPLETE) ===
+    // === ЖИВОЙ ПОИСК С ВЫПАДАЮЩИМИ ПОДСКАЗКАМИ И ИСТОРИЕЙ ПОИСКА (ДО 5 ЗАПРОСОВ) ===
+    const SEARCH_HISTORY_KEY = 'komboko_search_history';
+    const SEARCH_HISTORY_MAX = 5;
     let searchDebounceTimer = null;
     let autocompleteResults = [];
     let activeAutocompleteIndex = -1;
+    let searchDropdownMode = 'none'; // 'none' | 'history' | 'autocomplete'
+
+    function escapeHtmlAttr(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function getSearchHistory() {
+      try {
+        const raw = safeGet(SEARCH_HISTORY_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(x => String(x || '').trim()).filter(Boolean).slice(0, SEARCH_HISTORY_MAX);
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveSearchHistory(query) {
+      const clean = String(query || '').trim();
+      if (!clean) return;
+      const lower = clean.toLowerCase();
+      const current = getSearchHistory().filter(item => item.toLowerCase() !== lower);
+      current.unshift(clean);
+      safeSet(SEARCH_HISTORY_KEY, JSON.stringify(current.slice(0, SEARCH_HISTORY_MAX)));
+    }
+
+    function removeSearchHistoryItem(index, ev) {
+      if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
+      const list = getSearchHistory();
+      if (index >= 0 && index < list.length) {
+        list.splice(index, 1);
+        safeSet(SEARCH_HISTORY_KEY, JSON.stringify(list));
+      }
+      renderSearchHistoryDropdown();
+    }
+
+    function clearSearchHistory(ev) {
+      if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
+      safeSet(SEARCH_HISTORY_KEY, JSON.stringify([]));
+      const dropdown = document.getElementById('searchAutocompleteDropdown');
+      if (dropdown) dropdown.style.display = 'none';
+      searchDropdownMode = 'none';
+      activeAutocompleteIndex = -1;
+    }
+
+    function renderSearchHistoryDropdown() {
+      const dropdown = document.getElementById('searchAutocompleteDropdown');
+      if (!dropdown) return;
+      const historyList = getSearchHistory();
+      if (!historyList.length) {
+        dropdown.style.display = 'none';
+        searchDropdownMode = 'none';
+        activeAutocompleteIndex = -1;
+        return;
+      }
+
+      const headerLabel = currentLang === 'en' ? 'Recent searches' : 'Недавние запросы';
+      const clearLabel = currentLang === 'en' ? 'Clear' : 'Очистить';
+
+      let html = `
+        <div class="search-history-header">
+          <span class="search-history-title">${headerLabel}</span>
+          <button type="button" class="search-history-clear" onclick="clearSearchHistory(event)">${clearLabel}</button>
+        </div>
+      `;
+
+      historyList.forEach((q, idx) => {
+        const safeText = escapeHtmlAttr(q);
+        html += `
+          <div class="search-auto-item search-history-item" data-index="${idx}" data-query="${safeText}" onclick="selectSearchHistoryItem(${idx})">
+            <div class="search-history-left">
+              <span class="material-symbols-rounded search-history-icon">history</span>
+              <span class="search-history-text">${safeText}</span>
+            </div>
+            <button type="button" class="search-history-remove" onclick="removeSearchHistoryItem(${idx}, event)" title="${currentLang === 'en' ? 'Remove' : 'Удалить'}">
+              <span class="material-symbols-rounded" style="font-size: 16px;">close</span>
+            </button>
+          </div>
+        `;
+      });
+
+      dropdown.innerHTML = html;
+      dropdown.style.display = 'flex';
+      searchDropdownMode = 'history';
+      activeAutocompleteIndex = -1;
+    }
+
+    function selectSearchHistoryItem(indexOrQuery) {
+      const list = getSearchHistory();
+      const query = typeof indexOrQuery === 'number' ? (list[indexOrQuery] || '') : String(indexOrQuery || '');
+      const clean = query.trim();
+      const dropdown = document.getElementById('searchAutocompleteDropdown');
+      if (dropdown) dropdown.style.display = 'none';
+      searchDropdownMode = 'none';
+      activeAutocompleteIndex = -1;
+      if (!clean) return;
+
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (input) input.value = clean;
+      if (clearBtn) clearBtn.style.display = 'flex';
+
+      saveSearchHistory(clean);
+      state.currentQuery = clean;
+      const filterTypeEl = document.getElementById('filterType');
+      if (filterTypeEl) filterTypeEl.value = '';
+      switchTab('catalog');
+      resetAndFetchCatalog();
+    }
+
+    function onSearchFocus() {
+      const input = document.getElementById('searchInput');
+      const dropdown = document.getElementById('searchAutocompleteDropdown');
+      if (!input || !dropdown) return;
+      const query = (input.value || '').trim();
+      if (query.length < 2) {
+        renderSearchHistoryDropdown();
+      } else if (autocompleteResults.length > 0) {
+        dropdown.style.display = 'flex';
+        searchDropdownMode = 'autocomplete';
+      }
+    }
 
     function onSearchInput(val) {
       const clearBtn = document.getElementById('searchClearBtn');
@@ -16530,9 +16725,15 @@
 
       clearTimeout(searchDebounceTimer);
       if (query.length < 2) {
-        if (dropdown) dropdown.style.display = 'none';
         autocompleteResults = [];
         activeAutocompleteIndex = -1;
+        const input = document.getElementById('searchInput');
+        if (input && document.activeElement === input) {
+          renderSearchHistoryDropdown();
+        } else {
+          if (dropdown) dropdown.style.display = 'none';
+          searchDropdownMode = 'none';
+        }
         return;
       }
 
@@ -16544,15 +16745,14 @@
     function clearSearchInput() {
       const input = document.getElementById('searchInput');
       const clearBtn = document.getElementById('searchClearBtn');
-      const dropdown = document.getElementById('searchAutocompleteDropdown');
       if (input) {
         input.value = '';
         input.focus();
       }
       if (clearBtn) clearBtn.style.display = 'none';
-      if (dropdown) dropdown.style.display = 'none';
       autocompleteResults = [];
       activeAutocompleteIndex = -1;
+      renderSearchHistoryDropdown();
     }
 
     async function fetchAutocompleteSuggestions(query) {
@@ -16563,12 +16763,14 @@
         const res = await fetch(apiUrl(`/api/shikimori/search?q=${encodeURIComponent(query)}&limit=8`));
         if (!res.ok) {
           dropdown.style.display = 'none';
+          searchDropdownMode = 'none';
           return;
         }
         const data = await res.json();
         if (!Array.isArray(data) || data.length === 0) {
           dropdown.innerHTML = `<div class="search-auto-empty">${currentLang === 'en' ? 'No anime found' : 'Ничего не найдено'}</div>`;
           dropdown.style.display = 'block';
+          searchDropdownMode = 'none';
           autocompleteResults = [];
           activeAutocompleteIndex = -1;
           return;
@@ -16598,6 +16800,7 @@
         if (autocompleteResults.length === 0) {
           dropdown.innerHTML = `<div class="search-auto-empty">${currentLang === 'en' ? 'No safe results found' : 'Ничего не найдено'}</div>`;
           dropdown.style.display = 'block';
+          searchDropdownMode = 'none';
           return;
         }
 
@@ -16639,32 +16842,39 @@
 
         dropdown.innerHTML = html;
         dropdown.style.display = 'block';
+        searchDropdownMode = 'autocomplete';
       } catch (err) {
         dropdown.style.display = 'none';
+        searchDropdownMode = 'none';
       }
     }
 
     function selectAutocompleteItem(animeId) {
       const dropdown = document.getElementById('searchAutocompleteDropdown');
       if (dropdown) dropdown.style.display = 'none';
+      searchDropdownMode = 'none';
       autocompleteResults = [];
       activeAutocompleteIndex = -1;
 
       const item = state.itemsRegistry[String(animeId)];
       if (item) {
         const input = document.getElementById('searchInput');
-        if (input) input.value = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
+        const chosenTitle = currentLang === 'en' ? (item.titleEn || item.titleRu) : item.titleRu;
+        if (input) input.value = chosenTitle;
+        saveSearchHistory(chosenTitle);
         handleCardClick(item.id);
       }
     }
 
     function onSearchKeyDown(e) {
       const dropdown = document.getElementById('searchAutocompleteDropdown');
-      if (!dropdown || dropdown.style.display === 'none' || autocompleteResults.length === 0) {
+      if (!dropdown || dropdown.style.display === 'none') {
         return;
       }
 
       const items = dropdown.querySelectorAll('.search-auto-item');
+      if (!items.length) return;
+
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         activeAutocompleteIndex = (activeAutocompleteIndex + 1) % items.length;
@@ -16674,12 +16884,17 @@
         activeAutocompleteIndex = (activeAutocompleteIndex - 1 + items.length) % items.length;
         updateActiveAutocompleteItem(items);
       } else if (e.key === 'Enter') {
-        if (activeAutocompleteIndex >= 0 && activeAutocompleteIndex < autocompleteResults.length) {
+        if (activeAutocompleteIndex >= 0 && activeAutocompleteIndex < items.length) {
           e.preventDefault();
-          selectAutocompleteItem(autocompleteResults[activeAutocompleteIndex].id);
+          if (searchDropdownMode === 'history') {
+            selectSearchHistoryItem(activeAutocompleteIndex);
+          } else if (autocompleteResults[activeAutocompleteIndex]) {
+            selectAutocompleteItem(autocompleteResults[activeAutocompleteIndex].id);
+          }
         }
       } else if (e.key === 'Escape') {
         dropdown.style.display = 'none';
+        searchDropdownMode = 'none';
         activeAutocompleteIndex = -1;
       }
     }
@@ -16687,6 +16902,7 @@
     function updateActiveAutocompleteItem(items) {
       items.forEach((item, idx) => {
         item.classList.toggle('active', idx === activeAutocompleteIndex);
+        item.classList.toggle('selected', idx === activeAutocompleteIndex);
         if (idx === activeAutocompleteIndex) {
           item.scrollIntoView({ block: 'nearest' });
         }
@@ -19121,7 +19337,14 @@
 
     function handleSearchSubmit(e) {
       e.preventDefault();
-      const raw = document.getElementById('searchInput').value.trim();
+      const input = document.getElementById('searchInput');
+      const raw = (input ? input.value : '').trim();
+      const dropdown = document.getElementById('searchAutocompleteDropdown');
+      if (dropdown) dropdown.style.display = 'none';
+      searchDropdownMode = 'none';
+      activeAutocompleteIndex = -1;
+      if (raw) saveSearchHistory(raw);
+      if (input) input.blur();
       state.currentQuery = raw;
       document.getElementById('filterType').value = '';
       switchTab('catalog');

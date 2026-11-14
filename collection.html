@@ -618,6 +618,16 @@
 
     .card-poster-box { position: relative; width: 100%; aspect-ratio: 2 / 2.85; background: #120e1e; overflow: hidden; }
     .card-poster-box img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .collectible-card.is-mascot .card-poster-box {
+      background: #ffffff;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .collectible-card.is-mascot .card-poster-box img {
+      object-fit: contain;
+    }
     .rarity-badge {
       position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: var(--radius-full);
       font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
@@ -867,6 +877,11 @@
       transform: translateY(-4px);
     }
     .tray-card-poster { width: 100%; aspect-ratio: 2 / 2.85; object-fit: cover; display: block; }
+    .tray-card-mini.is-mascot .tray-card-poster {
+      background: #ffffff;
+      padding: 8px;
+      object-fit: contain;
+    }
     .tray-card-caption {
       padding: 6px 8px;
       font-size: 11px;
@@ -1063,6 +1078,11 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       border: 1.5px solid var(--glass-border);
       flex-shrink: 0;
+    }
+    .card-info-thumb.is-mascot {
+      background: #ffffff;
+      padding: 8px;
+      object-fit: contain;
     }
     .card-info-header-meta {
       display: flex;
@@ -3889,10 +3909,12 @@
       const jumpMeta = document.getElementById('jumpStatsMeta');
       const mathMeta = document.getElementById('mathStatsMeta');
       if (jumpMeta) {
-        jumpMeta.textContent = `+5 БК за пролёт · Лимит: ${gs.jumpCoinsToday || 0} / 2000 БК · Рекорд: ${gs.jumpBestFlights || 0}`;
+        const jToday = Math.min(2000, Number(gs.jumpCoinsToday || 0));
+        jumpMeta.textContent = `+5 БК за пролёт · Лимит: ${jToday} / 2000 БК · Рекорд: ${gs.jumpBestFlights || 0}`;
       }
       if (mathMeta) {
-        mathMeta.textContent = `10 ворот · Лимит: ${gs.mathCoinsToday || 0} / 2000 БК · Рекорд: ${(gs.mathBestScore || 0).toLocaleString('ru-RU')}`;
+        const mToday = Math.min(2000, Number(gs.mathCoinsToday || 0));
+        mathMeta.textContent = `10 ворот · Лимит: ${mToday} / 2000 БК · Рекорд: ${(gs.mathBestScore || 0).toLocaleString('ru-RU')}`;
       }
     }
 
@@ -3931,7 +3953,9 @@
       const btnUpgrade = document.getElementById('modalBtnUpgrade');
       const btnWatch = document.getElementById('modalBtnWatch');
 
-      thumbEl.src = (card.isMascot || card.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+      const isMascot = Boolean(card.isMascot || card.animeId === 'boku_mascot');
+      thumbEl.classList.toggle('is-mascot', isMascot);
+      thumbEl.src = isMascot ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
       titleEl.textContent = card.title;
       origTitleEl.textContent = card.titleEn || '';
 
@@ -4066,10 +4090,11 @@
                <span>Прокачать</span>
              </button>`;
 
-        const posterSrc = (card.isMascot || card.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+        const isMascot = Boolean(card.isMascot || card.animeId === 'boku_mascot');
+        const posterSrc = isMascot ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
 
         return `
-          <div class="collectible-card rarity-${card.rarity}" data-anime-id="${card.animeId}" onclick="openCardDetailsModal('${card.uid}')">
+          <div class="collectible-card rarity-${card.rarity} ${isMascot ? 'is-mascot' : ''}" data-anime-id="${card.animeId}" onclick="openCardDetailsModal('${card.uid}')">
             <div class="card-poster-box">
               <img src="${posterSrc}" alt="${card.title}" loading="lazy" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
               <div class="rarity-badge">${meta.nameRu}</div>
@@ -4112,9 +4137,10 @@
 
       carousel.innerHTML = upgradeable.map(c => {
         const isSel = c.uid === appState.selectedCardUid;
-        const posterSrc = (c.isMascot || c.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (c.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+        const isMascot = Boolean(c.isMascot || c.animeId === 'boku_mascot');
+        const posterSrc = isMascot ? getBokuSpriteUrl(5) : (c.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
         return `
-          <div class="tray-card-mini ${isSel ? 'selected' : ''}" onclick="selectUpgraderCard('${c.uid}')">
+          <div class="tray-card-mini ${isSel ? 'selected' : ''} ${isMascot ? 'is-mascot' : ''}" onclick="selectUpgraderCard('${c.uid}')">
             <img class="tray-card-poster" src="${posterSrc}" alt="${c.title}" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
             <div class="tray-card-caption">${c.title}</div>
           </div>
@@ -4217,9 +4243,10 @@
     }
 
     function renderSlotCardHTML(card, rarityName) {
-      const posterSrc = (card.isMascot || card.animeId === 'boku_mascot') ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+      const isMascot = Boolean(card.isMascot || card.animeId === 'boku_mascot');
+      const posterSrc = isMascot ? getBokuSpriteUrl(5) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
       return `
-        <div class="collectible-card rarity-${card.rarity}" style="width: 170px; cursor: default;">
+        <div class="collectible-card rarity-${card.rarity} ${isMascot ? 'is-mascot' : ''}" style="width: 170px; cursor: default;">
           <div class="card-poster-box">
             <img src="${posterSrc}" alt="${card.title}" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
             <div class="rarity-badge">${rarityName}</div>
@@ -5289,9 +5316,9 @@
         }
 
         const dailyLimit = Number(sessionData.dailyLimit || 2000);
-        const coinsTodayAtStart = Number(sessionData.coinsToday ?? appState.gameStats?.jumpCoinsToday ?? 0);
+        const coinsTodayAtStart = Math.min(dailyLimit, Number(sessionData.coinsToday ?? appState.gameStats?.jumpCoinsToday ?? 0));
         if (coinsTodayAtStart >= dailyLimit) {
-          document.getElementById('gameHudStat2').textContent = 'Лимит 2000/д · Рекорд!';
+          document.getElementById('gameHudStat2').textContent = `Лимит ${dailyLimit}/д · Рекорд!`;
         }
 
         jumpState = {
@@ -5753,7 +5780,7 @@
             updateGameStatsCardsUI();
 
             const capLimit = data.dailyLimit || 2000;
-            const todayTotal = data.gameStats?.jumpCoinsToday ?? 0;
+            const todayTotal = Math.min(capLimit, data.gameStats?.jumpCoinsToday ?? 0);
             coinsEl.textContent = `+${data.awardedCoins} БК`;
             detailsEl.textContent = `Пролётов: ${data.flights} (с 2x: ${data.doubleFlights}) · Рекорд: ${data.gameStats?.jumpBestFlights || data.flights} · Сегодня: ${todayTotal}/${capLimit} БК${data.cappedByDailyLimit ? ' (дневной лимит достигнут)' : ''}.`;
             if (data.questEligibility?.quest_play_bokujump && !appState.questsClaimedAt?.quest_play_bokujump) {
@@ -6122,7 +6149,7 @@
             updateGameStatsCardsUI();
 
             const capLimit = data.dailyLimit || 2000;
-            const todayTotal = data.gameStats?.mathCoinsToday ?? 0;
+            const todayTotal = Math.min(capLimit, data.gameStats?.mathCoinsToday ?? 0);
             coinsEl.textContent = `+${data.awardedCoins} БК`;
             detailsEl.textContent = `${data.tierLabel || ''} · Счёт: ${(data.finalScore || st.score).toLocaleString('ru-RU')}${data.multiplier2x ? ' · Множитель 2x сработал!' : ' · Без 2x множителя'} · Сегодня: ${todayTotal}/${capLimit} БК${data.cappedByDailyLimit ? ' (дневной лимит достигнут)' : ''}`;
             if (data.questEligibility?.quest_play_bokumath && !appState.questsClaimedAt?.quest_play_bokumath) {

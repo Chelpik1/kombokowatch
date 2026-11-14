@@ -866,22 +866,53 @@
       border-radius: var(--radius-md);
       overflow: hidden;
       background: #141022;
-      border: 2px solid rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.14);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
+    .tray-card-mini.rarity-rare { border-color: #a78bfa; }
+    .tray-card-mini.rarity-epic { border-color: #ec4899; }
     .tray-card-mini:hover { transform: translateY(-4px); border-color: var(--color-primary); }
     .tray-card-mini.selected {
       border-color: var(--color-primary);
       box-shadow: 0 0 0 3px rgba(208, 188, 255, 0.35), 0 8px 24px rgba(208, 188, 255, 0.4);
       transform: translateY(-4px);
     }
-    .tray-card-poster { width: 100%; aspect-ratio: 2 / 2.85; object-fit: cover; display: block; }
+    .tray-poster-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 2.85;
+      overflow: hidden;
+      background: #120e1e;
+    }
+    .tray-card-poster { width: 100%; height: 100%; object-fit: cover; display: block; }
     .tray-card-mini.is-mascot .tray-card-poster {
       background: #ffffff;
       padding: 8px;
       object-fit: contain;
     }
+    .tray-rarity-pill {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid transparent;
+      z-index: 3;
+      line-height: 1.3;
+      pointer-events: none;
+    }
+    .tray-card-mini.rarity-common .tray-rarity-pill { background: rgba(30, 27, 38, 0.88); color: #e5e7eb; border-color: rgba(255, 255, 255, 0.24); }
+    .tray-card-mini.rarity-rare .tray-rarity-pill { background: rgba(88, 28, 135, 0.9); color: #ede9fe; border-color: #a78bfa; }
+    .tray-card-mini.rarity-epic .tray-rarity-pill { background: rgba(131, 24, 67, 0.92); color: #fce7f3; border-color: #f472b6; }
     .tray-card-caption {
       padding: 6px 8px;
       font-size: 11px;
@@ -1939,6 +1970,225 @@
     .player-design-desc { font-size: 9.5px; color: var(--color-variant); line-height: 1.25; }
     .player-design-card.active .player-design-name, .player-design-card.active .player-design-desc { color: var(--color-on-primary-container); }
 
+    /* === ЭПИЧНАЯ ЦЕРЕМОНИЯ ЛЕГЕНДАРНОГО АПГРЕЙДА === */
+    .legendary-celebration-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 12000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: radial-gradient(circle at 50% 45%, rgba(88, 42, 168, 0.65) 0%, rgba(10, 6, 22, 0.94) 68%, rgba(5, 3, 12, 0.98) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+    .legendary-particles-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .legendary-sunburst {
+      position: absolute;
+      width: min(115vmax, 1100px);
+      height: min(115vmax, 1100px);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(251, 191, 36, 0.24) 0deg 9deg,
+        transparent 9deg 22deg,
+        rgba(208, 188, 255, 0.14) 22deg 30deg,
+        transparent 30deg 45deg
+      );
+      mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.5) 45%, transparent 72%);
+      -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.5) 45%, transparent 72%);
+      pointer-events: none;
+      z-index: 0;
+      animation: legRaysSpin 18s linear infinite;
+    }
+    .legendary-shockwave {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 3px solid rgba(251, 191, 36, 0.9);
+      box-shadow: 0 0 50px rgba(251, 191, 36, 0.8), inset 0 0 35px rgba(208, 188, 255, 0.6);
+      pointer-events: none;
+      z-index: 2;
+      animation: legShockwaveExpand 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .legendary-celebration-stage {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 410px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      animation: legStagePop 0.72s cubic-bezier(0.22, 1.4, 0.36, 1) forwards;
+    }
+    .legendary-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(168, 85, 247, 0.32) 100%);
+      border: 1.5px solid #fbbf24;
+      color: #fde68a;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px rgba(251, 191, 36, 0.45);
+    }
+    .legendary-card-showcase {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0;
+    }
+    .legendary-card-halo {
+      position: absolute;
+      inset: -26px;
+      border-radius: 30px;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.52) 0%, rgba(168, 85, 247, 0.26) 52%, transparent 75%);
+      filter: blur(22px);
+      animation: legHaloPulse 2.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .legendary-reveal-card {
+      position: relative;
+      width: 196px;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 2.5px solid #fbbf24;
+      background: #171029;
+      box-shadow: 0 0 38px rgba(251, 191, 36, 0.55), 0 18px 46px rgba(0, 0, 0, 0.7);
+      animation: legCardFloat 3.4s ease-in-out infinite;
+    }
+    .legendary-reveal-card::after {
+      content: '';
+      position: absolute;
+      inset: -40%;
+      background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 49%, rgba(253, 230, 138, 0.35) 54%, transparent 66%);
+      animation: legBeamSweep 2.6s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .legendary-reveal-poster-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 2.85;
+      overflow: hidden;
+      background: #120d22;
+    }
+    .legendary-reveal-poster-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .legendary-reveal-card.is-mascot .legendary-reveal-poster-box {
+      background: #ffffff;
+      padding: 14px;
+    }
+    .legendary-reveal-card.is-mascot .legendary-reveal-poster-box img {
+      object-fit: contain;
+    }
+    .legendary-reveal-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #92400e 0%, #5b21b6 100%);
+      color: #fde68a;
+      border: 1.5px solid #fbbf24;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      z-index: 5;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    }
+    .legendary-reveal-caption {
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(180deg, rgba(28, 18, 48, 0.92) 0%, rgba(16, 11, 28, 0.98) 100%);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .legendary-boku-peek {
+      position: absolute;
+      right: -46px;
+      bottom: -8px;
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 18px rgba(251, 191, 36, 0.65));
+      animation: legBokuHop 1.6s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 6;
+    }
+    .legendary-celebration-title {
+      font-size: 23px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #fde68a 48%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.25;
+      filter: drop-shadow(0 4px 14px rgba(251, 191, 36, 0.35));
+    }
+    .legendary-celebration-desc {
+      font-size: 13.5px;
+      color: #f3e8ff;
+      line-height: 1.5;
+      max-width: 360px;
+    }
+    .legendary-claim-btn {
+      height: 46px;
+      padding: 0 32px;
+      border-radius: 999px;
+      border: 1.5px solid #fde68a;
+      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
+      color: #261202;
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(251, 191, 36, 0.55);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+    }
+    .legendary-claim-btn:hover { transform: scale(1.05); box-shadow: 0 12px 36px rgba(251, 191, 36, 0.75); }
+    @keyframes legRaysSpin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+    @keyframes legShockwaveExpand { 0% { transform: scale(0.35); opacity: 1; } 100% { transform: scale(4.8); opacity: 0; } }
+    @keyframes legStagePop { 0% { opacity: 0; transform: scale(0.72) translateY(26px); } 65% { opacity: 1; transform: scale(1.04) translateY(-4px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes legHaloPulse { 0%, 100% { opacity: 0.72; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.06); } }
+    @keyframes legCardFloat { 0%, 100% { transform: translateY(0) rotate(-0.8deg); } 50% { transform: translateY(-7px) rotate(0.8deg); } }
+    @keyframes legBokuHop { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+    @keyframes legBeamSweep { 0% { transform: translateX(-110%) translateY(-20%); } 65%, 100% { transform: translateX(130%) translateY(20%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .legendary-sunburst, .legendary-shockwave, .legendary-celebration-stage,
+      .legendary-card-halo, .legendary-reveal-card, .legendary-reveal-card::after,
+      .legendary-boku-peek { animation: none !important; }
+    }
+
     /* === АДАПТАЦИЯ СВЕТЛЫХ ТЕМ ДЛЯ КОЛЛЕКЦИИ И МИНИ-ИГР === */
     html[data-theme-mode="light"] .nav-rail {
       box-shadow: 0 8px 32px rgba(20, 19, 18, 0.08);
@@ -1995,6 +2245,9 @@
       background: var(--glass-surface);
       border-color: var(--glass-border);
     }
+    html[data-theme-mode="light"] .tray-card-mini.rarity-rare { border-color: #8b5cf6; }
+    html[data-theme-mode="light"] .tray-card-mini.rarity-epic { border-color: #db2777; }
+    html[data-theme-mode="light"] .tray-poster-wrap { background: var(--bg-elevated); }
     html[data-theme-mode="light"] .tray-card-caption { color: var(--text-strong); }
     html[data-theme-mode="light"] .quests-summary-banner {
       background: linear-gradient(135deg, var(--color-primary-container) 0%, var(--glass-surface) 100%);
@@ -2025,24 +2278,72 @@
       box-shadow: 0 12px 32px rgba(20, 19, 18, 0.18);
     }
     html[data-theme-mode="light"] .card-info-pill,
-    html[data-theme-mode="light"] .game-hud-metrics,
     html[data-theme-mode="light"] .jump-touch-btn {
       background: var(--bg-subtle);
       color: var(--text-strong);
       border-color: var(--glass-border);
     }
+    html[data-theme-mode="light"] .game-hud-metrics {
+      background: var(--bg-elevated);
+      color: var(--text-strong);
+      border: 1px solid var(--glass-border);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+    html[data-theme-mode="light"] #gameHudStat2,
+    html[data-theme-mode="light"] #gameOverQuestNote { color: #15803d !important; }
+    html[data-theme-mode="light"] .game-icon-btn {
+      background: var(--bg-subtle);
+      color: var(--text-strong);
+      border-color: var(--glass-border);
+    }
+    html[data-theme-mode="light"] .game-icon-btn:hover {
+      background: var(--color-primary-container);
+      color: var(--color-on-primary-container);
+      border-color: var(--color-primary);
+    }
+    html[data-theme-mode="light"] .game-canvas-frame {
+      background: #f3efff;
+      border-color: var(--glass-border-glow);
+      box-shadow: 0 10px 28px rgba(20, 19, 18, 0.14);
+    }
+    html[data-theme-mode="light"] .tutorial-list {
+      background: var(--bg-subtle);
+      border-color: var(--glass-border);
+      color: var(--text-strong);
+    }
+    html[data-theme-mode="light"] #gameOverDetails { color: var(--color-surface) !important; }
+    html[data-theme-mode="light"] #gameTouchDoubleBtn {
+      background: var(--color-primary-container) !important;
+      color: var(--color-on-primary-container) !important;
+      border-color: var(--color-primary) !important;
+    }
+    html[data-theme-mode="light"] .math-timing-track {
+      background: rgba(20, 19, 18, 0.12);
+      border-color: var(--glass-border);
+    }
+    html[data-theme-mode="light"] .math-timing-needle {
+      background: var(--text-strong);
+      box-shadow: 0 0 8px var(--theme-glow);
+    }
     html[data-theme-mode="light"] #assistantAdviceBox,
     html[data-theme-mode="light"] #infoModal .info-inner-box,
     html[data-theme-mode="light"] #mathTimingBox,
-    html[data-theme-mode="light"] .game-overlay-panel,
     html[data-theme-mode="light"] #onboardingTermsModal [style*="rgba(14, 11, 24"] {
       background: var(--bg-elevated) !important;
       color: var(--text-strong) !important;
       border-color: var(--glass-border) !important;
     }
+    html[data-theme-mode="light"] .game-overlay-panel {
+      background: var(--bg-modal) !important;
+      color: var(--text-strong) !important;
+    }
     html[data-theme-mode="light"] #mathTimingBox div { color: var(--text-strong) !important; }
     html[data-theme-mode="light"] .game-stage-shell {
+      background: var(--glass-surface);
       color: var(--text-strong);
+      border-color: var(--glass-border-glow);
+      box-shadow: 0 18px 46px rgba(20, 19, 18, 0.12);
     }
   </style>
 </head>
@@ -2101,7 +2402,7 @@
     </div>
 
     <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko" style="margin-top: auto;">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.24-3.55 3.93-1.63 4.74-1.92 5.27-1.93.12 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.19-.04.28z"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2ZM16.95 8.18 6.65 12.15c-.53.21-.51.57.03.75l2.87.96 5.55-3.67-4.15 4.1-.13 1.7c-.02.4.19.48.46.22l1.2-1.17 2.3 1.7c.47.35.81.17.93-.41l1.75-7.67c.16-.6-.2-.83-.51-.47Z"/></svg>
     </a>
   </nav>
 
@@ -2283,7 +2584,7 @@
           <div class="minigame-card">
             <div class="minigame-card-head">
               <div class="minigame-art-box">
-                <img src="/assets/aistudio/sprite_01_31fefb2e.webp" alt="БокуДжамп" />
+                <img src="/assets/bokujump_cap_boku.webp" alt="БокуДжамп" />
               </div>
               <div>
                 <div class="minigame-title">БокуДжамп</div>
@@ -2689,6 +2990,36 @@
       <p id="resultModalDesc" style="font-size: 13.5px; color: var(--color-surface); line-height: 1.5;"></p>
       <button class="md-btn md-btn-filled" style="width: 100%; margin-top: 6px;" onclick="closeUpgradeResultModal()">
         Продолжить
+      </button>
+    </div>
+  </div>
+
+  <!-- Эпичное торжество при апгрейде карточки до Легендарной -->
+  <div id="legendaryCelebrationOverlay" class="legendary-celebration-overlay" onclick="if(event.target.id==='legendaryCelebrationOverlay') closeLegendaryCelebrationModal()">
+    <canvas id="legendaryParticlesCanvas" class="legendary-particles-canvas"></canvas>
+    <div class="legendary-sunburst"></div>
+    <div class="legendary-shockwave" id="legendaryShockwave"></div>
+    <div class="legendary-celebration-stage">
+      <div class="legendary-eyebrow">
+        <span class="material-symbols-rounded" style="font-size: 16px;">auto_awesome</span>
+        <span>Легендарный ранг</span>
+      </div>
+      <div class="legendary-card-showcase">
+        <div class="legendary-card-halo"></div>
+        <div class="legendary-reveal-card" id="legendaryRevealCardBox">
+          <div class="legendary-reveal-poster-box">
+            <img id="legendaryRevealPoster" src="" alt="Легендарная карточка" />
+            <div class="legendary-reveal-badge">Легендарная</div>
+          </div>
+          <div class="legendary-reveal-caption" id="legendaryRevealCaption">Карточка</div>
+        </div>
+        <img id="legendaryBokuImg" src="/assets/sprite_08.webp" class="legendary-boku-peek" alt="Боку" onerror="this.onerror=null; this.src=window.BOKU_FALLBACK_SVG;" />
+      </div>
+      <div class="legendary-celebration-title" id="legendaryCelebrationTitle">Легенда рождена!</div>
+      <div class="legendary-celebration-desc" id="legendaryCelebrationDesc"></div>
+      <button type="button" class="legendary-claim-btn" onclick="closeLegendaryCelebrationModal()">
+        <span class="material-symbols-rounded" style="font-size: 20px;">workspace_premium</span>
+        <span>Забрать в коллекцию</span>
       </button>
     </div>
   </div>
@@ -3205,9 +3536,7 @@
     }
 
     const IS_DEV_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
-      ? 'https://api.komboko.fun'
-      : (IS_DEV_HOST ? '' : '');
+    const API_BASE = api.komboko.fun
 
     function apiUrl(path) {
       if (!path) return '';
@@ -4139,9 +4468,13 @@
         const isSel = c.uid === appState.selectedCardUid;
         const isMascot = Boolean(c.isMascot || c.animeId === 'boku_mascot');
         const posterSrc = isMascot ? getBokuSpriteUrl(5) : (c.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+        const rarityLabel = RARITY_META[c.rarity]?.nameRu || c.rarity;
         return `
-          <div class="tray-card-mini ${isSel ? 'selected' : ''} ${isMascot ? 'is-mascot' : ''}" onclick="selectUpgraderCard('${c.uid}')">
-            <img class="tray-card-poster" src="${posterSrc}" alt="${c.title}" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
+          <div class="tray-card-mini rarity-${c.rarity} ${isSel ? 'selected' : ''} ${isMascot ? 'is-mascot' : ''}" onclick="selectUpgraderCard('${c.uid}')">
+            <div class="tray-poster-wrap">
+              <img class="tray-card-poster" src="${posterSrc}" alt="${c.title}" onerror="this.src='https://shikimori.one/favicons/apple-touch-icon-180x180.png'" />
+              <div class="tray-rarity-pill">${rarityLabel}</div>
+            </div>
             <div class="tray-card-caption">${c.title}</div>
           </div>
         `;
@@ -4343,9 +4676,92 @@
         });
       }
 
+      function playLegendaryFanfare() {
+        const ac = getCtx();
+        if (!ac) return;
+        const now = ac.currentTime;
+        try {
+          // 1. Тёплый саб-бас удар при пробуждении легенды
+          const sub = ac.createOscillator();
+          const subGain = ac.createGain();
+          sub.type = 'sine';
+          sub.frequency.setValueAtTime(146.8, now);
+          sub.frequency.exponentialRampToValueAtTime(65.4, now + 0.65);
+          subGain.gain.setValueAtTime(0.18, now);
+          subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.72);
+          sub.connect(subGain);
+          subGain.connect(ac.destination);
+          sub.start(now);
+          sub.stop(now + 0.75);
+
+          // 2. Главная триумфальная брасс-арпеджио тема через фильтр
+          const filter = ac.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(1800, now);
+          filter.frequency.exponentialRampToValueAtTime(4800, now + 0.85);
+          filter.connect(ac.destination);
+
+          const leadNotes = [
+            [523.25, 0.00, 0.14],
+            [659.25, 0.11, 0.14],
+            [783.99, 0.22, 0.14],
+            [1046.5, 0.34, 0.24],
+            [987.77, 0.50, 0.14],
+            [1174.66, 0.62, 0.18],
+            [1318.51, 0.76, 0.22],
+            [1567.98, 0.92, 0.88]
+          ];
+          leadNotes.forEach(([freq, offset, dur]) => {
+            ['sawtooth', 'triangle'].forEach((wave, idx) => {
+              const osc = ac.createOscillator();
+              const gain = ac.createGain();
+              osc.type = wave;
+              osc.frequency.setValueAtTime(freq, now + offset);
+              if (idx === 0) osc.detune.setValueAtTime(7, now + offset);
+              gain.gain.setValueAtTime(0.001, now + offset);
+              gain.gain.linearRampToValueAtTime(idx === 0 ? 0.055 : 0.07, now + offset + 0.025);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + offset + dur);
+              osc.connect(gain);
+              gain.connect(filter);
+              osc.start(now + offset);
+              osc.stop(now + offset + dur + 0.04);
+            });
+          });
+
+          // 3. Небесный финальный аккорд (Cmaj9) + хрустальные колокольчики
+          [261.63, 392.0, 523.25, 659.25, 783.99, 987.77, 1174.66].forEach((freq) => {
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + 0.92);
+            gain.gain.setValueAtTime(0.001, now + 0.92);
+            gain.gain.linearRampToValueAtTime(0.036, now + 1.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 2.35);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(now + 0.92);
+            osc.stop(now + 2.4);
+          });
+
+          [[1567.98, 0.95], [2093.0, 1.12], [2637.02, 1.3], [3135.96, 1.48]].forEach(([freq, offset]) => {
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + offset);
+            gain.gain.setValueAtTime(0.05, now + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.72);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(now + offset);
+            osc.stop(now + offset + 0.76);
+          });
+        } catch (_) {}
+      }
+
       return {
         stopAll,
         playSpin,
+        playLegendaryFanfare,
         playWin: () => playChime([[523, 0, 0.14], [659, 90, 0.14], [784, 180, 0.18], [1046, 280, 0.34]], 'triangle', 0.09),
         playSave: () => playChime([[440, 0, 0.14], [554, 110, 0.24]], 'sine', 0.075),
         playFail: () => playChime([[290, 0, 0.16], [185, 130, 0.28]], 'sawtooth', 0.06)
@@ -4421,16 +4837,22 @@
       await new Promise(r => setTimeout(r, 3300));
 
       if (isWin) {
-        WheelAudio.playWin();
         appState.cards = cards;
         CardsStorage.saveLocal();
+        const upgradedCard = appState.cards.find(c => c.uid === card.uid) || { ...card, rarity: newRarity };
 
-        showUpgradeOutcomeModal(
-          true,
-          'Апгрейд успешен! ✨',
-          `«${card.title}» прокачана с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}»! Бонусы шанса сброшены.`,
-          getBokuSpriteUrl(8)
-        );
+        if (newRarity === 'legendary') {
+          WheelAudio.playLegendaryFanfare();
+          showLegendaryCelebrationModal(upgradedCard, RARITY_META[oldRarity].nameRu);
+        } else {
+          WheelAudio.playWin();
+          showUpgradeOutcomeModal(
+            true,
+            'Апгрейд успешен! ✨',
+            `«${card.title}» прокачана с «${RARITY_META[oldRarity].nameRu}» до «${RARITY_META[newRarity].nameRu}»! Бонусы шанса сброшены.`,
+            getBokuSpriteUrl(8)
+          );
+        }
 
         appState.isSpinning = false;
         updateUpgraderArenaUI();
@@ -4530,6 +4952,140 @@
 
     function closeUpgradeResultModal() {
       document.getElementById('upgradeResultModal').style.display = 'none';
+    }
+
+    let legendaryAnimRaf = null;
+    function showLegendaryCelebrationModal(card, oldRarityName) {
+      const overlay = document.getElementById('legendaryCelebrationOverlay');
+      const cardBox = document.getElementById('legendaryRevealCardBox');
+      const posterEl = document.getElementById('legendaryRevealPoster');
+      const captionEl = document.getElementById('legendaryRevealCaption');
+      const titleEl = document.getElementById('legendaryCelebrationTitle');
+      const descEl = document.getElementById('legendaryCelebrationDesc');
+      const bokuEl = document.getElementById('legendaryBokuImg');
+      const shockwaveEl = document.getElementById('legendaryShockwave');
+      const canvas = document.getElementById('legendaryParticlesCanvas');
+
+      const isMascot = Boolean(card.isMascot || card.animeId === 'boku_mascot');
+      cardBox.className = `legendary-reveal-card ${isMascot ? 'is-mascot' : ''}`;
+      posterEl.src = isMascot ? getBokuSpriteUrl(8) : (card.poster || 'https://shikimori.one/favicons/apple-touch-icon-180x180.png');
+      captionEl.textContent = card.title || 'Карточка';
+      titleEl.textContent = `«${card.title}» — ЛЕГЕНДА!`;
+      descEl.textContent = `Невероятная удача! Карточка возвысилась с «${oldRarityName}» до высшего ранга «Легендарная».`;
+      if (bokuEl) bokuEl.src = getBokuSpriteUrl(8);
+
+      if (shockwaveEl) {
+        shockwaveEl.style.animation = 'none';
+        void shockwaveEl.offsetWidth;
+        shockwaveEl.style.animation = '';
+      }
+
+      overlay.style.display = 'flex';
+      if (legendaryAnimRaf) cancelAnimationFrame(legendaryAnimRaf);
+
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!canvas || reduceMotion) return;
+
+      const ctx = canvas.getContext('2d');
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const w = overlay.clientWidth || window.innerWidth;
+      const h = overlay.clientHeight || window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const palette = ['#fbbf24', '#fde68a', '#f59e0b', '#D0BCFF', '#f472b6', '#ffffff', '#38bdf8'];
+      const particles = [];
+      for (let i = 0; i < 95; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 180 + Math.random() * 520;
+        particles.push({
+          x: w / 2,
+          y: h / 2,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 120,
+          size: 4 + Math.random() * 6,
+          color: palette[i % palette.length],
+          rot: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 9,
+          life: 1.8 + Math.random() * 1.4,
+          maxLife: 3.2,
+          isStar: i % 3 === 0
+        });
+      }
+
+      let prevT = performance.now();
+      const tick = (now) => {
+        if (overlay.style.display !== 'flex') return;
+        const dt = Math.min(0.05, (now - prevT) / 1000);
+        prevT = now;
+        ctx.clearRect(0, 0, w, h);
+
+        if (particles.length < 48 && Math.random() < 0.35) {
+          particles.push({
+            x: Math.random() * w,
+            y: h + 10,
+            vx: (Math.random() - 0.5) * 40,
+            vy: -(90 + Math.random() * 140),
+            size: 3 + Math.random() * 4,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            rot: 0,
+            vRot: 2,
+            life: 1.8,
+            maxLife: 1.8,
+            isStar: true,
+            ambient: true
+          });
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const pt = particles[i];
+          pt.x += pt.vx * dt;
+          pt.y += pt.vy * dt;
+          if (!pt.ambient) {
+            pt.vx *= 0.985;
+            pt.vy += 320 * dt;
+          }
+          pt.rot += pt.vRot * dt;
+          pt.life -= dt;
+          if (pt.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, Math.min(1, pt.life / 0.85));
+          ctx.translate(pt.x, pt.y);
+          ctx.rotate(pt.rot);
+          ctx.fillStyle = pt.color;
+          if (pt.isStar) {
+            ctx.beginPath();
+            ctx.moveTo(0, -pt.size);
+            ctx.lineTo(pt.size * 0.35, -pt.size * 0.35);
+            ctx.lineTo(pt.size, 0);
+            ctx.lineTo(pt.size * 0.35, pt.size * 0.35);
+            ctx.lineTo(0, pt.size);
+            ctx.lineTo(-pt.size * 0.35, pt.size * 0.35);
+            ctx.lineTo(-pt.size, 0);
+            ctx.lineTo(-pt.size * 0.35, -pt.size * 0.35);
+            ctx.closePath();
+            ctx.fill();
+          } else {
+            ctx.fillRect(-pt.size * 0.7, -pt.size * 0.35, pt.size * 1.4, pt.size * 0.7);
+          }
+          ctx.restore();
+        }
+        legendaryAnimRaf = requestAnimationFrame(tick);
+      };
+      legendaryAnimRaf = requestAnimationFrame(tick);
+    }
+
+    function closeLegendaryCelebrationModal() {
+      const overlay = document.getElementById('legendaryCelebrationOverlay');
+      if (overlay) overlay.style.display = 'none';
+      if (legendaryAnimRaf) {
+        cancelAnimationFrame(legendaryAnimRaf);
+        legendaryAnimRaf = null;
+      }
     }
 
     // =========================================================================
@@ -4874,10 +5430,10 @@
         return img;
       }
       sprites.normal = loadImg('/assets/skins/default/sprite_05.webp');
-      sprites.capBoku = loadImg('/assets/aistudio/sprite_01_31fefb2e.webp');
-      sprites.springBoku = loadImg('/assets/aistudio/sprite_02_73cc4941.webp');
-      sprites.capItem = loadImg('/assets/aistudio/sprite_03_0ed9e25f.webp');
-      sprites.springItem = loadImg('/assets/aistudio/sprite_04_ef9c34fa.webp');
+      sprites.capBoku = loadImg('/assets/bokujump_cap_boku.webp');
+      sprites.springBoku = loadImg('/assets/bokujump_spring_boku.webp');
+      sprites.capItem = loadImg('/assets/bokujump_item_cap.webp');
+      sprites.springItem = loadImg('/assets/bokujump_item_spring.webp');
       sprites.happy = loadImg('/assets/skins/default/sprite_11.webp');
 
       function refreshSkinSprites() {
@@ -5114,11 +5670,11 @@
               <span><strong>Преграды:</strong> Розовые пунктирные — <strong>фейковые</strong> (рассыпаются). Янтарные с трещиной — <strong>ломаются</strong> после 1 прыжка. Голубые ездят!</span>
             </div>
             <div class="tutorial-row">
-              <img src="/assets/aistudio/sprite_03_0ed9e25f.webp" alt="Пропеллер" />
+              <img src="/assets/bokujump_item_cap.webp" alt="Пропеллер" />
               <span><strong>Шапочка-пропеллер:</strong> Стремительный полёт вверх без падения!</span>
             </div>
             <div class="tutorial-row">
-              <img src="/assets/aistudio/sprite_04_ef9c34fa.webp" alt="Пружинки" />
+              <img src="/assets/bokujump_item_spring.webp" alt="Пружинки" />
               <span><strong>Пружинки:</strong> Высокий прыжок + <strong>двойной прыжок в воздухе</strong> (жми <strong>Пробел</strong> или тап по экрану)! Лови и монетку <strong>2x</strong>.</span>
             </div>
           `;
@@ -5578,15 +6134,16 @@
         const ctx = getCtx();
         const st = jumpState;
         if (!ctx || !st) return;
+        const isLight = document.documentElement.getAttribute('data-theme-mode') === 'light';
 
-        // Фон звёздного неба
+        // Фон неба (адаптируется под светлую и тёмную темы)
         const grad = ctx.createLinearGradient(0, 0, 0, CH);
-        grad.addColorStop(0, '#130c26');
-        grad.addColorStop(1, '#090612');
+        grad.addColorStop(0, isLight ? '#f4f0ff' : '#130c26');
+        grad.addColorStop(1, isLight ? '#e4dcff' : '#090612');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, CW, CH);
 
-        ctx.fillStyle = 'rgba(208, 188, 255, 0.16)';
+        ctx.fillStyle = isLight ? 'rgba(103, 80, 164, 0.22)' : 'rgba(208, 188, 255, 0.16)';
         for (let i = 0; i < 18; i++) {
           const sx = ((i * 73) % CW);
           const sy = ((i * 137 - st.cameraY * 0.25) % CH + CH) % CH;
@@ -5603,17 +6160,17 @@
           ctx.save();
           ctx.globalAlpha = pl.alpha;
           if (pl.type === 'normal') {
-            ctx.fillStyle = '#9A75F0';
-            ctx.strokeStyle = '#EADDFF';
+            ctx.fillStyle = isLight ? '#7c3aed' : '#9A75F0';
+            ctx.strokeStyle = isLight ? '#4c1d95' : '#EADDFF';
           } else if (pl.type === 'moving') {
             ctx.fillStyle = '#0284c7';
-            ctx.strokeStyle = '#7dd3fc';
+            ctx.strokeStyle = isLight ? '#075985' : '#7dd3fc';
           } else if (pl.type === 'breaking') {
             ctx.fillStyle = '#d97706';
-            ctx.strokeStyle = '#fde68a';
+            ctx.strokeStyle = isLight ? '#78350f' : '#fde68a';
           } else {
-            ctx.fillStyle = 'rgba(244, 114, 182, 0.35)';
-            ctx.strokeStyle = '#f472b6';
+            ctx.fillStyle = isLight ? 'rgba(219, 39, 119, 0.24)' : 'rgba(244, 114, 182, 0.35)';
+            ctx.strokeStyle = isLight ? '#be185d' : '#f472b6';
           }
 
           ctx.beginPath();
@@ -5705,9 +6262,19 @@
 
         for (const fl of st.floaters) {
           ctx.globalAlpha = Math.max(0, Math.min(1, fl.life * 1.4));
-          ctx.fillStyle = fl.color;
+          let floaterColor = fl.color;
+          if (isLight) {
+            if (fl.color === '#4ade80') floaterColor = '#15803d';
+            else if (fl.color === '#fbbf24') floaterColor = '#b45309';
+            else if (fl.color === '#D0BCFF') floaterColor = '#6d28d9';
+            else if (fl.color === '#38bdf8') floaterColor = '#0369a1';
+          }
           ctx.font = '800 14px Comfortaa, sans-serif';
           ctx.textAlign = 'center';
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(10, 7, 20, 0.85)';
+          ctx.strokeText(fl.text, fl.x, fl.y);
+          ctx.fillStyle = floaterColor;
           ctx.fillText(fl.text, fl.x, fl.y);
         }
         ctx.globalAlpha = 1;
@@ -5717,7 +6284,7 @@
         // Полоски активных бонусов сверху холста
         let barY = 10;
         const drawBar = (label, cur, max, color) => {
-          ctx.fillStyle = 'rgba(14, 11, 24, 0.78)';
+          ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.88)' : 'rgba(14, 11, 24, 0.78)';
           ctx.beginPath();
           ctx.roundRect(10, barY, 150, 18, 9);
           ctx.fill();
@@ -5725,16 +6292,16 @@
           ctx.beginPath();
           ctx.roundRect(12, barY + 2, 146 * Math.max(0, cur / max), 14, 7);
           ctx.fill();
-          ctx.fillStyle = '#fff';
+          ctx.fillStyle = isLight ? '#141312' : '#fff';
           ctx.font = '700 10.5px Comfortaa, sans-serif';
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           ctx.fillText(`${label} ${cur.toFixed(1)}с`, 18, barY + 9);
           barY += 24;
         };
-        if (p.propellerTime > 0) drawBar('Пропеллер', p.propellerTime, 3.2, '#9A75F0');
-        if (p.springTime > 0) drawBar(p.airDoubleAvailable ? 'Пружинки (2й прыж.)' : 'Пружинки', p.springTime, 10.0, '#0284c7');
-        if (p.x2Time > 0) drawBar('Бонус 2x', p.x2Time, 8.0, '#d97706');
+        if (p.propellerTime > 0) drawBar('Пропеллер', p.propellerTime, 3.2, isLight ? '#c4b5fd' : '#9A75F0');
+        if (p.springTime > 0) drawBar(p.airDoubleAvailable ? 'Пружинки (2й прыж.)' : 'Пружинки', p.springTime, 10.0, isLight ? '#7dd3fc' : '#0284c7');
+        if (p.x2Time > 0) drawBar('Бонус 2x', p.x2Time, 8.0, isLight ? '#fcd34d' : '#d97706');
       }
 
       async function finishJumpSession() {
@@ -5943,17 +6510,18 @@
         const ctx = getCtx();
         const st = mathState;
         if (!ctx || !st) return;
+        const isLight = document.documentElement.getAttribute('data-theme-mode') === 'light';
 
         const grad = ctx.createLinearGradient(0, 0, 0, CH);
-        grad.addColorStop(0, '#140b29');
-        grad.addColorStop(1, '#080510');
+        grad.addColorStop(0, isLight ? '#f4f0ff' : '#140b29');
+        grad.addColorStop(1, isLight ? '#e4dcff' : '#080510');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, CW, CH);
 
         if (st.phase === 'RUNNER') {
           const horizonY = 110;
           // Трасса в перспективе
-          ctx.fillStyle = 'rgba(79, 55, 139, 0.25)';
+          ctx.fillStyle = isLight ? 'rgba(103, 80, 164, 0.14)' : 'rgba(79, 55, 139, 0.25)';
           ctx.beginPath();
           ctx.moveTo(CW * 0.34, horizonY);
           ctx.lineTo(CW * 0.66, horizonY);
@@ -5963,14 +6531,14 @@
           ctx.fill();
 
           // Разделительная полоса и линии разметки
-          ctx.strokeStyle = 'rgba(208, 188, 255, 0.35)';
+          ctx.strokeStyle = isLight ? 'rgba(103, 80, 164, 0.42)' : 'rgba(208, 188, 255, 0.35)';
           ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.moveTo(CW * 0.5, horizonY);
           ctx.lineTo(CW * 0.5, CH);
           ctx.stroke();
 
-          ctx.strokeStyle = 'rgba(208, 188, 255, 0.14)';
+          ctx.strokeStyle = isLight ? 'rgba(103, 80, 164, 0.18)' : 'rgba(208, 188, 255, 0.14)';
           for (let i = 0; i < 6; i++) {
             const prog = ((i / 6) + st.roadOffset / 6) % 1;
             const y = horizonY + (CH - horizonY) * (prog * prog);
@@ -5994,17 +6562,19 @@
             const drawGateBox = (cx, opt, isActive) => {
               const good = opt.op === '*' || opt.op === '+';
               ctx.save();
-              ctx.fillStyle = good ? 'rgba(34, 197, 94, 0.24)' : 'rgba(239, 68, 68, 0.24)';
+              ctx.fillStyle = isLight
+                ? (good ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)')
+                : (good ? 'rgba(34, 197, 94, 0.24)' : 'rgba(239, 68, 68, 0.24)');
               ctx.strokeStyle = isActive
-                ? '#ffffff'
-                : (good ? '#4ade80' : '#f87171');
+                ? (isLight ? '#1f1638' : '#ffffff')
+                : (good ? (isLight ? '#15803d' : '#4ade80') : (isLight ? '#b91c1c' : '#f87171'));
               ctx.lineWidth = isActive ? 3 : 1.8;
               ctx.beginPath();
               ctx.roundRect(cx - boxW / 2, y - boxH, boxW, boxH, 12 * scale);
               ctx.fill();
               ctx.stroke();
 
-              ctx.fillStyle = '#ffffff';
+              ctx.fillStyle = isLight ? '#141312' : '#ffffff';
               ctx.font = `800 ${Math.round(24 * scale)}px Comfortaa, sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
@@ -6026,14 +6596,14 @@
           }
 
           // Очки прямо над Боку
-          ctx.fillStyle = 'rgba(18, 14, 30, 0.9)';
-          ctx.strokeStyle = '#D0BCFF';
+          ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.94)' : 'rgba(18, 14, 30, 0.9)';
+          ctx.strokeStyle = isLight ? '#6d28d9' : '#D0BCFF';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.roundRect(bokuX - 54, bokuY - 72, 108, 26, 13);
           ctx.fill();
           ctx.stroke();
-          ctx.fillStyle = '#fff';
+          ctx.fillStyle = isLight ? '#141312' : '#fff';
           ctx.font = '800 13px Comfortaa, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -6045,7 +6615,7 @@
           const botY = CH - 165;
           const trackH = botY - topY;
 
-          ctx.strokeStyle = 'rgba(208, 188, 255, 0.35)';
+          ctx.strokeStyle = isLight ? 'rgba(103, 80, 164, 0.4)' : 'rgba(208, 188, 255, 0.35)';
           ctx.lineWidth = 4;
           ctx.beginPath();
           ctx.moveTo(rulerX, botY);
@@ -6067,13 +6637,17 @@
           for (const t of tiers) {
             const ty = botY - t.norm * trackH;
             const reached = curNorm >= t.norm;
-            ctx.strokeStyle = reached ? '#4ade80' : 'rgba(255,255,255,0.22)';
+            ctx.strokeStyle = reached
+              ? (isLight ? '#15803d' : '#4ade80')
+              : (isLight ? 'rgba(20, 19, 18, 0.25)' : 'rgba(255,255,255,0.22)');
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(rulerX - 10, ty);
             ctx.lineTo(rulerX + 18, ty);
             ctx.stroke();
-            ctx.fillStyle = reached ? '#4ade80' : 'rgba(255,255,255,0.6)';
+            ctx.fillStyle = reached
+              ? (isLight ? '#15803d' : '#4ade80')
+              : (isLight ? 'rgba(20, 19, 18, 0.68)' : 'rgba(255,255,255,0.6)');
             ctx.font = '700 12px Comfortaa, sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
@@ -6085,7 +6659,7 @@
           if (img.complete && img.naturalWidth > 0) {
             ctx.drawImage(img, CW * 0.68 - 38, jumpY - 40, 76, 80);
           }
-          ctx.fillStyle = '#FFD54F';
+          ctx.fillStyle = isLight ? '#b45309' : '#FFD54F';
           ctx.font = '800 15px Comfortaa, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(`Итог: ${st.score.toLocaleString('ru-RU')} очк.`, CW * 0.68, Math.max(26, jumpY - 52));
@@ -6093,7 +6667,12 @@
 
         for (const fl of st.floaters) {
           ctx.globalAlpha = Math.max(0, Math.min(1, fl.life * 1.3));
-          ctx.fillStyle = fl.color;
+          let floaterColor = fl.color;
+          if (isLight) {
+            if (fl.color === '#4ade80') floaterColor = '#15803d';
+            else if (fl.color === '#f87171') floaterColor = '#b91c1c';
+          }
+          ctx.fillStyle = floaterColor;
           ctx.font = '800 15px Comfortaa, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(fl.text, fl.x, fl.y);

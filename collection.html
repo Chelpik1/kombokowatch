@@ -3536,7 +3536,10 @@
     }
 
     const IS_DEV_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_BASE = api.komboko.fun
+    const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
+      ? 'https://api.komboko.fun'
+      : (IS_DEV_HOST ? '' : '');
+
 
     function apiUrl(path) {
       if (!path) return '';

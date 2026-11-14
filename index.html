@@ -423,6 +423,7 @@
       border-color: var(--glass-border-glow);
     }
     .tg-header-btn .material-symbols-rounded { font-size: 20px; }
+    .tg-header-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
     
     .header-profile-btn:hover { transform: scale(1.08); background: rgba(208, 188, 255, 0.25); }
     .header-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
@@ -4589,7 +4590,7 @@
     .news-card-title {
       font-size: 15px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-strong);
       line-height: 1.45;
       display: -webkit-box;
       -webkit-line-clamp: 3;
@@ -7595,10 +7596,38 @@
     html[data-theme-mode="light"] .roulette-ai-prep-text,
     html[data-theme-mode="light"] .news-comment-body,
     html[data-theme-mode="light"] .news-reader-title,
+    html[data-theme-mode="light"] .news-card-title,
+    html[data-theme-mode="light"] .news-linked-title,
+    html[data-theme-mode="light"] .news-auth-title,
+    html[data-theme-mode="light"] .news-search-input,
     html[data-theme-mode="light"] .section-title { color: var(--text-strong); }
+    html[data-theme-mode="light"] .news-card { box-shadow: 0 8px 26px rgba(20, 19, 18, 0.08); }
+    html[data-theme-mode="light"] .news-card-footer { border-top-color: var(--glass-border); }
     html[data-theme-mode="light"] .news-card-thumb-wrap,
     html[data-theme-mode="light"] .news-card-thumb-placeholder { background: var(--bg-elevated); }
-    html[data-theme-mode="light"] .news-card-linked-badge { background: rgba(255, 255, 255, 0.88); color: var(--color-on-primary-container); border-color: var(--glass-border-glow); }
+    html[data-theme-mode="light"] .news-placeholder-label {
+      background: var(--color-primary-container);
+      color: var(--color-on-primary-container);
+      border-color: var(--glass-border-glow);
+    }
+    html[data-theme-mode="light"] .news-search-input-wrap:focus-within { background: var(--bg-modal); }
+    html[data-theme-mode="light"] .news-search-clear { background: rgba(20, 19, 18, 0.08); color: var(--color-variant); }
+    html[data-theme-mode="light"] .news-search-clear:hover { background: var(--color-primary-container); color: var(--text-strong); }
+    html[data-theme-mode="light"] .news-linked-banner { background: var(--bg-elevated); }
+    html[data-theme-mode="light"] .news-reader-body,
+    html[data-theme-mode="light"] .news-reader-body .b-quote { color: var(--text-strong); }
+    html[data-theme-mode="light"] .news-reader-body .b-quote { background: var(--bg-subtle); }
+    html[data-theme-mode="light"] .news-reader-body .b-spoiler_block { background: var(--bg-subtle); border-color: var(--glass-border); color: var(--text-strong); }
+    html[data-theme-mode="light"] .news-comments-section { border-top-color: var(--glass-border) !important; }
+    html[data-theme-mode="light"] .news-comments-count-pill {
+      background: var(--color-primary-container);
+      color: var(--color-on-primary-container);
+      border-color: var(--glass-border-glow);
+    }
+    html[data-theme-mode="light"] .news-comment-author { color: var(--color-primary); }
+    html[data-theme-mode="light"] .news-comment-body blockquote { background: var(--bg-subtle); color: var(--text-strong); }
+    html[data-theme-mode="light"] .news-card-linked-badge { background: rgba(255, 255, 255, 0.9); color: var(--color-on-primary-container); border-color: var(--glass-border-glow); }
+    html[data-theme-mode="light"] .news-card-linked-badge:hover { background: var(--color-primary-container); color: var(--color-on-primary-container); }
     html[data-theme-mode="light"] .catalog-filters-pill-btn { background: var(--glass-surface); border-color: var(--glass-border); }
     html[data-theme-mode="light"] .active-filter-chip { background: var(--color-primary-container); color: var(--color-on-primary-container); border-color: var(--glass-border-glow); }
     html[data-theme-mode="light"] .chip-remove-btn,
@@ -8909,7 +8938,7 @@
     
       <div class="header-right-tools">
         <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram канал">
-          <span class="material-symbols-rounded">send</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2ZM16.95 8.18 6.65 12.15c-.53.21-.51.57.03.75l2.87.96 5.55-3.67-4.15 4.1-.13 1.7c-.02.4.19.48.46.22l1.2-1.17 2.3 1.7c.47.35.81.17.93-.41l1.75-7.67c.16-.6-.2-.83-.51-.47Z"/></svg>
         </a>
         <div class="header-profile-btn" id="headerAuthLogo" onclick="handleAuthLogoClick()" title="Войти через Shikimori">
           <span class="material-symbols-rounded">account_circle</span>

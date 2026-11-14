@@ -17902,7 +17902,7 @@
         requestAnimationFrame(step);
       };
 
-const compressBokuImgToJpeg = (dataUrl, maxSide = 768, quality = 0.82) => new Promise((resolve) => {
+const compressBokuImgToJpeg = (dataUrl, maxSide = 512, quality = 0.78) => new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
           let { width, height } = img;
@@ -17930,12 +17930,32 @@ const compressBokuImgToJpeg = (dataUrl, maxSide = 768, quality = 0.82) => new Pr
 
       try {
         const historyPayload = bokuChatHistory.slice(-6);
-        let res;
+        const compressedJpeg = currentAttachedImg ? await compressBokuImgToJpeg(currentAttachedImg, 512, 0.78) : undefined;
 
-        if (currentAttachedImg) {
-          // Сразу получаем готовый ответ от воркера, минуя VPS
-          const compressedJpeg = await compressBokuImgToJpeg(currentAttachedImg, 768, 0.82);
-          res = await fetch(`${BACKEND_URL}/ai/vision`, {
+        const basePayload = {
+          message: msgText,
+          image: compressedJpeg,
+          history: historyPayload,
+          animeContext,
+          userContext,
+          userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
+          deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
+          shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null
+        };
+
+        // 1. Сначала проверяем на VPS через trace.moe + AnimeTrace (серия + таймкод + кадр)
+        let res = await fetch(apiUrl('/api/boku/chat'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(basePayload)
+        });
+
+        clearInterval(bokuThinkingTimer);
+        let data = await res.json();
+
+        // 2. Если кадр не найден в базах серий (арт/мем/эдит) — распознаём напрямую через Cloudflare Worker
+        if (data.needClientVision && compressedJpeg) {
+          const visionRes = await fetch(`${BACKEND_URL}/ai/vision`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -17943,7 +17963,23 @@ const compressBokuImgToJpeg = (dataUrl, maxSide = 768, quality = 0.82) => new Pr
               question: msgText
             })
           });
-        } else {
+          const visionJson = await visionRes.json().catch(() => null);
+
+          delete basePayload.image;
+          if (visionJson && visionJson.success && visionJson.reply) {
+            basePayload.message = `[Пользователь прикрепил картинку (арт/скриншот). Распознавание определило: ${visionJson.reply}]\nВопрос пользователя: ${msgText}\nОбязательно укажи название аниме в {{Название}}!`;
+          } else {
+            basePayload.message = `[Пользователь прикрепил картинку, но распознать её не удалось]\nВопрос пользователя: ${msgText}`;
+          }
+
+          res = await fetch(apiUrl('/api/boku/chat'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(basePayload)
+          });
+          data = await res.json();
+        }
+        else {
           // Обычный текстовый запрос идёт на VPS
           res = await fetch(apiUrl('/api/boku/chat'), {
             method: 'POST',

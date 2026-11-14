@@ -17943,17 +17943,16 @@ const compressBokuImgToJpeg = (dataUrl, maxSide = 512, quality = 0.78) => new Pr
           shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null
         };
 
-        // 1. Сначала проверяем на VPS через trace.moe + AnimeTrace (серия + таймкод + кадр)
+        // ШАГ 1: Всегда сначала идем на VPS (проверить trace.moe / AnimeTrace)
         let res = await fetch(apiUrl('/api/boku/chat'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(basePayload)
         });
 
-        clearInterval(bokuThinkingTimer);
         let data = await res.json();
 
-        // 2. Если кадр не найден в базах серий (арт/мем/эдит) — распознаём напрямую через Cloudflare Worker
+        // ШАГ 2: Если VPS ответил, что это арт/мем/эдит и нужен Client Vision
         if (data.needClientVision && compressedJpeg) {
           const visionRes = await fetch(`${BACKEND_URL}/ai/vision`, {
             method: 'POST',
@@ -17965,6 +17964,7 @@ const compressBokuImgToJpeg = (dataUrl, maxSide = 512, quality = 0.78) => new Pr
           });
           const visionJson = await visionRes.json().catch(() => null);
 
+          // Убираем картинку из палоуда, передаем текстовый результат от воркера на VPS
           delete basePayload.image;
           if (visionJson && visionJson.success && visionJson.reply) {
             basePayload.message = `[Пользователь прикрепил картинку (арт/скриншот). Распознавание определило: ${visionJson.reply}]\nВопрос пользователя: ${msgText}\nОбязательно укажи название аниме в {{Название}}!`;
@@ -17972,6 +17972,7 @@ const compressBokuImgToJpeg = (dataUrl, maxSide = 512, quality = 0.78) => new Pr
             basePayload.message = `[Пользователь прикрепил картинку, но распознать её не удалось]\nВопрос пользователя: ${msgText}`;
           }
 
+          // ШАГ 3: Финальный запрос на VPS для рендеринга ответа Боку
           res = await fetch(apiUrl('/api/boku/chat'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -17979,26 +17980,9 @@ const compressBokuImgToJpeg = (dataUrl, maxSide = 512, quality = 0.78) => new Pr
           });
           data = await res.json();
         }
-        else {
-          // Обычный текстовый запрос идёт на VPS
-          res = await fetch(apiUrl('/api/boku/chat'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message: msgText,
-              history: historyPayload,
-              animeContext,
-              userContext,
-              userId: state.currentUser?.id || safeGet('shiki_user_id') || '',
-              deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
-              shikiId: state.currentUser?.id || safeGet('shiki_user_id') || null
-            })
-          });
-        }
-        clearInterval(bokuThinkingTimer);
-        const data = await res.json();
-        const replyRaw = data.reply || 'Хм, даже не знаю что ответить...';
 
+        clearInterval(bokuThinkingTimer);
+        const replyRaw = data.reply || 'Хм, даже не знаю что ответить...';
         // Обновляем квоту (при КД лимит не тратится!)
         const quotaBadge = document.getElementById('bokuAiQuotaBadge');
         if (quotaBadge && data.remaining !== undefined) {

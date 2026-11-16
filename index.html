@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" id="themeColorMeta" content="#08060f">
   <title>KombokoWatch — онлайн-кинотеатр</title>
   <meta name="description" content="Онлайн-кинотеатр для просмотра аниме и чтения манги с плеером без рекламы и поддержкой множества источников." />
   <meta property="og:title" content="KombokoWatch — онлайн-кинотеатр" />
@@ -17,9 +18,14 @@
       try {
         var t = localStorage.getItem('komboko_theme') || 'default';
         var valid = { 'default': 'dark', 'void-cyan': 'dark', 'concrete-red': 'dark', 'manga-print': 'light', 'digital-vapor': 'light' };
+        var themeColors = { 'default': '#08060f', 'void-cyan': '#0a0a0c', 'concrete-red': '#171619', 'manga-print': '#f5f2eb', 'digital-vapor': '#f7f6fc' };
         if (!valid[t]) t = 'default';
         document.documentElement.setAttribute('data-theme', t);
         document.documentElement.setAttribute('data-theme-mode', valid[t]);
+        var tc = document.getElementById('themeColorMeta');
+        if (tc && themeColors[t]) tc.setAttribute('content', themeColors[t]);
+        var isStandalone = (window.navigator.standalone === true) || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+        if (isStandalone) document.documentElement.classList.add('pwa-standalone');
         var pd = localStorage.getItem('komboko_player_design') || 'default';
         var validPd = { 'default': 1, 'youtube': 1, 'neumorphism': 1, 'aero': 1 };
         if (!validPd[pd]) pd = 'default';
@@ -33,10 +39,10 @@
   </script>
 
   <!-- Иконки и PWA теги -->
-  <link rel="icon" type="image/x-icon" href="./favicon.ico">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-  <link rel="manifest" href="./site.webmanifest">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
 
   <!-- Google Fonts: Comfortaa -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3518,7 +3524,10 @@
         overflow-x: hidden;
       }
       @media (display-mode: standalone) {
-        .app-main { padding-top: max(67px, calc(20px + env(safe-area-inset-top))) !important; }
+        .app-main { padding-top: max(62px, calc(18px + env(safe-area-inset-top))) !important; }
+      }
+      html.pwa-standalone .app-main {
+        padding-top: max(62px, calc(18px + env(safe-area-inset-top))) !important;
       }
       .anime-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 14px; }
       .details-top { flex-direction: column; align-items: center; text-align: center; width: 100%; }
@@ -8673,7 +8682,13 @@
           <div class="welcome-feature-box">
             <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 22px;">style</span>
             <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
-              <strong data-i18n="welcomeTipCardsStrong">Карточки, манга и статистика:</strong> <span data-i18n="welcomeTipCardsDesc">получайте коллекционные карточки за просмотр от 60% тайтла, читайте мангу и отслеживайте часы в Центре активности!</span>
+              <strong data-i18n="welcomeTipCardsStrong">Карточки и манга:</strong> <span data-i18n="welcomeTipCardsDesc">получайте коллекционные карточки за просмотр от 60% тайтла и читайте мангу прямо на сайте.</span>
+            </div>
+          </div>
+          <div class="welcome-feature-box">
+            <span class="material-symbols-rounded" style="color: #38bdf8; font-size: 22px;">analytics</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="welcomeTipActivityStrong">Центр активности:</strong> <span data-i18n="welcomeTipActivityDesc">отслеживайте часы просмотра, любимые жанры, недосмотренные серии и соревнуйтесь в Топе анимешников в профиле!</span>
             </div>
           </div>
         </div>
@@ -8905,6 +8920,12 @@
             <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 22px;">style</span>
             <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
               <strong data-i18n="bokuFeatureCardsTitle">Коллекция карточек:</strong> <span data-i18n="bokuFeatureCardsDesc">Смотри от 60% тайтла, получай карточки и прокачивай их в апгрейдере!</span>
+            </div>
+          </a>
+          <a href="/stat" class="welcome-feature-box" style="cursor: pointer; text-decoration: none;">
+            <span class="material-symbols-rounded" style="color: #38bdf8; font-size: 22px;">analytics</span>
+            <div style="font-size: 12px; color: var(--color-surface); line-height: 1.4;">
+              <strong data-i18n="bokuFeatureActivityTitle">Центр активности:</strong> <span data-i18n="bokuFeatureActivityDesc">Статистика часов просмотра с Shikimori, любимые жанры, досмотр и Топ анимешников (/stat)!</span>
             </div>
           </a>
         </div>
@@ -10285,6 +10306,9 @@
         root.setAttribute('data-theme', meta.id);
         root.setAttribute('data-theme-mode', meta.mode);
         localStorage.setItem('komboko_theme', meta.id);
+        const themeColors = { 'default': '#08060f', 'void-cyan': '#0a0a0c', 'concrete-red': '#171619', 'manga-print': '#f5f2eb', 'digital-vapor': '#f7f6fc' };
+        const tc = document.getElementById('themeColorMeta');
+        if (tc && themeColors[meta.id]) tc.setAttribute('content', themeColors[meta.id]);
         renderThemePickers();
         updateDesignEntryPreview();
       };
@@ -10530,6 +10554,8 @@
         bokuRouletteBtn: 'Рулетка от Боку ✨',
         bokuFeatureCardsTitle: 'Коллекция карточек:',
         bokuFeatureCardsDesc: 'Смотри от 60% тайтла, получай карточки и прокачивай их в апгрейдере!',
+        bokuFeatureActivityTitle: 'Центр активности:',
+        bokuFeatureActivityDesc: 'Статистика часов просмотра с Shikimori, любимые жанры, досмотр и Топ анимешников (/stat)!',
         bokuAuthNotice: 'Чтобы я могла подбирать аниме точно под твой вкус по спискам Shikimori, авторизуйся на сайте! А пока держи шедевр с высоким рейтингом:',
         bokuAuthLogin: 'Войти',
         bokuAuthRoulette: 'Рулетка',
@@ -10565,8 +10591,10 @@
         welcomeTip2Desc: 'некоторые провайдеры VPN блокируют доступ к серверам раздачи потоков.',
         welcomeTipPartyStrong: 'Совместный просмотр:',
         welcomeTipPartyDesc: 'нажмите кнопку «Комната» в плеере и отправьте код другу.',
-        welcomeTipCardsStrong: 'Карточки, манга и статистика:',
-        welcomeTipCardsDesc: 'получайте коллекционные карточки за просмотр от 60% тайтла, читайте мангу и отслеживайте часы в Центре активности!',
+        welcomeTipCardsStrong: 'Карточки и манга:',
+        welcomeTipCardsDesc: 'получайте коллекционные карточки за просмотр от 60% тайтла и читайте мангу прямо на сайте.',
+        welcomeTipActivityStrong: 'Центр активности:',
+        welcomeTipActivityDesc: 'отслеживайте часы просмотра, любимые жанры, недосмотренные серии и соревнуйтесь в Топе анимешников в профиле!',
         welcomeShikiTitle: 'Войдите через Shikimori',
         welcomeShikiSub: 'Откройте все возможности сайта',
         welcomeShikiDesc: 'Авторизация позволит мне подбирать аниме точно под твой вкус и синхронизировать твой просмотр!',
@@ -10804,6 +10832,8 @@
         bokuRouletteBtn: 'Boku Roulette ✨',
         bokuFeatureCardsTitle: 'Card Collection:',
         bokuFeatureCardsDesc: 'Watch 60%+ of any anime to unlock collectible cards and upgrade them in the upgrader!',
+        bokuFeatureActivityTitle: 'Activity Center:',
+        bokuFeatureActivityDesc: 'Track Shikimori watch hours, top genres, unfinished series, and Top Anime Fans (/stat)!',
         bokuAuthNotice: 'Log in with Shikimori to let me pick anime tailored to your tastes! Meanwhile, check out this top-rated masterpiece:',
         bokuAuthLogin: 'Log In',
         bokuAuthRoulette: 'Roulette',
@@ -10853,8 +10883,10 @@
         welcomeTip2Desc: 'some VPN providers block access to media streaming servers.',
         welcomeTipPartyStrong: 'Watch Party:',
         welcomeTipPartyDesc: 'click "Room" in the player and share the 6-digit code with a friend.',
-        welcomeTipCardsStrong: 'Cards, Manga & Stats:',
-        welcomeTipCardsDesc: 'unlock collectible cards by watching 60%+ of a title, read manga, and track your watch hours in the Activity Center!',
+        welcomeTipCardsStrong: 'Cards & Manga:',
+        welcomeTipCardsDesc: 'unlock collectible cards by watching 60%+ of a title and read manga right on the site.',
+        welcomeTipActivityStrong: 'Activity Center:',
+        welcomeTipActivityDesc: 'track watch hours, favorite genres, unfinished series, and compete in Top Anime Fans from your profile!',
         welcomeShikiTitle: 'Log in with Shikimori',
         welcomeShikiSub: 'Unlock all website features',
         welcomeShikiDesc: 'Signing in lets me recommend anime tailored to your taste and sync your watch progress across devices!',
@@ -14776,6 +14808,8 @@
           state.currentUser = user;
           localStorage.setItem('shiki_user_id', String(user.id));
           const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
+          if (user.nickname) localStorage.setItem('shiki_user_nickname', String(user.nickname));
+          if (avatar) localStorage.setItem('shiki_user_avatar', String(avatar));
           ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -14992,9 +15026,13 @@
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const rateEntry = state.userRates?.[String(anime.id)];
+      const shikiNick = state.currentUser?.nickname || safeGet('shiki_user_nickname') || '';
+      const shikiAvatar = state.currentUser?.image?.x160 || state.currentUser?.image?.x48 || safeGet('shiki_user_avatar') || '';
       const payload = {
         userId: shikiUid,
         deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
+        nickname: shikiNick,
+        avatar: shikiAvatar,
         dateKey,
         monthKey: dateKey.slice(0, 7),
         deltaSeconds: wholeSec,
@@ -15088,9 +15126,13 @@
           } catch (_) {}
         }
 
+        const shikiNick = state.currentUser?.nickname || safeGet('shiki_user_nickname') || '';
+        const shikiAvatar = state.currentUser?.image?.x160 || state.currentUser?.image?.x48 || safeGet('shiki_user_avatar') || '';
         const body = {
           userId: shikiUid,
           deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
+          nickname: shikiNick,
+          avatar: shikiAvatar,
           recentTitles,
           progressItems,
           ...(extraPayload || {})
@@ -16215,10 +16257,27 @@
 
     async function fetchAllUserRates(userId, token) {
       try {
-        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime`, {
-          headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
-        });
-        const rates = await res.json();
+        const headers = { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` };
+        const rates = [];
+        let page = 1;
+        const limit = 250;
+        while (page <= 12) {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&limit=${limit}&page=${page}`, { headers }).catch(() => null);
+          if (!res || !res.ok) break;
+          const batch = await res.json();
+          if (!Array.isArray(batch) || batch.length === 0) break;
+          rates.push(...batch);
+          if (batch.length < limit) break;
+          page += 1;
+        }
+        if (rates.length === 0) {
+          const fallbackRes = await fetch(`https://shikimori.io/api/users/${userId}/anime_rates?limit=5000`, { headers }).catch(() => null);
+          if (fallbackRes && fallbackRes.ok) {
+            const fallbackArr = await fallbackRes.json();
+            if (Array.isArray(fallbackArr)) rates.push(...fallbackArr);
+          }
+        }
+
         if (Array.isArray(rates)) {
           state.userRates = {};
           const watchingRates = [];
@@ -16254,7 +16313,7 @@
 
             if (missingIds.length > 0) {
               try {
-                const gItems = await fetchGraphQLAnimes({ ids: missingIds.join(','), limit: 50 });
+                const gItems = await fetchGraphQLAnimes({ ids: missingIds.slice(0, 50).join(','), limit: 50 });
                 const parsedItems = gItems.map(item => parseAnimeItem(item));
 
                 parsedItems.forEach(item => {
@@ -16276,67 +16335,91 @@
           } else if (orderSelect && orderSelect.value === 'recommendations' && state.currentTab === 'catalog') {
             fetchRecommendationsCatalog(true);
           }
-          // Синхронизируем статусы Shikimori, топ-оценки и любимые жанры с Центром активности
+
+          // Автоматическая синхронизация часов просмотра из «Просмотрено», любимых жанров и топ-оценок
           try {
             const completedOrDroppedIds = rates
               .filter(r => (r.status === 'completed' || r.status === 'dropped') && r.target_id)
               .map(r => String(r.target_id));
 
-            const ratedSorted = [...rates]
-              .filter(r => r.target_id && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching'))
-              .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)))
-              .slice(0, 35);
+            const activeForTaste = rates
+              .filter(r => r.target_id && (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0))
+              .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)));
 
-            const idsToEnrich = ratedSorted.map(r => String(r.target_id));
-            let topRatedTitles = [];
-            const shikiGenreCounts = {};
+            const uniqueIds = Array.from(new Set([
+              ...completedRates.map(r => String(r.target_id)),
+              ...activeForTaste.slice(0, 120).map(r => String(r.target_id))
+            ])).slice(0, 450);
 
-            if (idsToEnrich.length > 0) {
-              const gItems = await fetchGraphQLAnimes({ ids: idsToEnrich.join(','), limit: 40 }).catch(() => []);
-              const byId = new Map();
+            const byId = new Map();
+            for (let i = 0; i < uniqueIds.length; i += 50) {
+              const chunk = uniqueIds.slice(i, i + 50);
+              const gItems = await fetchGraphQLAnimes({ ids: chunk.join(','), limit: 50 }).catch(() => []);
               (gItems || []).forEach(g => {
                 const parsed = parseAnimeItem(g);
                 byId.set(String(parsed.id), parsed);
               });
-
-              ratedSorted.forEach(r => {
-                const aid = String(r.target_id);
-                const info = byId.get(aid) || state.itemsRegistry?.[aid];
-                const gRu = info?.genresRu || info?.genres || [];
-                const gEn = info?.genresEn || [];
-                gRu.forEach((gn, idx) => {
-                  const key = String(gn || '').toLowerCase();
-                  if (!key) return;
-                  if (!shikiGenreCounts[key]) {
-                    shikiGenreCounts[key] = { name: gn, nameEn: gEn[idx] || '', shikiCount: 0, scoreSum: 0 };
-                  }
-                  shikiGenreCounts[key].shikiCount += 1;
-                  shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
-                });
-                if (info) {
-                  topRatedTitles.push({
-                    animeId: aid,
-                    title: info.titleRu || 'Аниме',
-                    titleEn: info.titleEn || '',
-                    poster: info.poster || '',
-                    kind: info.kind || 'TV',
-                    year: info.year || '',
-                    userScore: Number(r.score) || 0,
-                    globalScore: Number(info.score) || 0,
-                    shikiStatus: r.status || '',
-                    episodesWatched: Number(r.episodes) || 0,
-                    episodesTotal: Number(info.episodes) || 0,
-                    genres: gRu
-                  });
-                }
-              });
             }
+
+            let shikiCompletedSeconds = 0;
+            const shikiCompletedCount = completedRates.length;
+
+            completedRates.forEach(r => {
+              const aid = String(r.target_id);
+              const info = byId.get(aid) || state.itemsRegistry?.[aid];
+              const kind = String(info?.kind || '').toLowerCase();
+              const defaultDurMin = kind === 'movie' ? 90 : 24;
+              const durationMin = Math.max(1, Number(info?.duration) || defaultDurMin);
+              const totalEps = Number(info?.episodes) || (kind === 'movie' ? 1 : 12);
+              const watchedEps = Math.max(1, Number(r.episodes) || totalEps);
+              const rewatches = Math.max(0, Number(r.rewatches) || 0);
+              shikiCompletedSeconds += watchedEps * (1 + rewatches) * durationMin * 60;
+            });
+
+            const topRatedTitles = [];
+            const shikiGenreCounts = {};
+
+            activeForTaste.forEach(r => {
+              const aid = String(r.target_id);
+              const info = byId.get(aid) || state.itemsRegistry?.[aid];
+              if (!info) return;
+              const gRu = info.genresRu || info.genres || [];
+              const gEn = info.genresEn || [];
+              const weightBoost = r.status === 'completed' ? 1.5 : 1;
+              gRu.forEach((gn, idx) => {
+                const key = String(gn || '').toLowerCase();
+                if (!key) return;
+                if (!shikiGenreCounts[key]) {
+                  shikiGenreCounts[key] = { name: gn, nameEn: gEn[idx] || '', shikiCount: 0, scoreSum: 0 };
+                }
+                shikiGenreCounts[key].shikiCount += weightBoost;
+                shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
+              });
+              if (topRatedTitles.length < 40 && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching')) {
+                topRatedTitles.push({
+                  animeId: aid,
+                  title: info.titleRu || 'Аниме',
+                  titleEn: info.titleEn || '',
+                  poster: info.poster || '',
+                  kind: info.kind || 'TV',
+                  year: info.year || '',
+                  userScore: Number(r.score) || 0,
+                  globalScore: Number(info.score) || 0,
+                  shikiStatus: r.status || '',
+                  episodesWatched: Number(r.episodes) || 0,
+                  episodesTotal: Number(info.episodes) || 0,
+                  genres: gRu
+                });
+              }
+            });
 
             syncActivityWithServer({
               completedOrDroppedIds,
+              shikiCompletedSeconds: Math.round(shikiCompletedSeconds),
+              shikiCompletedCount,
               topRatedTitles: topRatedTitles
                 .sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore))
-                .slice(0, 30),
+                .slice(0, 35),
               shikiGenreCounts
             });
           } catch (_) {}
@@ -20912,6 +20995,14 @@
         quoteEn: '“Watch 60%+ of any anime to unlock collectible cards and upgrade them in the upgrader!”',
         bubbleRu: '🎴 Карточки и апгрейдер',
         bubbleEn: '🎴 Cards & Upgrader'
+      },
+      {
+        id: 6,
+        src: getBokuSpriteUrl(6),
+        quoteRu: '«Загляни в Центр активности в профиле: там твои часы просмотра с Shikimori, любимые жанры и Топ анимешников!»',
+        quoteEn: '“Check out the Activity Center in your profile for Shikimori watch hours, favorite genres, and Top Anime Fans!”',
+        bubbleRu: '📊 Центр активности и Топы',
+        bubbleEn: '📊 Activity Center & Top'
       }
     ];
     let currentChibiIndex = 0;

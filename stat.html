@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" id="themeColorMeta" content="#08060f" />
   <title>KombokoWatch — Центр активности</title>
-  <meta name="description" content="Статистика просмотров, недосмотренные тайтлы, любимые жанры и ИИ-аналитика в KombokoWatch." />
+  <meta name="description" content="Статистика просмотров, недосмотренные тайтлы, любимые жанры и топ анимешников в KombokoWatch." />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -28,9 +29,24 @@
           'manga-print': 'light',
           'digital-vapor': 'light'
         };
+        var themeColors = {
+          'default': '#08060f',
+          'void-cyan': '#0a0a0c',
+          'concrete-red': '#171619',
+          'manga-print': '#f5f2eb',
+          'digital-vapor': '#f7f6fc'
+        };
         if (!valid[t]) t = 'default';
         document.documentElement.setAttribute('data-theme', t);
         document.documentElement.setAttribute('data-theme-mode', valid[t]);
+        var metaTc = document.getElementById('themeColorMeta');
+        if (metaTc && themeColors[t]) metaTc.setAttribute('content', themeColors[t]);
+
+        var isStandalone = (window.navigator.standalone === true) ||
+          (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+        if (isStandalone) {
+          document.documentElement.classList.add('pwa-standalone');
+        }
       } catch (_) {}
     })();
   </script>
@@ -195,6 +211,12 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border-hairline);
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+    }
+    html.pwa-standalone .topbar {
+      padding-top: max(18px, env(safe-area-inset-top, 0px));
     }
     .topbar-inner {
       max-width: 1200px;
@@ -203,7 +225,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
+      gap: 20px;
     }
     .brand-mark {
       font-size: 18px;
@@ -231,20 +253,32 @@
     .nav-tab {
       position: relative;
       z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       border: none;
       background: transparent;
       color: var(--text-muted);
       font-family: inherit;
       font-size: 13.5px;
       font-weight: 600;
-      padding: 7px 14px;
+      padding: 7px 13px;
       border-radius: 7px;
       cursor: pointer;
       white-space: nowrap;
       flex-shrink: 0;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
       transition: color 180ms var(--ease-out), background-color 180ms var(--ease-out);
       min-height: 36px;
     }
+    .nav-tab-icon {
+      font-size: 18px;
+      display: none;
+      line-height: 1;
+    }
+    .nav-tab-short { display: none; }
     .nav-tab:hover {
       color: var(--text-strong);
     }
@@ -821,6 +855,160 @@
       align-items: start;
     }
 
+    /* Leaderboards */
+    .lb-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .lb-cat-scroll {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-width: 100%;
+    }
+    .lb-cat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 36px;
+      padding: 6px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-surface-alt);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      touch-action: manipulation;
+      transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+    }
+    .lb-cat-btn:hover {
+      color: var(--text-strong);
+      border-color: var(--border-accent);
+    }
+    .lb-cat-btn.active {
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      border-color: transparent;
+    }
+    .lb-my-card {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--color-primary-container);
+      border: 1px solid var(--border-accent);
+      margin-bottom: 16px;
+    }
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--border-hairline);
+      transition: background-color 140ms var(--ease-out);
+    }
+    .lb-row:hover {
+      background: var(--bg-surface-alt);
+    }
+    .lb-row.is-me {
+      background: var(--color-primary-container);
+      border-radius: 10px;
+      border-bottom-color: transparent;
+      margin: 2px 0;
+    }
+    .lb-rank {
+      width: 34px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .lb-rank.top-1 { color: #F59E0B; font-size: 16px; }
+    .lb-rank.top-2 { color: #94A3B8; font-size: 15px; }
+    .lb-rank.top-3 { color: #D97706; font-size: 15px; }
+    .lb-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .lb-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .lb-main {
+      min-width: 0;
+      flex: 1;
+    }
+    .lb-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-strong);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lb-you-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      flex-shrink: 0;
+    }
+    .lb-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lb-metric {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .lb-metric-val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .lb-metric-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .btn-visibility-hidden {
+      background: var(--color-primary-container);
+      border-color: var(--border-accent);
+      color: var(--color-primary);
+    }
+
     @media (max-width: 960px) {
       .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .overview-grid { grid-template-columns: 1fr; }
@@ -829,14 +1017,94 @@
       .nav-links { order: 3; width: 100%; }
     }
 
+    @media (max-width: 768px) {
+      .topbar-inner {
+        flex-wrap: nowrap;
+        padding: 10px 16px;
+      }
+      .nav-links {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        order: unset;
+        width: 100%;
+        z-index: 60;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 2px;
+        padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+        border-radius: 0;
+        border: none;
+        border-top: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25);
+        overflow: visible;
+      }
+      .nav-tab {
+        flex-direction: column;
+        gap: 2px;
+        padding: 5px 2px;
+        min-height: 48px;
+        font-size: 10px;
+        font-weight: 600;
+        border-radius: 10px;
+        min-width: 0;
+      }
+      .nav-tab-icon {
+        display: block;
+        font-size: 20px;
+      }
+      .nav-tab-full { display: none; }
+      .nav-tab-short {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .nav-tab.active {
+        background: var(--color-primary-container);
+        color: var(--color-primary);
+      }
+      .page-shell {
+        padding: 18px 14px calc(86px + env(safe-area-inset-bottom, 0px));
+      }
+      .sync-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .sync-banner .btn {
+        width: 100%;
+      }
+      .ai-summary-meta {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .lb-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .lb-cat-scroll {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+      .lb-cat-scroll::-webkit-scrollbar { display: none; }
+    }
+
     @media (max-width: 600px) {
-      .page-shell { padding: 18px 14px 48px; }
       .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .surface-card { padding: 16px; }
       .anime-row { flex-direction: column; align-items: stretch; gap: 12px; }
       .row-actions { justify-content: flex-end; }
       .btn { min-height: 44px; }
       .search-input { width: 100%; }
+      .segmented { max-width: 100%; overflow-x: auto; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -855,11 +1123,36 @@
       <a href="/" class="brand-mark">KombokoWatch</a>
 
       <nav class="nav-links" aria-label="Разделы центра активности">
-        <button type="button" class="nav-tab active" data-section="overview" onclick="switchSection('overview')">Обзор</button>
-        <button type="button" class="nav-tab" data-section="time" onclick="switchSection('time')">Время просмотра</button>
-        <button type="button" class="nav-tab" data-section="unfinished" onclick="switchSection('unfinished')">Недосмотренные</button>
-        <button type="button" class="nav-tab" data-section="recent" onclick="switchSection('recent')">Последние</button>
-        <button type="button" class="nav-tab" data-section="taste" onclick="switchSection('taste')">Жанры и Топ-оценки</button>
+        <button type="button" class="nav-tab active" data-section="overview" onclick="switchSection('overview')">
+          <span class="material-symbols-rounded nav-tab-icon">dashboard</span>
+          <span class="nav-tab-full">Обзор</span>
+          <span class="nav-tab-short">Обзор</span>
+        </button>
+        <button type="button" class="nav-tab" data-section="time" onclick="switchSection('time')">
+          <span class="material-symbols-rounded nav-tab-icon">schedule</span>
+          <span class="nav-tab-full">Время просмотра</span>
+          <span class="nav-tab-short">Время</span>
+        </button>
+        <button type="button" class="nav-tab" data-section="unfinished" onclick="switchSection('unfinished')">
+          <span class="material-symbols-rounded nav-tab-icon">pause_circle</span>
+          <span class="nav-tab-full">Недосмотренные</span>
+          <span class="nav-tab-short">Досмотр</span>
+        </button>
+        <button type="button" class="nav-tab" data-section="recent" onclick="switchSection('recent')">
+          <span class="material-symbols-rounded nav-tab-icon">history</span>
+          <span class="nav-tab-full">Последние</span>
+          <span class="nav-tab-short">История</span>
+        </button>
+        <button type="button" class="nav-tab" data-section="taste" onclick="switchSection('taste')">
+          <span class="material-symbols-rounded nav-tab-icon">auto_awesome</span>
+          <span class="nav-tab-full">Жанры и Топ-оценки</span>
+          <span class="nav-tab-short">Вкусы</span>
+        </button>
+        <button type="button" class="nav-tab" data-section="leaderboard" onclick="switchSection('leaderboard')">
+          <span class="material-symbols-rounded nav-tab-icon">leaderboard</span>
+          <span class="nav-tab-full">Топ анимешников</span>
+          <span class="nav-tab-short">Топы</span>
+        </button>
       </nav>
 
       <div class="topbar-action">
@@ -1067,15 +1360,50 @@
           </div>
         </div>
       </section>
+      <!-- 6. ТОП АНИМЕШНИКОВ -->
+      <section id="panel-leaderboard" class="stat-panel">
+        <div class="surface-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title" id="leaderboardTitle">Топ анимешников KombokoWatch</h2>
+              <div class="section-sub" id="leaderboardSub">Рейтинг зрителей по часам просмотра, коллекции карточек и мини-играм</div>
+            </div>
+            <button type="button" class="btn" id="btnToggleHideLeaderboard" onclick="toggleLeaderboardVisibility()">
+              <span class="material-symbols-rounded" id="hideLeaderboardIcon" style="font-size: 18px;">visibility_off</span>
+              <span id="hideLeaderboardLabel">Не показывать меня в топе</span>
+            </button>
+          </div>
+
+          <div class="lb-controls">
+            <div class="lb-cat-scroll" role="tablist" aria-label="Категории топа">
+              <button type="button" class="lb-cat-btn active" data-lbcat="hours" onclick="setLeaderboardCategory('hours')">Часы просмотра</button>
+              <button type="button" class="lb-cat-btn" data-lbcat="cards" onclick="setLeaderboardCategory('cards')">Больше карточек</button>
+              <button type="button" class="lb-cat-btn" data-lbcat="legendary" onclick="setLeaderboardCategory('legendary')">Легендарки</button>
+              <button type="button" class="lb-cat-btn" data-lbcat="coins" onclick="setLeaderboardCategory('coins')">Бококойны</button>
+              <button type="button" class="lb-cat-btn" data-lbcat="completed" onclick="setLeaderboardCategory('completed')">Просмотрено</button>
+              <button type="button" class="lb-cat-btn" data-lbcat="games" onclick="setLeaderboardCategory('games')">Мини-игры</button>
+            </div>
+          </div>
+
+          <div id="lbMySummary" class="lb-my-card" style="display: none;"></div>
+          <div id="leaderboardList">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 
   <script>
-    const SECTION_ORDER = ['overview', 'time', 'unfinished', 'recent', 'taste'];
+    const SECTION_ORDER = ['overview', 'time', 'unfinished', 'recent', 'taste', 'leaderboard'];
     let currentSection = 'overview';
     let currentTimeChartMode = 'days14';
     let currentGenreMode = 'combined';
     let currentRatedMode = 'user';
+    let currentLeaderboardCat = 'hours';
+    let leaderboardData = null;
     let currentLang = (localStorage.getItem('komboko_lang') === 'en') ? 'en' : 'ru';
     let activityState = null;
 
@@ -1223,23 +1551,91 @@
       document.getElementById('genresSub').textContent = 'Derived from recent watches & Shikimori lists';
       document.getElementById('topRatedTitle').textContent = 'Highest Rated Titles';
       document.getElementById('topRatedSub').textContent = 'Your top scores & highest-rated titles';
+      document.getElementById('leaderboardTitle').textContent = 'Top Anime Fans';
+      document.getElementById('leaderboardSub').textContent = 'Community rankings across watch hours, cards, and mini-games';
+      document.getElementById('hideLeaderboardLabel').textContent = "Don't show me in top";
+
       const tabMap = {
-        overview: 'Overview',
-        time: 'Watch Time',
-        unfinished: 'Unfinished',
-        recent: 'Recent',
-        taste: 'Genres & Top'
+        overview: ['Overview', 'Overview'],
+        time: ['Watch Time', 'Time'],
+        unfinished: ['Unfinished', 'Resume'],
+        recent: ['Recent', 'Recent'],
+        taste: ['Genres & Top', 'Taste'],
+        leaderboard: ['Top Fans', 'Top']
       };
       document.querySelectorAll('.nav-tab').forEach(b => {
         const k = b.getAttribute('data-section');
-        if (tabMap[k]) b.textContent = tabMap[k];
+        if (tabMap[k]) {
+          const fullEl = b.querySelector('.nav-tab-full');
+          const shortEl = b.querySelector('.nav-tab-short');
+          if (fullEl) fullEl.textContent = tabMap[k][0];
+          if (shortEl) shortEl.textContent = tabMap[k][1];
+        }
       });
+
+      const lbCatMap = {
+        hours: 'Watch Hours',
+        cards: 'Total Cards',
+        legendary: 'Legendaries',
+        coins: 'Bokocoins',
+        completed: 'Completed',
+        games: 'Mini-Games'
+      };
+      document.querySelectorAll('.lb-cat-btn').forEach(b => {
+        const c = b.getAttribute('data-lbcat');
+        if (lbCatMap[c]) b.textContent = lbCatMap[c];
+      });
+    }
+
+    async function fetchAllShikimoriRates(uid, token) {
+      const headers = { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` };
+      const allRates = [];
+      let page = 1;
+      const limit = 250;
+      while (page <= 12) {
+        const rRes = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${uid}&target_type=Anime&limit=${limit}&page=${page}`, { headers }).catch(() => null);
+        if (!rRes || !rRes.ok) break;
+        const batch = await rRes.json();
+        if (!Array.isArray(batch) || batch.length === 0) break;
+        allRates.push(...batch);
+        if (batch.length < limit) break;
+        page += 1;
+      }
+      if (allRates.length === 0) {
+        const rRes = await fetch(`https://shikimori.io/api/users/${uid}/anime_rates?limit=5000`, { headers }).catch(() => null);
+        if (rRes && rRes.ok) {
+          const fallbackRates = await rRes.json();
+          if (Array.isArray(fallbackRates)) allRates.push(...fallbackRates);
+        }
+      }
+      return allRates;
+    }
+
+    async function enrichShikiAnimeIds(ids) {
+      const byId = new Map();
+      const uniqueIds = Array.from(new Set(ids.filter(Boolean).map(String))).slice(0, 450);
+      for (let i = 0; i < uniqueIds.length; i += 50) {
+        const chunk = uniqueIds.slice(i, i + 50);
+        const gqlQuery = `query { animes(ids: "${chunk.join(',')}", limit: 50, censored: false) { id name russian score kind duration episodes episodesAired airedOn { year } poster { originalUrl mainUrl } genres { name russian } } }`;
+        const gRes = await fetch('https://shikimori.io/api/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ query: gqlQuery })
+        }).catch(() => null);
+        if (gRes && gRes.ok) {
+          const gJson = await gRes.json();
+          const animes = gJson?.data?.animes || [];
+          animes.forEach(a => byId.set(String(a.id), a));
+        }
+      }
+      return byId;
     }
 
     async function resolveShikimoriIdentityAndSync() {
       const token = localStorage.getItem('shiki_token');
       let uid = localStorage.getItem('shiki_user_id');
-      let nickname = '';
+      let nickname = localStorage.getItem('shiki_user_nickname') || '';
+      let avatar = localStorage.getItem('shiki_user_avatar') || '';
 
       if (token) {
         try {
@@ -1251,7 +1647,10 @@
             if (u && u.id) {
               uid = String(u.id);
               nickname = u.nickname || '';
+              avatar = u.image ? (u.image.x160 || u.image.x48 || '') : '';
               localStorage.setItem('shiki_user_id', uid);
+              if (nickname) localStorage.setItem('shiki_user_nickname', nickname);
+              if (avatar) localStorage.setItem('shiki_user_avatar', avatar);
             }
           }
         } catch (_) {}
@@ -1269,81 +1668,86 @@
         if (guestBanner) guestBanner.style.display = 'flex';
       }
 
-      // Синхронизируем локальную историю и Shikimori оценки с сервером
+      // Синхронизируем локальную историю, списки «Просмотрено», любимые жанры и оценки Shikimori
       let extraSync = {};
       if (uid && token) {
         try {
-          const rRes = await fetch(`https://shikimori.io/api/users/${uid}/anime_rates?limit=500`, {
-            headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
-          });
-          if (rRes.ok) {
-            const rates = await rRes.json();
-            if (Array.isArray(rates) && rates.length > 0) {
-              const completedOrDroppedIds = rates
-                .filter(r => (r.status === 'completed' || r.status === 'dropped') && r.target_id)
-                .map(r => String(r.target_id));
+          const rates = await fetchAllShikimoriRates(uid, token);
+          if (Array.isArray(rates) && rates.length > 0) {
+            const completedOrDroppedIds = rates
+              .filter(r => (r.status === 'completed' || r.status === 'dropped') && r.target_id)
+              .map(r => String(r.target_id));
 
-              const ratedSorted = [...rates]
-                .filter(r => r.target_id && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching'))
-                .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)))
-                .slice(0, 35);
+            const completedRates = rates.filter(r => r.status === 'completed' && r.target_id);
+            const activeForTaste = rates
+              .filter(r => r.target_id && (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0))
+              .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)));
 
-              const ids = ratedSorted.map(r => String(r.target_id));
-              if (ids.length > 0) {
-                const gqlQuery = `query { animes(ids: "${ids.join(',')}", limit: 40) { id name russian score kind episodes airedOn { year } poster { originalUrl mainUrl } genres { name russian } } }`;
-                const gRes = await fetch('https://shikimori.io/api/graphql', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                  body: JSON.stringify({ query: gqlQuery })
-                }).catch(() => null);
+            const idsToEnrich = Array.from(new Set([
+              ...completedRates.map(r => String(r.target_id)),
+              ...activeForTaste.slice(0, 120).map(r => String(r.target_id))
+            ]));
 
-                if (gRes && gRes.ok) {
-                  const gJson = await gRes.json();
-                  const animes = gJson?.data?.animes || [];
-                  const byId = new Map();
-                  animes.forEach(a => byId.set(String(a.id), a));
+            const byId = idsToEnrich.length > 0 ? await enrichShikiAnimeIds(idsToEnrich) : new Map();
 
-                  const shikiGenreCounts = {};
-                  const topRatedTitles = [];
+            let shikiCompletedSeconds = 0;
+            const shikiCompletedCount = completedRates.length;
 
-                  ratedSorted.forEach(r => {
-                    const aid = String(r.target_id);
-                    const info = byId.get(aid);
-                    if (!info) return;
-                    const genresRu = (info.genres || []).map(g => g.russian || g.name).filter(Boolean);
-                    const genresEn = (info.genres || []).map(g => g.name || g.russian).filter(Boolean);
-                    genresRu.forEach((gn, idx) => {
-                      const key = gn.toLowerCase();
-                      if (!shikiGenreCounts[key]) {
-                        shikiGenreCounts[key] = { name: gn, nameEn: genresEn[idx] || gn, shikiCount: 0, scoreSum: 0 };
-                      }
-                      shikiGenreCounts[key].shikiCount += 1;
-                      shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
-                    });
-                    topRatedTitles.push({
-                      animeId: aid,
-                      title: info.russian || info.name || 'Аниме',
-                      titleEn: info.name || info.russian || '',
-                      poster: info.poster?.mainUrl || info.poster?.originalUrl || '',
-                      kind: info.kind || 'tv',
-                      year: info.airedOn?.year ? String(info.airedOn.year) : '',
-                      userScore: Number(r.score) || 0,
-                      globalScore: Number(info.score) || 0,
-                      shikiStatus: r.status || '',
-                      episodesWatched: Number(r.episodes) || 0,
-                      episodesTotal: Number(info.episodes) || 0,
-                      genres: genresRu
-                    });
-                  });
+            completedRates.forEach(r => {
+              const info = byId.get(String(r.target_id));
+              const kind = String(info?.kind || '').toLowerCase();
+              const defaultDurMin = kind === 'movie' ? 90 : (kind === 'special' || kind === 'ova' ? 24 : 24);
+              const durationMin = Math.max(1, Number(info?.duration) || defaultDurMin);
+              const totalEps = Number(info?.episodes) || Number(info?.episodesAired) || (kind === 'movie' ? 1 : 12);
+              const watchedEps = Math.max(1, Number(r.episodes) || totalEps);
+              const rewatches = Math.max(0, Number(r.rewatches) || 0);
+              shikiCompletedSeconds += watchedEps * (1 + rewatches) * durationMin * 60;
+            });
 
-                  extraSync = {
-                    completedOrDroppedIds,
-                    shikiGenreCounts,
-                    topRatedTitles: topRatedTitles.sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore))
-                  };
+            const shikiGenreCounts = {};
+            const topRatedTitles = [];
+
+            activeForTaste.forEach(r => {
+              const aid = String(r.target_id);
+              const info = byId.get(aid);
+              if (!info) return;
+              const genresRu = (info.genres || []).map(g => g.russian || g.name).filter(Boolean);
+              const genresEn = (info.genres || []).map(g => g.name || g.russian).filter(Boolean);
+              const weightBoost = r.status === 'completed' ? 1.5 : 1;
+              genresRu.forEach((gn, idx) => {
+                const key = gn.toLowerCase();
+                if (!shikiGenreCounts[key]) {
+                  shikiGenreCounts[key] = { name: gn, nameEn: genresEn[idx] || gn, shikiCount: 0, scoreSum: 0 };
                 }
+                shikiGenreCounts[key].shikiCount += weightBoost;
+                shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
+              });
+
+              if (topRatedTitles.length < 40 && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching')) {
+                topRatedTitles.push({
+                  animeId: aid,
+                  title: info.russian || info.name || 'Аниме',
+                  titleEn: info.name || info.russian || '',
+                  poster: info.poster?.mainUrl || info.poster?.originalUrl || '',
+                  kind: info.kind || 'tv',
+                  year: info.airedOn?.year ? String(info.airedOn.year) : '',
+                  userScore: Number(r.score) || 0,
+                  globalScore: Number(info.score) || 0,
+                  shikiStatus: r.status || '',
+                  episodesWatched: Number(r.episodes) || 0,
+                  episodesTotal: Number(info.episodes) || 0,
+                  genres: genresRu
+                });
               }
-            }
+            });
+
+            extraSync = {
+              completedOrDroppedIds,
+              shikiGenreCounts,
+              shikiCompletedSeconds: Math.round(shikiCompletedSeconds),
+              shikiCompletedCount,
+              topRatedTitles: topRatedTitles.sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore))
+            };
           }
         } catch (_) {}
       }
@@ -1406,13 +1810,15 @@
         };
       });
 
-      if (recentTitles.length > 0 || progressItems.length > 0 || Object.keys(extraSync).length > 0) {
+      if (recentTitles.length > 0 || progressItems.length > 0 || Object.keys(extraSync).length > 0 || nickname || avatar) {
         await fetch('/api/activity/sync', {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
             userId: uid || '',
             deviceId: getDeviceId(),
+            nickname,
+            avatar,
             recentTitles,
             progressItems,
             ...extraSync
@@ -1547,12 +1953,18 @@
       renderUnfinishedSection();
       renderRecentSection();
       renderTasteSection();
+      updateHideLeaderboardBtn();
+      if (currentSection === 'leaderboard') {
+        loadLeaderboard(currentLeaderboardCat);
+      }
     }
 
     function renderOverviewSection() {
       const todayKey = getLocalDateKey();
       const monthKey = todayKey.slice(0, 7);
       const totalSec = Number(activityState.watchSecondsTotal) || 0;
+      const shikiSec = Number(activityState.shikiCompletedSeconds) || 0;
+      const liveSec = Number(activityState.liveWatchSeconds) || Math.max(0, totalSec - shikiSec);
       const todaySec = Number(activityState.dailySeconds?.[todayKey]) || 0;
       const monthSec = Number(activityState.monthlySeconds?.[monthKey]) || 0;
       const unfinished = activityState.unfinishedTitles || [];
@@ -1560,7 +1972,15 @@
       const genres = getSortedGenres('combined');
 
       document.getElementById('kpiTotalHours').textContent = `${(totalSec / 3600).toFixed(1)} ${currentLang === 'en' ? 'h' : 'ч'}`;
-      document.getElementById('kpiTotalMins').textContent = `${Math.floor(totalSec / 60)} ${currentLang === 'en' ? 'min total' : 'мин за всё время'}`;
+      if (shikiSec > 0) {
+        const shikiH = Math.round(shikiSec / 3600);
+        const liveM = Math.round(liveSec / 60);
+        document.getElementById('kpiTotalMins').textContent = currentLang === 'en'
+          ? `Shikimori: ~${shikiH}h · Site: ${liveM}m`
+          : `Shikimori: ~${shikiH} ч · На сайте: ${liveM} мин`;
+      } else {
+        document.getElementById('kpiTotalMins').textContent = `${Math.floor(totalSec / 60)} ${currentLang === 'en' ? 'min total' : 'мин за всё время'}`;
+      }
       document.getElementById('kpiMonthHours').textContent = `${(monthSec / 3600).toFixed(1)} ${currentLang === 'en' ? 'h' : 'ч'}`;
       document.getElementById('kpiTodayMins').textContent = `${currentLang === 'en' ? 'Today' : 'Сегодня'}: ${formatDurationHuman(todaySec)}`;
       document.getElementById('kpiUnfinishedCount').textContent = String(unfinished.length);
@@ -1956,6 +2376,209 @@
         if (btn) btn.disabled = false;
       }
     }
+
+    function updateHideLeaderboardBtn() {
+      const btn = document.getElementById('btnToggleHideLeaderboard');
+      const icon = document.getElementById('hideLeaderboardIcon');
+      const label = document.getElementById('hideLeaderboardLabel');
+      const isHidden = Boolean(leaderboardData?.currentUser?.hidden ?? activityState?.hideFromLeaderboard);
+      if (btn) btn.classList.toggle('btn-visibility-hidden', isHidden);
+      if (icon) icon.textContent = isHidden ? 'visibility' : 'visibility_off';
+      if (label) {
+        if (currentLang === 'en') {
+          label.textContent = isHidden ? 'Hidden from top (Show me)' : "Don't show me in top";
+        } else {
+          label.textContent = isHidden ? 'Вы скрыты из топа (Показать)' : 'Не показывать меня в топе';
+        }
+      }
+    }
+
+    function setLeaderboardCategory(cat) {
+      currentLeaderboardCat = cat;
+      document.querySelectorAll('.lb-cat-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lbcat') === cat);
+      });
+      loadLeaderboard(cat);
+    }
+
+    function formatLeaderboardMetric(entry, cat) {
+      const en = currentLang === 'en';
+      if (cat === 'hours') {
+        const hrs = (Number(entry.watchSecondsTotal || 0) / 3600).toFixed(1);
+        const liveMin = Math.round(Number(entry.liveWatchSeconds || 0) / 60);
+        const completed = Number(entry.shikiCompletedCount || 0);
+        const sub = completed > 0
+          ? (en ? `${completed} completed · ${liveMin}m live` : `${completed} тайтлов · ${liveMin} мин здесь`)
+          : (en ? `${Math.round(Number(entry.watchSecondsTotal || 0) / 60)} min total` : `${Math.round(Number(entry.watchSecondsTotal || 0) / 60)} мин всего`);
+        return { main: `${hrs} ${en ? 'h' : 'ч'}`, sub };
+      }
+      if (cat === 'cards') {
+        return {
+          main: `${Number(entry.cardsCount || 0)} ${en ? 'cards' : 'шт.'}`,
+          sub: en ? `${Number(entry.legendaryCount || 0)} legendary` : `${Number(entry.legendaryCount || 0)} лег.`
+        };
+      }
+      if (cat === 'legendary') {
+        return {
+          main: `${Number(entry.legendaryCount || 0)}`,
+          sub: en ? `of ${Number(entry.cardsCount || 0)} cards` : `из ${Number(entry.cardsCount || 0)} карт`
+        };
+      }
+      if (cat === 'coins') {
+        return {
+          main: `${Number(entry.bokocoins || 0).toLocaleString(en ? 'en-US' : 'ru-RU')} ${en ? 'BC' : 'БК'}`,
+          sub: en ? `${Number(entry.cardsCount || 0)} cards` : `${Number(entry.cardsCount || 0)} карточек`
+        };
+      }
+      if (cat === 'completed') {
+        return {
+          main: `${Number(entry.shikiCompletedCount || 0)}`,
+          sub: en ? `${(Number(entry.watchSecondsTotal || 0) / 3600).toFixed(0)}h watch time` : `${(Number(entry.watchSecondsTotal || 0) / 3600).toFixed(0)} ч просмотра`
+        };
+      }
+      return {
+        main: `${Number(entry.bestGameScore || 0).toLocaleString(en ? 'en-US' : 'ru-RU')}`,
+        sub: en ? 'Jump / Math record' : 'БокуДжамп / Матика'
+      };
+    }
+
+    async function loadLeaderboard(cat = currentLeaderboardCat) {
+      const listEl = document.getElementById('leaderboardList');
+      const mySummaryEl = document.getElementById('lbMySummary');
+      if (!listEl) return;
+
+      try {
+        const uid = localStorage.getItem('shiki_user_id') || '';
+        const params = new URLSearchParams({
+          category: cat,
+          limit: '50',
+          deviceId: getDeviceId()
+        });
+        if (uid) params.set('userId', uid);
+
+        const res = await fetch(`/api/activity/leaderboard?${params.toString()}`, {
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (!data || !data.success) throw new Error('Failed');
+        leaderboardData = data;
+        if (activityState && data.currentUser) {
+          activityState.hideFromLeaderboard = Boolean(data.currentUser.hidden);
+        }
+        updateHideLeaderboardBtn();
+        renderLeaderboard();
+      } catch (_) {
+        listEl.innerHTML = `<div class="empty-state"><p>${currentLang === 'en' ? 'Could not load leaderboard right now.' : 'Не удалось загрузить рейтинг пользователей.'}</p></div>`;
+        if (mySummaryEl) mySummaryEl.style.display = 'none';
+      }
+    }
+
+    function renderLeaderboard() {
+      const listEl = document.getElementById('leaderboardList');
+      const mySummaryEl = document.getElementById('lbMySummary');
+      if (!listEl || !leaderboardData) return;
+
+      const en = currentLang === 'en';
+      const cat = leaderboardData.category || currentLeaderboardCat;
+      const entries = Array.isArray(leaderboardData.entries) ? leaderboardData.entries : [];
+      const me = leaderboardData.currentUser || null;
+
+      if (mySummaryEl && me) {
+        mySummaryEl.style.display = 'flex';
+        const m = formatLeaderboardMetric(me, cat);
+        const rankText = me.hidden
+          ? (en ? 'Your profile is hidden from the public leaderboard' : 'Вы скрыли свой профиль из публичного топа')
+          : (me.rank
+              ? (en ? `Your rank: #${me.rank} of ${leaderboardData.totalParticipants}` : `Ваше место: #${me.rank} из ${leaderboardData.totalParticipants}`)
+              : (en ? 'Watch anime or collect cards to enter the ranking' : 'Смотрите аниме или собирайте карточки, чтобы попасть в топ'));
+        mySummaryEl.innerHTML = `
+          <div>
+            <div style="font-size: 13.5px; font-weight: 700; color: var(--text-strong);">${escapeHtml(rankText)}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${escapeHtml(me.displayName || '')}</div>
+          </div>
+          <div class="lb-metric">
+            <div class="lb-metric-val tabular">${escapeHtml(m.main)}</div>
+            <div class="lb-metric-sub tabular">${escapeHtml(m.sub)}</div>
+          </div>
+        `;
+      } else if (mySummaryEl) {
+        mySummaryEl.style.display = 'none';
+      }
+
+      if (entries.length === 0) {
+        listEl.innerHTML = `<div class="empty-state"><p>${en ? 'No participants in this ranking yet.' : 'В этой категории пока нет участников.'}</p></div>`;
+        return;
+      }
+
+      listEl.innerHTML = `<div class="anime-row-list">${entries.map((entry, idx) => {
+        const m = formatLeaderboardMetric(entry, cat);
+        const rank = Number(entry.rank) || (idx + 1);
+        const rankClass = rank <= 3 ? `top-${rank}` : '';
+        const initials = String(entry.displayName || 'U').slice(0, 2).toUpperCase();
+        const avatarHtml = entry.avatar
+          ? `<img src="${escapeHtml(entry.avatar)}" alt="${escapeHtml(entry.displayName)}" referrerpolicy="no-referrer" onerror="this.remove();" />`
+          : escapeHtml(initials);
+        const secondaryBits = [
+          entry.shikiCompletedCount > 0 ? `${entry.shikiCompletedCount} ${en ? 'completed' : 'просм.'}` : '',
+          entry.cardsCount > 0 ? `${entry.cardsCount} ${en ? 'cards' : 'карт.'}` : '',
+          entry.legendaryCount > 0 ? `${entry.legendaryCount} ${en ? 'leg.' : 'лег.'}` : ''
+        ].filter(Boolean).join(' · ');
+
+        return `
+          <div class="lb-row stagger-item ${entry.isCurrentUser ? 'is-me' : ''}" style="animation-delay: ${Math.min(idx * 18, 220)}ms;">
+            <div class="lb-rank tabular ${rankClass}">#${rank}</div>
+            <div class="lb-avatar">${avatarHtml}</div>
+            <div class="lb-main">
+              <div class="lb-name">
+                <span>${escapeHtml(entry.displayName || 'Участник')}</span>
+                ${entry.isCurrentUser ? `<span class="lb-you-badge">${en ? 'You' : 'Вы'}</span>` : ''}
+              </div>
+              <div class="lb-sub">${escapeHtml(secondaryBits || (en ? 'KombokoWatch viewer' : 'Зритель KombokoWatch'))}</div>
+            </div>
+            <div class="lb-metric">
+              <div class="lb-metric-val tabular">${escapeHtml(m.main)}</div>
+              <div class="lb-metric-sub tabular">${escapeHtml(m.sub)}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}</div>`;
+    }
+
+    async function toggleLeaderboardVisibility() {
+      const btn = document.getElementById('btnToggleHideLeaderboard');
+      if (btn) btn.disabled = true;
+      const currentlyHidden = Boolean(leaderboardData?.currentUser?.hidden ?? activityState?.hideFromLeaderboard);
+      const nextHide = !currentlyHidden;
+
+      try {
+        const res = await fetch('/api/activity/leaderboard-visibility', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            userId: localStorage.getItem('shiki_user_id') || '',
+            deviceId: getDeviceId(),
+            hide: nextHide
+          })
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          if (activityState) activityState.hideFromLeaderboard = Boolean(data.hideFromLeaderboard);
+          if (leaderboardData?.currentUser) leaderboardData.currentUser.hidden = Boolean(data.hideFromLeaderboard);
+          updateHideLeaderboardBtn();
+          await loadLeaderboard(currentLeaderboardCat);
+        }
+      } catch (_) {} finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    const _origSwitchSection = switchSection;
+    switchSection = function (targetId) {
+      _origSwitchSection(targetId);
+      if (targetId === 'leaderboard' && !leaderboardData) {
+        loadLeaderboard(currentLeaderboardCat);
+      }
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
       applyTranslations();

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" id="themeColorMeta" content="#08060f">
   <title>KombokoWatch — Коллекция и Апгрейд</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -22,9 +23,14 @@
       try {
         var t = localStorage.getItem('komboko_theme') || 'default';
         var valid = { 'default': 'dark', 'void-cyan': 'dark', 'concrete-red': 'dark', 'manga-print': 'light', 'digital-vapor': 'light' };
+        var themeColors = { 'default': '#08060f', 'void-cyan': '#0a0a0c', 'concrete-red': '#171619', 'manga-print': '#f5f2eb', 'digital-vapor': '#f7f6fc' };
         if (!valid[t]) t = 'default';
         document.documentElement.setAttribute('data-theme', t);
         document.documentElement.setAttribute('data-theme-mode', valid[t]);
+        var tc = document.getElementById('themeColorMeta');
+        if (tc && themeColors[t]) tc.setAttribute('content', themeColors[t]);
+        var isStandalone = (window.navigator.standalone === true) || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+        if (isStandalone) document.documentElement.classList.add('pwa-standalone');
         var pd = localStorage.getItem('komboko_player_design') || 'default';
         if (!/^(default|youtube|neumorphism|aero)$/.test(pd)) pd = 'default';
         document.documentElement.setAttribute('data-player-design', pd);
@@ -1422,6 +1428,9 @@
         margin-left: 0;
         width: 100%;
         padding: calc(var(--safe-top) + 20px) 16px calc(var(--bottom-nav-height) + var(--safe-bottom) + 24px) 16px;
+      }
+      html.pwa-standalone .main-viewport {
+        padding-top: max(calc(var(--safe-top) + 20px), 58px);
       }
       .app-header-brand { margin-bottom: 18px; }
       .brand-title-text { font-size: 21px; }
@@ -3337,6 +3346,9 @@
         root.setAttribute('data-theme', meta.id);
         root.setAttribute('data-theme-mode', meta.mode);
         localStorage.setItem('komboko_theme', meta.id);
+        const themeColors = { 'default': '#08060f', 'void-cyan': '#0a0a0c', 'concrete-red': '#171619', 'manga-print': '#f5f2eb', 'digital-vapor': '#f7f6fc' };
+        const tc = document.getElementById('themeColorMeta');
+        if (tc && themeColors[meta.id]) tc.setAttribute('content', themeColors[meta.id]);
         renderThemePickers();
         updateDesignEntryPreview();
       };

@@ -15145,6 +15145,9 @@
         });
         if (res.ok) {
           const data = await res.json();
+          if (shikiUid && data?.shikiHoursLocked) {
+            safeSet(`komboko_shiki_hours_locked_${shikiUid}`, '1');
+          }
           // Синхронизируем удалённые пользователем «недосмотренные» с локальным хранилищем
           if (data?.dismissedUnfinished && typeof data.dismissedUnfinished === 'object') {
             for (const [aid, dTs] of Object.entries(data.dismissedUnfinished)) {
@@ -15158,8 +15161,10 @@
               } catch (_) {}
             }
           }
+          return data;
         }
       } catch (_) {}
+      return null;
     }
 
     function showCardAwardToast(card) {
@@ -16257,34 +16262,51 @@
 
     async function fetchAllUserRates(userId, token) {
       try {
-        const headers = { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` };
+        const headers = { 'Authorization': `Bearer ${token}` };
         const rates = [];
-        let page = 1;
-        const limit = 250;
-        while (page <= 12) {
-          const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&limit=${limit}&page=${page}`, { headers }).catch(() => null);
-          if (!res || !res.ok) break;
-          const batch = await res.json();
-          if (!Array.isArray(batch) || batch.length === 0) break;
-          rates.push(...batch);
-          if (batch.length < limit) break;
-          page += 1;
-        }
+
+        // Сначала быстрый v1 запрос (отдаёт весь список с метаданными anime за 1 обращение)
+        try {
+          const v1Res = await fetch(`https://shikimori.io/api/users/${userId}/anime_rates?limit=5000`, {
+            headers,
+            signal: AbortSignal.timeout(9000)
+          }).catch(() => null);
+          if (v1Res && v1Res.ok) {
+            const arr = await v1Res.json();
+            if (Array.isArray(arr) && arr.length > 0) rates.push(...arr);
+          }
+        } catch (_) {}
+
+        // Резервная пагинация через v2 (Shikimori отдаёт максимум по 100 за страницу)
         if (rates.length === 0) {
-          const fallbackRes = await fetch(`https://shikimori.io/api/users/${userId}/anime_rates?limit=5000`, { headers }).catch(() => null);
-          if (fallbackRes && fallbackRes.ok) {
-            const fallbackArr = await fallbackRes.json();
-            if (Array.isArray(fallbackArr)) rates.push(...fallbackArr);
+          let page = 1;
+          const limit = 100;
+          while (page <= 8) {
+            const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&limit=${limit}&page=${page}`, {
+              headers,
+              signal: AbortSignal.timeout(6000)
+            }).catch(() => null);
+            if (!res || !res.ok) break;
+            const batch = await res.json();
+            if (!Array.isArray(batch) || batch.length === 0) break;
+            rates.push(...batch);
+            if (batch.length < limit) break;
+            page += 1;
           }
         }
+
+        const getAid = (r) => String(r?.target_id || r?.anime?.id || '');
 
         if (Array.isArray(rates)) {
           state.userRates = {};
           const watchingRates = [];
 
           rates.forEach(r => {
-            state.userRates[r.target_id] = r;
-            if (r.status === 'watching' && r.target_id) {
+            const aid = getAid(r);
+            if (!aid) return;
+            if (!r.target_id) r.target_id = Number(aid) || aid;
+            state.userRates[aid] = r;
+            if (r.status === 'watching') {
               watchingRates.push(r);
             }
           });
@@ -16292,7 +16314,7 @@
           updateFavIconState();
 
           // Автоматический импорт карточек из списка «Просмотрено»
-          const completedRates = rates.filter(r => r.status === 'completed' && r.target_id);
+          const completedRates = rates.filter(r => r.status === 'completed' && getAid(r));
           if (completedRates.length > 0) {
             importCompletedShikimoriCards(completedRates, token, userId);
           }
@@ -16300,7 +16322,8 @@
           if (watchingRates.length > 0) {
             watchingRates.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
             watchingRates.forEach(r => {
-              const progressKey = `komboko_progress_${r.target_id}`;
+              const aid = getAid(r);
+              const progressKey = `komboko_progress_${aid}`;
               const localData = JSON.parse(localStorage.getItem(progressKey) || '{}');
               if (!localData.episode || r.episodes > localData.episode) {
                 localStorage.setItem(progressKey, JSON.stringify({ episode: r.episodes }));
@@ -16308,8 +16331,8 @@
             });
 
             const missingIds = watchingRates
-              .map(r => String(r.target_id))
-              .filter(id => !state.history.some(h => String(h.id) === id));
+              .map(getAid)
+              .filter(id => id && !state.history.some(h => String(h.id) === id));
 
             if (missingIds.length > 0) {
               try {
@@ -16336,20 +16359,25 @@
             fetchRecommendationsCatalog(true);
           }
 
-          // Автоматическая синхронизация часов просмотра из «Просмотрено», любимых жанров и топ-оценок
+          // Единоразовый импорт часов из «Просмотрено» + обновление любимых жанров и топ-оценок
           try {
+            const hoursLockedKey = `komboko_shiki_hours_locked_${userId}`;
+            const hoursAlreadyLocked = safeGet(hoursLockedKey) === '1';
+
             const completedOrDroppedIds = rates
-              .filter(r => (r.status === 'completed' || r.status === 'dropped') && r.target_id)
-              .map(r => String(r.target_id));
+              .filter(r => (r.status === 'completed' || r.status === 'dropped') && getAid(r))
+              .map(getAid);
 
             const activeForTaste = rates
-              .filter(r => r.target_id && (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0))
+              .filter(r => getAid(r) && (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0))
               .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)));
 
-            const uniqueIds = Array.from(new Set([
-              ...completedRates.map(r => String(r.target_id)),
-              ...activeForTaste.slice(0, 120).map(r => String(r.target_id))
-            ])).slice(0, 450);
+            const uniqueIds = hoursAlreadyLocked
+              ? activeForTaste.slice(0, 50).map(getAid)
+              : Array.from(new Set([
+                  ...completedRates.slice(0, 200).map(getAid),
+                  ...activeForTaste.slice(0, 50).map(getAid)
+                ])).slice(0, 250);
 
             const byId = new Map();
             for (let i = 0; i < uniqueIds.length; i += 50) {
@@ -16357,34 +16385,25 @@
               const gItems = await fetchGraphQLAnimes({ ids: chunk.join(','), limit: 50 }).catch(() => []);
               (gItems || []).forEach(g => {
                 const parsed = parseAnimeItem(g);
-                byId.set(String(parsed.id), parsed);
+                if (parsed?.id) byId.set(String(parsed.id), parsed);
               });
+              if (i + 50 < uniqueIds.length) {
+                await new Promise(resolve => setTimeout(resolve, 220));
+              }
             }
-
-            let shikiCompletedSeconds = 0;
-            const shikiCompletedCount = completedRates.length;
-
-            completedRates.forEach(r => {
-              const aid = String(r.target_id);
-              const info = byId.get(aid) || state.itemsRegistry?.[aid];
-              const kind = String(info?.kind || '').toLowerCase();
-              const defaultDurMin = kind === 'movie' ? 90 : 24;
-              const durationMin = Math.max(1, Number(info?.duration) || defaultDurMin);
-              const totalEps = Number(info?.episodes) || (kind === 'movie' ? 1 : 12);
-              const watchedEps = Math.max(1, Number(r.episodes) || totalEps);
-              const rewatches = Math.max(0, Number(r.rewatches) || 0);
-              shikiCompletedSeconds += watchedEps * (1 + rewatches) * durationMin * 60;
-            });
 
             const topRatedTitles = [];
             const shikiGenreCounts = {};
 
-            activeForTaste.forEach(r => {
-              const aid = String(r.target_id);
-              const info = byId.get(aid) || state.itemsRegistry?.[aid];
+            activeForTaste.slice(0, 120).forEach(r => {
+              const aid = getAid(r);
+              const gInfo = byId.get(aid) || state.itemsRegistry?.[aid];
+              const v1Info = r.anime;
+              const info = gInfo || v1Info;
               if (!info) return;
-              const gRu = info.genresRu || info.genres || [];
-              const gEn = info.genresEn || [];
+
+              const gRu = gInfo ? (gInfo.genresRu || gInfo.genres || []) : [];
+              const gEn = gInfo ? (gInfo.genresEn || []) : [];
               const weightBoost = r.status === 'completed' ? 1.5 : 1;
               gRu.forEach((gn, idx) => {
                 const key = String(gn || '').toLowerCase();
@@ -16396,13 +16415,14 @@
                 shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
               });
               if (topRatedTitles.length < 40 && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching')) {
+                const v1Poster = v1Info?.image?.original ? `https://shikimori.io${v1Info.image.original}` : '';
                 topRatedTitles.push({
                   animeId: aid,
-                  title: info.titleRu || 'Аниме',
-                  titleEn: info.titleEn || '',
-                  poster: info.poster || '',
+                  title: gInfo?.titleRu || v1Info?.russian || v1Info?.name || 'Аниме',
+                  titleEn: gInfo?.titleEn || v1Info?.name || '',
+                  poster: gInfo?.poster || v1Poster || '',
                   kind: info.kind || 'TV',
-                  year: info.year || '',
+                  year: gInfo?.year || (v1Info?.aired_on ? String(v1Info.aired_on).slice(0, 4) : ''),
                   userScore: Number(r.score) || 0,
                   globalScore: Number(info.score) || 0,
                   shikiStatus: r.status || '',
@@ -16413,15 +16433,35 @@
               }
             });
 
-            syncActivityWithServer({
+            const syncPayload = {
               completedOrDroppedIds,
-              shikiCompletedSeconds: Math.round(shikiCompletedSeconds),
-              shikiCompletedCount,
               topRatedTitles: topRatedTitles
                 .sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore))
                 .slice(0, 35),
               shikiGenreCounts
-            });
+            };
+
+            if (!hoursAlreadyLocked) {
+              let shikiCompletedSeconds = 0;
+              completedRates.forEach(r => {
+                const aid = getAid(r);
+                const gInfo = byId.get(aid) || state.itemsRegistry?.[aid];
+                const v1Info = r.anime;
+                const kind = String(gInfo?.kind || v1Info?.kind || '').toLowerCase();
+                const defaultDurMin = kind === 'movie' ? 90 : 24;
+                const durationMin = Math.max(1, Number(gInfo?.duration) || defaultDurMin);
+                const totalEps = Number(gInfo?.episodes || v1Info?.episodes || v1Info?.episodes_aired) || (kind === 'movie' ? 1 : 12);
+                const watchedEps = Math.max(1, Number(r.episodes) || totalEps);
+                const rewatches = Math.max(0, Number(r.rewatches) || 0);
+                shikiCompletedSeconds += watchedEps * (1 + rewatches) * durationMin * 60;
+              });
+              syncPayload.shikiCompletedSeconds = Math.round(shikiCompletedSeconds);
+              syncPayload.shikiCompletedCount = completedRates.length;
+              syncPayload.shikiRatesFetched = true;
+              syncPayload.lockShikiHours = true;
+            }
+
+            syncActivityWithServer(syncPayload);
           } catch (_) {}
         }
       } catch (_) {}

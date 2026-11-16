@@ -2401,7 +2401,7 @@
       </a>
     </div>
 
-    <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko" style="margin-top: auto;">
+    <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko" style="margin-top: auto;" onclick="triggerCollectionQuest('quest_visit_tg')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2ZM16.95 8.18 6.65 12.15c-.53.21-.51.57.03.75l2.87.96 5.55-3.67-4.15 4.1-.13 1.7c-.02.4.19.48.46.22l1.2-1.17 2.3 1.7c.47.35.81.17.93-.41l1.75-7.67c.16-.6-.2-.83-.51-.47Z"/></svg>
     </a>
   </nav>
@@ -2918,7 +2918,7 @@
           </span>
         </button>
 
-        <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="md-btn md-btn-filled" style="width: 100%; justify-content: flex-start; padding: 0 20px;">
+        <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="md-btn md-btn-filled" style="width: 100%; justify-content: flex-start; padding: 0 20px;" onclick="triggerCollectionQuest('quest_visit_tg')">
           <span class="material-symbols-rounded" style="font-size: 20px;">send</span>
           <span>Telegram канал Komboko</span>
         </a>
@@ -3444,6 +3444,7 @@
       currentAdviceIdx = Math.floor(Math.random() * BOKU_ADVICES.length);
       renderBokuAssistantUI();
       document.getElementById('bokuAssistantModal').style.display = 'flex';
+      triggerCollectionQuest('quest_chibi_interaction');
     }
 
     function closeBokuAssistantModal() {
@@ -3453,6 +3454,7 @@
     function cycleBokuAdvice() {
       currentAdviceIdx = (currentAdviceIdx + 1) % BOKU_ADVICES.length;
       renderBokuAssistantUI();
+      triggerCollectionQuest('quest_chibi_interaction');
     }
 
     function renderBokuAssistantUI() {
@@ -3539,7 +3541,6 @@
     const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
       ? 'https://api.komboko.fun'
       : (IS_DEV_HOST ? '' : '');
-
 
     function apiUrl(path) {
       if (!path) return '';
@@ -4013,6 +4014,8 @@
             if (Array.isArray(data.dailyQuests) && data.dailyQuests.length > 0) appState.dailyQuests = data.dailyQuests;
             if (data.gameStats) appState.gameStats = data.gameStats;
             if (data.questEligibility) appState.questEligibility = data.questEligibility;
+            if (!appState.questEligibility) appState.questEligibility = {};
+            if (appState.cards.length >= 3) appState.questEligibility.quest_collect_three_cards = true;
 
             this.saveLocal();
           }
@@ -4313,6 +4316,7 @@
         btnWatch.style.display = 'none';
         descEl.textContent = card.description || BOKU_MASCOT_CARD.description;
         modal.style.display = 'flex';
+        triggerCollectionQuest('quest_view_card_details');
         if (OnboardingGuide.step === 2) {
           OnboardingGuide.setStep(3);
         }
@@ -4323,6 +4327,7 @@
       btnWatch.href = `/?animeId=${encodeURIComponent(card.animeId)}`;
 
       modal.style.display = 'flex';
+      triggerCollectionQuest('quest_view_card_details');
 
       if (OnboardingGuide.step === 2) {
         OnboardingGuide.setStep(3);
@@ -4861,6 +4866,7 @@
         updateUpgraderArenaUI();
         renderUpgraderTray();
         renderCollection();
+        triggerCollectionQuest('quest_try_upgrade');
 
         if (!OnboardingGuide.hasCompleted()) {
           OnboardingGuide.finish();
@@ -4883,6 +4889,7 @@
         updateUpgraderArenaUI();
         renderUpgraderTray();
         renderCollection();
+        triggerCollectionQuest('quest_try_upgrade');
         if (!OnboardingGuide.hasCompleted()) OnboardingGuide.finish();
         return;
       }
@@ -4933,6 +4940,7 @@
       updateUpgraderArenaUI();
       renderUpgraderTray();
       renderCollection();
+      triggerCollectionQuest('quest_try_upgrade');
 
       if (!OnboardingGuide.hasCompleted()) {
         OnboardingGuide.finish();
@@ -5094,10 +5102,14 @@
     // =========================================================================
     // 7. СИСТЕМА ЗАДАНИЙ (1000 БК + КАРТОЧКА БОКУ ЗА ПРИВЕТСТВЕННЫЙ БОНУС)
     // =========================================================================
+    function getDateKeyFromTs(ts) {
+      const d = new Date(ts);
+      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    }
+
     function getQuestStatus(quest) {
-      const lastClaim = appState.questsClaimedAt[quest.id] || 0;
+      const lastClaim = Number(appState.questsClaimedAt[quest.id] || 0);
       const now = Date.now();
-      const DAY_MS = 24 * 60 * 60 * 1000;
 
       if (quest.isOneTime) {
         const isCompleted = lastClaim > 0;
@@ -5106,9 +5118,10 @@
 
       if (quest.isDaily) {
         if (lastClaim === 0) return { isCompleted: false, canClaim: true, remainingHours: 0 };
-        const elapsed = now - lastClaim;
-        if (elapsed < DAY_MS) {
-          const remainingHours = Math.ceil((DAY_MS - elapsed) / 3600000);
+        if (getDateKeyFromTs(lastClaim) === getDateKeyFromTs(now)) {
+          const cur = new Date(now);
+          const nextUtcMidnight = Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate() + 1);
+          const remainingHours = Math.max(1, Math.ceil((nextUtcMidnight - now) / 3600000));
           return { isCompleted: true, canClaim: false, remainingHours };
         }
         return { isCompleted: false, canClaim: true, remainingHours: 0 };
@@ -5186,6 +5199,11 @@
       const coreGrid = document.getElementById('coreQuestsGrid');
       const dailyGrid = document.getElementById('dailyQuestsGrid');
 
+      if (!appState.questEligibility) appState.questEligibility = {};
+      if (appState.cards.length >= 3) {
+        appState.questEligibility.quest_collect_three_cards = true;
+      }
+
       const coreList = appState.coreQuests.length > 0 ? appState.coreQuests : [
         { id: 'welcome_bonus', reward: 1000, titleRu: 'Приветственный бонус от Боку 💜', descRu: 'Единоразовый подарок новичку: +1000 Бококойнов и стартовая коллекционная карточка маскота Боку!', icon: 'card_giftcard', isOneTime: true },
         { id: 'daily_login', reward: 150, titleRu: 'Ежедневный вход в коллекцию', descRu: 'Заходи на страницу карточек каждый день и забирай 150 Бококойнов.', icon: 'calendar_month', isDaily: true },
@@ -5233,6 +5251,49 @@
       questBannerTimeout = setTimeout(() => banner.classList.remove('show'), 5000);
     }
 
+    const collectionQuestTriggerCache = new Map();
+    async function triggerCollectionQuest(questId) {
+      try {
+        const uid = String(appState.currentUser?.id || safeGet('shiki_user_id') || '');
+        const dayKey = getDateKeyFromTs(Date.now());
+        const cacheKey = `${dayKey}_${uid || getDeviceId()}_${questId}`;
+        if (collectionQuestTriggerCache.get(cacheKey) === 'done') return;
+
+        const res = await fetch(apiUrl('/api/cards/complete_quest'), {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            questId,
+            deviceId: getDeviceId(),
+            userId: uid
+          })
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data?.alreadyClaimed || data?.skippedNotAssigned) {
+          collectionQuestTriggerCache.set(cacheKey, 'done');
+        }
+        if (data?.questsClaimedAt) {
+          appState.questsClaimedAt = { ...appState.questsClaimedAt, ...data.questsClaimedAt };
+        }
+        if (data?.questEligibility) {
+          appState.questEligibility = { ...(appState.questEligibility || {}), ...data.questEligibility };
+        }
+        if (data && data.success && data.reward > 0) {
+          collectionQuestTriggerCache.set(cacheKey, 'done');
+          appState.bokocoins = data.bokocoins;
+          appState.questsClaimedAt[questId] = Date.now();
+          CardsStorage.saveLocal();
+          updateBalancesUI();
+          renderQuests();
+          showQuestSuccessBanner(data.reward, data.questTitle);
+        } else if (data?.questsClaimedAt) {
+          CardsStorage.saveLocal();
+          renderQuests();
+        }
+      } catch (_) {}
+    }
+
     async function claimQuestReward(questId) {
       try {
         const res = await fetch(apiUrl('/api/cards/claim_quest'), {
@@ -5241,7 +5302,7 @@
           body: JSON.stringify({
             questId,
             deviceId: getDeviceId(),
-            userId: safeGet('shiki_user_id') || ''
+            userId: String(appState.currentUser?.id || safeGet('shiki_user_id') || '')
           })
         });
 
@@ -5249,6 +5310,12 @@
         if (data.success) {
           appState.bokocoins = data.bokocoins;
           appState.questsClaimedAt[questId] = Date.now();
+          if (data.questsClaimedAt) {
+            appState.questsClaimedAt = { ...appState.questsClaimedAt, ...data.questsClaimedAt };
+          }
+          if (data.questEligibility) {
+            appState.questEligibility = { ...(appState.questEligibility || {}), ...data.questEligibility };
+          }
 
           if (data.card) {
             const exIdx = appState.cards.findIndex(c => c.uid === data.card.uid || c.animeId === data.card.animeId);
@@ -6353,7 +6420,13 @@
             const todayTotal = Math.min(capLimit, data.gameStats?.jumpCoinsToday ?? 0);
             coinsEl.textContent = `+${data.awardedCoins} БК`;
             detailsEl.textContent = `Пролётов: ${data.flights} (с 2x: ${data.doubleFlights}) · Рекорд: ${data.gameStats?.jumpBestFlights || data.flights} · Сегодня: ${todayTotal}/${capLimit} БК${data.cappedByDailyLimit ? ' (дневной лимит достигнут)' : ''}.`;
-            if (data.questEligibility?.quest_play_bokujump && !appState.questsClaimedAt?.quest_play_bokujump) {
+            const jumpRecordReady = data.questEligibility?.quest_jump_record_25 &&
+              appState.dailyQuests.some(q => q.id === 'quest_jump_record_25') &&
+              getQuestStatus({ id: 'quest_jump_record_25', isDaily: true }).canClaim;
+            if (jumpRecordReady) {
+              questEl.textContent = 'Квест «Покоритель неба (БокуДжамп)» готов к получению во вкладке Квесты!';
+              questEl.style.display = 'block';
+            } else if (data.questEligibility?.quest_play_bokujump && getQuestStatus({ id: 'quest_play_bokujump', isDaily: true }).canClaim) {
               questEl.textContent = 'Квест «Прыжок в БокуДжамп» готов к получению во вкладке Квесты!';
               questEl.style.display = 'block';
             }
@@ -6734,7 +6807,13 @@
             const todayTotal = Math.min(capLimit, data.gameStats?.mathCoinsToday ?? 0);
             coinsEl.textContent = `+${data.awardedCoins} БК`;
             detailsEl.textContent = `${data.tierLabel || ''} · Счёт: ${(data.finalScore || st.score).toLocaleString('ru-RU')}${data.multiplier2x ? ' · Множитель 2x сработал!' : ' · Без 2x множителя'} · Сегодня: ${todayTotal}/${capLimit} БК${data.cappedByDailyLimit ? ' (дневной лимит достигнут)' : ''}`;
-            if (data.questEligibility?.quest_play_bokumath && !appState.questsClaimedAt?.quest_play_bokumath) {
+            const mathRecordReady = data.questEligibility?.quest_math_score_1000 &&
+              appState.dailyQuests.some(q => q.id === 'quest_math_score_1000') &&
+              getQuestStatus({ id: 'quest_math_score_1000', isDaily: true }).canClaim;
+            if (mathRecordReady) {
+              questEl.textContent = 'Квест «Гений БокуМатики» готов к получению во вкладке Квесты!';
+              questEl.style.display = 'block';
+            } else if (data.questEligibility?.quest_play_bokumath && getQuestStatus({ id: 'quest_play_bokumath', isDaily: true }).canClaim) {
               questEl.textContent = 'Квест «Забег в БокуМатике» готов к получению во вкладке Квесты!';
               questEl.style.display = 'block';
             }

@@ -1471,6 +1471,18 @@
     let currentLang = (localStorage.getItem('komboko_lang') === 'en') ? 'en' : 'ru';
     let activityState = null;
 
+    const IS_LOCAL_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const IS_AISTUDIO_PREVIEW = window.location.hostname.includes('run.app') || window.location.hostname.includes('aistudio') || window.location.hostname.includes('googleusercontent');
+    const API_BASE = (IS_LOCAL_DEV || IS_AISTUDIO_PREVIEW)
+      ? ''
+      : ((window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun')) ? 'https://api.komboko.fun' : '');
+
+    function apiUrl(path) {
+      if (!path) return '';
+      const clean = path.startsWith('/') ? path : '/' + path;
+      return `${API_BASE}${clean}`;
+    }
+
     function getDeviceId() {
       let id = localStorage.getItem('komboko_device_id');
       if (!id) {
@@ -1802,7 +1814,7 @@
       });
       if (uid) params.set('userId', uid);
 
-      const res = await fetch(`/api/activity/state?${params.toString()}`, {
+      const res = await fetch(apiUrl(`/api/activity/state?${params.toString()}`), {
         headers: getAuthHeaders(),
         signal: AbortSignal.timeout(8000)
       });
@@ -2040,7 +2052,7 @@
 
       if (localFallback.recentTitles.length > 0 || progressItems.length > 0 || Object.keys(extraSync).length > 0 || nickname || avatar) {
         try {
-          const syncRes = await fetch('/api/activity/sync', {
+          const syncRes = await fetch(apiUrl('/api/activity/sync'), {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
@@ -2380,7 +2392,7 @@
       try { localStorage.removeItem(`komboko_progress_${animeId}`); } catch (_) {}
 
       try {
-        const res = await fetch('/api/activity/unfinished/remove', {
+        const res = await fetch(apiUrl('/api/activity/unfinished/remove'), {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
@@ -2604,7 +2616,7 @@
 
       try {
         const todayKey = getLocalDateKey();
-        const res = await fetch('/api/activity/ai-summary', {
+        const res = await fetch(apiUrl('/api/activity/ai-summary'), {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
@@ -2622,7 +2634,7 @@
           const orReply = await callOpenRouterFromBrowser(data.openRouterRequest);
           if (orReply) {
             finalText = orReply.replace(/[*#`]/g, '').trim();
-            fetch('/api/activity/ai-summary/ack', {
+            fetch(apiUrl('/api/activity/ai-summary/ack'), {
               method: 'POST',
               headers: getAuthHeaders(),
               body: JSON.stringify({
@@ -2733,7 +2745,7 @@
         });
         if (uid) params.set('userId', uid);
 
-        const res = await fetch(`/api/activity/leaderboard?${params.toString()}`, {
+        const res = await fetch(apiUrl(`/api/activity/leaderboard?${params.toString()}`), {
           headers: getAuthHeaders(),
           signal: AbortSignal.timeout(8000)
         });
@@ -2832,7 +2844,7 @@
       const nextHide = !currentlyHidden;
 
       try {
-        const res = await fetch('/api/activity/leaderboard-visibility', {
+        const res = await fetch(apiUrl('/api/activity/leaderboard-visibility'), {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({

@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" id="themeColorMeta" content="#08060f" />
   <title>KombokoWatch — Центр активности</title>
-  <meta name="description" content="Статистика просмотров, недосмотренные тайтлы, любимые жанры и топ анимешников в KombokoWatch." />
+  <meta name="description" content="Статистика просмотров, недосмотренные тайтлы, все списки Shikimori, любимые жанры и топ анимешников в KombokoWatch." />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -197,6 +197,41 @@
       --theme-glow: rgba(124, 58, 237, 0.22);
     }
 
+    /* Smooth Theme Ripple Animation */
+    html.theme-animating,
+    html.theme-animating *,
+    html.theme-animating *::before,
+    html.theme-animating *::after {
+      transition:
+        background-color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        fill 0.4s ease,
+        stroke 0.4s ease !important;
+    }
+    @keyframes themeRadialSpread {
+      from { clip-path: circle(0px at var(--theme-ripple-x, 50vw) var(--theme-ripple-y, 50vh)); }
+      to { clip-path: circle(155vmax at var(--theme-ripple-x, 50vw) var(--theme-ripple-y, 50vh)); }
+    }
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+    ::view-transition-old(root) { z-index: 1; }
+    ::view-transition-new(root) { z-index: 2; animation: themeRadialSpread 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .theme-wave-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999999;
+      opacity: 0;
+    }
+    .theme-wave-overlay.active { animation: themeWaveGlow 0.68s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    @keyframes themeWaveGlow {
+      0% { opacity: 0.55; clip-path: circle(0px at var(--theme-ripple-x, 50vw) var(--theme-ripple-y, 50vh)); }
+      55% { opacity: 0.25; }
+      100% { opacity: 0; clip-path: circle(150vmax at var(--theme-ripple-x, 50vw) var(--theme-ripple-y, 50vh)); }
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -229,10 +264,11 @@
       background-color: var(--bg-body);
       color: var(--color-surface);
       width: 100%;
+      max-width: 100vw;
       min-height: 100dvh;
       min-height: -webkit-fill-available;
       display: flex;
-      overflow-x: hidden;
+      overflow-x: clip;
       position: relative;
     }
 
@@ -264,13 +300,9 @@
       100% { transform: translateY(40px) scale(1.1); }
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .tabular { font-variant-numeric: tabular-nums; }
 
-    .tabular {
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* === ЛЕВЫЙ NAV RAIL (ИДЕНТИЧНО ОСНОВНОМУ САЙТУ И КОЛЛЕКЦИЯМ) === */
+    /* === ЛЕВЫЙ NAV RAIL === */
     .nav-rail {
       width: 92px;
       background: var(--glass-bg);
@@ -287,6 +319,9 @@
       gap: 16px;
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.4);
     }
+    html[data-theme-mode="light"] .nav-rail {
+      box-shadow: 8px 0 28px rgba(20, 19, 18, 0.08);
+    }
 
     .header-profile-btn {
       width: 45px;
@@ -302,7 +337,7 @@
       background: var(--bg-subtle);
       color: var(--color-primary);
       text-decoration: none;
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       flex-shrink: 0;
     }
     .header-profile-btn:hover { transform: scale(1.08); }
@@ -321,8 +356,9 @@
       border: 1px solid var(--glass-border);
       background: var(--glass-surface);
       color: var(--color-primary);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
       flex-shrink: 0;
+      margin-top: auto;
     }
     .tg-header-btn:hover { transform: scale(1.08); border-color: var(--color-primary); }
     .tg-header-btn svg { width: 20px; height: 20px; fill: currentColor; }
@@ -355,6 +391,7 @@
     }
     .nav-btn:hover { color: var(--text-strong); transform: translateY(-2px); }
     .nav-btn.active { color: var(--color-primary); }
+    .nav-btn.is-locked { opacity: 0.62; }
     .nav-btn .nav-indicator {
       width: 56px;
       height: 32px;
@@ -363,6 +400,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
       transition: background 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out);
     }
     .nav-btn.active .nav-indicator {
@@ -373,6 +411,15 @@
       font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
       color: var(--color-on-primary-container);
     }
+    .nav-lock-mini {
+      position: absolute;
+      top: 1px;
+      right: 4px;
+      font-size: 12px !important;
+      color: var(--color-primary);
+      display: none !important;
+    }
+    .nav-btn.is-locked .nav-lock-mini { display: inline-block !important; }
     .nav-label {
       font-size: 10.5px;
       font-weight: 700;
@@ -388,23 +435,25 @@
     .main-viewport {
       margin-left: 92px;
       flex: 1;
+      min-width: 0;
+      max-width: calc(100vw - 92px);
       min-height: 100dvh;
-      padding: max(24px, calc(var(--safe-top) + 16px)) max(32px, calc(var(--safe-right) + 20px)) 64px max(32px, calc(var(--safe-left) + 20px));
+      padding: max(24px, calc(var(--safe-top) + 16px)) max(32px, calc(var(--safe-right) + 20px)) 56px max(32px, calc(var(--safe-left) + 20px));
       display: flex;
       flex-direction: column;
-      width: calc(100% - 92px);
-      max-width: 1440px;
+      overflow-x: hidden;
     }
 
     .app-header-brand {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       gap: 14px;
       flex-wrap: wrap;
+      min-width: 0;
     }
-    .brand-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .brand-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 220px; }
     .brand-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .brand-title-text {
       font-size: 26px;
@@ -416,11 +465,7 @@
       text-decoration: none;
       cursor: pointer;
     }
-    .brand-sub {
-      font-size: 13px;
-      color: var(--color-variant);
-      font-weight: 600;
-    }
+    .brand-sub { font-size: 13px; color: var(--color-variant); font-weight: 600; }
     .sync-meta-line {
       font-size: 12px;
       color: var(--color-variant);
@@ -430,18 +475,17 @@
       gap: 8px;
       margin-top: 2px;
     }
-    .mobile-profile-btn {
-      display: none;
-    }
+    .mobile-profile-btn { display: none; }
 
     .header-actions {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
+      max-width: 100%;
     }
 
-    /* === КНОПКИ MD3 В СТИЛЕ ОСНОВНОГО САЙТА === */
+    /* === КНОПКИ MD3 === */
     .md-btn {
       display: inline-flex;
       align-items: center;
@@ -463,6 +507,12 @@
     .md-btn:hover:not(:disabled) { transform: scale(1.03); }
     .md-btn:active:not(:disabled) { transform: scale(0.98); }
     .md-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .md-btn-icon {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: var(--radius-md);
+    }
 
     .md-btn-filled {
       background: var(--btn-filled-bg);
@@ -493,11 +543,6 @@
       background: rgba(239, 68, 68, 0.24);
       border-color: rgba(239, 68, 68, 0.55);
     }
-    .md-btn-lock-active {
-      background: var(--color-primary-container);
-      border-color: var(--glass-border-glow);
-      color: var(--color-on-primary-container);
-    }
 
     /* === GLASS CARDS И СЕКЦИИ === */
     .glass-card {
@@ -508,6 +553,9 @@
       border: 1.5px solid var(--glass-border);
       padding: 20px;
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: clip;
     }
     html[data-theme-mode="light"] .glass-card {
       box-shadow: 0 8px 24px rgba(20, 19, 18, 0.06);
@@ -525,9 +573,11 @@
       border: 1.5px solid var(--glass-border-glow);
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
+      min-width: 0;
+      max-width: 100%;
     }
 
-    .stat-panel { display: none; }
+    .stat-panel { display: none; min-width: 0; max-width: 100%; }
     .stat-panel.active { display: block; }
     .stat-panel.anim-forward { animation: panelEnterForward 320ms var(--ease-out) both; }
     .stat-panel.anim-backward { animation: panelEnterBackward 320ms var(--ease-out) both; }
@@ -546,60 +596,73 @@
       to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
 
+    /* Auth Gate Card (for guest restrictions) */
+    .auth-lock-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 12px;
+      padding: 28px 18px;
+      border-radius: var(--radius-md);
+      background: var(--bg-elevated);
+      border: 1px dashed var(--glass-border-glow);
+    }
+    .auth-lock-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: var(--color-primary-container);
+      color: var(--color-on-primary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-lock-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-strong);
+    }
+    .auth-lock-card p {
+      font-size: 13px;
+      color: var(--color-variant);
+      max-width: 420px;
+      line-height: 1.5;
+    }
+
     /* KPI ROW */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
       margin-bottom: 20px;
+      min-width: 0;
     }
-    .kpi-card {
-      position: relative;
-      overflow: hidden;
-    }
-    .kpi-top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .kpi-label {
-      font-size: 12.5px;
-      color: var(--color-variant);
-      font-weight: 700;
-    }
+    .kpi-card { position: relative; overflow: hidden; min-width: 0; }
+    .kpi-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .kpi-label { font-size: 12.5px; color: var(--color-variant); font-weight: 700; }
     .kpi-icon-badge {
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
-      background: var(--bg-subtle);
-      color: var(--color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      flex-shrink: 0;
+      width: 30px; height: 30px; border-radius: 10px;
+      background: var(--bg-subtle); color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;
     }
     .kpi-value {
-      font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+      font-size: clamp(1.3rem, 2.2vw, 1.85rem);
       font-weight: 700;
       color: var(--text-strong);
       margin-top: 8px;
       letter-spacing: -0.02em;
     }
-    .kpi-meta {
-      font-size: 11.5px;
-      color: var(--color-variant);
-      margin-top: 6px;
-      line-height: 1.35;
-    }
+    .kpi-meta { font-size: 11.5px; color: var(--color-variant); margin-top: 6px; line-height: 1.35; }
 
     .overview-grid {
       display: grid;
-      grid-template-columns: 1.5fr 1fr;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
       gap: 18px;
       margin-bottom: 20px;
       align-items: stretch;
+      min-width: 0;
     }
 
     .section-head {
@@ -609,6 +672,7 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 16px;
+      min-width: 0;
     }
     .section-title {
       font-size: 17px;
@@ -618,13 +682,9 @@
       align-items: center;
       gap: 8px;
     }
-    .section-sub {
-      font-size: 12.5px;
-      color: var(--color-variant);
-      margin-top: 3px;
-    }
+    .section-sub { font-size: 12.5px; color: var(--color-variant); margin-top: 3px; line-height: 1.4; }
 
-    /* Segmented subnav matching collection.html activities-subnav */
+    /* Segmented subnav */
     .activities-subnav {
       display: inline-flex;
       align-items: center;
@@ -639,7 +699,7 @@
     }
     .activities-subnav::-webkit-scrollbar { display: none; }
     .activities-subbtn {
-      height: 34px;
+      height: 36px;
       padding: 0 14px;
       border-radius: 14px;
       border: none;
@@ -662,6 +722,49 @@
       box-shadow: 0 4px 14px var(--theme-glow);
     }
 
+    /* Controls / Selects */
+    .taste-controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+    }
+    .stat-select {
+      height: 42px;
+      padding: 0 36px 0 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+      background-color: var(--bg-elevated);
+      color: var(--text-strong);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239A75F0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .stat-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--theme-glow);
+    }
+    .stat-select option {
+      background: #1a1526;
+      color: #ffffff;
+    }
+    html[data-theme-mode="light"] .stat-select option {
+      background: #ffffff;
+      color: #141312;
+    }
+
     /* Bar Chart */
     .chart-stage {
       position: relative;
@@ -673,6 +776,7 @@
       border-radius: var(--radius-md);
       background: var(--bg-elevated);
       border: 1px solid var(--glass-border);
+      min-width: 0;
     }
     .chart-col {
       flex: 1;
@@ -685,159 +789,96 @@
       position: relative;
       cursor: pointer;
     }
-    .chart-bar-wrap {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
+    .chart-bar-wrap { width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
     .chart-bar {
-      width: 100%;
-      max-width: 26px;
-      min-height: 4px;
+      width: 100%; max-width: 26px; min-height: 4px;
       border-radius: 8px 8px 4px 4px;
       background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent-vivid) 100%);
-      opacity: 0.9;
-      transform-origin: bottom;
+      opacity: 0.9; transform-origin: bottom;
       animation: barGrow 460ms var(--ease-out) both;
       transition: opacity 0.15s, transform 0.15s;
     }
-    .chart-bar.is-zero {
-      background: var(--glass-border);
-      opacity: 0.5;
-      min-height: 4px;
-    }
+    .chart-bar.is-zero { background: var(--glass-border); opacity: 0.5; min-height: 4px; }
     .chart-col:hover .chart-bar,
-    .chart-col.is-active .chart-bar {
-      opacity: 1;
-      transform: scaleY(1.05);
-    }
+    .chart-col.is-active .chart-bar { opacity: 1; transform: scaleY(1.05); }
     @keyframes barGrow {
       from { transform: scaleY(0.1); opacity: 0.2; }
       to { transform: scaleY(1); opacity: 0.9; }
     }
     .chart-label {
-      position: absolute;
-      bottom: -24px;
-      font-size: 10.5px;
-      color: var(--color-variant);
-      white-space: nowrap;
-      font-weight: 600;
+      position: absolute; bottom: -24px;
+      font-size: 10.5px; color: var(--color-variant); white-space: nowrap; font-weight: 600;
     }
     .chart-tooltip {
-      position: absolute;
-      bottom: calc(100% - 14px);
-      left: 50%;
+      position: absolute; bottom: calc(100% - 14px); left: 50%;
       transform: translateX(-50%) translateY(4px);
-      background: var(--bg-modal);
-      color: var(--text-strong);
-      border: 1px solid var(--glass-border-glow);
-      border-radius: 10px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.14s, transform 0.14s;
-      z-index: 15;
+      background: var(--bg-modal); color: var(--text-strong);
+      border: 1px solid var(--glass-border-glow); border-radius: 10px;
+      padding: 5px 10px; font-size: 11px; font-weight: 700; white-space: nowrap;
+      pointer-events: none; opacity: 0; transition: opacity 0.14s, transform 0.14s; z-index: 15;
     }
     .chart-col:hover .chart-tooltip,
     .chart-col:focus-within .chart-tooltip,
-    .chart-col.is-active .chart-tooltip {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    .chart-col.is-active .chart-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* Boku AI Card */
     .boku-mini-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      object-fit: contain;
-      background: var(--bg-subtle);
-      border: 1px solid var(--glass-border-glow);
-      padding: 2px;
-      flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 14px; object-fit: contain;
+      background: var(--bg-subtle); border: 1px solid var(--glass-border-glow); padding: 2px; flex-shrink: 0;
     }
     .ai-summary-body {
-      font-size: 13.5px;
-      line-height: 1.6;
-      color: var(--color-surface);
-      padding: 16px;
-      border-radius: var(--radius-md);
-      background: var(--bg-elevated);
-      border: 1px solid var(--glass-border);
-      min-height: 126px;
+      font-size: 13.5px; line-height: 1.6; color: var(--color-surface);
+      padding: 16px; border-radius: var(--radius-md); background: var(--bg-elevated);
+      border: 1px solid var(--glass-border); min-height: 126px;
     }
     .ai-summary-meta {
-      margin-top: 12px;
-      font-size: 12px;
-      color: var(--color-variant);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      margin-top: 12px; font-size: 12px; color: var(--color-variant);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
     }
 
-    /* Lists & Rows */
-    .anime-row-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    /* Lists & Rows — overflow safe */
+    .anime-row-list { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-width: 100%; }
     .anime-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       padding: 12px 14px;
       border-radius: var(--radius-md);
       background: var(--bg-elevated);
       border: 1px solid var(--glass-border);
       transition: transform 0.18s var(--ease-out), border-color 0.18s, opacity 0.22s;
+      min-width: 0;
+      max-width: 100%;
     }
-    .anime-row:hover {
-      border-color: var(--glass-border-glow);
-      transform: translateY(-1px);
-    }
-    .anime-row.removing {
-      opacity: 0;
-      transform: translateX(18px);
-    }
+    .anime-row:hover { border-color: var(--glass-border-glow); transform: translateY(-1px); }
+    .anime-row.removing { opacity: 0; transform: translateX(18px); }
     .anime-row-main {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       min-width: 0;
-      flex: 1;
+      flex: 1 1 auto;
       text-decoration: none;
       color: inherit;
     }
     .poster-thumb {
-      width: 50px;
-      height: 70px;
-      border-radius: 12px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: var(--bg-subtle);
-      border: 1px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-variant);
+      width: 50px; height: 70px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+      background: var(--bg-subtle); border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center; color: var(--color-variant);
     }
     .poster-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .anime-info { min-width: 0; flex: 1; }
+    .anime-info { min-width: 0; flex: 1 1 auto; }
     .anime-title {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-strong);
-      white-space: nowrap;
+      line-height: 1.32;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-word;
     }
     .anime-meta-line {
       font-size: 12px;
@@ -847,33 +888,27 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 6px;
+      min-width: 0;
     }
     .progress-track {
-      width: 100%;
-      max-width: 280px;
-      height: 7px;
-      border-radius: var(--radius-full);
-      background: var(--bg-subtle);
-      border: 1px solid var(--glass-border);
-      overflow: hidden;
-      margin-top: 8px;
+      width: 100%; max-width: 280px; height: 7px; border-radius: var(--radius-full);
+      background: var(--bg-subtle); border: 1px solid var(--glass-border); overflow: hidden; margin-top: 8px;
     }
     .progress-fill {
-      height: 100%;
-      border-radius: var(--radius-full);
-      background: var(--btn-filled-bg);
+      height: 100%; border-radius: var(--radius-full); background: var(--btn-filled-bg);
       transition: width 420ms var(--ease-out);
     }
-    .row-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
+    .row-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .row-action-btn {
+      height: 38px;
+      padding: 0 14px;
+      font-size: 12.5px;
+      border-radius: var(--radius-full);
     }
 
     /* Search Input */
     .search-input {
-      height: 40px;
+      height: 42px;
       padding: 0 16px;
       border-radius: var(--radius-full);
       border: 1px solid var(--glass-border);
@@ -883,6 +918,7 @@
       font-weight: 600;
       width: 240px;
       max-width: 100%;
+      min-width: 0;
     }
     .search-input::placeholder { color: var(--color-variant); opacity: 0.7; }
     .search-input:focus {
@@ -891,208 +927,395 @@
       box-shadow: 0 0 0 3px var(--theme-glow);
     }
 
-    /* Genres */
+    /* Taste & Genres (minmax(0, 1fr) guarantees zero horizontal blowout on mobile!) */
     .taste-split {
       display: grid;
-      grid-template-columns: 1fr 1.2fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
       gap: 18px;
       align-items: start;
+      width: 100%;
+      max-width: 100%;
     }
-    .genre-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .genre-list { display: flex; flex-direction: column; gap: 14px; min-width: 0; width: 100%; }
+    .genre-item { min-width: 0; width: 100%; }
     .genre-item-head {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
       margin-bottom: 6px;
+      min-width: 0;
+      width: 100%;
     }
-    .genre-name { font-size: 13.5px; font-weight: 700; color: var(--text-strong); }
-    .genre-stats { font-size: 12px; color: var(--color-variant); }
+    .genre-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-strong);
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow-wrap: anywhere;
+    }
+    .genre-stats {
+      font-size: 12px;
+      color: var(--color-variant);
+      flex-shrink: 0;
+      white-space: nowrap;
+      text-align: right;
+    }
     .genre-bar-bg {
-      height: 8px;
-      border-radius: var(--radius-full);
-      background: var(--bg-elevated);
-      border: 1px solid var(--glass-border);
-      overflow: hidden;
+      height: 8px; border-radius: var(--radius-full); background: var(--bg-elevated);
+      border: 1px solid var(--glass-border); overflow: hidden; width: 100%;
     }
     .genre-bar-fill {
-      height: 100%;
-      border-radius: var(--radius-full);
-      background: var(--btn-filled-bg);
-      transform-origin: left;
-      animation: barSlideX 460ms var(--ease-out) both;
+      height: 100%; border-radius: var(--radius-full); background: var(--btn-filled-bg);
+      transform-origin: left; animation: barSlideX 460ms var(--ease-out) both;
     }
-    @keyframes barSlideX {
-      from { transform: scaleX(0); }
-      to { transform: scaleX(1); }
+    @keyframes barSlideX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    .taste-more-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      justify-content: center;
     }
 
     /* Tables */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-    }
-    .data-table th, .data-table td {
-      padding: 10px 8px;
-      font-size: 13px;
-      border-bottom: 1px solid var(--glass-border);
-    }
-    .data-table th {
-      text-align: left;
-      color: var(--color-variant);
-      font-weight: 700;
-      font-size: 12px;
-    }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .data-table th, .data-table td { padding: 10px 8px; font-size: 13px; border-bottom: 1px solid var(--glass-border); }
+    .data-table th { text-align: left; color: var(--color-variant); font-weight: 700; font-size: 12px; }
     .data-table th.num, .data-table td.num { text-align: right; }
 
     /* Leaderboards */
-    .lb-my-card {
+    .lb-toolbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      background: var(--color-primary-container);
-      color: var(--color-on-primary-container);
-      border: 1px solid var(--glass-border-glow);
       margin-bottom: 16px;
+      min-width: 0;
+    }
+    .lb-visibility-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .lb-vis-hint {
+      font-size: 11.5px;
+      color: var(--color-variant);
+      line-height: 1.35;
+    }
+    .lb-my-card {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 18px; border-radius: var(--radius-md);
+      background: var(--color-primary-container); color: var(--color-on-primary-container);
+      border: 1px solid var(--glass-border-glow); margin-bottom: 16px;
     }
     .lb-row {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       padding: 12px 14px;
       border-radius: var(--radius-md);
       background: var(--bg-elevated);
       border: 1px solid var(--glass-border);
-      transition: transform 0.16s var(--ease-out), border-color 0.16s;
+      transition: transform 0.16s var(--ease-out), border-color 0.16s, background-color 0.16s;
+      cursor: pointer;
+      min-width: 0;
+      max-width: 100%;
+      text-align: left;
+      width: 100%;
+      color: inherit;
     }
-    .lb-row:hover { border-color: var(--glass-border-glow); }
-    .lb-row.is-me {
-      background: var(--color-primary-container);
-      border-color: var(--glass-border-glow);
-    }
+    .lb-row:hover { border-color: var(--glass-border-glow); transform: translateY(-1px); }
+    .lb-row.is-me { background: var(--color-primary-container); border-color: var(--glass-border-glow); }
     .lb-row.is-me .lb-name,
     .lb-row.is-me .lb-metric-val { color: var(--color-on-primary-container); }
+    .lb-row.is-me .lb-sub,
+    .lb-row.is-me .lb-metric-sub { color: var(--color-on-primary-container); opacity: 0.85; }
     .lb-rank {
-      width: 36px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--color-variant);
-      flex-shrink: 0;
+      width: 34px; text-align: center; font-size: 13.5px; font-weight: 700;
+      color: var(--color-variant); flex-shrink: 0;
     }
     .lb-rank.top-1 { color: #fbbf24; font-size: 16px; }
-    .lb-rank.top-2 { color: #cbd5e1; font-size: 15px; }
+    .lb-rank.top-2 { color: #94a3b8; font-size: 15px; }
     .lb-rank.top-3 { color: #d97706; font-size: 15px; }
     .lb-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
+      width: 42px; height: 42px; border-radius: 14px; overflow: hidden; flex-shrink: 0;
+      background: var(--bg-subtle); border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-strong); font-weight: 700; font-size: 14px;
+    }
+    .lb-avatar.is-anon {
+      background: var(--color-primary-container);
+      color: var(--color-on-primary-container);
+      border-color: var(--glass-border-glow);
+    }
+    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lb-main { min-width: 0; flex: 1 1 auto; }
+    .lb-name {
+      font-size: 14px; font-weight: 700; color: var(--text-strong);
+      display: flex; align-items: center; gap: 6px; min-width: 0;
+    }
+    .lb-name-text {
       overflow: hidden;
-      flex-shrink: 0;
-      background: var(--bg-subtle);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+    .lb-you-badge {
+      font-size: 10.5px; font-weight: 700; padding: 2px 8px;
+      border-radius: var(--radius-full); background: var(--btn-filled-bg);
+      color: var(--btn-filled-text); flex-shrink: 0;
+    }
+    .lb-sub {
+      font-size: 11.5px; color: var(--color-variant); margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lb-metric { text-align: right; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+    .lb-metric-val { font-size: 14.5px; font-weight: 700; color: var(--color-primary); }
+    .lb-metric-sub { font-size: 11px; color: var(--color-variant); }
+    .lb-chevron { color: var(--color-variant); font-size: 18px !important; opacity: 0.7; }
+
+    /* Modals (Theme, Terms, Public User Profile) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: rgba(8, 6, 15, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    html[data-theme-mode="light"] .modal-overlay {
+      background: rgba(20, 19, 18, 0.45);
+    }
+    .modal-content {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      max-height: 88dvh;
+      overflow-y: auto;
+      background: var(--bg-modal);
+      border: 1.5px solid var(--glass-border-glow);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px 20px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      color: var(--text-strong);
+      animation: staggerReveal 240ms var(--ease-out) both;
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
       border: 1px solid var(--glass-border);
+      background: var(--bg-subtle);
+      color: var(--text-strong);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-strong);
-      font-weight: 700;
-      font-size: 14px;
+      cursor: pointer;
     }
-    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .lb-main { min-width: 0; flex: 1; }
-    .lb-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-strong);
+    .modal-close:hover { background: var(--color-primary-container); }
+
+    /* Theme Picker Grid inside Modal */
+    .theme-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+    .theme-option-card {
       display: flex;
       align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      gap: 10px;
+      padding: 10px;
+      min-width: 0;
+      border-radius: 14px;
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--glass-border);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.2s var(--ease-out), border-color 0.2s, background-color 0.2s;
     }
-    .lb-you-badge {
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      background: var(--btn-filled-bg);
-      color: var(--btn-filled-text);
-      flex-shrink: 0;
+    .theme-option-card:first-child { grid-column: 1 / -1; }
+    .theme-option-card:hover { transform: translateY(-1.5px); border-color: var(--glass-border-glow); }
+    .theme-option-card.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-container);
+      box-shadow: 0 3px 14px var(--theme-glow);
     }
-    .lb-sub {
-      font-size: 11.5px;
-      color: var(--color-variant);
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .theme-swatch-preview {
+      width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+      border: 1.5px solid rgba(128, 128, 128, 0.35);
+      display: flex; align-items: center; justify-content: center;
     }
-    .lb-metric { text-align: right; flex-shrink: 0; }
-    .lb-metric-val { font-size: 15px; font-weight: 700; color: var(--color-primary); }
-    .lb-metric-sub { font-size: 11px; color: var(--color-variant); }
+    .theme-swatch-dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+    .theme-option-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .theme-option-name { font-size: 12px; font-weight: 700; color: var(--text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .theme-option-card.active .theme-option-name { color: var(--color-on-primary-container); }
+    .theme-option-desc { font-size: 10px; color: var(--color-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .theme-option-card.active .theme-option-desc { color: var(--color-on-primary-container); opacity: 0.85; }
+    .theme-mode-icon {
+      width: 24px; height: 24px; border-radius: 999px;
+      background: rgba(128, 128, 128, 0.14); color: var(--color-variant);
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .theme-option-card.active .theme-mode-icon { background: var(--color-primary); color: var(--btn-filled-text); }
 
-    /* Empty & Toast */
-    .empty-state {
-      padding: 28px 16px;
-      text-align: center;
-      color: var(--color-variant);
+    /* User Profile Modal */
+    .profile-modal-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-right: 40px;
     }
-    .empty-state p {
-      max-width: 440px;
-      margin: 6px auto 14px;
-      font-size: 13px;
+    .profile-modal-avatar {
+      width: 64px; height: 64px; border-radius: 18px; overflow: hidden; flex-shrink: 0;
+      border: 2px solid var(--color-primary); background: var(--bg-subtle);
+      display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700;
+    }
+    .profile-modal-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .profile-mini-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .profile-mini-kpi {
+      background: var(--bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 10px 10px;
+      min-width: 0;
+    }
+    .profile-mini-kpi-val { font-size: 15px; font-weight: 700; color: var(--text-strong); }
+    .profile-mini-kpi-lbl { font-size: 10.5px; color: var(--color-variant); margin-top: 2px; }
+    .profile-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-height: 290px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .p-card {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+    }
+    .p-card.rarity-rare { border-color: #8b5cf6; }
+    .p-card.rarity-epic { border-color: #ec4899; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.22); }
+    .p-card.rarity-legendary { border-color: #fbbf24; box-shadow: 0 4px 16px rgba(251, 191, 36, 0.28); }
+    .p-card-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; background: var(--bg-subtle); }
+    .p-card.is-mascot .p-card-img { object-fit: contain; padding: 8px; background: #fff; }
+    .p-card-rarity {
+      position: absolute; top: 6px; left: 6px; padding: 2px 6px; border-radius: 6px;
+      font-size: 9px; font-weight: 700; background: rgba(12, 9, 20, 0.85); color: #fff;
+    }
+    .p-card.rarity-legendary .p-card-rarity { background: #b45309; color: #fef3c7; }
+    .p-card.rarity-epic .p-card-rarity { background: #be185d; color: #fce7f3; }
+    .p-card.rarity-rare .p-card-rarity { background: #5b21b6; color: #ede9fe; }
+    .p-card-title {
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-strong);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.25;
+    }
+
+    /* Terms box */
+    .terms-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .terms-block {
+      background: var(--bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .terms-block h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+    }
+    .terms-block p {
+      font-size: 12.5px;
+      color: var(--color-surface);
       line-height: 1.5;
     }
-    .komboko-toast {
-      position: fixed;
-      bottom: 92px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--bg-modal);
-      border: 1.5px solid var(--glass-border-glow);
-      color: var(--text-strong);
-      padding: 10px 20px;
-      border-radius: var(--radius-full);
-      font-size: 13px;
+
+    /* Footer */
+    .stat-footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--color-variant);
+    }
+    .stat-footer-link {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-size: 12.5px;
       font-weight: 700;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.25s var(--ease-out);
-      white-space: nowrap;
-      max-width: calc(100vw - 32px);
-      overflow: hidden;
-      text-overflow: ellipsis;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 6px 4px;
     }
-    .komboko-toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+
+    /* Empty & Toast */
+    .empty-state { padding: 28px 16px; text-align: center; color: var(--color-variant); }
+    .empty-state p { max-width: 440px; margin: 6px auto 14px; font-size: 13px; line-height: 1.5; }
+    .komboko-toast {
+      position: fixed; bottom: 92px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-modal); border: 1.5px solid var(--glass-border-glow);
+      color: var(--text-strong); padding: 10px 20px; border-radius: var(--radius-full);
+      font-size: 13px; font-weight: 700; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+      z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.25s var(--ease-out);
+      white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
     }
+    .komboko-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 1020px) {
       .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .overview-grid { grid-template-columns: 1fr; }
-      .taste-split { grid-template-columns: 1fr; }
+      .overview-grid { grid-template-columns: minmax(0, 1fr); }
+      .taste-split { grid-template-columns: minmax(0, 1fr); }
     }
 
-    /* === МОБИЛЬНАЯ АДАПТАЦИЯ И IPHONE PWA (ИДЕНТИЧНА ОСНОВНОМУ САЙТУ) === */
+    /* === МОБИЛЬНАЯ АДАПТАЦИЯ И IPHONE PWA === */
     @media (max-width: 768px) {
       .nav-rail {
-        top: auto !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
+        top: auto !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
         width: 100% !important;
         height: calc(var(--bottom-nav-height) + var(--safe-bottom)) !important;
         padding: 4px 6px var(--safe-bottom) !important;
@@ -1105,33 +1328,22 @@
         gap: 0 !important;
       }
       .nav-rail .header-profile-btn,
-      .nav-rail .tg-header-btn {
-        display: none !important;
-      }
+      .nav-rail .tg-header-btn { display: none !important; }
       .nav-destinations {
-        flex-direction: row !important;
-        justify-content: space-around !important;
-        width: 100% !important;
-        gap: 2px !important;
-        padding: 0 !important;
-        overflow: visible !important;
+        flex-direction: row !important; justify-content: space-around !important;
+        width: 100% !important; gap: 2px !important; padding: 0 !important; overflow: visible !important;
       }
       .nav-btn {
-        flex: 1 1 0;
-        width: auto !important;
-        min-width: 0;
-        padding: 4px 2px !important;
-        gap: 3px !important;
+        flex: 1 1 0; width: auto !important; min-width: 0;
+        padding: 4px 2px !important; gap: 3px !important;
       }
-      .nav-btn .nav-indicator {
-        width: 44px;
-        height: 28px;
-      }
+      .nav-btn .nav-indicator { width: 44px; height: 28px; }
       .nav-btn .material-symbols-rounded { font-size: 20px; }
       .nav-label { font-size: 9.5px; }
 
       .main-viewport {
         margin-left: 0 !important;
+        max-width: 100vw !important;
         width: 100% !important;
         padding: calc(16px + var(--safe-top)) 14px calc(var(--bottom-nav-height) + var(--safe-bottom) + 22px) 14px !important;
       }
@@ -1142,19 +1354,44 @@
         padding-top: max(60px, calc(18px + var(--safe-top))) !important;
       }
 
-      .mobile-profile-btn {
-        display: flex !important;
-      }
+      .mobile-profile-btn { display: flex !important; width: 44px; height: 44px; }
       .brand-title-text { font-size: 21px; }
-      .header-actions { width: 100%; }
-      .header-actions .md-btn { flex: 1 1 auto; height: 38px; padding: 0 12px; font-size: 12px; }
-      .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .glass-card { padding: 16px; border-radius: var(--radius-md); }
-      .sync-banner { flex-direction: column; align-items: flex-start; }
+      .header-actions { width: 100%; gap: 8px; }
+      .header-actions .md-btn:not(.md-btn-icon) { flex: 1 1 auto; height: 42px; padding: 0 12px; font-size: 12px; }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .glass-card { padding: 14px; border-radius: var(--radius-md); }
+      .sync-banner { flex-direction: column; align-items: flex-start; padding: 14px; }
       .sync-banner .md-btn { width: 100%; }
-      .anime-row { flex-direction: column; align-items: stretch; gap: 10px; }
-      .row-actions { justify-content: flex-end; }
+
+      /* Компактные мобильные карточки аниме: без вертикального раздувания и без горизонтального вылета */
+      .anime-row {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 10px;
+      }
+      .anime-row-main { gap: 10px; }
+      .poster-thumb { width: 46px; height: 64px; border-radius: 10px; }
+      .anime-title { font-size: 13.5px; }
+      .anime-meta-line { font-size: 11.5px; gap: 4px; }
+      .row-actions { gap: 6px; }
+      .row-action-btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border-radius: 14px;
+      }
+      .row-action-btn .row-btn-text { display: none; }
+
+      .taste-controls-bar { flex-direction: column; align-items: stretch; }
+      .taste-controls-bar .search-input,
+      .taste-controls-bar .stat-select { width: 100%; }
       .search-input { width: 100%; }
+      .lb-toolbar { flex-direction: column; align-items: stretch; }
+      .lb-toolbar .stat-select { width: 100%; }
+      .profile-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .theme-picker-grid { grid-template-columns: 1fr; }
+      .theme-option-card:first-child { grid-column: auto; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1182,24 +1419,36 @@
         <span class="nav-label" data-nav="time">Время</span>
       </button>
       <button type="button" class="nav-btn" data-section="unfinished" onclick="switchSection('unfinished')">
-        <div class="nav-indicator"><span class="material-symbols-rounded">pause_circle</span></div>
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">pause_circle</span>
+          <span class="material-symbols-rounded nav-lock-mini">lock</span>
+        </div>
         <span class="nav-label" data-nav="unfinished">Досмотр</span>
       </button>
       <button type="button" class="nav-btn" data-section="recent" onclick="switchSection('recent')">
-        <div class="nav-indicator"><span class="material-symbols-rounded">history</span></div>
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">history</span>
+          <span class="material-symbols-rounded nav-lock-mini">lock</span>
+        </div>
         <span class="nav-label" data-nav="recent">История</span>
       </button>
       <button type="button" class="nav-btn" data-section="taste" onclick="switchSection('taste')">
-        <div class="nav-indicator"><span class="material-symbols-rounded">auto_awesome</span></div>
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">auto_awesome</span>
+          <span class="material-symbols-rounded nav-lock-mini">lock</span>
+        </div>
         <span class="nav-label" data-nav="taste">Вкусы</span>
       </button>
       <button type="button" class="nav-btn" data-section="leaderboard" onclick="switchSection('leaderboard')">
-        <div class="nav-indicator"><span class="material-symbols-rounded">leaderboard</span></div>
+        <div class="nav-indicator">
+          <span class="material-symbols-rounded">leaderboard</span>
+          <span class="material-symbols-rounded nav-lock-mini">lock</span>
+        </div>
         <span class="nav-label" data-nav="leaderboard">Топы</span>
       </button>
     </div>
 
-    <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" class="tg-header-btn" title="Telegram-канал Komboko Squad">
+    <a href="https://t.me/KOMBOKO_SQUAD" target="_blank" rel="noopener noreferrer" class="tg-header-btn" title="Telegram-канал Komboko Squad">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
       </svg>
@@ -1224,11 +1473,13 @@
         <a href="/" class="header-profile-btn mobile-profile-btn" id="mobileProfileBtn" title="На главную">
           <span class="material-symbols-rounded" style="font-size: 22px;">person</span>
         </a>
-        <button type="button" class="md-btn md-btn-tonal" id="syncNowBtn" onclick="loadActivityData(true)">
-          <span class="material-symbols-rounded" style="font-size: 18px;">sync</span>
-          <span id="syncBtnLabel">Синхронизировать</span>
+        <button type="button" class="md-btn md-btn-tonal md-btn-icon" id="btnOpenThemeModal" onclick="openStatThemeModal()" title="Выбрать тему оформления" aria-label="Выбрать тему оформления">
+          <span class="material-symbols-rounded" style="font-size: 20px;">palette</span>
         </button>
-        <a href="/collection" class="md-btn md-btn-tonal">
+        <button type="button" class="md-btn md-btn-tonal md-btn-icon" id="btnOpenTermsModal" onclick="openStatTermsModal()" title="Пользовательское соглашение" aria-label="Пользовательское соглашение">
+          <span class="material-symbols-rounded" style="font-size: 20px;">description</span>
+        </button>
+        <a href="/collection" id="headerCollectionLink" class="md-btn md-btn-tonal">
           <span class="material-symbols-rounded" style="font-size: 18px;">style</span>
           <span id="collectionLinkLabel">Коллекция</span>
         </a>
@@ -1240,13 +1491,13 @@
     </header>
 
     <div id="guestNoticeBanner" class="sync-banner" style="display: none;">
-      <div>
-        <strong style="color: var(--text-strong); font-size: 14px;" id="guestNoticeTitle">Гостевой профиль устройства</strong>
-        <p style="font-size: 12.5px; color: var(--color-variant); margin-top: 3px;" id="guestNoticeDesc">
-          Статистика сохраняется для этого устройства. Войдите через Shikimori на главной странице, чтобы один раз подтянуть часы из «Просмотрено» и попасть в Топ анимешников!
+      <div style="min-width: 0;">
+        <strong style="color: var(--text-strong); font-size: 14px;" id="guestNoticeTitle">Гостевой режим (только часы просмотра)</strong>
+        <p style="font-size: 12.5px; color: var(--color-variant); margin-top: 3px; line-height: 1.45;" id="guestNoticeDesc">
+          Сейчас вам доступна базовая статистика часов просмотра на сайте. Войдите через Shikimori на главной странице, чтобы открыть все списки, жанры, историю, досмотр, сводку ИИ, коллекцию и Топ анимешников!
         </p>
       </div>
-      <a href="/" class="md-btn md-btn-filled" id="guestNoticeBtn">Войти на главной</a>
+      <a href="/" class="md-btn md-btn-filled" id="guestNoticeBtn">Войти через Shikimori</a>
     </div>
 
     <!-- 1. ОБЗОР -->
@@ -1268,20 +1519,20 @@
           <div class="kpi-value tabular" id="kpiMonthHours">0.0 ч</div>
           <div class="kpi-meta tabular" id="kpiTodayMins">Сегодня: 0 мин</div>
         </div>
-        <div class="glass-card kpi-card stagger-item" style="animation-delay: 80ms;">
+        <div class="glass-card kpi-card stagger-item" id="kpiUnfinishedCard" style="animation-delay: 80ms;">
           <div class="kpi-top-row">
             <span class="kpi-label" data-t="kpiUnfinished">Недосмотренные</span>
             <div class="kpi-icon-badge"><span class="material-symbols-rounded" style="font-size: 18px;">pause_circle</span></div>
           </div>
           <div class="kpi-value tabular" id="kpiUnfinishedCount">0</div>
-          <div class="kpi-meta" data-t="kpiUnfinishedHint">От 10% первой серии или фильма</div>
+          <div class="kpi-meta" id="kpiUnfinishedHint" data-t="kpiUnfinishedHint">От 10% первой серии или фильма</div>
         </div>
-        <div class="glass-card kpi-card stagger-item" style="animation-delay: 120ms;">
+        <div class="glass-card kpi-card stagger-item" id="kpiTopGenreCard" style="animation-delay: 120ms;">
           <div class="kpi-top-row">
             <span class="kpi-label" data-t="kpiTopGenre">Ведущий жанр</span>
             <div class="kpi-icon-badge"><span class="material-symbols-rounded" style="font-size: 18px;">favorite</span></div>
           </div>
-          <div class="kpi-value" id="kpiTopGenre" style="font-size: clamp(1.15rem, 1.9vw, 1.45rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
+          <div class="kpi-value" id="kpiTopGenre" style="font-size: clamp(1.1rem, 1.9vw, 1.45rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">—</div>
           <div class="kpi-meta tabular" id="kpiRecentCount">0 тайтлов в истории</div>
         </div>
       </div>
@@ -1291,35 +1542,38 @@
           <div class="section-head">
             <div>
               <h2 class="section-title" id="overviewChartHeading">Активность за 14 дней</h2>
-              <div class="section-sub" id="overviewChartSub">Наведите на столбец для точных минут просмотра</div>
+              <div class="section-sub" id="overviewChartSub">Нажмите или наведите на столбец для точных минут</div>
             </div>
-            <button type="button" id="btnOverviewTimeMore" class="md-btn md-btn-tonal" style="height: 34px; padding: 0 14px; font-size: 12px;" onclick="switchSection('time')">Подробнее</button>
+            <button type="button" id="btnOverviewTimeMore" class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 12px;" onclick="switchSection('time')">Подробнее</button>
           </div>
           <div id="overviewChart" class="chart-stage"></div>
         </div>
 
-        <div class="glass-card stagger-item" style="animation-delay: 170ms; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
-          <div>
-            <div class="section-head" style="margin-bottom: 10px;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <img id="bokuAiStatAvatar" src="/assets/skins/default/sprite_10.webp" class="boku-mini-avatar" alt="Боку" />
-                <div>
-                  <h2 class="section-title" id="aiSummaryTitle">Сводка от Боку (ИИ)</h2>
-                  <div class="section-sub" id="aiSummarySub">Персональный разбор привычек и вкусов</div>
+        <div class="glass-card stagger-item" id="overviewAiCard" style="animation-delay: 170ms; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+          <div id="aiSummaryAuthContent" style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px; height: 100%;">
+            <div>
+              <div class="section-head" style="margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <img id="bokuAiStatAvatar" src="/assets/skins/default/sprite_10.webp" class="boku-mini-avatar" alt="Боку" />
+                  <div>
+                    <h2 class="section-title" id="aiSummaryTitle">Сводка от Боку (ИИ)</h2>
+                    <div class="section-sub" id="aiSummarySub">Персональный разбор привычек и вкусов</div>
+                  </div>
                 </div>
               </div>
+              <div id="aiSummaryBody" class="ai-summary-body">
+                Нажмите кнопку ниже, чтобы Боку проанализировала ваши часы просмотра, любимые жанры и высокооценённые тайтлы.
+              </div>
             </div>
-            <div id="aiSummaryBody" class="ai-summary-body">
-              Нажмите кнопку ниже, чтобы Боку проанализировала ваши часы просмотра, любимые жанры и высокооценённые тайтлы.
+            <div class="ai-summary-meta">
+              <span id="aiSummaryTime" class="tabular"></span>
+              <button type="button" class="md-btn md-btn-filled" id="btnRequestAiSummary" onclick="requestAiSummary()">
+                <span class="material-symbols-rounded" style="font-size: 18px;">auto_awesome</span>
+                <span id="btnAiSummaryLabel">Запросить сводку от ИИ</span>
+              </button>
             </div>
           </div>
-          <div class="ai-summary-meta">
-            <span id="aiSummaryTime" class="tabular"></span>
-            <button type="button" class="md-btn md-btn-filled" id="btnRequestAiSummary" onclick="requestAiSummary()">
-              <span class="material-symbols-rounded" style="font-size: 18px;">auto_awesome</span>
-              <span id="btnAiSummaryLabel">Запросить сводку от ИИ</span>
-            </button>
-          </div>
+          <div id="aiSummaryGuestGate" style="display: none;"></div>
         </div>
       </div>
 
@@ -1329,7 +1583,7 @@
             <h2 class="section-title" id="overviewResumeTitle">Можно продолжить сейчас</h2>
             <div class="section-sub" id="overviewResumeSub">Быстрый возврат к недосмотренным аниме</div>
           </div>
-          <button type="button" id="btnOverviewAllUnfinished" class="md-btn md-btn-tonal" style="height: 34px; padding: 0 14px; font-size: 12px;" onclick="switchSection('unfinished')">Все недосмотренные</button>
+          <button type="button" id="btnOverviewAllUnfinished" class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 12px;" onclick="switchSection('unfinished')">Все недосмотренные</button>
         </div>
         <div id="overviewUnfinishedList"></div>
       </div>
@@ -1393,12 +1647,13 @@
       </div>
     </section>
 
-    <!-- 5. ЛЮБИМЫЕ ЖАНРЫ И ТОП-ОЦЕНКИ -->
+    <!-- 5. ВКУСЫ: ЖАНРЫ И ВСЕ СПИСКИ SHIKIMORI -->
     <section id="panel-taste" class="stat-panel">
-      <div class="taste-split">
+      <div id="tasteGuestGate" class="glass-card" style="display: none;"></div>
+      <div id="tasteSplitContainer" class="taste-split">
         <div class="glass-card">
           <div class="section-head">
-            <div>
+            <div style="min-width: 0;">
               <h2 class="section-title" id="genresTitle">Любимые жанры</h2>
               <div class="section-sub" id="genresSub">По последним просмотрам и спискам Shikimori</div>
             </div>
@@ -1412,60 +1667,139 @@
         </div>
 
         <div class="glass-card">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title" id="topRatedTitle">Самые высокооценённые тайтлы</h2>
-              <div class="section-sub" id="topRatedSub">Ваши высшие оценки и фавориты с высоким баллом</div>
-            </div>
-            <div class="activities-subnav">
-              <button type="button" class="activities-subbtn active" data-rmode="user" onclick="setRatedMode('user')">Мои оценки</button>
-              <button type="button" class="activities-subbtn" data-rmode="global" onclick="setRatedMode('global')">Топ рейтинга</button>
+          <div class="section-head" style="margin-bottom: 12px;">
+            <div style="min-width: 0;">
+              <h2 class="section-title" id="topRatedTitle">Списки и оценки Shikimori</h2>
+              <div class="section-sub" id="topRatedSub">Все ваши списки, оценки и просмотренные тайтлы без ограничений</div>
             </div>
           </div>
+
+          <div class="taste-controls-bar">
+            <input type="search" id="tasteSearchInput" class="search-input" style="flex: 1 1 160px;" placeholder="Поиск по спискам..." oninput="resetTastePagination(); renderTasteSection()" />
+            <select id="tasteStatusSelect" class="stat-select" aria-label="Статус списка" onchange="currentTasteStatus = this.value; resetTastePagination(); renderTasteSection()">
+              <option value="all">Все списки</option>
+              <option value="completed">Просмотрено</option>
+              <option value="watching">Смотрю</option>
+              <option value="rewatching">Пересматриваю</option>
+              <option value="planned">Запланировано</option>
+              <option value="on_hold">Отложено</option>
+              <option value="dropped">Брошено</option>
+            </select>
+            <select id="tasteSortSelect" class="stat-select" aria-label="Сортировка" onchange="currentRatedMode = this.value; resetTastePagination(); renderTasteSection()">
+              <option value="user">Мои оценки</option>
+              <option value="global">Рейтинг Shikimori</option>
+              <option value="title">По алфавиту</option>
+            </select>
+          </div>
+
           <div id="topRatedList"></div>
         </div>
       </div>
     </section>
 
-    <!-- 6. ТОП АНИМЕШНИКОВ -->
+    <!-- 6. ОБЩИЙ ТОП АНИМЕШНИКОВ -->
     <section id="panel-leaderboard" class="stat-panel">
       <div class="glass-card">
         <div class="section-head">
-          <div>
+          <div style="min-width: 0;">
             <h2 class="section-title" id="leaderboardTitle">Топ анимешников KombokoWatch</h2>
-            <div class="section-sub" id="leaderboardSub">Рейтинг зрителей по часам просмотра, карточкам, легендаркам и мини-играм</div>
-          </div>
-          <button type="button" class="md-btn md-btn-tonal" id="btnToggleHideLeaderboard" onclick="toggleLeaderboardVisibility()">
-            <span class="material-symbols-rounded" id="hideLeaderboardIcon" style="font-size: 18px;">visibility_off</span>
-            <span id="hideLeaderboardLabel">Не показывать меня в топе</span>
-          </button>
-        </div>
-
-        <div style="margin-bottom: 16px;">
-          <div class="activities-subnav" role="tablist" aria-label="Категории топа">
-            <button type="button" class="activities-subbtn active" data-lbcat="hours" onclick="setLeaderboardCategory('hours')">Часы просмотра</button>
-            <button type="button" class="activities-subbtn" data-lbcat="cards" onclick="setLeaderboardCategory('cards')">Больше карточек</button>
-            <button type="button" class="activities-subbtn" data-lbcat="legendary" onclick="setLeaderboardCategory('legendary')">Легендарки</button>
-            <button type="button" class="activities-subbtn" data-lbcat="coins" onclick="setLeaderboardCategory('coins')">Бококойны</button>
-            <button type="button" class="activities-subbtn" data-lbcat="completed" onclick="setLeaderboardCategory('completed')">Просмотрено</button>
-            <button type="button" class="activities-subbtn" data-lbcat="games" onclick="setLeaderboardCategory('games')">Мини-игры</button>
+            <div class="section-sub" id="leaderboardSub">Единый рейтинг пользователей. Нажмите на участника, чтобы открыть профиль и карточки.</div>
           </div>
         </div>
 
-        <div id="lbMySummary" class="lb-my-card" style="display: none;"></div>
-        <div id="leaderboardList"></div>
+        <div id="leaderboardAuthContent">
+          <div class="lb-toolbar">
+            <select id="leaderboardSortSelect" class="stat-select" aria-label="Сортировка топа" onchange="setLeaderboardCategory(this.value)">
+              <option value="hours">Сортировка: Часы просмотра</option>
+              <option value="cards">Сортировка: Количество карточек</option>
+              <option value="legendary">Сортировка: Легендарные карточки</option>
+              <option value="coins">Сортировка: Бококойны</option>
+              <option value="completed">Сортировка: Просмотренные тайтлы</option>
+              <option value="games">Сортировка: Рекорд мини-игр</option>
+            </select>
+
+            <div class="lb-visibility-box">
+              <div class="activities-subnav" role="tablist" aria-label="Режим видимости профиля">
+                <button type="button" class="activities-subbtn active" data-vis="public" onclick="setProfileVisibility('public')">Публичный</button>
+                <button type="button" class="activities-subbtn" data-vis="anonymous" onclick="setProfileVisibility('anonymous')">Анонимный</button>
+                <button type="button" class="activities-subbtn" data-vis="hidden" onclick="setProfileVisibility('hidden')">Не показывать</button>
+              </div>
+              <div class="lb-vis-hint" id="visibilityHintText">Публичный: видны ник, аватар, карточки, часы и ссылка на Shikimori.</div>
+            </div>
+          </div>
+
+          <div id="lbMySummary" class="lb-my-card" style="display: none;"></div>
+          <div id="leaderboardList"></div>
+        </div>
+
+        <div id="leaderboardGuestGate" style="display: none;"></div>
       </div>
     </section>
+
+    <footer class="stat-footer">
+      <span>KombokoWatch 2026</span>
+      <button type="button" class="stat-footer-link" id="footerTermsLink" onclick="openStatTermsModal()">Пользовательское соглашение</button>
+    </footer>
   </main>
+
+  <!-- Модальное окно выбора темы оформления -->
+  <div id="statThemeModal" class="modal-overlay" onclick="if(event.target.id==='statThemeModal') closeStatThemeModal()">
+    <div class="modal-content" style="max-width: 460px;">
+      <button type="button" class="modal-close" onclick="closeStatThemeModal()" aria-label="Закрыть">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="material-symbols-rounded" style="color: var(--color-primary); font-size: 24px;">palette</span>
+        <h3 style="font-size: 18px; font-weight: 700;" id="themeModalTitle">Оформление сайта</h3>
+      </div>
+      <div id="statThemePickerGrid" class="theme-picker-grid"></div>
+      <button type="button" class="md-btn md-btn-filled" style="width: 100%;" id="themeModalDoneBtn" onclick="closeStatThemeModal()">Готово</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно Пользовательского соглашения Центра активности -->
+  <div id="statTermsModal" class="modal-overlay" onclick="if(event.target.id==='statTermsModal') closeStatTermsModal()">
+    <div class="modal-content" style="max-width: 560px;">
+      <button type="button" class="modal-close" onclick="closeStatTermsModal()" aria-label="Закрыть">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="material-symbols-rounded" style="color: var(--color-primary); font-size: 24px;">gavel</span>
+        <h3 style="font-size: 18px; font-weight: 700;" id="termsModalTitle">Пользовательское соглашение</h3>
+      </div>
+      <div class="terms-list" id="statTermsBody"></div>
+      <button type="button" class="md-btn md-btn-filled" style="width: 100%;" id="termsModalDoneBtn" onclick="closeStatTermsModal()">Понятно</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно профиля участника топа -->
+  <div id="userProfileModal" class="modal-overlay" onclick="if(event.target.id==='userProfileModal') closeUserProfileModal()">
+    <div class="modal-content" style="max-width: 580px;">
+      <button type="button" class="modal-close" onclick="closeUserProfileModal()" aria-label="Закрыть">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+      <div id="userProfileModalBody"></div>
+    </div>
+  </div>
 
   <div id="kombokoToast" class="komboko-toast"></div>
 
   <script>
     const SECTION_ORDER = ['overview', 'time', 'unfinished', 'recent', 'taste', 'leaderboard'];
+    const SITE_THEMES = {
+      default: { id: 'default', mode: 'dark', bg: '#08060f', accent: '#D0BCFF', accent2: '#9A75F0', name: 'Классика Боку', desc: 'Базовая тёмно-фиолетовая тема сайта' },
+      'void-cyan': { id: 'void-cyan', mode: 'dark', bg: '#0a0a0c', accent: '#00ffcc', accent2: '#06b6d4', name: 'Void Black + Cyan', desc: 'Глубокий чёрный и электрический циан' },
+      'concrete-red': { id: 'concrete-red', mode: 'dark', bg: '#1a191c', accent: '#ff1e1e', accent2: '#ff3b3b', name: 'Brutal Concrete + Red', desc: 'Тёмный бетон и чистый алый акцент' },
+      'manga-print': { id: 'manga-print', mode: 'light', bg: '#f5f2eb', accent: '#e63946', accent2: '#141312', name: 'Manga Print', desc: 'Бумажный крем и штамповый красный' },
+      'digital-vapor': { id: 'digital-vapor', mode: 'light', bg: '#f7f6fc', accent: '#7c3aed', accent2: '#1a1625', name: 'Digital Vapor', desc: 'Лавандовый лёд и ультрафиолет' }
+    };
+
     let currentSection = 'overview';
     let currentTimeChartMode = 'days14';
     let currentGenreMode = 'combined';
     let currentRatedMode = 'user';
+    let currentTasteStatus = 'all';
+    let tasteShowLimit = 60;
     let currentLeaderboardCat = 'hours';
     let leaderboardData = null;
     let currentLang = (localStorage.getItem('komboko_lang') === 'en') ? 'en' : 'ru';
@@ -1490,6 +1824,10 @@
         localStorage.setItem('komboko_device_id', id);
       }
       return id;
+    }
+
+    function isShikiAuth() {
+      return Boolean(localStorage.getItem('shiki_user_id') || localStorage.getItem('shiki_token') || activityState?.isAuth);
     }
 
     function getLocalDateKey(d = new Date()) {
@@ -1525,12 +1863,21 @@
       if (el) el.src = `/assets/skins/${safeSkin}/sprite_10.webp`;
     }
 
+    function getBokuSkinSprite(num = 5) {
+      const skin = localStorage.getItem('komboko_boku_skin') || 'default';
+      const safeSkin = /^(default|goth|android)$/.test(skin) ? skin : 'default';
+      const n = String(num).padStart(2, '0');
+      return `/assets/skins/${safeSkin}/sprite_${n}.webp`;
+    }
+
     function updateProfileAvatars(avatarUrl, nickname) {
       ['railProfileBtn', 'mobileProfileBtn'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         if (avatarUrl) {
           el.innerHTML = `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(nickname || 'Профиль')}" />`;
+        } else {
+          el.innerHTML = `<span class="material-symbols-rounded" style="font-size: 22px;">person</span>`;
         }
         if (nickname) el.title = nickname;
       });
@@ -1550,11 +1897,9 @@
       const hours = Math.floor(sec / 3600);
       const mins = Math.floor((sec % 3600) / 60);
       if (currentLang === 'en') {
-        if (hours > 0) return `${hours}h ${mins}m`;
-        return `${mins}m`;
+        return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
       }
-      if (hours > 0) return `${hours} ч ${mins} мин`;
-      return `${mins} мин`;
+      return hours > 0 ? `${hours} ч ${mins} мин` : `${mins} мин`;
     }
 
     function formatClockTime(sec) {
@@ -1597,6 +1942,180 @@
       return `/?${params.toString()}`;
     }
 
+    function buildGuestGateHtml(titleRu, titleEn, descRu, descEn) {
+      const en = currentLang === 'en';
+      return `
+        <div class="auth-lock-card">
+          <div class="auth-lock-icon"><span class="material-symbols-rounded">lock</span></div>
+          <h3>${escapeHtml(en ? titleEn : titleRu)}</h3>
+          <p>${escapeHtml(en ? descEn : descRu)}</p>
+          <a href="/" class="md-btn md-btn-filled">
+            <span class="material-symbols-rounded" style="font-size: 18px;">login</span>
+            <span>${en ? 'Sign in via Shikimori' : 'Войти через Shikimori'}</span>
+          </a>
+        </div>
+      `;
+    }
+
+    /* === ТЕМЫ САЙТА === */
+    function getSiteTheme() {
+      const saved = localStorage.getItem('komboko_theme') || 'default';
+      return SITE_THEMES[saved] ? saved : 'default';
+    }
+
+    function renderStatThemePicker() {
+      const container = document.getElementById('statThemePickerGrid');
+      if (!container) return;
+      const activeId = getSiteTheme();
+      container.innerHTML = Object.values(SITE_THEMES).map(th => {
+        const isActive = th.id === activeId;
+        return `
+          <button type="button" class="theme-option-card ${isActive ? 'active' : ''}" onclick="setSiteTheme('${th.id}', true, event)">
+            <div class="theme-swatch-preview" style="background: ${th.bg};">
+              <span class="theme-swatch-dot" style="background: ${th.accent}; color: ${th.accent};"></span>
+            </div>
+            <div class="theme-option-meta">
+              <div class="theme-option-name">${escapeHtml(th.name)}</div>
+              <div class="theme-option-desc">${escapeHtml(th.desc)}</div>
+            </div>
+            <span class="theme-mode-icon">
+              <span class="material-symbols-rounded" style="font-size: 14px;">${th.mode === 'light' ? 'light_mode' : 'dark_mode'}</span>
+            </span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    let _themeAnimTimer = null;
+    function setSiteTheme(themeId, animate = true, clickEvent = null) {
+      const meta = SITE_THEMES[themeId] || SITE_THEMES.default;
+      const root = document.documentElement;
+      const prevTheme = root.getAttribute('data-theme') || 'default';
+
+      let rx = Math.round(window.innerWidth / 2);
+      let ry = Math.round(window.innerHeight / 2);
+      if (clickEvent && typeof clickEvent.clientX === 'number' && clickEvent.clientX > 0) {
+        rx = Math.round(clickEvent.clientX);
+        ry = Math.round(clickEvent.clientY);
+      } else if (clickEvent && clickEvent.currentTarget && clickEvent.currentTarget.getBoundingClientRect) {
+        const rect = clickEvent.currentTarget.getBoundingClientRect();
+        rx = Math.round(rect.left + rect.width / 2);
+        ry = Math.round(rect.top + rect.height / 2);
+      }
+      root.style.setProperty('--theme-ripple-x', rx + 'px');
+      root.style.setProperty('--theme-ripple-y', ry + 'px');
+
+      const applyDom = () => {
+        root.setAttribute('data-theme', meta.id);
+        root.setAttribute('data-theme-mode', meta.mode);
+        localStorage.setItem('komboko_theme', meta.id);
+        const themeColors = { 'default': '#08060f', 'void-cyan': '#0a0a0c', 'concrete-red': '#171619', 'manga-print': '#f5f2eb', 'digital-vapor': '#f7f6fc' };
+        const tc = document.getElementById('themeColorMeta');
+        if (tc && themeColors[meta.id]) tc.setAttribute('content', themeColors[meta.id]);
+        renderStatThemePicker();
+      };
+
+      if (!animate || prevTheme === meta.id) {
+        applyDom();
+        return;
+      }
+
+      root.classList.add('theme-animating');
+      clearTimeout(_themeAnimTimer);
+      _themeAnimTimer = setTimeout(() => root.classList.remove('theme-animating'), 720);
+
+      let wave = document.getElementById('themeWaveOverlay');
+      if (!wave && document.body) {
+        wave = document.createElement('div');
+        wave.id = 'themeWaveOverlay';
+        wave.className = 'theme-wave-overlay';
+        document.body.appendChild(wave);
+      }
+      if (wave) {
+        wave.style.background = `radial-gradient(circle at ${rx}px ${ry}px, ${meta.accent}55 0%, ${meta.accent2}26 38%, transparent 72%)`;
+        wave.classList.remove('active');
+        void wave.offsetWidth;
+        wave.classList.add('active');
+      }
+
+      if (typeof document.startViewTransition === 'function') {
+        try {
+          document.startViewTransition(() => applyDom());
+          return;
+        } catch (_) {}
+      }
+      applyDom();
+    }
+
+    function openStatThemeModal() {
+      renderStatThemePicker();
+      document.getElementById('statThemeModal').style.display = 'flex';
+    }
+    function closeStatThemeModal() {
+      document.getElementById('statThemeModal').style.display = 'none';
+    }
+
+    /* === ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ ЦЕНТРА АКТИВНОСТИ === */
+    function renderStatTermsBody() {
+      const el = document.getElementById('statTermsBody');
+      if (!el) return;
+      const en = currentLang === 'en';
+      if (en) {
+        el.innerHTML = `
+          <div class="terms-block">
+            <h4>1. Server Storage & Cross-Device Sync</h4>
+            <p>KombokoWatch stores your watch time, unfinished queue, history, Shikimori genre preferences, and collectible card stats on our server so your data stays synced seamlessly between your phone and desktop browser.</p>
+          </div>
+          <div class="terms-block">
+            <h4>2. One-Time Shikimori Hours Lock</h4>
+            <p>To prevent artificial leaderboard inflation, watch hours calculated from your Shikimori "Completed" list are imported strictly once. After that, only real watch time logged inside the KombokoWatch player increases your hours.</p>
+          </div>
+          <div class="terms-block">
+            <h4>3. Profile Visibility Modes (Public / Anonymous / Hidden)</h4>
+            <p>You choose how you appear in the Top Anime Fans ranking: <strong>Public</strong> shares your nickname, avatar, cards, watch hours, and Shikimori link; <strong>Anonymous</strong> masks your identity behind "Anonymous Boku #XXXX" and hides your details on click; <strong>Hidden</strong> removes you from the public ranking completely.</p>
+          </div>
+          <div class="terms-block">
+            <h4>4. Data Privacy & AI Summaries</h4>
+            <p>Your OAuth tokens stay strictly on your device and are used only to authenticate requests to Shikimori and KombokoWatch. We never sell or share personal data with third-party advertisers. Boku AI summaries analyze only your aggregated watch stats when requested.</p>
+          </div>
+        `;
+      } else {
+        el.innerHTML = `
+          <div class="terms-block">
+            <h4>1. Хранение и бесшовная синхронизация</h4>
+            <p>Центр активности KombokoWatch сохраняет ваши часы просмотра, список досмотра, историю, любимые жанры и коллекцию карточек на сервере для мгновенной синхронизации между телефоном (PWA) и компьютером.</p>
+          </div>
+          <div class="terms-block">
+            <h4>2. Защита от накрутки часов Shikimori</h4>
+            <p>Примерные часы просмотра из списка «Просмотрено» Shikimori подтягиваются строго единоразово при первом входе и фиксируются сервером. Далее общее время увеличивается только за счёт реального просмотра в плеере KombokoWatch.</p>
+          </div>
+          <div class="terms-block">
+            <h4>3. Видимость профиля в топе (Публичный / Анонимный / Скрытый)</h4>
+            <p>В разделе «Топы» вы полностью управляете приватностью: <strong>Публичный</strong> отображает ваш ник, аватар, коллекцию карточек, часы и ссылку на Shikimori; <strong>Анонимный</strong> скрывает личность под именем «Анонимный Боко #XXXX» и закрывает карточку профиля от других зрителей; <strong>Не показывать</strong> полностью убирает вас из публичного рейтинга.</p>
+          </div>
+          <div class="terms-block">
+            <h4>4. Приватность и ИИ-сводка</h4>
+            <p>Токены Shikimori не передаются третьим лицам и используются исключительно для синхронизации ваших списков. Сводка от Боку (ИИ) формируется только по вашему запросу на основе агрегированной статистики просмотров и жанров.</p>
+          </div>
+        `;
+      }
+    }
+
+    function openStatTermsModal() {
+      renderStatTermsBody();
+      document.getElementById('statTermsModal').style.display = 'flex';
+    }
+    function closeStatTermsModal() {
+      document.getElementById('statTermsModal').style.display = 'none';
+    }
+    function closeUserProfileModal() {
+      document.getElementById('userProfileModal').style.display = 'none';
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'komboko_theme' && e.newValue) setSiteTheme(e.newValue, false);
+    });
+
     function switchSection(targetId) {
       if (!SECTION_ORDER.includes(targetId)) return;
       const prevSection = currentSection;
@@ -1624,31 +2143,28 @@
       if (window.location.hash !== `#${targetId}`) {
         history.replaceState(null, '', `#${targetId}`);
       }
-      if (targetId === 'leaderboard' && !leaderboardData) {
+      if (targetId === 'leaderboard' && isShikiAuth() && !leaderboardData) {
         loadLeaderboard(currentLeaderboardCat);
       }
     }
 
     function applyTranslations() {
+      renderStatTermsBody();
       if (currentLang !== 'en') return;
       document.title = 'KombokoWatch — Activity Center';
       document.getElementById('brandSubLabel').textContent = 'activity center';
       document.getElementById('backHomeLabel').textContent = 'Watch Anime';
       document.getElementById('collectionLinkLabel').textContent = 'Collection';
-      document.getElementById('syncBtnLabel').textContent = 'Sync';
-      document.getElementById('guestNoticeTitle').textContent = 'Guest Device Profile';
-      document.getElementById('guestNoticeDesc').textContent = 'Activity is saved for this device. Sign in with Shikimori on the main page to do a one-time completed hours import and enter Top Anime Fans!';
-      document.getElementById('guestNoticeBtn').textContent = 'Go to Login';
+      document.getElementById('guestNoticeTitle').textContent = 'Guest Mode (Watch Hours Only)';
+      document.getElementById('guestNoticeDesc').textContent = 'Basic site watch hours are visible to guests. Sign in with Shikimori on the main page to unlock all lists, genres, history, resume queue, AI summary, collection, and Top Anime Fans!';
+      document.getElementById('guestNoticeBtn').textContent = 'Sign in with Shikimori';
       document.getElementById('overviewChartHeading').textContent = 'Last 14 Days Activity';
       document.getElementById('overviewChartSub').textContent = 'Tap or hover a bar to inspect watch time';
-      const btnMore = document.getElementById('btnOverviewTimeMore');
-      if (btnMore) btnMore.textContent = 'Details';
-      const btnAllUnf = document.getElementById('btnOverviewAllUnfinished');
-      if (btnAllUnf) btnAllUnf.textContent = 'All unfinished';
-      const unSearch = document.getElementById('unfinishedSearchInput');
-      if (unSearch) unSearch.placeholder = 'Search by title...';
-      const recSearch = document.getElementById('recentSearchInput');
-      if (recSearch) recSearch.placeholder = 'Search history...';
+      document.getElementById('btnOverviewTimeMore').textContent = 'Details';
+      document.getElementById('btnOverviewAllUnfinished').textContent = 'All unfinished';
+      document.getElementById('unfinishedSearchInput').placeholder = 'Search by title...';
+      document.getElementById('recentSearchInput').placeholder = 'Search history...';
+      document.getElementById('tasteSearchInput').placeholder = 'Search all lists...';
       document.getElementById('aiSummaryTitle').textContent = 'Boku AI Summary';
       document.getElementById('aiSummarySub').textContent = 'Personalized insights on your anime habits';
       const aiBody = document.getElementById('aiSummaryBody');
@@ -1669,10 +2185,15 @@
       document.getElementById('recentSub').textContent = 'Click any title to open its watch page';
       document.getElementById('genresTitle').textContent = 'Favorite Genres';
       document.getElementById('genresSub').textContent = 'Derived from recent watches & Shikimori lists';
-      document.getElementById('topRatedTitle').textContent = 'Highest Rated Titles';
-      document.getElementById('topRatedSub').textContent = 'Your top scores & highest-rated titles';
+      document.getElementById('topRatedTitle').textContent = 'Shikimori Lists & Scores';
+      document.getElementById('topRatedSub').textContent = 'All your Shikimori lists and ratings without caps';
       document.getElementById('leaderboardTitle').textContent = 'Top Anime Fans';
-      document.getElementById('leaderboardSub').textContent = 'Community rankings across watch hours, cards, legendaries, and mini-games';
+      document.getElementById('leaderboardSub').textContent = 'Unified community leaderboard. Click any user to inspect their profile & cards.';
+      document.getElementById('themeModalTitle').textContent = 'Site Theme';
+      document.getElementById('themeModalDoneBtn').textContent = 'Done';
+      document.getElementById('termsModalTitle').textContent = 'User Agreement';
+      document.getElementById('termsModalDoneBtn').textContent = 'Got it';
+      document.getElementById('footerTermsLink').textContent = 'User Agreement';
 
       const kpiT = {
         kpiTotal: 'Total Watched',
@@ -1687,31 +2208,37 @@
       });
 
       const navMap = {
-        overview: 'Overview',
-        time: 'Time',
-        unfinished: 'Resume',
-        recent: 'Recent',
-        taste: 'Taste',
-        leaderboard: 'Top'
+        overview: 'Overview', time: 'Time', unfinished: 'Resume',
+        recent: 'Recent', taste: 'Taste', leaderboard: 'Top'
       };
       document.querySelectorAll('[data-nav]').forEach(el => {
         const k = el.getAttribute('data-nav');
         if (navMap[k]) el.textContent = navMap[k];
       });
 
-      const lbCatMap = {
-        hours: 'Watch Hours',
-        cards: 'Total Cards',
-        legendary: 'Legendaries',
-        coins: 'Bokocoins',
-        completed: 'Completed',
-        games: 'Mini-Games'
-      };
-      document.querySelectorAll('.lb-cat-btn, [data-lbcat]').forEach(b => {
-        const c = b.getAttribute('data-lbcat');
-        if (lbCatMap[c]) b.textContent = lbCatMap[c];
+      const statusSel = document.getElementById('tasteStatusSelect');
+      if (statusSel) {
+        const labels = { all: 'All Lists', completed: 'Completed', watching: 'Watching', rewatching: 'Rewatching', planned: 'Planned', on_hold: 'On Hold', dropped: 'Dropped' };
+        Array.from(statusSel.options).forEach(opt => { if (labels[opt.value]) opt.textContent = labels[opt.value]; });
+      }
+      const sortSel = document.getElementById('tasteSortSelect');
+      if (sortSel) {
+        const labels = { user: 'My Scores', global: 'Shikimori Rating', title: 'Alphabetical' };
+        Array.from(sortSel.options).forEach(opt => { if (labels[opt.value]) opt.textContent = labels[opt.value]; });
+      }
+      const lbSel = document.getElementById('leaderboardSortSelect');
+      if (lbSel) {
+        const labels = {
+          hours: 'Sort: Watch Hours', cards: 'Sort: Total Cards', legendary: 'Sort: Legendaries',
+          coins: 'Sort: Bokocoins', completed: 'Sort: Completed Anime', games: 'Sort: Mini-Games Score'
+        };
+        Array.from(lbSel.options).forEach(opt => { if (labels[opt.value]) opt.textContent = labels[opt.value]; });
+      }
+      const visLabels = { public: 'Public', anonymous: 'Anonymous', hidden: 'Hidden' };
+      document.querySelectorAll('[data-vis]').forEach(b => {
+        const v = b.getAttribute('data-vis');
+        if (visLabels[v]) b.textContent = visLabels[v];
       });
-
       const rangeMap = { days14: '14 days', days30: '30 days', months: 'By month' };
       document.querySelectorAll('[data-range]').forEach(b => {
         const r = b.getAttribute('data-range');
@@ -1722,14 +2249,29 @@
         const g = b.getAttribute('data-gmode');
         if (gMap[g]) b.textContent = gMap[g];
       });
-      const rMap = { user: 'My Scores', global: 'Top Ranked' };
-      document.querySelectorAll('[data-rmode]').forEach(b => {
-        const r = b.getAttribute('data-rmode');
-        if (rMap[r]) b.textContent = rMap[r];
-      });
     }
 
     function buildLocalFallbackState() {
+      // В гостевом режиме НЕ показываем личную историю/жанры/списки — только базовые нулевые часы до ответа сервера
+      if (!localStorage.getItem('shiki_user_id') && !localStorage.getItem('shiki_token')) {
+        return {
+          success: true,
+          isAuth: false,
+          watchSecondsTotal: 0,
+          liveWatchSeconds: 0,
+          shikiCompletedSeconds: 0,
+          shikiCompletedCount: 0,
+          shikiHoursLocked: false,
+          dailySeconds: {},
+          monthlySeconds: {},
+          recentTitles: [],
+          unfinishedTitles: [],
+          genreStats: {},
+          topRatedTitles: [],
+          aiSummaryCache: null
+        };
+      }
+
       let localHist = [];
       try { localHist = JSON.parse(localStorage.getItem('kodik_history') || '[]'); } catch (_) {}
       const recentTitles = [];
@@ -1737,7 +2279,7 @@
       const genreStats = {};
 
       if (Array.isArray(localHist)) {
-        localHist.filter(h => h && h.id && !h.isManga).slice(0, 35).forEach(h => {
+        localHist.filter(h => h && h.id && !h.isManga).slice(0, 40).forEach(h => {
           const aid = String(h.id);
           let p = {};
           try { p = JSON.parse(localStorage.getItem(`komboko_progress_${aid}`) || '{}'); } catch (_) {}
@@ -1788,6 +2330,7 @@
 
       return {
         success: true,
+        isAuth: true,
         watchSecondsTotal: 0,
         liveWatchSeconds: 0,
         shikiCompletedSeconds: 0,
@@ -1826,7 +2369,6 @@
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      // 1 request in v1 returns ALL anime rates with embedded anime metadata (episodes, kind, titles, poster, score)
       try {
         const v1Res = await fetch(`https://shikimori.io/api/users/${uid}/anime_rates?limit=5000`, {
           headers,
@@ -1838,9 +2380,8 @@
         }
       } catch (_) {}
 
-      // Fallback to paginated v2 (100/page max in Shikimori)
       const allRates = [];
-      for (let page = 1; page <= 8; page++) {
+      for (let page = 1; page <= 15; page++) {
         const rRes = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${uid}&target_type=Anime&limit=100&page=${page}`, {
           headers,
           signal: AbortSignal.timeout(6000)
@@ -1879,29 +2420,42 @@
     }
 
     function updateIdentityBanner() {
-      const uid = localStorage.getItem('shiki_user_id');
+      const authed = isShikiAuth();
       const nickname = activityState?.nickname || localStorage.getItem('shiki_user_nickname') || '';
-      const avatar = activityState?.avatar || localStorage.getItem('shiki_user_avatar') || '';
+      const avatar = authed ? (activityState?.avatar || localStorage.getItem('shiki_user_avatar') || '') : '';
       updateProfileAvatars(avatar, nickname);
 
       const syncLabel = document.getElementById('profileSyncLabel');
       const guestBanner = document.getElementById('guestNoticeBanner');
-      if (uid) {
+      const colLink = document.getElementById('headerCollectionLink');
+
+      if (authed) {
         syncLabel.textContent = currentLang === 'en'
           ? `Synced via Shikimori${nickname ? ' (' + nickname + ')' : ''}`
           : `Синхронизация Shikimori${nickname ? ' (' + nickname + ')' : ''}`;
         if (guestBanner) guestBanner.style.display = 'none';
+        if (colLink) colLink.style.display = 'inline-flex';
       } else {
-        syncLabel.textContent = currentLang === 'en' ? 'Device Profile' : 'Профиль устройства';
+        syncLabel.textContent = currentLang === 'en' ? 'Guest Mode' : 'Гостевой режим';
         if (guestBanner) guestBanner.style.display = 'flex';
+        if (colLink) colLink.style.display = 'none';
       }
+
+      document.querySelectorAll('.nav-btn[data-section]').forEach(btn => {
+        const sec = btn.getAttribute('data-section');
+        const lockNeeded = !authed && sec !== 'overview' && sec !== 'time';
+        btn.classList.toggle('is-locked', lockNeeded);
+      });
     }
 
-    async function performBackgroundSync(isManual = false) {
+    async function performBackgroundSync() {
       const token = localStorage.getItem('shiki_token');
       let uid = localStorage.getItem('shiki_user_id');
+      if (!token && !uid) return null;
+
       let nickname = localStorage.getItem('shiki_user_nickname') || '';
       let avatar = localStorage.getItem('shiki_user_avatar') || '';
+      let shikiUrl = localStorage.getItem('shiki_user_url') || '';
 
       if (token) {
         try {
@@ -1915,9 +2469,11 @@
               uid = String(u.id);
               nickname = u.nickname || nickname;
               avatar = (u.image ? (u.image.x160 || u.image.x48) : '') || avatar;
+              shikiUrl = u.url ? (String(u.url).startsWith('http') ? String(u.url) : `https://shikimori.one${u.url}`) : shikiUrl;
               localStorage.setItem('shiki_user_id', uid);
               if (nickname) localStorage.setItem('shiki_user_nickname', nickname);
               if (avatar) localStorage.setItem('shiki_user_avatar', avatar);
+              if (shikiUrl) localStorage.setItem('shiki_user_url', shikiUrl);
               updateProfileAvatars(avatar, nickname);
             }
           }
@@ -1938,41 +2494,46 @@
         updatedAt: u.updatedAt
       }));
 
-      // Подтягиваем данные с Shikimori:
-      // Часы просмотра из «Просмотрено» (shikiCompletedSeconds) подгружаются ТОЛЬКО ЕДИНОРАЗОВО, пока сервер не выставил shikiHoursLocked!
+      // Автоматическая синхронизация всех списков Shikimori + 1-разовый импорт часов просмотра
       let extraSync = {};
       const hoursAlreadyLocked = Boolean(activityState?.shikiHoursLocked);
+      const listFetchKey = uid ? `komboko_lists_synced_at_${uid}` : '';
+      const lastListsAt = listFetchKey ? Number(sessionStorage.getItem(listFetchKey) || 0) : 0;
+      const shouldFetchShikiLists = Boolean(uid) && (!hoursAlreadyLocked || (Date.now() - lastListsAt > 120000) || (activityState?.topRatedTitles?.length || 0) <= 40);
 
-      if (uid && (!hoursAlreadyLocked || isManual)) {
+      if (shouldFetchShikiLists) {
         try {
           const rates = await fetchAllShikimoriRates(uid, token);
           if (Array.isArray(rates) && rates.length > 0) {
+            if (listFetchKey) sessionStorage.setItem(listFetchKey, String(Date.now()));
             const getAid = (r) => String(r.target_id || r.anime?.id || '');
             const completedOrDroppedIds = rates
               .filter(r => (r.status === 'completed' || r.status === 'dropped') && getAid(r))
               .map(getAid);
 
             const completedRates = rates.filter(r => r.status === 'completed' && getAid(r));
-            const activeForTaste = rates
-              .filter(r => getAid(r) && (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0))
+            const allRatesWithAid = rates
+              .filter(r => getAid(r))
               .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)));
 
-            // Если часы уже зафиксированы — обогащаем только топ-50 для жанров/оценок; если ещё НЕ зафиксированы — обогащаем до 250 просмотренных (остальные считаем по метаданным v1 anime_rates!)
+            const activeForTaste = allRatesWithAid
+              .filter(r => r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0);
+
             const idsToEnrich = hoursAlreadyLocked
-              ? activeForTaste.slice(0, 50).map(getAid)
+              ? activeForTaste.slice(0, 100).map(getAid)
               : Array.from(new Set([
                   ...completedRates.slice(0, 200).map(getAid),
-                  ...activeForTaste.slice(0, 50).map(getAid)
+                  ...activeForTaste.slice(0, 80).map(getAid)
                 ]));
 
             const byId = idsToEnrich.length > 0
-              ? await enrichShikiAnimeIds(idsToEnrich, hoursAlreadyLocked ? 1 : 5)
+              ? await enrichShikiAnimeIds(idsToEnrich, hoursAlreadyLocked ? 2 : 5)
               : new Map();
 
             const shikiGenreCounts = {};
             const topRatedTitles = [];
 
-            activeForTaste.slice(0, 120).forEach(r => {
+            allRatesWithAid.slice(0, 2500).forEach(r => {
               const aid = getAid(r);
               const gInfo = byId.get(aid);
               const v1Info = r.anime;
@@ -1985,33 +2546,37 @@
               const genresEn = gInfo
                 ? (gInfo.genres || []).map(g => g.name || g.russian).filter(Boolean)
                 : [];
-              const weightBoost = r.status === 'completed' ? 1.5 : 1;
-              genresRu.forEach((gn, idx) => {
-                const key = gn.toLowerCase();
-                if (!shikiGenreCounts[key]) {
-                  shikiGenreCounts[key] = { name: gn, nameEn: genresEn[idx] || gn, shikiCount: 0, scoreSum: 0 };
-                }
-                shikiGenreCounts[key].shikiCount += weightBoost;
-                shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
-              });
 
-              if (topRatedTitles.length < 40 && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching')) {
-                const rawImg = gInfo?.poster?.mainUrl || gInfo?.poster?.originalUrl || (v1Info?.image?.original ? `https://shikimori.io${v1Info.image.original}` : '');
-                topRatedTitles.push({
-                  animeId: aid,
-                  title: info.russian || info.name || 'Аниме',
-                  titleEn: info.name || info.russian || '',
-                  poster: rawImg,
-                  kind: info.kind || 'tv',
-                  year: gInfo?.airedOn?.year ? String(gInfo.airedOn.year) : (v1Info?.aired_on ? String(v1Info.aired_on).slice(0, 4) : ''),
-                  userScore: Number(r.score) || 0,
-                  globalScore: Number(info.score) || 0,
-                  shikiStatus: r.status || '',
-                  episodesWatched: Number(r.episodes) || 0,
-                  episodesTotal: Number(info.episodes) || 0,
-                  genres: genresRu
+              if (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0) {
+                const weightBoost = r.status === 'completed' ? 1.5 : 1;
+                genresRu.forEach((gn, idx) => {
+                  const key = gn.toLowerCase();
+                  if (!shikiGenreCounts[key]) {
+                    shikiGenreCounts[key] = { name: gn, nameEn: genresEn[idx] || gn, shikiCount: 0, scoreSum: 0 };
+                  }
+                  shikiGenreCounts[key].shikiCount += weightBoost;
+                  shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
                 });
               }
+
+              const v1Poster = v1Info?.image?.original
+                ? (v1Info.image.original.startsWith('http') ? v1Info.image.original : `https://shikimori.io${v1Info.image.original}`)
+                : (v1Info?.image?.preview ? `https://shikimori.io${v1Info.image.preview}` : '');
+              const rawImg = gInfo?.poster?.mainUrl || gInfo?.poster?.originalUrl || v1Poster || '';
+              topRatedTitles.push({
+                animeId: aid,
+                title: info.russian || info.name || 'Аниме',
+                titleEn: info.name || info.russian || '',
+                poster: rawImg,
+                kind: info.kind || 'tv',
+                year: gInfo?.airedOn?.year ? String(gInfo.airedOn.year) : (v1Info?.aired_on ? String(v1Info.aired_on).slice(0, 4) : ''),
+                userScore: Number(r.score) || 0,
+                globalScore: Number(info.score) || 0,
+                shikiStatus: r.status || '',
+                episodesWatched: Number(r.episodes) || 0,
+                episodesTotal: Number(info.episodes) || 0,
+                genres: genresRu
+              });
             });
 
             extraSync = {
@@ -2020,7 +2585,6 @@
               topRatedTitles: topRatedTitles.sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore))
             };
 
-            // Единоразовый расчёт часов просмотра из списка «Просмотрено» Shikimori
             if (!hoursAlreadyLocked) {
               let shikiCompletedSeconds = 0;
               completedRates.forEach(r => {
@@ -2060,6 +2624,7 @@
               deviceId: getDeviceId(),
               nickname,
               avatar,
+              shikiUrl: shikiUrl || (nickname ? `https://shikimori.one/${encodeURIComponent(nickname)}` : ''),
               recentTitles: localFallback.recentTitles,
               progressItems,
               ...extraSync
@@ -2080,15 +2645,11 @@
       return null;
     }
 
-    async function loadActivityData(isManual = false) {
-      const btn = document.getElementById('syncNowBtn');
-      if (btn && isManual) btn.disabled = true;
-
-      // Шаг 1: мгновенный первичный рендер (чтобы графики и блоки никогда не были пустыми)
+    async function loadActivityData() {
       if (!activityState) {
         try {
           const cached = JSON.parse(localStorage.getItem('komboko_activity_cache') || 'null');
-          activityState = (cached && cached.success) ? cached : buildLocalFallbackState();
+          activityState = (cached && cached.success && Boolean(cached.isAuth) === isShikiAuth()) ? cached : buildLocalFallbackState();
         } catch (_) {
           activityState = buildLocalFallbackState();
         }
@@ -2097,7 +2658,6 @@
       }
 
       try {
-        // Шаг 2: быстрая загрузка состояния с сервера (<200ms)
         const serverState = await fetchServerActivityState();
         if (serverState && serverState.success) {
           activityState = serverState;
@@ -2112,27 +2672,20 @@
         renderAllSections();
       }
 
-      // Шаг 3: фоновая / ручная синхронизация локальной истории + единоразовый импорт Shikimori
-      try {
-        await performBackgroundSync(isManual);
-        const freshState = await fetchServerActivityState();
-        if (freshState && freshState.success) {
-          activityState = freshState;
-          try { localStorage.setItem('komboko_activity_cache', JSON.stringify(freshState)); } catch (_) {}
-          updateIdentityBanner();
-          renderAllSections();
-          updateLastSyncedTimestamp();
-          if (isManual) {
-            showToast(currentLang === 'en' ? 'Activity synced!' : 'Статистика синхронизирована ✨');
+      if (isShikiAuth()) {
+        try {
+          await performBackgroundSync();
+          const freshState = await fetchServerActivityState();
+          if (freshState && freshState.success) {
+            activityState = freshState;
+            try { localStorage.setItem('komboko_activity_cache', JSON.stringify(freshState)); } catch (_) {}
+            updateIdentityBanner();
+            renderAllSections();
+            updateLastSyncedTimestamp();
           }
+        } catch (err) {
+          console.warn('Background sync error:', err);
         }
-      } catch (err) {
-        console.warn('Sync error:', err);
-        if (isManual) {
-          showToast(currentLang === 'en' ? 'Sync failed, check connection' : 'Не удалось синхронизироваться с сервером');
-        }
-      } finally {
-        if (btn) btn.disabled = false;
       }
     }
 
@@ -2141,7 +2694,7 @@
         hour: '2-digit',
         minute: '2-digit'
       });
-      document.getElementById('lastSyncedLabel').textContent = (currentLang === 'en' ? 'Synced at ' : 'Обновлено в ') + timeStr;
+      document.getElementById('lastSyncedLabel').textContent = (currentLang === 'en' ? 'Updated at ' : 'Обновлено в ') + timeStr;
     }
 
     function getDayBuckets(countDays) {
@@ -2153,14 +2706,8 @@
         d.setDate(now.getDate() - i);
         const key = getLocalDateKey(d);
         const sec = Number(daily[key]) || 0;
-        const shortLabel = d.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU', {
-          day: '2-digit',
-          month: '2-digit'
-        });
-        const fullLabel = d.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU', {
-          day: 'numeric',
-          month: 'long'
-        });
+        const shortLabel = d.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU', { day: '2-digit', month: '2-digit' });
+        const fullLabel = d.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'long' });
         out.push({ key, shortLabel, fullLabel, seconds: sec });
       }
       return out;
@@ -2233,13 +2780,11 @@
       renderUnfinishedSection();
       renderRecentSection();
       renderTasteSection();
-      updateHideLeaderboardBtn();
-      if (currentSection === 'leaderboard') {
-        loadLeaderboard(currentLeaderboardCat);
-      }
+      renderLeaderboardSectionShell();
     }
 
     function renderOverviewSection() {
+      const authed = isShikiAuth();
       const todayKey = getLocalDateKey();
       const monthKey = todayKey.slice(0, 7);
       const totalSec = Number(activityState.watchSecondsTotal) || 0;
@@ -2252,41 +2797,77 @@
       const genres = getSortedGenres('combined');
 
       document.getElementById('kpiTotalHours').textContent = `${(totalSec / 3600).toFixed(1)} ${currentLang === 'en' ? 'h' : 'ч'}`;
-      if (shikiSec > 0 || activityState.shikiHoursLocked) {
+      if (authed && (shikiSec > 0 || activityState.shikiHoursLocked)) {
         const shikiH = Math.round(shikiSec / 3600);
         const liveM = Math.round(liveSec / 60);
-        const lockNote = activityState.shikiHoursLocked
-          ? (currentLang === 'en' ? ' · locked' : ' · зафиксир.')
-          : '';
+        const lockNote = activityState.shikiHoursLocked ? (currentLang === 'en' ? ' · locked' : ' · фикс.') : '';
         document.getElementById('kpiTotalMins').textContent = currentLang === 'en'
           ? `Shikimori: ~${shikiH}h${lockNote} · Site: ${liveM}m`
           : `Shikimori: ~${shikiH} ч${lockNote} · Сайт: ${liveM} мин`;
       } else {
-        document.getElementById('kpiTotalMins').textContent = `${Math.floor(totalSec / 60)} ${currentLang === 'en' ? 'min total' : 'мин за всё время'}`;
+        document.getElementById('kpiTotalMins').textContent = `${Math.floor(totalSec / 60)} ${currentLang === 'en' ? 'min total' : 'мин на сайте'}`;
       }
       document.getElementById('kpiMonthHours').textContent = `${(monthSec / 3600).toFixed(1)} ${currentLang === 'en' ? 'h' : 'ч'}`;
       document.getElementById('kpiTodayMins').textContent = `${currentLang === 'en' ? 'Today' : 'Сегодня'}: ${formatDurationHuman(todaySec)}`;
-      document.getElementById('kpiUnfinishedCount').textContent = String(unfinished.length);
-      document.getElementById('kpiTopGenre').textContent = genres[0]?.name || '—';
-      document.getElementById('kpiRecentCount').textContent = `${recent.length} ${currentLang === 'en' ? 'titles in history' : 'тайтлов в истории'}`;
+
+      if (!authed) {
+        document.getElementById('kpiUnfinishedCount').textContent = '—';
+        document.getElementById('kpiUnfinishedHint').textContent = currentLang === 'en' ? 'Shikimori login required' : 'После входа в Shikimori';
+        document.getElementById('kpiTopGenre').textContent = '—';
+        document.getElementById('kpiRecentCount').textContent = currentLang === 'en' ? 'Shikimori login required' : 'После входа в Shikimori';
+      } else {
+        document.getElementById('kpiUnfinishedCount').textContent = String(unfinished.length);
+        document.getElementById('kpiUnfinishedHint').textContent = currentLang === 'en' ? 'From 10% of ep. 1 or movie' : 'От 10% первой серии или фильма';
+        document.getElementById('kpiTopGenre').textContent = genres[0]?.name || '—';
+        document.getElementById('kpiRecentCount').textContent = `${recent.length} ${currentLang === 'en' ? 'titles in history' : 'тайтлов в истории'}`;
+      }
 
       renderBarChart('overviewChart', getDayBuckets(14), 2);
 
-      if (activityState.aiSummaryCache && activityState.aiSummaryCache.text) {
-        document.getElementById('aiSummaryBody').textContent = activityState.aiSummaryCache.text;
-        document.getElementById('aiSummaryTime').textContent = formatRelativeDate(activityState.aiSummaryCache.generatedAt);
+      const aiAuthEl = document.getElementById('aiSummaryAuthContent');
+      const aiGateEl = document.getElementById('aiSummaryGuestGate');
+      if (!authed) {
+        if (aiAuthEl) aiAuthEl.style.display = 'none';
+        if (aiGateEl) {
+          aiGateEl.style.display = 'block';
+          aiGateEl.innerHTML = buildGuestGateHtml(
+            'Сводка от Боку (ИИ)',
+            'Boku AI Summary',
+            'Войдите через Shikimori, чтобы Боку проанализировала ваши жанры, списки и привычки просмотра.',
+            'Sign in with Shikimori so Boku can analyze your favorite genres, lists, and watching habits.'
+          );
+        }
+      } else {
+        if (aiAuthEl) aiAuthEl.style.display = 'flex';
+        if (aiGateEl) aiGateEl.style.display = 'none';
+        if (activityState.aiSummaryCache && activityState.aiSummaryCache.text) {
+          document.getElementById('aiSummaryBody').textContent = activityState.aiSummaryCache.text;
+          document.getElementById('aiSummaryTime').textContent = formatRelativeDate(activityState.aiSummaryCache.generatedAt);
+        }
       }
 
       const previewWrap = document.getElementById('overviewUnfinishedList');
-      if (unfinished.length === 0) {
-        previewWrap.innerHTML = `
-          <div class="empty-state">
-            <p>${currentLang === 'en' ? 'No unfinished anime yet. Watch at least 10% of episode 1 or a movie and it will appear here.' : 'Недосмотренных тайтлов пока нет. Посмотрите хотя бы 10% первой серии или фильма — тайтл появится здесь для быстрого возврата.'}</p>
-            <a href="/" class="md-btn md-btn-filled">${currentLang === 'en' ? 'Browse Catalog' : 'Открыть каталог'}</a>
-          </div>
-        `;
+      const btnAllUnf = document.getElementById('btnOverviewAllUnfinished');
+      if (!authed) {
+        if (btnAllUnf) btnAllUnf.style.display = 'none';
+        previewWrap.innerHTML = buildGuestGateHtml(
+          'Быстрый возврат к досмотру',
+          'Continue Watching Queue',
+          'Список недосмотренных серий и синхронизация прогресса между устройствами доступны после входа через Shikimori.',
+          'Cross-device resume queue and unfinished titles become available once you sign in with Shikimori.'
+        );
       } else {
-        previewWrap.innerHTML = `<div class="anime-row-list">${unfinished.slice(0, 4).map((item, idx) => renderUnfinishedRowHtml(item, idx)).join('')}</div>`;
+        if (btnAllUnf) btnAllUnf.style.display = 'inline-flex';
+        if (unfinished.length === 0) {
+          previewWrap.innerHTML = `
+            <div class="empty-state">
+              <p>${currentLang === 'en' ? 'No unfinished anime yet. Watch at least 10% of episode 1 or a movie and it will appear here.' : 'Недосмотренных тайтлов пока нет. Посмотрите хотя бы 10% первой серии или фильма — тайтл появится здесь для быстрого возврата.'}</p>
+              <a href="/" class="md-btn md-btn-filled">${currentLang === 'en' ? 'Browse Catalog' : 'Открыть каталог'}</a>
+            </div>
+          `;
+        } else {
+          previewWrap.innerHTML = `<div class="anime-row-list">${unfinished.slice(0, 4).map((item, idx) => renderUnfinishedRowHtml(item, idx)).join('')}</div>`;
+        }
       }
     }
 
@@ -2341,7 +2922,7 @@
               <div class="anime-meta-line">
                 <span>${escapeHtml(String(item.kind || 'TV').toUpperCase())}</span>
                 <span aria-hidden="true">·</span>
-                <span class="tabular">${currentLang === 'en' ? 'Ep.' : 'Серия'} ${Number(item.episode) || 1}${item.episodes ? ' / ' + Number(item.episodes) : ''}${timeMeta}</span>
+                <span class="tabular">${currentLang === 'en' ? 'Ep.' : 'Серия'} ${Number(item.episode) || 1}${item.episodes ? '/' + Number(item.episodes) : ''}${timeMeta}</span>
                 <span aria-hidden="true">·</span>
                 <span class="tabular">${pct}%</span>
               </div>
@@ -2351,13 +2932,13 @@
             </div>
           </a>
           <div class="row-actions">
-            <a href="${resumeUrl}" class="md-btn md-btn-filled" style="height: 36px; padding: 0 14px; font-size: 12.5px;">
-              <span class="material-symbols-rounded" style="font-size: 18px;">play_arrow</span>
-              <span>${currentLang === 'en' ? 'Continue' : 'Продолжить'}</span>
+            <a href="${resumeUrl}" class="md-btn md-btn-filled row-action-btn" title="${currentLang === 'en' ? 'Continue' : 'Продолжить'}" aria-label="${currentLang === 'en' ? 'Continue' : 'Продолжить'}">
+              <span class="material-symbols-rounded" style="font-size: 20px;">play_arrow</span>
+              <span class="row-btn-text">${currentLang === 'en' ? 'Continue' : 'Продолжить'}</span>
             </a>
-            <button type="button" class="md-btn md-btn-danger" style="height: 36px; padding: 0 12px; font-size: 12.5px;" onclick="removeUnfinishedTitle('${escapeHtml(item.animeId)}')" title="${currentLang === 'en' ? 'Remove from unfinished' : 'Удалить из списка'}">
-              <span class="material-symbols-rounded" style="font-size: 18px;">delete_outline</span>
-              <span>${currentLang === 'en' ? 'Remove' : 'Удалить'}</span>
+            <button type="button" class="md-btn md-btn-danger row-action-btn" onclick="removeUnfinishedTitle('${escapeHtml(item.animeId)}')" title="${currentLang === 'en' ? 'Remove from unfinished' : 'Удалить из списка'}" aria-label="${currentLang === 'en' ? 'Remove' : 'Удалить'}">
+              <span class="material-symbols-rounded" style="font-size: 19px;">delete_outline</span>
+              <span class="row-btn-text">${currentLang === 'en' ? 'Remove' : 'Удалить'}</span>
             </button>
           </div>
         </div>
@@ -2366,8 +2947,20 @@
 
     function renderUnfinishedSection() {
       const container = document.getElementById('unfinishedFullList');
+      const searchEl = document.getElementById('unfinishedSearchInput');
       if (!container || !activityState) return;
-      const q = (document.getElementById('unfinishedSearchInput')?.value || '').trim().toLowerCase();
+      if (!isShikiAuth()) {
+        if (searchEl) searchEl.style.display = 'none';
+        container.innerHTML = buildGuestGateHtml(
+          'Раздел «Досмотр» закрыт для гостей',
+          'Unfinished Queue Requires Login',
+          'Войдите через Shikimori на главной странице, чтобы просматривать недосмотренные тайтлы и продолжать их с любого устройства.',
+          'Sign in via Shikimori on the main page to view unfinished anime and resume across devices.'
+        );
+        return;
+      }
+      if (searchEl) searchEl.style.display = 'block';
+      const q = (searchEl?.value || '').trim().toLowerCase();
       const items = (activityState.unfinishedTitles || []).filter(item => {
         if (!q) return true;
         return String(item.title || '').toLowerCase().includes(q) || String(item.titleEn || '').toLowerCase().includes(q);
@@ -2388,7 +2981,6 @@
     async function removeUnfinishedTitle(animeId) {
       const row = document.getElementById(`unfinished-row-${animeId}`);
       if (row) row.classList.add('removing');
-
       try { localStorage.removeItem(`komboko_progress_${animeId}`); } catch (_) {}
 
       try {
@@ -2416,8 +3008,20 @@
 
     function renderRecentSection() {
       const container = document.getElementById('recentFullList');
+      const searchEl = document.getElementById('recentSearchInput');
       if (!container || !activityState) return;
-      const q = (document.getElementById('recentSearchInput')?.value || '').trim().toLowerCase();
+      if (!isShikiAuth()) {
+        if (searchEl) searchEl.style.display = 'none';
+        container.innerHTML = buildGuestGateHtml(
+          'История просмотров закрыта для гостей',
+          'Watch History Requires Login',
+          'Войдите через Shikimori, чтобы видеть синхронизированную историю всех просмотренных тайтлов.',
+          'Sign in with Shikimori to access your synced watch history.'
+        );
+        return;
+      }
+      if (searchEl) searchEl.style.display = 'block';
+      const q = (searchEl?.value || '').trim().toLowerCase();
       const items = (activityState.recentTitles || []).filter(item => {
         if (!q) return true;
         return String(item.title || '').toLowerCase().includes(q) || String(item.titleEn || '').toLowerCase().includes(q);
@@ -2457,9 +3061,9 @@
               </div>
             </a>
             <div class="row-actions">
-              <a href="${url}" class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 12.5px;">
-                <span class="material-symbols-rounded" style="font-size: 18px;">open_in_new</span>
-                <span>${currentLang === 'en' ? 'Open' : 'Открыть'}</span>
+              <a href="${url}" class="md-btn md-btn-tonal row-action-btn" title="${currentLang === 'en' ? 'Open' : 'Открыть'}" aria-label="${currentLang === 'en' ? 'Open' : 'Открыть'}">
+                <span class="material-symbols-rounded" style="font-size: 19px;">play_arrow</span>
+                <span class="row-btn-text">${currentLang === 'en' ? 'Open' : 'Открыть'}</span>
               </a>
             </div>
           </div>
@@ -2475,20 +3079,49 @@
       renderTasteSection();
     }
 
-    function setRatedMode(mode) {
-      currentRatedMode = mode;
-      document.querySelectorAll('[data-rmode]').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-rmode') === mode);
-      });
-      renderTasteSection();
+    function resetTastePagination() {
+      tasteShowLimit = 60;
+    }
+
+    function getStatusLabel(status) {
+      const en = currentLang === 'en';
+      const map = {
+        completed: en ? 'Completed' : 'Просмотрено',
+        watching: en ? 'Watching' : 'Смотрю',
+        rewatching: en ? 'Rewatching' : 'Пересматриваю',
+        planned: en ? 'Planned' : 'Запланировано',
+        on_hold: en ? 'On Hold' : 'Отложено',
+        dropped: en ? 'Dropped' : 'Брошено'
+      };
+      return map[status] || '';
     }
 
     function renderTasteSection() {
       if (!activityState) return;
+      const gateEl = document.getElementById('tasteGuestGate');
+      const splitEl = document.getElementById('tasteSplitContainer');
+
+      if (!isShikiAuth()) {
+        if (splitEl) splitEl.style.display = 'none';
+        if (gateEl) {
+          gateEl.style.display = 'block';
+          gateEl.innerHTML = buildGuestGateHtml(
+            'Любимые жанры и списки Shikimori',
+            'Favorite Genres & Shikimori Lists',
+            'Войдите через Shikimori, чтобы увидеть аналитику любимых жанров и все ваши списки аниме (Просмотрено, Смотрю, Запланировано, Отложено, Брошено).',
+            'Sign in with Shikimori to explore your top genres and all of your Shikimori lists.'
+          );
+        }
+        return;
+      }
+
+      if (gateEl) gateEl.style.display = 'none';
+      if (splitEl) splitEl.style.display = 'grid';
+
       const gWrap = document.getElementById('genresBreakdownList');
-      const genres = getSortedGenres(currentGenreMode).slice(0, 10);
+      const genres = getSortedGenres(currentGenreMode).slice(0, 12);
       if (genres.length === 0) {
-        gWrap.innerHTML = `<div class="empty-state"><p>${currentLang === 'en' ? 'Watch a few titles or connect Shikimori to discover your top genres.' : 'Посмотрите пару тайтлов или войдите через Shikimori — здесь появятся ваши любимые жанры.'}</p></div>`;
+        gWrap.innerHTML = `<div class="empty-state"><p>${currentLang === 'en' ? 'Watch a few titles or rate anime on Shikimori to discover your top genres.' : 'Посмотрите пару тайтлов или добавьте оценки на Shikimori — здесь появятся ваши любимые жанры.'}</p></div>`;
       } else {
         const topW = genres[0].weight || 1;
         const totalW = genres.reduce((acc, x) => acc + x.weight, 0) || 1;
@@ -2497,15 +3130,15 @@
           const sharePct = Math.max(1, Math.round((g.weight / totalW) * 100));
           const countParts = [];
           if (g.watchCount > 0) countParts.push(`${g.watchCount} ${currentLang === 'en' ? 'watched' : 'просм.'}`);
-          if (g.shikiCount > 0) countParts.push(`${Math.round(g.shikiCount)} Shikimori`);
+          if (g.shikiCount > 0) countParts.push(`${Math.round(g.shikiCount)} Shiki`);
           return `
-            <div class="stagger-item" style="animation-delay: ${idx * 30}ms;">
+            <div class="genre-item stagger-item" style="animation-delay: ${Math.min(idx * 25, 240)}ms;">
               <div class="genre-item-head">
                 <span class="genre-name">${escapeHtml(g.name)}</span>
                 <span class="genre-stats tabular">${escapeHtml(countParts.join(' · ') || '—')} · ${sharePct}%</span>
               </div>
               <div class="genre-bar-bg">
-                <div class="genre-bar-fill" style="width: ${barPct}%; animation-delay: ${idx * 30}ms;"></div>
+                <div class="genre-bar-fill" style="width: ${barPct}%; animation-delay: ${Math.min(idx * 25, 240)}ms;"></div>
               </div>
             </div>
           `;
@@ -2513,10 +3146,9 @@
       }
 
       const rWrap = document.getElementById('topRatedList');
-      let ratedItems = [...(activityState.topRatedTitles || [])];
-      if (ratedItems.length === 0) {
-        ratedItems = (activityState.recentTitles || [])
-          .filter(t => Number(t.score) > 0)
+      let allItems = [...(activityState.topRatedTitles || [])];
+      if (allItems.length === 0) {
+        allItems = (activityState.recentTitles || [])
           .map(t => ({
             animeId: t.animeId,
             title: t.title,
@@ -2526,56 +3158,97 @@
             year: t.year,
             userScore: Number(t.userScore) || 0,
             globalScore: Number(t.score) || 0,
-            genres: t.genres || []
+            shikiStatus: t.shikiStatus || '',
+            episodesWatched: t.lastEpisode || 0,
+            episodesTotal: t.episodes || 0
           }));
       }
 
+      const q = (document.getElementById('tasteSearchInput')?.value || '').trim().toLowerCase();
+      let filtered = allItems.filter(item => {
+        if (currentTasteStatus !== 'all' && item.shikiStatus !== currentTasteStatus) return false;
+        if (q) {
+          const tRu = String(item.title || '').toLowerCase();
+          const tEn = String(item.titleEn || '').toLowerCase();
+          if (!tRu.includes(q) && !tEn.includes(q)) return false;
+        }
+        return true;
+      });
+
       if (currentRatedMode === 'user') {
-        const userOnly = ratedItems.filter(x => Number(x.userScore) > 0);
-        ratedItems = (userOnly.length > 0 ? userOnly : ratedItems)
-          .sort((a, b) => (Number(b.userScore) - Number(a.userScore)) || (Number(b.globalScore) - Number(a.globalScore)));
-      } else {
-        ratedItems.sort((a, b) => (Number(b.globalScore) - Number(a.globalScore)) || (Number(b.userScore) - Number(a.userScore)));
+        filtered.sort((a, b) => (Number(b.userScore || 0) - Number(a.userScore || 0)) || (Number(b.globalScore || 0) - Number(a.globalScore || 0)));
+      } else if (currentRatedMode === 'global') {
+        filtered.sort((a, b) => (Number(b.globalScore || 0) - Number(a.globalScore || 0)) || (Number(b.userScore || 0) - Number(a.userScore || 0)));
+      } else if (currentRatedMode === 'title') {
+        filtered.sort((a, b) => {
+          const ta = currentLang === 'en' ? (a.titleEn || a.title) : a.title;
+          const tb = currentLang === 'en' ? (b.titleEn || b.title) : b.title;
+          return String(ta).localeCompare(String(tb), currentLang === 'en' ? 'en' : 'ru');
+        });
       }
 
-      ratedItems = ratedItems.slice(0, 15);
-      if (ratedItems.length === 0) {
-        rWrap.innerHTML = `<div class="empty-state"><p>${currentLang === 'en' ? 'Rate anime on Shikimori or watch highly scored titles to populate your top list.' : 'Оценивайте тайтлы на Shikimori или смотрите любимое аниме, чтобы здесь появился топ ваших оценок.'}</p></div>`;
-      } else {
-        rWrap.innerHTML = `<div class="anime-row-list">${ratedItems.map((item, idx) => {
-          const title = currentLang === 'en' ? (item.titleEn || item.title) : item.title;
-          const url = buildWatchUrl(item.animeId);
-          const scoreLabel = item.userScore > 0
-            ? `${currentLang === 'en' ? 'Your score' : 'Ваша оценка'}: ${item.userScore}/10`
-            : `Shikimori: ${Number(item.globalScore || 0).toFixed(2)}`;
-          return `
-            <div class="anime-row stagger-item" style="animation-delay: ${idx * 22}ms;">
-              <a href="${url}" class="anime-row-main">
-                ${makePosterMarkup(item.poster, title)}
-                <div class="anime-info">
-                  <div class="anime-title">${escapeHtml(title)}</div>
-                  <div class="anime-meta-line">
-                    <span class="tabular" style="color: var(--color-primary); font-weight: 700;">${escapeHtml(scoreLabel)}</span>
-                    ${item.globalScore > 0 && item.userScore > 0 ? `<span aria-hidden="true">·</span><span class="tabular">Shiki ${Number(item.globalScore).toFixed(2)}</span>` : ''}
-                    ${item.year ? `<span aria-hidden="true">·</span><span class="tabular">${escapeHtml(item.year)}</span>` : ''}
-                  </div>
-                </div>
-              </a>
-              <div class="row-actions">
-                <a href="${url}" class="md-btn md-btn-tonal" style="height: 36px; padding: 0 14px; font-size: 12.5px;">
-                  <span class="material-symbols-rounded" style="font-size: 18px;">play_circle</span>
-                  <span>${currentLang === 'en' ? 'Watch' : 'Смотреть'}</span>
-                </a>
-              </div>
-            </div>
-          `;
-        }).join('')}</div>`;
+      if (filtered.length === 0) {
+        rWrap.innerHTML = `<div class="empty-state"><p>${currentLang === 'en' ? 'No titles found in this list filter.' : 'В выбранном списке пока нет тайтлов.'}</p></div>`;
+        return;
       }
+
+      const visibleItems = filtered.slice(0, tasteShowLimit);
+      const remaining = Math.max(0, filtered.length - visibleItems.length);
+
+      const rowsHtml = visibleItems.map((item, idx) => {
+        const title = currentLang === 'en' ? (item.titleEn || item.title) : item.title;
+        const url = buildWatchUrl(item.animeId);
+        const statusLabel = getStatusLabel(item.shikiStatus);
+        const scorePart = item.userScore > 0
+          ? `${currentLang === 'en' ? 'Score' : 'Оценка'}: ${item.userScore}/10`
+          : (item.globalScore > 0 ? `Shiki ${Number(item.globalScore).toFixed(2)}` : '');
+        const epPart = item.episodesWatched > 0
+          ? `${item.episodesWatched}${item.episodesTotal ? '/' + item.episodesTotal : ''} ${currentLang === 'en' ? 'ep.' : 'с.'}`
+          : '';
+        const metaParts = [
+          scorePart ? `<span class="tabular" style="color: var(--color-primary); font-weight: 700;">${escapeHtml(scorePart)}</span>` : '',
+          statusLabel ? `<span>${escapeHtml(statusLabel)}</span>` : '',
+          epPart ? `<span class="tabular">${escapeHtml(epPart)}</span>` : '',
+          item.year ? `<span class="tabular">${escapeHtml(item.year)}</span>` : ''
+        ].filter(Boolean).join('<span aria-hidden="true">·</span>');
+
+        return `
+          <div class="anime-row stagger-item" style="animation-delay: ${Math.min(idx * 14, 180)}ms;">
+            <a href="${url}" class="anime-row-main">
+              ${makePosterMarkup(item.poster, title)}
+              <div class="anime-info">
+                <div class="anime-title">${escapeHtml(title)}</div>
+                <div class="anime-meta-line">${metaParts || escapeHtml(String(item.kind || 'TV').toUpperCase())}</div>
+              </div>
+            </a>
+            <div class="row-actions">
+              <a href="${url}" class="md-btn md-btn-tonal row-action-btn" title="${currentLang === 'en' ? 'Watch' : 'Смотреть'}" aria-label="${currentLang === 'en' ? 'Watch' : 'Смотреть'}">
+                <span class="material-symbols-rounded" style="font-size: 20px;">play_circle</span>
+                <span class="row-btn-text">${currentLang === 'en' ? 'Watch' : 'Смотреть'}</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const countHeader = `<div style="font-size: 12px; color: var(--color-variant); margin-bottom: 10px;" class="tabular">${currentLang === 'en' ? `Showing ${visibleItems.length} of ${filtered.length}` : `Показано ${visibleItems.length} из ${filtered.length}`}</div>`;
+      const moreButtons = remaining > 0 ? `
+        <div class="taste-more-row">
+          <button type="button" class="md-btn md-btn-tonal" onclick="tasteShowLimit += 60; renderTasteSection();">
+            ${currentLang === 'en' ? `Show +${Math.min(60, remaining)}` : `Показать ещё ${Math.min(60, remaining)}`}
+          </button>
+          <button type="button" class="md-btn md-btn-filled" onclick="tasteShowLimit = 5000; renderTasteSection();">
+            ${currentLang === 'en' ? `Show all (${filtered.length})` : `Показать все (${filtered.length})`}
+          </button>
+        </div>
+      ` : '';
+
+      rWrap.innerHTML = `${countHeader}<div class="anime-row-list">${rowsHtml}</div>${moreButtons}`;
     }
 
     async function callOpenRouterFromBrowser(orReq) {
       if (!orReq || !orReq.apiKey || !Array.isArray(orReq.models)) return null;
-      const apiUrl = orReq.apiUrl || 'https://openrouter.ai/api/v1/chat/completions';
+      const endpoint = orReq.apiUrl || 'https://openrouter.ai/api/v1/chat/completions';
       for (const model of orReq.models) {
         try {
           const payload = {
@@ -2587,7 +3260,7 @@
           if (model.startsWith('nvidia/') || model === 'openrouter/free') {
             payload.reasoning = { effort: 'none', exclude: true };
           }
-          const r = await fetch(apiUrl, {
+          const r = await fetch(endpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -2608,6 +3281,7 @@
     }
 
     async function requestAiSummary() {
+      if (!isShikiAuth()) return;
       const btn = document.getElementById('btnRequestAiSummary');
       const bodyEl = document.getElementById('aiSummaryBody');
       const timeEl = document.getElementById('aiSummaryTime');
@@ -2656,27 +3330,60 @@
       }
     }
 
-    function updateHideLeaderboardBtn() {
-      const btn = document.getElementById('btnToggleHideLeaderboard');
-      const icon = document.getElementById('hideLeaderboardIcon');
-      const label = document.getElementById('hideLeaderboardLabel');
-      const isHidden = Boolean(leaderboardData?.currentUser?.hidden ?? activityState?.hideFromLeaderboard);
-      if (btn) btn.classList.toggle('md-btn-lock-active', isHidden);
-      if (icon) icon.textContent = isHidden ? 'visibility' : 'visibility_off';
-      if (label) {
-        if (currentLang === 'en') {
-          label.textContent = isHidden ? 'Hidden from top (Show me)' : "Don't show me in top";
+    function updateVisibilityControlsUI() {
+      const vis = leaderboardData?.currentUser?.profileVisibility
+        || activityState?.profileVisibility
+        || (activityState?.hideFromLeaderboard ? 'hidden' : 'public');
+      document.querySelectorAll('[data-vis]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-vis') === vis);
+      });
+      const hint = document.getElementById('visibilityHintText');
+      if (hint) {
+        const en = currentLang === 'en';
+        if (vis === 'anonymous') {
+          hint.textContent = en
+            ? 'Anonymous: shown as "Anonymous Boku #XXXX"; cards & Shikimori link are hidden on click.'
+            : 'Анонимный: в топе под именем «Анонимный Боко #XXXX»; при клике профиль и карточки скрыты.';
+        } else if (vis === 'hidden') {
+          hint.textContent = en
+            ? 'Hidden: your account does not appear in the public leaderboard.'
+            : 'Скрытый: ваш аккаунт полностью скрыт из общего топа.';
         } else {
-          label.textContent = isHidden ? 'Вы скрыты из топа (Показать)' : 'Не показывать меня в топе';
+          hint.textContent = en
+            ? 'Public: nickname, avatar, cards, watch hours, and Shikimori link are visible.'
+            : 'Публичный: видны ник, аватар, карточки, часы и ссылка на Shikimori.';
         }
+      }
+    }
+
+    function renderLeaderboardSectionShell() {
+      const authWrap = document.getElementById('leaderboardAuthContent');
+      const gateWrap = document.getElementById('leaderboardGuestGate');
+      if (!isShikiAuth()) {
+        if (authWrap) authWrap.style.display = 'none';
+        if (gateWrap) {
+          gateWrap.style.display = 'block';
+          gateWrap.innerHTML = buildGuestGateHtml(
+            'Топ анимешников доступен после входа',
+            'Top Anime Fans Requires Login',
+            'Войдите через Shikimori, чтобы видеть рейтинг сообщества, открывать профили участников с их карточками и настраивать публичность своего аккаунта.',
+            'Sign in with Shikimori to browse the community ranking, inspect user card collections, and configure your profile visibility.'
+          );
+        }
+        return;
+      }
+      if (gateWrap) gateWrap.style.display = 'none';
+      if (authWrap) authWrap.style.display = 'block';
+      updateVisibilityControlsUI();
+      if (currentSection === 'leaderboard' && !leaderboardData) {
+        loadLeaderboard(currentLeaderboardCat);
       }
     }
 
     function setLeaderboardCategory(cat) {
       currentLeaderboardCat = cat;
-      document.querySelectorAll('[data-lbcat]').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-lbcat') === cat);
-      });
+      const sel = document.getElementById('leaderboardSortSelect');
+      if (sel && sel.value !== cat) sel.value = cat;
       loadLeaderboard(cat);
     }
 
@@ -2700,36 +3407,22 @@
         return { main: `${hrs} ${en ? 'h' : 'ч'}`, sub };
       }
       if (cat === 'cards') {
-        return {
-          main: `${cardsCnt} ${en ? 'cards' : 'шт.'}`,
-          sub: en ? `${legCnt} legendary` : `${legCnt} лег.`
-        };
+        return { main: `${cardsCnt} ${en ? 'cards' : 'шт.'}`, sub: en ? `${legCnt} legendary` : `${legCnt} лег.` };
       }
       if (cat === 'legendary') {
-        return {
-          main: `${legCnt}`,
-          sub: en ? `of ${cardsCnt} cards` : `из ${cardsCnt} карт`
-        };
+        return { main: `${legCnt}`, sub: en ? `of ${cardsCnt} cards` : `из ${cardsCnt} карт` };
       }
       if (cat === 'coins') {
-        return {
-          main: `${coins.toLocaleString(en ? 'en-US' : 'ru-RU')} ${en ? 'BC' : 'БК'}`,
-          sub: en ? `${cardsCnt} cards` : `${cardsCnt} карточек`
-        };
+        return { main: `${coins.toLocaleString(en ? 'en-US' : 'ru-RU')} ${en ? 'BC' : 'БК'}`, sub: en ? `${cardsCnt} cards` : `${cardsCnt} карточек` };
       }
       if (cat === 'completed') {
-        return {
-          main: `${completed}`,
-          sub: en ? `${(totalSec / 3600).toFixed(0)}h watch time` : `${(totalSec / 3600).toFixed(0)} ч просмотра`
-        };
+        return { main: `${completed}`, sub: en ? `${(totalSec / 3600).toFixed(0)}h watch time` : `${(totalSec / 3600).toFixed(0)} ч просмотра` };
       }
-      return {
-        main: `${bestScore.toLocaleString(en ? 'en-US' : 'ru-RU')}`,
-        sub: en ? 'Jump / Math record' : 'БокуДжамп / Матика'
-      };
+      return { main: `${bestScore.toLocaleString(en ? 'en-US' : 'ru-RU')}`, sub: en ? 'Jump / Math record' : 'БокуДжамп / Матика' };
     }
 
     async function loadLeaderboard(cat = currentLeaderboardCat) {
+      if (!isShikiAuth()) return;
       const listEl = document.getElementById('leaderboardList');
       const mySummaryEl = document.getElementById('lbMySummary');
       if (!listEl) return;
@@ -2739,7 +3432,7 @@
       try {
         const uid = localStorage.getItem('shiki_user_id') || '';
         const params = new URLSearchParams({
-          category: cat,
+          sortBy: cat,
           limit: '50',
           deviceId: getDeviceId()
         });
@@ -2749,13 +3442,15 @@
           headers: getAuthHeaders(),
           signal: AbortSignal.timeout(8000)
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data || !data.success) throw new Error('Failed');
         leaderboardData = data;
         if (activityState && data.currentUser) {
+          activityState.profileVisibility = data.currentUser.profileVisibility || activityState.profileVisibility;
           activityState.hideFromLeaderboard = Boolean(data.currentUser.hidden);
         }
-        updateHideLeaderboardBtn();
+        updateVisibilityControlsUI();
         renderLeaderboard();
       } catch (_) {
         listEl.innerHTML = `<div class="empty-state"><p>${currentLang === 'en' ? 'Could not load leaderboard right now.' : 'Не удалось загрузить рейтинг пользователей.'}</p></div>`;
@@ -2769,7 +3464,7 @@
       if (!listEl || !leaderboardData) return;
 
       const en = currentLang === 'en';
-      const cat = leaderboardData.category || currentLeaderboardCat;
+      const cat = leaderboardData.sortBy || leaderboardData.category || currentLeaderboardCat;
       const entries = Array.isArray(leaderboardData.entries) ? leaderboardData.entries : [];
       const me = leaderboardData.currentUser || null;
 
@@ -2777,19 +3472,25 @@
         mySummaryEl.style.display = 'flex';
         const m = formatLeaderboardMetric(me, cat);
         const name = me.displayName || me.nickname || '';
-        const rankText = me.hidden
-          ? (en ? 'Your profile is hidden from the public leaderboard' : 'Вы скрыли свой профиль из публичного топа')
-          : (me.rank
-              ? (en ? `Your rank: #${me.rank} of ${leaderboardData.totalParticipants}` : `Ваше место: #${me.rank} из ${leaderboardData.totalParticipants}`)
-              : (en ? 'Watch anime or collect cards to enter the ranking' : 'Смотрите аниме или собирайте карточки, чтобы попасть в топ'));
+        const vis = me.profileVisibility || (me.hidden ? 'hidden' : 'public');
+        let rankText = '';
+        if (vis === 'hidden') {
+          rankText = en ? 'Your profile is hidden from the leaderboard' : 'Вы скрыли свой профиль из публичного топа';
+        } else if (me.rank) {
+          rankText = en ? `Your rank: #${me.rank} of ${leaderboardData.totalParticipants}` : `Ваше место: #${me.rank} из ${leaderboardData.totalParticipants}`;
+        } else {
+          rankText = en ? 'Watch anime or collect cards to enter the ranking' : 'Смотрите аниме или собирайте карточки, чтобы попасть в топ';
+        }
         mySummaryEl.innerHTML = `
           <div>
             <div style="font-size: 13.5px; font-weight: 700;">${escapeHtml(rankText)}</div>
             <div style="font-size: 12px; opacity: 0.85; margin-top: 2px;">${escapeHtml(name)}</div>
           </div>
           <div class="lb-metric">
-            <div class="lb-metric-val tabular" style="color: inherit;">${escapeHtml(m.main)}</div>
-            <div class="lb-metric-sub tabular" style="color: inherit; opacity: 0.85;">${escapeHtml(m.sub)}</div>
+            <div>
+              <div class="lb-metric-val tabular" style="color: inherit;">${escapeHtml(m.main)}</div>
+              <div class="lb-metric-sub tabular" style="color: inherit; opacity: 0.85;">${escapeHtml(m.sub)}</div>
+            </div>
           </div>
         `;
       } else if (mySummaryEl) {
@@ -2797,7 +3498,7 @@
       }
 
       if (entries.length === 0) {
-        listEl.innerHTML = `<div class="empty-state"><p>${en ? 'No participants in this ranking yet.' : 'В этой категории пока нет участников.'}</p></div>`;
+        listEl.innerHTML = `<div class="empty-state"><p>${en ? 'No participants in this ranking yet.' : 'В рейтинге пока нет участников.'}</p></div>`;
         return;
       }
 
@@ -2805,11 +3506,15 @@
         const m = formatLeaderboardMetric(entry, cat);
         const rank = Number(entry.rank) || (idx + 1);
         const rankClass = rank <= 3 ? `top-${rank}` : '';
-        const name = entry.displayName || entry.nickname || 'Участник';
+        const name = entry.displayName || entry.nickname || (en ? 'Member' : 'Участник');
+        const profileId = entry.profileId || entry.userKey || '';
+        const isAnon = Boolean(entry.isAnonymous);
         const initials = String(name).slice(0, 2).toUpperCase();
-        const avatarHtml = entry.avatar
-          ? `<img src="${escapeHtml(entry.avatar)}" alt="${escapeHtml(name)}" referrerpolicy="no-referrer" onerror="this.remove();" />`
-          : escapeHtml(initials);
+        const avatarHtml = isAnon
+          ? `<span class="material-symbols-rounded" style="font-size: 20px;">visibility_off</span>`
+          : (entry.avatar
+              ? `<img src="${escapeHtml(entry.avatar)}" alt="${escapeHtml(name)}" referrerpolicy="no-referrer" onerror="this.remove();" />`
+              : escapeHtml(initials));
         const completedVal = Number(entry.completedCount ?? entry.shikiCompletedCount ?? 0);
         const secondaryBits = [
           completedVal > 0 ? `${completedVal} ${en ? 'completed' : 'просм.'}` : '',
@@ -2818,31 +3523,30 @@
         ].filter(Boolean).join(' · ');
 
         return `
-          <div class="lb-row stagger-item ${entry.isCurrentUser ? 'is-me' : ''}" style="animation-delay: ${Math.min(idx * 16, 200)}ms;">
+          <button type="button" class="lb-row stagger-item ${entry.isCurrentUser ? 'is-me' : ''}" style="animation-delay: ${Math.min(idx * 16, 200)}ms;" onclick="openLeaderboardUserProfile('${escapeHtml(profileId)}')">
             <div class="lb-rank tabular ${rankClass}">#${rank}</div>
-            <div class="lb-avatar">${avatarHtml}</div>
+            <div class="lb-avatar ${isAnon ? 'is-anon' : ''}">${avatarHtml}</div>
             <div class="lb-main">
               <div class="lb-name">
-                <span>${escapeHtml(name)}</span>
+                <span class="lb-name-text">${escapeHtml(name)}</span>
                 ${entry.isCurrentUser ? `<span class="lb-you-badge">${en ? 'You' : 'Вы'}</span>` : ''}
               </div>
               <div class="lb-sub">${escapeHtml(secondaryBits || (en ? 'KombokoWatch viewer' : 'Зритель KombokoWatch'))}</div>
             </div>
             <div class="lb-metric">
-              <div class="lb-metric-val tabular">${escapeHtml(m.main)}</div>
-              <div class="lb-metric-sub tabular">${escapeHtml(m.sub)}</div>
+              <div>
+                <div class="lb-metric-val tabular">${escapeHtml(m.main)}</div>
+                <div class="lb-metric-sub tabular">${escapeHtml(m.sub)}</div>
+              </div>
+              <span class="material-symbols-rounded lb-chevron">chevron_right</span>
             </div>
-          </div>
+          </button>
         `;
       }).join('')}</div>`;
     }
 
-    async function toggleLeaderboardVisibility() {
-      const btn = document.getElementById('btnToggleHideLeaderboard');
-      if (btn) btn.disabled = true;
-      const currentlyHidden = Boolean(leaderboardData?.currentUser?.hidden ?? activityState?.hideFromLeaderboard);
-      const nextHide = !currentlyHidden;
-
+    async function setProfileVisibility(visibility) {
+      if (!isShikiAuth()) return;
       try {
         const res = await fetch(apiUrl('/api/activity/leaderboard-visibility'), {
           method: 'POST',
@@ -2850,21 +3554,145 @@
           body: JSON.stringify({
             userId: localStorage.getItem('shiki_user_id') || '',
             deviceId: getDeviceId(),
-            hide: nextHide
+            visibility
           })
         });
         const data = await res.json();
         if (data && data.success) {
-          if (activityState) activityState.hideFromLeaderboard = Boolean(data.hideFromLeaderboard);
-          if (leaderboardData?.currentUser) leaderboardData.currentUser.hidden = Boolean(data.hideFromLeaderboard);
-          updateHideLeaderboardBtn();
-          showToast(data.hideFromLeaderboard
-            ? (currentLang === 'en' ? 'You are now hidden from the leaderboard' : 'Вы скрыты из публичного топа')
-            : (currentLang === 'en' ? 'You are visible in the leaderboard again' : 'Вы снова отображаетесь в топе'));
+          const vis = data.profileVisibility || visibility;
+          if (activityState) {
+            activityState.profileVisibility = vis;
+            activityState.hideFromLeaderboard = (vis === 'hidden');
+          }
+          if (leaderboardData?.currentUser) {
+            leaderboardData.currentUser.profileVisibility = vis;
+            leaderboardData.currentUser.hidden = (vis === 'hidden');
+          }
+          updateVisibilityControlsUI();
+          const en = currentLang === 'en';
+          const toastMap = {
+            public: en ? 'Profile mode: Public' : 'Режим профиля: Публичный',
+            anonymous: en ? 'Profile mode: Anonymous Boku' : 'Режим профиля: Анонимный Боко',
+            hidden: en ? 'Profile hidden from leaderboard' : 'Вы скрыты из публичного топа'
+          };
+          showToast(toastMap[vis] || toastMap.public);
           await loadLeaderboard(currentLeaderboardCat);
         }
-      } catch (_) {} finally {
-        if (btn) btn.disabled = false;
+      } catch (_) {
+        showToast(currentLang === 'en' ? 'Failed to update visibility' : 'Не удалось изменить режим профиля');
+      }
+    }
+
+    async function openLeaderboardUserProfile(profileId) {
+      if (!profileId || !isShikiAuth()) return;
+      const modal = document.getElementById('userProfileModal');
+      const body = document.getElementById('userProfileModalBody');
+      const en = currentLang === 'en';
+      modal.style.display = 'flex';
+      body.innerHTML = `<div class="empty-state"><p>${en ? 'Loading profile...' : 'Загружаем профиль...'}</p></div>`;
+
+      try {
+        const uid = localStorage.getItem('shiki_user_id') || '';
+        const params = new URLSearchParams({ deviceId: getDeviceId() });
+        if (uid) params.set('userId', uid);
+        const res = await fetch(apiUrl(`/api/activity/profile/${encodeURIComponent(profileId)}?${params.toString()}`), {
+          headers: getAuthHeaders(),
+          signal: AbortSignal.timeout(8000)
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          body.innerHTML = `<div class="empty-state"><p>${escapeHtml(data?.message || (en ? 'Profile unavailable' : 'Профиль недоступен'))}</p></div>`;
+          return;
+        }
+
+        if (data.isPrivate || data.isAnonymous) {
+          body.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 14px 6px;">
+              <img src="${escapeHtml(getBokuSkinSprite(4))}" alt="Боку" style="width: 92px; height: 92px; object-fit: contain;" />
+              <h3 style="font-size: 18px; font-weight: 700;">${escapeHtml(data.anonName || (en ? 'Anonymous Boku' : 'Анонимный Боко'))}</h3>
+              <p style="font-size: 13.5px; color: var(--color-variant); max-width: 390px; line-height: 1.55;">
+                ${en ? 'This user chose to hide their profile details. Maybe there is something very secret in there!' : 'Этот пользователь предпочел скрыть информацию о себе. Возможно там что-то очень секретное'}
+              </p>
+              <button type="button" class="md-btn md-btn-filled" style="min-width: 160px;" onclick="closeUserProfileModal()">${en ? 'Close' : 'Закрыть'}</button>
+            </div>
+          `;
+          return;
+        }
+
+        const totalH = (Number(data.watchSecondsTotal || 0) / 3600).toFixed(1);
+        const siteM = Math.round(Number(data.liveWatchSeconds || 0) / 60);
+        const shikiH = Math.round(Number(data.shikiCompletedSeconds || 0) / 3600);
+        const nick = data.nickname || 'Участник';
+        const avHtml = data.avatar
+          ? `<img src="${escapeHtml(data.avatar)}" alt="${escapeHtml(nick)}" referrerpolicy="no-referrer" />`
+          : escapeHtml(nick.slice(0, 2).toUpperCase());
+
+        const rarityLabelMap = {
+          legendary: en ? 'Legend' : 'Легенд.',
+          epic: en ? 'Epic' : 'Эпик',
+          rare: en ? 'Rare' : 'Редкая',
+          common: en ? 'Common' : 'Обычн.'
+        };
+        const cards = Array.isArray(data.cards) ? data.cards : [];
+        const cardsHtml = cards.length === 0
+          ? `<div class="empty-state" style="padding: 16px;"><p>${en ? 'No cards collected yet.' : 'Карточек пока нет.'}</p></div>`
+          : `<div class="profile-cards-grid">${cards.map(c => {
+              const cTitle = en ? (c.titleEn || c.title) : c.title;
+              const rar = c.rarity || 'common';
+              return `
+                <div class="p-card rarity-${escapeHtml(rar)} ${c.isMascot ? 'is-mascot' : ''}">
+                  <span class="p-card-rarity">${escapeHtml(rarityLabelMap[rar] || rarityLabelMap.common)}</span>
+                  <img class="p-card-img" src="${escapeHtml(c.poster || '')}" alt="${escapeHtml(cTitle)}" referrerpolicy="no-referrer" onerror="this.src='/favicon.svg';" />
+                  <div class="p-card-title">${escapeHtml(cTitle)}</div>
+                </div>
+              `;
+            }).join('')}</div>`;
+
+        const genresLine = Array.isArray(data.topGenres) && data.topGenres.length > 0
+          ? data.topGenres.map(g => en ? (g.nameEn || g.name) : g.name).join(' · ')
+          : '';
+
+        body.innerHTML = `
+          <div class="profile-modal-head">
+            <div class="profile-modal-avatar">${avHtml}</div>
+            <div style="min-width: 0; flex: 1;">
+              <h3 style="font-size: 18px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(nick)}</h3>
+              <div style="font-size: 12px; color: var(--color-variant); margin-top: 2px;" class="tabular">
+                Shikimori: ~${shikiH} ${en ? 'h' : 'ч'} · ${en ? 'Site' : 'Сайт'}: ${siteM} ${en ? 'm' : 'мин'}
+              </div>
+              ${data.shikiUrl ? `
+                <a href="${escapeHtml(data.shikiUrl)}" target="_blank" rel="noopener noreferrer" class="md-btn md-btn-tonal" style="height: 32px; padding: 0 12px; font-size: 11.5px; margin-top: 8px;">
+                  <span>Shikimori</span>
+                  <span class="material-symbols-rounded" style="font-size: 15px;">open_in_new</span>
+                </a>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="profile-mini-kpis">
+            <div class="profile-mini-kpi">
+              <div class="profile-mini-kpi-val tabular">${totalH} ${en ? 'h' : 'ч'}</div>
+              <div class="profile-mini-kpi-lbl">${en ? 'Watch Hours' : 'Часов просмотра'}</div>
+            </div>
+            <div class="profile-mini-kpi">
+              <div class="profile-mini-kpi-val tabular">${Number(data.cardsCount || 0)}</div>
+              <div class="profile-mini-kpi-lbl">${en ? 'Total Cards' : 'Всего карточек'}</div>
+            </div>
+            <div class="profile-mini-kpi">
+              <div class="profile-mini-kpi-val tabular">${Number(data.rarityCounts?.legendary || 0)}</div>
+              <div class="profile-mini-kpi-lbl">${en ? 'Legendaries' : 'Легендарок'}</div>
+            </div>
+          </div>
+
+          ${genresLine ? `<div style="font-size: 12px; color: var(--color-variant); line-height: 1.4;"><strong style="color: var(--text-strong);">${en ? 'Favorite genres' : 'Любимые жанры'}:</strong> ${escapeHtml(genresLine)}</div>` : ''}
+
+          <div>
+            <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">${en ? `Card Collection (${cards.length})` : `Коллекция карточек (${cards.length})`}</div>
+            ${cardsHtml}
+          </div>
+        `;
+      } catch (_) {
+        body.innerHTML = `<div class="empty-state"><p>${en ? 'Failed to load profile.' : 'Не удалось загрузить профиль.'}</p></div>`;
       }
     }
 
@@ -2883,7 +3711,7 @@
       if (SECTION_ORDER.includes(initialHash) && initialHash !== 'overview') {
         switchSection(initialHash);
       }
-      loadActivityData(false);
+      loadActivityData();
     });
   </script>
 </body>

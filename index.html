@@ -14810,6 +14810,12 @@
           const avatar = user.image ? (user.image.x160 || user.image.x48) : 'https://shikimori.io/favicons/apple-touch-icon-180x180.png';
           if (user.nickname) localStorage.setItem('shiki_user_nickname', String(user.nickname));
           if (avatar) localStorage.setItem('shiki_user_avatar', String(avatar));
+          if (user.url) {
+            const fullShikiUrl = String(user.url).startsWith('http') ? String(user.url) : `https://shikimori.one${user.url}`;
+            localStorage.setItem('shiki_user_url', fullShikiUrl);
+          } else if (user.nickname) {
+            localStorage.setItem('shiki_user_url', `https://shikimori.one/${encodeURIComponent(user.nickname)}`);
+          }
           ['sidebarAuthLogo', 'headerAuthLogo'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -14890,8 +14896,8 @@
         }).catch(() => {});
       }
 
-      // 2. Честный трекинг 60% хронометража для выдачи карточки тайтла и Бококойнов
-      if (dur >= 60) {
+      // 2. Честный трекинг 60% хронометража для выдачи карточки тайтла и Бококойнов (только для авторизованных Shikimori)
+      if (dur >= 60 && (token || state.currentUser || safeGet('shiki_user_id'))) {
         const shikiUid = safeGet('shiki_user_id') || (state.currentUser ? String(state.currentUser.id) : '');
         const cardHeaders = {
           'Content-Type': 'application/json'
@@ -14914,7 +14920,7 @@
             deviceId: devId,
             userId: shikiUid
           })
-        }).then(r => r.json()).then(data => {
+        }).then(r => (r.ok ? r.json() : null)).then(data => {
           if (data && data.success && data.newlyAwarded && data.card) {
             localStorage.setItem('komboko_quest_watched_title', 'true');
             showCardAwardToast(data.card);
@@ -15128,11 +15134,15 @@
 
         const shikiNick = state.currentUser?.nickname || safeGet('shiki_user_nickname') || '';
         const shikiAvatar = state.currentUser?.image?.x160 || state.currentUser?.image?.x48 || safeGet('shiki_user_avatar') || '';
+        const shikiUrl = state.currentUser?.url
+          ? (String(state.currentUser.url).startsWith('http') ? String(state.currentUser.url) : `https://shikimori.one${state.currentUser.url}`)
+          : (safeGet('shiki_user_url') || (shikiNick ? `https://shikimori.one/${encodeURIComponent(shikiNick)}` : ''));
         const body = {
           userId: shikiUid,
           deviceId: (typeof getDeviceId === 'function') ? getDeviceId() : '',
           nickname: shikiNick,
           avatar: shikiAvatar,
+          shikiUrl,
           recentTitles,
           progressItems,
           ...(extraPayload || {})
@@ -16115,6 +16125,8 @@
     async function triggerQuest(questId) {
       try {
         const uid = String(state.currentUser?.id || safeGet('shiki_user_id') || '');
+        const token = safeGet('shiki_token');
+        if (!uid && !token) return;
         const dayKey = getDateKeyFromTsClient(Date.now());
         const cacheKey = `${dayKey}_${uid || getDeviceId()}_${questId}`;
         if (triggeredQuestsSessionMap.get(cacheKey) === 'done') return;
@@ -16368,15 +16380,18 @@
               .filter(r => (r.status === 'completed' || r.status === 'dropped') && getAid(r))
               .map(getAid);
 
-            const activeForTaste = rates
-              .filter(r => getAid(r) && (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0))
+            const allRatesWithAid = rates
+              .filter(r => getAid(r))
               .sort((a, b) => (Number(b.score || 0) - Number(a.score || 0)) || (new Date(b.updated_at || 0) - new Date(a.updated_at || 0)));
 
+            const activeForTaste = allRatesWithAid
+              .filter(r => r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0);
+
             const uniqueIds = hoursAlreadyLocked
-              ? activeForTaste.slice(0, 50).map(getAid)
+              ? activeForTaste.slice(0, 100).map(getAid)
               : Array.from(new Set([
                   ...completedRates.slice(0, 200).map(getAid),
-                  ...activeForTaste.slice(0, 50).map(getAid)
+                  ...activeForTaste.slice(0, 80).map(getAid)
                 ])).slice(0, 250);
 
             const byId = new Map();
@@ -16395,7 +16410,7 @@
             const topRatedTitles = [];
             const shikiGenreCounts = {};
 
-            activeForTaste.slice(0, 120).forEach(r => {
+            allRatesWithAid.slice(0, 2500).forEach(r => {
               const aid = getAid(r);
               const gInfo = byId.get(aid) || state.itemsRegistry?.[aid];
               const v1Info = r.anime;
@@ -16404,40 +16419,42 @@
 
               const gRu = gInfo ? (gInfo.genresRu || gInfo.genres || []) : [];
               const gEn = gInfo ? (gInfo.genresEn || []) : [];
-              const weightBoost = r.status === 'completed' ? 1.5 : 1;
-              gRu.forEach((gn, idx) => {
-                const key = String(gn || '').toLowerCase();
-                if (!key) return;
-                if (!shikiGenreCounts[key]) {
-                  shikiGenreCounts[key] = { name: gn, nameEn: gEn[idx] || '', shikiCount: 0, scoreSum: 0 };
-                }
-                shikiGenreCounts[key].shikiCount += weightBoost;
-                shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
-              });
-              if (topRatedTitles.length < 40 && (Number(r.score) > 0 || r.status === 'completed' || r.status === 'watching')) {
-                const v1Poster = v1Info?.image?.original ? `https://shikimori.io${v1Info.image.original}` : '';
-                topRatedTitles.push({
-                  animeId: aid,
-                  title: gInfo?.titleRu || v1Info?.russian || v1Info?.name || 'Аниме',
-                  titleEn: gInfo?.titleEn || v1Info?.name || '',
-                  poster: gInfo?.poster || v1Poster || '',
-                  kind: info.kind || 'TV',
-                  year: gInfo?.year || (v1Info?.aired_on ? String(v1Info.aired_on).slice(0, 4) : ''),
-                  userScore: Number(r.score) || 0,
-                  globalScore: Number(info.score) || 0,
-                  shikiStatus: r.status || '',
-                  episodesWatched: Number(r.episodes) || 0,
-                  episodesTotal: Number(info.episodes) || 0,
-                  genres: gRu
+              if (r.status === 'completed' || r.status === 'watching' || r.status === 'rewatching' || Number(r.score) > 0) {
+                const weightBoost = r.status === 'completed' ? 1.5 : 1;
+                gRu.forEach((gn, idx) => {
+                  const key = String(gn || '').toLowerCase();
+                  if (!key) return;
+                  if (!shikiGenreCounts[key]) {
+                    shikiGenreCounts[key] = { name: gn, nameEn: gEn[idx] || '', shikiCount: 0, scoreSum: 0 };
+                  }
+                  shikiGenreCounts[key].shikiCount += weightBoost;
+                  shikiGenreCounts[key].scoreSum += Number(r.score) || 0;
                 });
               }
+
+              const v1Poster = v1Info?.image?.original
+                ? (v1Info.image.original.startsWith('http') ? v1Info.image.original : `https://shikimori.io${v1Info.image.original}`)
+                : (v1Info?.image?.preview ? `https://shikimori.io${v1Info.image.preview}` : '');
+              topRatedTitles.push({
+                animeId: aid,
+                title: gInfo?.titleRu || v1Info?.russian || v1Info?.name || 'Аниме',
+                titleEn: gInfo?.titleEn || v1Info?.name || '',
+                poster: gInfo?.poster || v1Poster || '',
+                kind: info.kind || 'TV',
+                year: gInfo?.year || (v1Info?.aired_on ? String(v1Info.aired_on).slice(0, 4) : ''),
+                userScore: Number(r.score) || 0,
+                globalScore: Number(info.score) || 0,
+                shikiStatus: r.status || '',
+                episodesWatched: Number(r.episodes) || 0,
+                episodesTotal: Number(info.episodes) || 0,
+                genres: gRu
+              });
             });
 
             const syncPayload = {
               completedOrDroppedIds,
               topRatedTitles: topRatedTitles
-                .sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore))
-                .slice(0, 35),
+                .sort((a, b) => (b.userScore - a.userScore) || (b.globalScore - a.globalScore)),
               shikiGenreCounts
             };
 

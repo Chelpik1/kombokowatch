@@ -3621,6 +3621,8 @@
     }
 
     const IS_DEV_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const WORKER_ORIGIN = 'https://super-surf-30ae.artemchebotarew.workers.dev';
+    const SHIKI_PROXY_BASE = `${WORKER_ORIGIN}/shiki`;
     const API_BASE = (window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun'))
       ? 'https://api.komboko.fun'
       : (IS_DEV_HOST ? '' : '');
@@ -3629,6 +3631,17 @@
       if (!path) return '';
       const clean = path.startsWith('/') ? path : '/' + path;
       return `${API_BASE}${clean}`;
+    }
+
+    async function shikiApiFetch(path, options = {}) {
+      const cleanPath = path.startsWith('/') ? path : '/' + path;
+      try {
+        const wRes = await fetch(`${SHIKI_PROXY_BASE}${cleanPath}`, options);
+        if (wRes && wRes.status !== 404 && wRes.status !== 502 && wRes.status !== 503 && wRes.status !== 522 && wRes.status !== 524) {
+          return wRes;
+        }
+      } catch (_) {}
+      return fetch(`https://shikimori.io${cleanPath}`, options);
     }
 
     function isShikimoriAuthenticated() {
@@ -4190,7 +4203,7 @@
       for (let i = 0; i < cleanIds.length; i += chunkSize) {
         const chunk = cleanIds.slice(i, i + chunkSize);
         try {
-          const restRes = await fetch(`https://shikimori.io/api/animes?ids=${chunk.join(',')}&limit=50`);
+          const restRes = await shikiApiFetch(`/api/animes?ids=${chunk.join(',')}&limit=50`);
           if (restRes.ok) {
             const list = await restRes.json();
             if (Array.isArray(list) && list.length > 0) {
@@ -4258,14 +4271,14 @@
       if (showFeedback) showToast('Синхронизируем просмотренные аниме...');
 
       try {
-        const userRes = await fetch('https://shikimori.io/api/users/whoami', {
+        const userRes = await shikiApiFetch('/api/users/whoami', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!userRes.ok) throw new Error('Auth failed');
         const user = await userRes.json();
         const userId = user.id;
 
-        const ratesRes = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&status=completed&limit=500`, {
+        const ratesRes = await shikiApiFetch(`/api/v2/user_rates?user_id=${userId}&target_type=Anime&status=completed&limit=500`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!ratesRes.ok) throw new Error('Rates failed');

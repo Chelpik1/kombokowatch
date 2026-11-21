@@ -1807,6 +1807,8 @@
 
     const IS_LOCAL_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const IS_AISTUDIO_PREVIEW = window.location.hostname.includes('run.app') || window.location.hostname.includes('aistudio') || window.location.hostname.includes('googleusercontent');
+    const WORKER_ORIGIN = 'https://super-surf-30ae.artemchebotarew.workers.dev';
+    const SHIKI_PROXY_BASE = `${WORKER_ORIGIN}/shiki`;
     const API_BASE = (IS_LOCAL_DEV || IS_AISTUDIO_PREVIEW)
       ? ''
       : ((window.location.hostname === 'komboko.fun' || window.location.hostname.endsWith('komboko.fun')) ? 'https://api.komboko.fun' : '');
@@ -1815,6 +1817,17 @@
       if (!path) return '';
       const clean = path.startsWith('/') ? path : '/' + path;
       return `${API_BASE}${clean}`;
+    }
+
+    async function shikiApiFetch(path, options = {}) {
+      const cleanPath = path.startsWith('/') ? path : '/' + path;
+      try {
+        const wRes = await fetch(`${SHIKI_PROXY_BASE}${cleanPath}`, options);
+        if (wRes && wRes.status !== 404 && wRes.status !== 502 && wRes.status !== 503 && wRes.status !== 522 && wRes.status !== 524) {
+          return wRes;
+        }
+      } catch (_) {}
+      return fetch(`https://shikimori.io${cleanPath}`, options);
     }
 
     function getDeviceId() {
@@ -2370,7 +2383,7 @@
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
       try {
-        const v1Res = await fetch(`https://shikimori.io/api/users/${uid}/anime_rates?limit=5000`, {
+        const v1Res = await shikiApiFetch(`/api/users/${uid}/anime_rates?limit=5000`, {
           headers,
           signal: AbortSignal.timeout(9000)
         });
@@ -2382,7 +2395,7 @@
 
       const allRates = [];
       for (let page = 1; page <= 15; page++) {
-        const rRes = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${uid}&target_type=Anime&limit=100&page=${page}`, {
+        const rRes = await shikiApiFetch(`/api/v2/user_rates?user_id=${uid}&target_type=Anime&limit=100&page=${page}`, {
           headers,
           signal: AbortSignal.timeout(6000)
         }).catch(() => null);
@@ -2401,7 +2414,7 @@
       for (let i = 0; i < uniqueIds.length; i += 50) {
         const chunk = uniqueIds.slice(i, i + 50);
         const gqlQuery = `query { animes(ids: "${chunk.join(',')}", limit: 50, censored: false) { id name russian score kind duration episodes episodesAired airedOn { year } poster { originalUrl mainUrl } genres { name russian } } }`;
-        const gRes = await fetch('https://shikimori.io/api/graphql', {
+        const gRes = await shikiApiFetch('/api/graphql', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify({ query: gqlQuery }),
@@ -2459,9 +2472,9 @@
 
       if (token) {
         try {
-          const who = await fetch('https://shikimori.io/api/users/whoami', {
+          const who = await shikiApiFetch('/api/users/whoami', {
             headers: { 'Authorization': `Bearer ${token}` },
-            signal: AbortSignal.timeout(4500)
+            signal: AbortSignal.timeout(6000)
           });
           if (who.ok) {
             const u = await who.json();
@@ -3286,7 +3299,26 @@
       const bodyEl = document.getElementById('aiSummaryBody');
       const timeEl = document.getElementById('aiSummaryTime');
       if (btn) btn.disabled = true;
-      bodyEl.textContent = currentLang === 'en' ? 'Boku is analyzing your watch history and favorite genres...' : 'Боку изучает ваши часы просмотра, жанры и оценки...';
+      const summarySteps = currentLang === 'en'
+        ? [
+            'Boku is analyzing your watch hours and favorite genres...',
+            'Checking your top-rated masterpieces...',
+            'Counting your monthly anime pacing ✨',
+            'Putting together a cozy personalized recap...'
+          ]
+        : [
+            'Боку изучает ваши часы просмотра, жанры и оценки...',
+            'Перелистываю любимые тайтлы и высшие баллы 📚',
+            'Считаю темп просмотра за месяц и любимые жанры ✨',
+            'Подмечаю интересные детали в вашей статистике 🔍',
+            'Собираю живую и тёплую сводку специально для вас 💫'
+          ];
+      let stepIdx = 0;
+      bodyEl.textContent = summarySteps[0];
+      const summaryTimer = setInterval(() => {
+        stepIdx = (stepIdx + 1) % summarySteps.length;
+        bodyEl.textContent = summarySteps[stepIdx];
+      }, 2600);
 
       try {
         const todayKey = getLocalDateKey();
@@ -3326,6 +3358,7 @@
       } catch (_) {
         bodyEl.textContent = currentLang === 'en' ? 'Failed to reach AI service.' : 'Не удалось получить сводку от ИИ. Попробуйте ещё раз.';
       } finally {
+        clearInterval(summaryTimer);
         if (btn) btn.disabled = false;
       }
     }

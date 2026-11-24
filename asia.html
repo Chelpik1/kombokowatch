@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зарубежная Азия: Характеристика по субрегионам</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0b0812;
+            --bg-surface: #140f21;
+            --bg-surface-2: #1c1530;
+            --bg-surface-3: #261d40;
+            --border-subtle: rgba(168, 85, 247, 0.22);
+            --border-strong: rgba(217, 70, 239, 0.48);
+            --primary: #c084fc;
+            --primary-bright: #e879f9;
+            --cyan: #22d3ee;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --text-main: #f5f3ff;
+            --text-muted: #c4b5fd;
+            --text-dim: #8b7aa8;
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 12% 8%, rgba(168, 85, 247, 0.16), transparent 38%),
+                radial-gradient(circle at 88% 15%, rgba(34, 211, 238, 0.10), transparent 36%),
+                radial-gradient(circle at 50% 95%, rgba(217, 70, 239, 0.12), transparent 42%);
+            overflow-x: hidden;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Header */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(11, 8, 18, 0.86);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 66px;
+            padding: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #9333ea, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 22px rgba(192, 132, 252, 0.35);
+            flex-shrink: 0;
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 1.05rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+
+        .brand-sub {
+            font-size: 0.72rem;
+            color: var(--cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* Mode Switcher (5 vs 4 Maksakovsky) */
+        .scheme-switch {
+            display: inline-flex;
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .scheme-btn {
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .scheme-btn.active {
+            background: linear-gradient(135deg, #9333ea, #c026d3);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(192, 38, 211, 0.4);
+        }
+
+        /* Hero / Notebook Plan Banner */
+        .hero {
+            padding: 26px 0 18px;
+        }
+
+        .plan-card {
+            background: linear-gradient(145deg, rgba(28, 21, 48, 0.9), rgba(20, 15, 33, 0.95));
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 20px 22px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+        }
+
+        .plan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .plan-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--primary-bright);
+            background: rgba(232, 121, 249, 0.12);
+            border: 1px solid rgba(232, 121, 249, 0.3);
+            padding: 5px 12px;
+            border-radius: 999px;
+        }
+
+        .plan-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .plan-step {
+            background: rgba(11, 8, 18, 0.55);
+            border: 1px solid rgba(168, 85, 247, 0.18);
+            border-radius: var(--radius-md);
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        .step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .step-1 { background: rgba(34, 211, 238, 0.18); color: var(--cyan); border: 1px solid rgba(34, 211, 238, 0.35); }
+        .step-2 { background: rgba(251, 191, 36, 0.18); color: var(--amber); border: 1px solid rgba(251, 191, 36, 0.35); }
+        .step-3 { background: rgba(52, 211, 153, 0.18); color: var(--emerald); border: 1px solid rgba(52, 211, 153, 0.35); }
+
+        /* Controls Bar */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 18px 0 14px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1 1 280px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.88rem;
+            padding: 11px 14px 11px 40px;
+            border-radius: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-bright);
+            box-shadow: 0 0 0 3px rgba(232, 121, 249, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .m3-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-surface-2);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 10px 15px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .m3-btn:hover {
+            border-color: var(--border-strong);
+            background: var(--bg-surface-3);
+        }
+
+        .m3-btn.active-toggle {
+            background: rgba(34, 211, 238, 0.16);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .m3-btn.primary-action {
+            background: linear-gradient(135deg, #7e22ce, #c026d3);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(192, 38, 211, 0.35);
+        }
+
+        .m3-btn.primary-action:hover {
+            filter: brightness(1.08);
+        }
+
+        /* Subregion Tabs Grid */
+        .subregion-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .sub-card-btn {
+            text-align: left;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .sub-card-btn:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-2px);
+            background: var(--bg-surface-2);
+        }
+
+        .sub-card-btn.active {
+            background: linear-gradient(155deg, rgba(147, 51, 234, 0.28), rgba(28, 21, 48, 0.96));
+            border-color: var(--primary-bright);
+            box-shadow: 0 8px 26px rgba(168, 85, 247, 0.24);
+        }
+
+        .sub-card-btn.active::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--primary-bright));
+        }
+
+        .sub-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .sub-code {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sub-name {
+            font-size: 0.94rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .sub-countries-mini {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Active Subregion Header Card */
+        .region-banner {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+
+        .region-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .region-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .region-note {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: var(--amber);
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .region-metrics {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .metric-pill {
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .countries-list {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+            background: rgba(11, 8, 18, 0.45);
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(168, 85, 247, 0.14);
+        }
+
+        .countries-list strong {
+            color: #fff;
+        }
+
+        /* 3 Points Grid */
+        .points-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .point-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            transition: border-color 0.2s ease;
+        }
+
+        .point-card:hover {
+            border-color: var(--border-strong);
+        }
+
+        .point-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.16);
+        }
+
+        .point-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .point-title {
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .point-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .sub-blocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .info-tile {
+            background: var(--bg-surface-2);
+            border: 1px solid rgba(168, 85, 247, 0.14);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+        }
+
+        .info-tile-label {
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .label-cyan { color: var(--cyan); }
+        .label-amber { color: var(--amber); }
+        .label-emerald { color: var(--emerald); }
+        .label-pink { color: var(--primary-bright); }
+
+        .info-tile p {
+            font-size: 0.87rem;
+            color: #e9d5ff;
+            line-height: 1.58;
+        }
+
+        /* Short Notebook Mode */
+        .notebook-box {
+            background: rgba(11, 8, 18, 0.65);
+            border: 1px dashed rgba(34, 211, 238, 0.45);
+            border-radius: var(--radius-md);
+            padding: 15px 18px;
+        }
+
+        .notebook-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notebook-list li {
+            position: relative;
+            padding-left: 18px;
+            font-size: 0.9rem;
+            color: #f3e8ff;
+        }
+
+        .notebook-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        /* Comparison Table View */
+        .table-wrapper {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 880px;
+            font-size: 0.84rem;
+        }
+
+        th {
+            background: var(--bg-surface-3);
+            color: #fff;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-strong);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.14);
+            vertical-align: top;
+            color: #e9d5ff;
+            line-height: 1.5;
+        }
+
+        tr:hover td {
+            background: rgba(168, 85, 247, 0.06);
+        }
+
+        .td-region {
+            font-weight: 700;
+            color: var(--primary-bright);
+            min-width: 170px;
+        }
+
+        /* Search Results View */
+        .search-results-banner {
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            color: var(--cyan);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        mark {
+            background: rgba(232, 121, 249, 0.35);
+            color: #fff;
+            padding: 0 3px;
+            border-radius: 4px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            background: linear-gradient(135deg, #1e1b4b, #3b0764);
+            border: 1px solid var(--cyan);
+            color: #fff;
+            padding: 13px 18px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(16px);
+            pointer-events: none;
+            transition: all 0.25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 28px 16px 40px;
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            border-top: 1px solid rgba(168, 85, 247, 0.14);
+            margin-top: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .plan-steps {
+                grid-template-columns: 1fr;
+            }
+            .region-title {
+                font-size: 1.22rem;
+            }
+            .point-card, .region-banner, .plan-card {
+                padding: 16px;
+            }
+            .topbar-inner {
+                justify-content: center;
+            }
+            .brand {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Верхняя панель -->
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <div style="display:flex;align-items:center;gap:11px;">
+                    <div class="brand-badge" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                            <path d="M2 12h20"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="brand-title">Зарубежная Азия</div>
+                        <div class="brand-sub">Характеристика по субрегионам</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Переключатель деления: 5 субрегионов vs 4 субрегиона по Максаковскому -->
+            <div class="scheme-switch" role="group" aria-label="Формат деления субрегионов">
+                <button type="button" class="scheme-btn active" id="scheme5Btn" data-scheme="5">5 субрегионов (полный)</button>
+                <button type="button" class="scheme-btn" id="scheme4Btn" data-scheme="4">4 субрегиона (по Максаковскому)</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- План из тетради -->
+        <section class="hero">
+            <div class="plan-card">
+                <div class="plan-header">
+                    <span class="plan-tag">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                        </svg>
+                        План характеристики для каждого субрегиона
+                    </span>
+                    <span id="schemeHint" style="font-size:0.78rem;color:var(--text-dim);">
+                        Режим: 5 отдельных субрегионов (ЮЗ, Южная, ЮВА, Восточная, Центральная Азия)
+                    </span>
+                </div>
+                <div class="plan-steps">
+                    <div class="plan-step">
+                        <span class="step-num step-1">1</span>
+                        <span>Природные условия и климат (рельеф, пояса, почвы)</span>
+                    </div>
+                    <div class="plan-step">
+                        <span class="step-num step-2">2</span>
+                        <span>Ресурсы (минеральные, водные, земельные, лесные)</span>
+                    </div>
+                    <div class="plan-step">
+                        <span class="step-num step-3">3</span>
+                        <span>Ведущие отрасли хозяйства (промышленность, АПК, услуги)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Панель инструментов: поиск, режим шпаргалки, таблица, копирование -->
+        <section class="controls-bar">
+            <div class="search-box">
+                <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Поиск по странам, почвам, ресурсам, отраслям (например: регуры, олово, рис, ОАЭ)...">
+            </div>
+
+            <div class="action-group">
+                <button type="button" class="m3-btn" id="shortModeBtn" title="Переключить между подробным текстом и короткими тезисами для тетради">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                    </svg>
+                    <span id="shortModeText">Кратко для тетради</span>
+                </button>
+
+                <button type="button" class="m3-btn" id="compareTableBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                        <path d="M3 9h18"></path>
+                        <path d="M3 15h18"></path>
+                        <path d="M9 9v12"></path>
+                    </svg>
+                    <span id="compareTableText">Сравнительная таблица</span>
+                </button>
+
+                <button type="button" class="m3-btn primary-action" id="copySummaryBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                    </svg>
+                    <span>Скопировать конспект</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Кнопки выбора субрегионов -->
+        <nav class="subregion-tabs" id="subregionTabs" aria-label="Выбор субрегиона"></nav>
+
+        <!-- Основная рабочая область -->
+        <section id="mainViewport"></section>
+    </main>
+
+    <!-- Всплывающее уведомление -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="toastMsg">Конспект скопирован в буфер обмена!</span>
+    </div>
+
+    <footer>
+        Зарубежная Азия • Справочник по географии: Природные условия, Ресурсы и Ведущие отрасли хозяйства по каждому субрегиону
+    </footer>
+
+    <script>
+        // =========================================================================
+        // БАЗА ДАННЫХ ПО СУБРЕГИОНАМ ЗАРУБЕЖНОЙ АЗИИ (СТРОГО ПО 3 ПУНКТАМ ТЕТРАДИ)
+        // =========================================================================
+        const SUBREGIONS_5 = [
+            {
+                id: "sw",
+                code: "Субрегион 01",
+                name: "Юго-Западная Азия",
+                subtitle: "Ближний и Средний Восток",
+                area: "~6,8 млн км²",
+                population: "~390 млн чел.",
+                note: "",
+                countries: "Саудовская Аравия, Турция, Иран, Ирак, ОАЭ, Израиль, Иордания, Сирия, Ливан, Йемен, Оман, Катар, Кувейт, Бахрейн, Афганистан, Кипр, а также страны Закавказья (Грузия, Армения, Азербайджан).",
+                p1: {
+                    relief: "Преобладают обширные пустынные плоскогорья Аравийского полуострова, Иранское и Армянское нагорья, Малоазиатское нагорье, горы Загрос, Эльбурс, Гиндукуш и Большой Кавказ. Единственная крупная низменность — Месопотамская (бассейн Тигра и Евфрата). Высокая сейсмичность в Турции, Иране и Афганистане.",
+                    climate: "Тропический пустынный (Аравия) и субтропический континентальный/средиземноморский (Турция, Левант, Иран). Жаркое сухое лето (+35…+50 °C) и прохладная или теплая зима. Крайний дефицит влаги: 50–200 мм осадков в год; до 500–1000 мм выпадает только на побережье Средиземного и Черного морей.",
+                    soils: "Преобладают пустынные песчаные и каменистые почвы (Руб-эль-Хали, Большой Нефуд, Деште-Кевир), сероземы и бурые полупустынные почвы (орошаются в Месопотамии, подвержены вторичному засолению), а также плодородные коричневые почвы на побережье Средиземного моря.",
+                    risks: "Экстремальные засухи, пыльные бури, опустынивание, дефицит питьевой воды, разрушительные землетрясения (Турция, Иран)."
+                },
+                p2: {
+                    mineral: "Главный нефтегазовый пояс планеты (~50% мировых запасов нефти и ~40% газа) в бассейне Персидского залива: Саудовская Аравия (м-ние Гавар), Ирак, Иран, ОАЭ, Кувейт, Катар (гигантское газовое м-ние Северное / Южный Парс). Также хромиты и бор (Турция), медные руды (Иран), калийные и бромные соли (Мертвое море — Израиль, Иордания).",
+                    waterLand: "Острый водный голод: крупнейшие реки — Тигр, Евфрат, Иордан. Страны Персидского залива и Израиль — мировые лидеры по опреснению морской воды. Пашня занимает менее 10–15% земель (в основном оазисы и долины рек), преобладают скудные пустынно-степные пастбища.",
+                    forestRec: "Лесные ресурсы крайне бедны (лесистость менее 2–5%, сохранились только в горах Турции, Ирана и Закавказья). Богатые рекреационные ресурсы: морские курорты Турции (Анталья) и ОАЭ (Дубай), паломнический туризм (Мекка, Медина, Иерусалим), памятники древних цивилизаций."
+                },
+                p3: {
+                    industry: "Добыча и экспорт нефти и сжиженного природного газа (СПГ), крупная нефтепереработка и нефтехимия (Саудовская Аравия, ОАЭ, Катар, Иран). Энергоемкая выплавка алюминия на дешевом газе (ОАЭ, Бахрейн). В Турции — текстильная, автомобильная, металлургическая промышленность; в Израиле — хай-тек, электроника, фармацевтика и огранка алмазов.",
+                    agro: "Оазисное и поливное земледелие: мировой лидер по сбору фиников (Ирак, Саудовская Аравия, Иран), выращиваются цитрусовые, оливки, инжир, виноград, хлопчатник, пшеница и ячмень (Турция, Иран). В засушливых районах — кочевое и отгонно-пастбищное животноводство (овцеводство, козоводство, верблюдоводство).",
+                    services: "Глобальные авиационные и финансовые хабы (Дубай, Доха, Абу-Даби, Стамбул), морской транспорт через Ормузский пролив, Босфор и Дарданеллы, трубопроводный транспорт, международный туризм и паломничество."
+                },
+                shortNotes: {
+                    p1: [
+                        "Рельеф: нагорья (Иранское, Малоазиатское), пустынные плато Аравии, Месопотамская низменность; сейсмичность в Турции и Иране.",
+                        "Климат: тропический пустынный и субтропический; резкий дефицит осадков (50–200 мм/год), очень жаркое лето.",
+                        "Почвы: пустынные песчаные, сероземы (нуждаются в орошении, подвержены засолению), коричневые почвы на побережье."
+                    ],
+                    p2: [
+                        "Минеральные: ~50% мировых запасов нефти и ~40% газа (Персидский залив — Саудовская Аравия, Иран, Ирак, ОАЭ, Кувейт, Катар); хромиты Турции, соли Мертвого моря.",
+                        "Водные и земельные: острый дефицит пресной воды (лидеры по опреснению); мало пашни, преобладают пустынные пастбища.",
+                        "Лесные и рекреационные: лесов почти нет; мощный курортный и религиозно-паломнический туризм (Мекка, Иерусалим, Турция, ОАЭ)."
+                    ],
+                    p3: [
+                        "Промышленность: нефтегазодобыча, нефтехимия, выплавка алюминия (Персидский залив); автопром и текстиль (Турция); хай-тек и фармацевтика (Израиль).",
+                        "Сельское хозяйство: финики, цитрусовые, оливки, хлопок, пшеница (на орошении); пастбищное овцеводство и верблюдоводство.",
+                        "Сфера услуг: авиахабы и финансы (Дубай, Доха, Стамбул), морские перевозки (Ормузский пролив), туризм."
+                    ]
+                }
+            },
+            {
+                id: "s",
+                code: "Субрегион 02",
+                name: "Южная Азия",
+                subtitle: "Полуостров Индостан и Гималаи",
+                area: "~4,5 млн км²",
+                population: ">2,0 млрд чел.",
+                note: "Самый населенный субрегион мира (включает Индию — лидера планеты по численности жителей).",
+                countries: "Индия, Пакистан, Бангладеш, Шри-Ланка, Непал, Бутан, Мальдивская Республика.",
+                p1: {
+                    relief: "Четкое трехчленное строение: на севере — высочайшие горы мира Гималаи (г. Джомолунгма / Эверест, 8848 м) и Каракорум; в центре — плодородная Индо-Гангская низменность; на юге — древнее плоскогорье Декан с горами Восточные и Западные Гаты.",
+                    climate: "Субэкваториальный муссонный (на юге Шри-Ланки и Мальдивах — экваториальный, на западе Пакистана — тропический пустынный). Три сезона: прохладный сухой (зима), жаркий сухой (весна, до +45 °C) и влажный летний муссон (выпадает до 85% осадков; в Черапунджи — до 12 000 мм/год).",
+                    soils: "Высокоплодородные аллювиальные почвы в долинах Ганга, Брахмапутры и Инда; уникальные регуры (черные вулканические почвы плоскогорья Декан, отлично удерживающие влагу); красноземы и желтоземы на юге и в предгорьях; пустынные почвы в пустыне Тар.",
+                    risks: "Катастрофические муссонные наводнения (особенно в дельте Ганга в Бангладеш), тропические циклоны с Бенгальского залива, засухи при задержке муссона."
+                },
+                p2: {
+                    mineral: "Крупнейшие запасы железных и марганцевых руд, каменного угля, бокситов, хромитов, слюды и титана на северо-востоке плоскогорья Декан («Индийский Рур» — штаты Джаркханд, Одиша, Западная Бенгалия). В Пакистане — природный газ, каменная соль, хромиты; на Шри-Ланке — графит и драгоценные камни.",
+                    waterLand: "Мощные полноводные реки (Ганг, Брахмапутра, Инд, Годавари) с огромным гидроэнергетическим и ирригационным потенциалом, но сильным загрязнением вод. Очень высокая распаханность территории (в Индии пашня занимает >50% площади), однако на душу населения земли мало из-за перенаселения.",
+                    forestRec: "Муссонные листопадные и влажные тропические леса (сандал, тик, бамбук, мангровые заросли Сундарбана в дельте Ганга), сильно сведенные под пашню. Богатейшее культурно-историческое наследие (Тадж-Махал, храмы Индии и Непала), альпинизм в Гималаях, пляжный отдых (Гоа, Шри-Ланка, Мальдивы)."
+                },
+                p3: {
+                    industry: "В Индии — развитая черная металлургия (Бокаро, Бхилаи), тяжелое и транспортное машиностроение, фармацевтика («аптека мира»), химическая промышленность и огранка алмазов (Сурат). По всему субрегиону (Индия, Бангладеш, Пакистан) — мощная текстильная и швейная промышленность (хлопчатобумажные и джутовые ткани).",
+                    agro: "Аграрный сектор — основа занятости: мировой лидер по сбору риса (2-е место), пшеницы, чая (Индия — Ассам и Дарджилинг, Шри-Ланка), джута (Бангладеш и Индия — >90% мира), хлопчатника, сахарного тростника, арахиса, манго и специй. Индия — 1-е место в мире по поголовью КРС и надоям молока (мясное скотоводство ограничено религиозными запретами индуизма).",
+                    services: "Индия — мировой центр IT-аутсорсинга и разработки ПО (Бангалор — «Кремниевая долина» Азии, Хайдарабад), киноиндустрия (Болливуд в Мумбаи), крупный железнодорожный и морской транспорт (Мумбаи, Ченнаи, Карачи, Читтагонг), международный туризм (Мальдивы, Шри-Ланка, Индия, Непал)."
+                },
+                shortNotes: {
+                    p1: [
+                        "Рельеф: горы Гималаи (Эверест, 8848 м), Индо-Гангская низменность, плоскогорье Декан.",
+                        "Климат: субэкваториальный муссонный с влажным летом и сухой зимой; на западе — пустыня Тар.",
+                        "Почвы: плодородные аллювиальные (долина Ганга и Инда), черные регуры Декана (под хлопок), красноземы."
+                    ],
+                    p2: [
+                        "Минеральные: железные и марганцевые руды, уголь, бокситы (северо-восток Декана в Индии); газ (Пакистан); драгоценные камни (Шри-Ланка).",
+                        "Водные и земельные: великие реки Ганг, Брахмапутра, Инд; очень высокая распаханность (>50% в Индии), но дефицит пашни на душу населения.",
+                        "Лесные и рекреационные: муссонные леса и мангры; туризм (Гималаи, Тадж-Махал, Гоа, Мальдивы, Шри-Ланка)."
+                    ],
+                    p3: [
+                        "Промышленность: черная металлургия, фармацевтика, автопром (Индия); текстильная и швейная индустрия (Индия, Бангладеш, Пакистан).",
+                        "Сельское хозяйство: рис, пшеница, чай (Индия, Шри-Ланка), джут (Бангладеш), хлопок, сахарный тростник, специи; 1-е место по поголовью КРС (молочное направление).",
+                        "Сфера услуг: мировой лидер IT-услуг (Бангалор), киноиндустрия, морские порты и курортный туризм."
+                    ]
+                }
+            },
+            {
+                id: "se",
+                code: "Субрегион 03",
+                name: "Юго-Восточная Азия",
+                subtitle: "Полуостров Индокитай и Малайский архипелаг",
+                area: "~4,5 млн км²",
+                population: "~690 млн чел.",
+                note: "Страны региона объединены в интеграционный блок АСЕАН; перекресток Тихого и Индийского океанов.",
+                countries: "Материковая часть (Индокитай): Вьетнам, Таиланд, Мьянма, Камбоджа, Лаос. Островная часть (Малайский архипелаг): Индонезия, Филиппины, Малайзия, Сингапур, Бруней, Восточный Тимор.",
+                p1: {
+                    relief: "На материке — чередование меридиональных горных хребтов и плодородных речных долин (Меконг, Иравади, Чаупхрая, Красная). На островах (Зондских и Филиппинских) — молодой складчатый горный рельеф, часть Тихоокеанского огненного кольца (>130 действующих вулканов в Индонезии, частые землетрясения и цунами).",
+                    climate: "Субэкваториальный муссонный (на Индокитае — с выраженным влажным летом и сухой зимой) и экваториальный (Малайзия, Индонезия, Сингапур — круглый год жарко +26…+28 °C и обильные осадки 2000–4000 мм/год).",
+                    soils: "Краснo-желтые ферраллитные (латеритные) почвы влажных тропических лесов, высокоплодородные аллювиальные почвы в дельтах Меконга и Иравади, а также богатые вулканические почвы (особенно на о. Ява в Индонезии, позволяющие снимать по 3 урожая в год).",
+                    risks: "Извержения вулканов, землетрясения, разрушительные цунами, тайфуны (особенно на Филиппинах и во Вьетнаме), наводнения."
+                },
+                p2: {
+                    mineral: "Крупнейший в мире оловянно-вольфрамовый пояс (от Мьянмы и Таиланда через Малайзию до индонезийских островов Банка и Белитунг — >50% мировых запасов олова). Значительные запасы нефти и природного газа (Индонезия, Бруней, Малайзия, шельф Южно-Китайского моря), никеля и бокситов (Индонезия — 1-е место по никелю), меди и хромитов (Филиппины).",
+                    waterLand: "Избыток пресной воды, густая речная сеть (Меконг, Салуин, Иравади) с большим гидроэнергопотенциалом. Земельные ресурсы ограничены горным рельефом и лесами; широко применяется террасирование склонов.",
+                    forestRec: "Южный лесной пояс планеты: богатейшие влажные экваториальные и муссонные леса с ценными породами (тик, красное, железное дерево, ротанг), но идет интенсивная вырубка под плантации. Мирового уровня пляжный и экскурсионный туризм (Таиланд, Бали в Индонезии, Вьетнам, Сингапур, Филиппины)."
+                },
+                p3: {
+                    industry: "«Новые индустриальные страны» (НИС) 2-й волны: сборка электроники, бытовой техники и полупроводников (Малайзия, Вьетнам, Таиланд, Филиппины, Сингапур), автомобилестроение (Таиланд — «Детройт ЮВА», Индонезия), нефтепереработка и биотехнологии (Сингапур — о. Джуронг), легкая и обувная промышленность (Вьетнам, Индонезия, Камбоджа).",
+                    agro: "Глобальная плантационная житница: 1-е место в мире по производству пальмового масла (Индонезия и Малайзия — ~85% мирового выпуска), натурального каучука из гевеи (Таиланд, Индонезия, Вьетнам), копры, пряностей; крупнейшие экспортеры риса (Таиланд, Вьетнам) и кофе робуста (Вьетнам — 2-е место в мире). Развиты рыболовство и аквакультура (креветки).",
+                    services: "Сингапур — один из главных мировых финансовых центров и крупнейших контейнерных портов планеты (контроль Малаккского пролива). Мощнейшая индустрия международного туризма (Таиланд, Индонезия, Малайзия, Вьетнам)."
+                },
+                shortNotes: {
+                    p1: [
+                        "Рельеф: горы и речные долины Индокитая; вулканические архипелаги (Индонезия, Филиппины — Тихоокеанское огненное кольцо).",
+                        "Климат: субэкваториальный муссонный (материк) и влажный экваториальный (острова, осадки 2000–4000 мм).",
+                        "Почвы: ферраллитные (латеритные), плодородные аллювиальные (дельта Меконга) и вулканические (о. Ява)."
+                    ],
+                    p2: [
+                        "Минеральные: оловянно-вольфрамовый пояс (Малайзия, Индонезия, Таиланд, Мьянма); нефть и газ (Индонезия, Бруней, Малайзия); никель (Индонезия).",
+                        "Водные и земельные: полноводные реки (Меконг, Иравади), избыток влаги, террасное земледелие на склонах.",
+                        "Лесные и рекреационные: ценные тропические леса (тик, красное дерево); мировые курорты (Таиланд, Бали, Вьетнам)."
+                    ],
+                    p3: [
+                        "Промышленность: сборочная электроника (Малайзия, Вьетнам, Сингапур), автопром (Таиланд), нефтехимия (Сингапур), швейная и обувная индустрия (Вьетнам).",
+                        "Сельское хозяйство: пальмовое масло (Индонезия, Малайзия — 85% мира), каучук (Таиланд, Индонезия), рис (Таиланд, Вьетнам), кофе (Вьетнам), аквакультура.",
+                        "Сфера услуг: мировой портовый и финансовый хаб Сингапур (Малаккский пролив), международный туризм."
+                    ]
+                }
+            },
+            {
+                id: "e",
+                code: "Субрегион 04",
+                name: "Восточная Азия",
+                subtitle: "Тихоокеанский индустриальный локомотив",
+                area: "~11,8 млн км²",
+                population: ">1,65 млрд чел.",
+                note: "Главный центр мировой обрабатывающей промышленности, высоких технологий и внешней торговли.",
+                countries: "Китай (КНР, включая Гонконг/Сянган и Макао/Аомынь), Япония, Республика Корея, КНДР, Монголия, Тайвань.",
+                p1: {
+                    relief: "Резкая ступенчатость с запада на восток: на западе — высочайшее Тибетское нагорье (>4500 м), горы Куньлунь, Тянь-Шань, пустынные котловины (Такла-Макан) и плоскогорье Гоби; на востоке — Великая Китайская равнина и Маньчжурская низменность. Япония и Тайвань — гористые острова с высокой сейсмичностью и вулканизмом (гора Фудзияма).",
+                    climate: "На востоке — умеренный, субтропический и тропический муссонный климат (теплое влажное лето, прохладная сухая зима). На западе (Тибет, Синьцзян, Монголия) — резко континентальный засушливый и высокогорный климат.",
+                    soils: "В Восточном Китае, Корее и Японии — плодородные аллювиальные почвы (долины Янцзы и Хуанхэ), бурые лесные, желтоземы и красноземы, а также черноземовидные почвы на северо-востоке Китая (Маньчжурия). На западе и в Монголии — каштановые, бурые полупустынные и пустынные почвы.",
+                    risks: "Землетрясения, цунами и тайфуны (Япония, Тайвань, побережье Китая), наводнения на реках Хуанхэ и Янцзы, пыльные бури из пустыни Гоби."
+                },
+                p2: {
+                    mineral: "Китай — мировая кладовая сырья: 1-е место по запасам и добыче каменного угля (Шаньси, Шэньси), редкоземельных металлов (Баян-Обо — ~70% мировой добычи), вольфрама, сурьмы, графита, крупные запасы железных, медных и полиметаллических руд. В Монголии — медно-молибденовые руды (Эрдэнэт, Оюу-Толгой) и уголь. Япония и Республика Корея крайне бедны минеральным сырьем.",
+                    waterLand: "Крупнейшие реки — Янцзы, Хуанхэ, Амур, Сицзян с колоссальным гидроэнергопотенциалом (крупнейшая в мире ГЭС «Три ущелья» на Янцзы). Острый дефицит пашни на душу населения в Китае, Японии и Южной Корее; в Монголии преобладают степные пастбища.",
+                    forestRec: "Смешанные, широколиственные и субтропические леса (Япония сохраняет ~67% лесистости за счет охраны природы и импорта древесины). Богатые культурно-исторические и природные объекты (Великая Китайская стена, Киото, Токио, о. Хайнань)."
+                },
+                p3: {
+                    industry: "Мировой лидер индустрии: 1-е место в мире по выплавке стали и алюминия (Китай — >50% мирового выпуска), автомобилестроению и электромобилям (Китай, Япония, Республика Корея), морскому судостроению (Китай, Южная Корея, Япония — >90% мира), микроэлектронике и полупроводникам (Тайвань — TSMC, Южная Корея — Samsung), робототехнике (Япония, Китай) и ВИЭ (солнечные панели и ветрогенераторы КНР).",
+                    agro: "Интенсивное растениеводство на востоке: Китай — 1-е место в мире по сбору риса, пшеницы, овощей, фруктов, чая, табака, хлопчатника, а также по поголовью свиней, птицы, шелководству и аквакультуре. В Японии и Корее — рисоводство, овощеводство и мощное морское рыболовство. В Монголии и Западном Китае — пастбищное животноводство (овцы, козы, яки, лошади).",
+                    services: "Крупнейшие контейнерные порты мира (Шанхай, Нинбо, Шэньчжэнь, Пусан), самая длинная в мире сеть высокоскоростных железных дорог (Китай >45 тыс. км, Япония «Синкансэн»), глобальные финансовые центры (Токио, Гонконг, Шанхай, Сеул), цифровая экономика и туризм."
+                },
+                shortNotes: {
+                    p1: [
+                        "Рельеф: Тибетское нагорье и Гоби на западе; Великая Китайская равнина на востоке; гористые сейсмичные острова Японии и Тайваня.",
+                        "Климат: муссонный (умеренный и субтропический) на востоке; резко континентальный аридный — на западе и в Монголии.",
+                        "Почвы: аллювиальные (Янцзы, Хуанхэ), красноземы/желтоземы, бурые лесные и черноземовидные (СВ Китай); каштановые и пустынные — на западе."
+                    ],
+                    p2: [
+                        "Минеральные: Китай богат углем, редкоземельными металлами (~70% мира), вольфрамом, железной рудой; Монголия — медью и углем; Япония и Ю. Корея почти лишены сырья.",
+                        "Водные и земельные: реки Янцзы и Хуанхэ (огромный гидроэнергопотенциал); острый дефицит пашни на душу населения; пастбища Монголии.",
+                        "Лесные и рекреационные: высокая лесистость Японии (67%); памятники истории и мегаполисы (Пекин, Токио, Киото, о. Хайнань)."
+                    ],
+                    p3: [
+                        "Промышленность: «фабрика мира» — лидерство в стали, автопроме и электромобилях (КНР, Япония, Ю. Корея), судостроении (>90% мира), микрочипах (Тайвань, Ю. Корея), робототехнике.",
+                        "Сельское хозяйство: рис, пшеница, чай, хлопок, овощи, свиноводство, шелководство и рыболовство (Китай, Япония); пастбищное скотоводство (Монголия).",
+                        "Сфера услуг: порты-гиганты (Шанхай, Пусан), высокоскоростные ж/д (КНР, Япония), финансы (Токио, Гонконг, Шанхай)."
+                    ]
+                }
+            },
+            {
+                id: "c",
+                code: "Субрегион 05",
+                name: "Центральная Азия",
+                subtitle: "Внутриконтинентальный пояс Евразии",
+                area: "~4,0 млн км²",
+                population: "~82 млн чел.",
+                note: "В учебнике В.П. Максаковского объединяется с Восточной Азией в единый регион «Восточная и Центральная Азия».",
+                countries: "Казахстан, Узбекистан, Туркменистан, Кыргызстан, Таджикистан (не имеют выхода к Мировому океану).",
+                p1: {
+                    relief: "На западе и севере — обширные равнины и низменности (Туранская низменность, Прикаспийская низменность, Казахский мелкосопочник, плато Устюрт). На юго-востоке — высочайшие горные системы Тянь-Шаня и Памира (пик Исмоила Сомони, 7495 м) с межгорными котловинами (Ферганская долина).",
+                    climate: "Резко континентальный умеренный и субтропический (на крайнем юге) климат. Большая амплитуда температур (жаркое сухое лето до +40 °C и морозная зима на севере до −30 °C), малое количество осадков на равнинах (100–250 мм/год, пустыни Каракумы и Кызылкум).",
+                    soils: "На севере Казахстана — плодородные черноземы и темно-каштановые почвы (район освоения целины); в центральной части — бурые полупустынные и песчаные пустынные почвы; в предгорьях и оазисах (Ферганская, Зеравшанская долины) — сероземы, дающие высокие урожаи при орошении.",
+                    risks: "Острый дефицит воды и высыхание Аральского моря, опустынивание, вторичное засоление орошаемых земель, землетрясения и сели в горах Тянь-Шаня и Памира."
+                },
+                p2: {
+                    mineral: "Богатейшая сырьевая база: нефть и газ Прикаспийского бассейна (Казахстан — Тенгиз, Кашаган; Туркменистан — газовое м-ние Галкыныш; Узбекистан), уран (Казахстан — 1-е место в мире по добыче, Узбекистан), каменный уголь (Караганда, Экибастуз), железные и хромовые руды, медь, полиметаллы и золото (Казахстан, Узбекистан — Мурунтау, Кыргызстан — Кумтор).",
+                    waterLand: "Крайняя неравномерность вод: горные республики (Таджикистан, Кыргызстан) богаты ледниками и гидроэнергией рек Амударья, Сырдарья, Нарын и Вахш (Рогунская и Нурекская ГЭС), а равнинные страны испытывают острый дефицит воды. В Казахстане — огромные площади пашни и степных пастбищ.",
+                    forestRec: "Лесистость очень низкая (менее 4–5% — саксаульники в пустынях, тугайные и горные еловые леса Тянь-Шаня). Рекреационный потенциал: исторические города Великого шелкового пути (Самарканд, Бухара, Хива в Узбекистане), высокогорный туризм и альпинизм (Памир, Тянь-Шань, озеро Иссык-Куль)."
+                },
+                p3: {
+                    industry: "Добывающая и перерабатывающая промышленность: нефтегазовый комплекс (Казахстан, Туркменистан, Узбекистан), черная и цветная металлургия (выплавка меди, цинка, свинца, алюминия, урана и золота в Казахстане и Узбекистане), химическая промышленность (минеральные удобрения), легкая и текстильная индустрия (переработка хлопка и шелка в Узбекистане).",
+                    agro: "На севере Казахстана — крупное зерновое хозяйство (яровая пшеница) и мясное скотоводство. В орошаемых оазисах (Узбекистан, Туркменистан, Таджикистан) — хлопководство («белое золото»), бахчеводство, виноградарство, садоводство и шелководство. В горах и пустынях — пастбищное овцеводство (в т.ч. каракульское) и коневодство.",
+                    services: "Транзитный сухопутный мост Евразии между Китаем и Европой (железнодорожные коридоры, автомагистраль Западная Европа — Западный Китай), магистральные нефте- и газопроводы (в Китай и Россию), культурно-исторический и горный туризм."
+                },
+                shortNotes: {
+                    p1: [
+                        "Рельеф: Туранская низменность и Казахский мелкосопочник на западе/севере; горы Тянь-Шань и Памир, Ферганская долина на юго-востоке.",
+                        "Климат: резко континентальный засушливый (осадки 100–250 мм/год, пустыни Каракумы и Кызылкум).",
+                        "Почвы: черноземы и каштановые (Северный Казахстан), сероземы в оазисах (орошение), пустынные песчаные почвы."
+                    ],
+                    p2: [
+                        "Минеральные: нефть и газ Каспия (Казахстан, Туркменистан), уран (Казахстан — 1-е место в мире), уголь, медь, хромиты, золото (Узбекистан, Казахстан, Кыргызстан).",
+                        "Водные и земельные: ледники и ГЭС верховьев Амударьи и Сырдарьи (Таджикистан, Кыргызстан) vs дефицит воды на равнинах (проблема Арала); пашни Сев. Казахстана.",
+                        "Лесные и рекреационные: лесов мало; туризм по Великому шелковому пути (Самарканд, Бухара), Иссык-Куль, альпинизм."
+                    ],
+                    p3: [
+                        "Промышленность: добыча нефти, газа, урана, угля; цветная и черная металлургия (Казахстан, Узбекистан); текстильная индустрия (Узбекистан).",
+                        "Сельское хозяйство: пшеница (Сев. Казахстан), хлопчатник, фрукты и виноград (оазисы Узбекистана, Туркменистана, Таджикистана), овцеводство.",
+                        "Сфера услуг: сухопутный транзит между Китаем и Европой, трубопроводный транспорт, исторический и горный туризм."
+                    ]
+                }
+            }
+        ];
+
+        // Объединенный объект для режима «По учебнику Максаковского: 4 субрегиона»
+        function getSubregionsList(scheme) {
+            if (scheme === "5") return SUBREGIONS_5;
+
+            const east = SUBREGIONS_5.find(s => s.id === "e");
+            const central = SUBREGIONS_5.find(s => s.id === "c");
+
+            const combinedEC = {
+                id: "ec",
+                code: "Субрегион 04 (по Максаковскому)",
+                name: "Восточная и Центральная Азия",
+                subtitle: "Объединенный субрегион школьного курса",
+                area: "~15,8 млн км²",
+                population: ">1,73 млрд чел.",
+                note: "В классификации В.П. Максаковского объединяет страны Восточной Азии (КНР, Япония, Р. Корея, КНДР, Монголия) и Центральной Азии (Казахстан, Узбекистан, Туркменистан, Кыргызстан, Таджикистан).",
+                countries: "Восточная Азия: Китай (КНР, Гонконг, Макао), Япония, Республика Корея, КНДР, Монголия, Тайвань. Центральная Азия: Казахстан, Узбекистан, Туркменистан, Кыргызстан, Таджикистан.",
+                p1: {
+                    relief: "Огромные контрасты: на западе и в центре — Туранская низменность, пустыни Каракумы, Кызылкум и Гоби, высочайшие горы Памира, Тянь-Шаня, Куньлуня и Тибетское нагорье (>4500 м). На востоке — Великая Китайская равнина и гористые сейсмичные острова Японии и Тайваня.",
+                    climate: "На восточном побережье (Китай, Япония, Корея) — муссонный климат (влажное теплое лето, сухая зима). Во внутренних районах (Монголия, Казахстан, Узбекистан, Туркменистан, Западный Китай) — резко континентальный засушливый климат с дефицитом влаги.",
+                    soils: "На востоке — плодородные аллювиальные почвы (долины Янцзы и Хуанхэ), красноземы, желтоземы и бурые лесные почвы. На севере Казахстана и СВ Китая — черноземы и каштановые почвы. В оазисах Средней Азии — орошаемые сероземы, в пустынях — песчаные и солончаковые почвы.",
+                    risks: "Землетрясения, цунами и тайфуны на тихоокеанском побережье; наводнения на Янцзы и Хуанхэ; засухи, опустынивание и высыхание Аральского моря во внутренних районах."
+                },
+                p2: {
+                    mineral: "Колоссальная ресурсная база: Китай — 1-е место в мире по запасам и добыче угля, редкоземельных металлов (~70% мира), вольфрама, сурьмы, железных руд. Центральная Азия — нефть и газ Прикаспия (Казахстан, Туркменистан), уран (Казахстан — 1-е место в мире), медь и золото (Казахстан, Узбекистан, Монголия). Япония и Южная Корея бедны сырьем.",
+                    waterLand: "Мощные реки востока (Янцзы, Хуанхэ, Амур) и ледниковые реки Памира и Тянь-Шаня (Амударья, Сырдарья) обладают огромным гидроэнергопотенциалом, но равнины Центральной Азии страдают от нехватки воды. Крупные массивы пашни — в Северном Казахстане и Восточном Китае.",
+                    forestRec: "Высокая лесистость в Японии (67%) и горах Северо-Восточного Китая при крайне низкой лесистости в Центральной Азии и Монголии. Богатейший туризм: Великая Китайская стена, Киото, Токио, города Великого шелкового пути (Самарканд, Бухара), Памир и Тянь-Шань."
+                },
+                p3: {
+                    industry: "Восточная Азия — главный промышленный цех мира: лидерство в выплавке стали и алюминия (КНР), автопроме и электромобилях (Китай, Япония, Южная Корея), судостроении (>90% мира), микрочипах (Тайвань, Южная Корея) и робототехнике (Япония). Центральная Азия — добыча нефти, газа, урана, цветная и черная металлургия (Казахстан, Узбекистан), текстиль.",
+                    agro: "В муссонном Востоке — рисоводство, пшеница, чай, овощи, свиноводство и рыболовство (Китай, Япония). В Северном Казахстане — зерновое хозяйство (яровая пшеница); в оазисах Средней Азии — хлопководство, садоводство и шелководство; в Монголии и степях — пастбищное животноводство.",
+                    services: "Мировые контейнерные порты-гиганты (Шанхай, Нинбо, Пусан), крупнейшая сеть высокоскоростных ж/д (Китай, Япония), финансовые центры (Токио, Гонконг, Шанхай), а также сухопутные транзитные коридоры и трубопроводы Центральной Азии между Китаем и Европой."
+                },
+                shortNotes: {
+                    p1: [
+                        "Рельеф: Тибет, Памир, Тянь-Шань и пустыни (Каракумы, Гоби) в центре/на западе; Великая Китайская равнина и вулканические острова Японии на востоке.",
+                        "Климат: муссонный влажный на востоке; резко континентальный засушливый — в Центральной Азии и Монголии.",
+                        "Почвы: аллювиальные и красноземы (Восточный Китай), черноземы (Сев. Казахстан и СВ Китай), сероземы в оазисах Средней Азии."
+                    ],
+                    p2: [
+                        "Минеральные: уголь, редкоземельные металлы и руды КНР; нефть и газ Каспия (Казахстан, Туркменистан), уран (Казахстан — 1-е место), медь и золото (Узбекистан, Монголия).",
+                        "Водные и земельные: гидроэнергия Янцзы и рек Памира/Тянь-Шаня; дефицит воды на равнинах Центральной Азии; пашни Сев. Казахстана и Восточного Китая.",
+                        "Лесные и рекреационные: лесистая Япония (67%) vs безлесные степи; туризм (Китай, Япония, Самарканд, Бухара)."
+                    ],
+                    p3: [
+                        "Промышленность: лидеры в стали, автопроме, судостроении, микрочипах и роботах (КНР, Япония, Ю. Корея, Тайвань); нефтегаз, уран и металлургия (Казахстан, Узбекистан).",
+                        "Сельское хозяйство: рис, чай, свиноводство, рыболовство (восток); пшеница (Сев. Казахстан), хлопок (Узбекистан), пастбищное скотоводство (Монголия).",
+                        "Сфера услуг: порты-гиганты (Шанхай, Пусан), скоростные ж/д (КНР, Япония), финансы (Токио, Гонконг) и евразийский сухопутный транзит."
+                    ]
+                }
+            };
+
+            return [
+                SUBREGIONS_5[0],
+                SUBREGIONS_5[1],
+                SUBREGIONS_5[2],
+                combinedEC
+            ];
+        }
+
+        // =========================================================================
+        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ И РЕНДЕР
+        // =========================================================================
+        let state = {
+            scheme: "5",          // "5" или "4" (по Максаковскому)
+            selectedId: "sw",     // текущий субрегион
+            shortMode: false,     // режим краткого конспекта для тетради
+            compareMode: false,   // режим сравнительной таблицы
+            searchQuery: ""       // строка поиска
+        };
+
+        const scheme5Btn = document.getElementById("scheme5Btn");
+        const scheme4Btn = document.getElementById("scheme4Btn");
+        const schemeHint = document.getElementById("schemeHint");
+        const subregionTabs = document.getElementById("subregionTabs");
+        const mainViewport = document.getElementById("mainViewport");
+        const searchInput = document.getElementById("searchInput");
+        const shortModeBtn = document.getElementById("shortModeBtn");
+        const shortModeText = document.getElementById("shortModeText");
+        const compareTableBtn = document.getElementById("compareTableBtn");
+        const compareTableText = document.getElementById("compareTableText");
+        const copySummaryBtn = document.getElementById("copySummaryBtn");
+        const toast = document.getElementById("toast");
+        const toastMsg = document.getElementById("toastMsg");
+
+        function showToast(message) {
+            toastMsg.textContent = message;
+            toast.classList.add("show");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2600);
+        }
+
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        function highlightText(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
+            return text.replace(regex, "<mark>$1</mark>");
+        }
+
+        // Переключение схемы 5 / 4 субрегиона
+        function setScheme(newScheme) {
+            state.scheme = newScheme;
+            scheme5Btn.classList.toggle("active", newScheme === "5");
+            scheme4Btn.classList.toggle("active", newScheme === "4");
+
+            if (newScheme === "5") {
+                schemeHint.textContent = "Режим: 5 отдельных субрегионов (ЮЗ, Южная, ЮВА, Восточная, Центральная Азия)";
+                if (state.selectedId === "ec") state.selectedId = "e";
+            } else {
+                schemeHint.textContent = "Режим по учебнику В.П. Максаковского: 4 субрегиона (Восточная и Центральная Азия объединены)";
+                if (state.selectedId === "e" || state.selectedId === "c") state.selectedId = "ec";
+            }
+            renderAll();
+        }
+
+        scheme5Btn.addEventListener("click", () => setScheme("5"));
+        scheme4Btn.addEventListener("click", () => setScheme("4"));
+
+        // Переключение режима «Кратко для тетради»
+        shortModeBtn.addEventListener("click", () => {
+            state.shortMode = !state.shortMode;
+            shortModeBtn.classList.toggle("active-toggle", state.shortMode);
+            shortModeText.textContent = state.shortMode ? "Подробный разбор" : "Кратко для тетради";
+            renderMainViewport();
+        });
+
+        // Переключение режима «Сравнительная таблица»
+        compareTableBtn.addEventListener("click", () => {
+            state.compareMode = !state.compareMode;
+            compareTableBtn.classList.toggle("active-toggle", state.compareMode);
+            compareTableText.textContent = state.compareMode ? "Карточка субрегиона" : "Сравнительная таблица";
+            renderAll();
+        });
+
+        // Живой поиск
+        searchInput.addEventListener("input", (e) => {
+            state.searchQuery = e.target.value.trim();
+            renderAll();
+        });
+
+        // Копирование конспекта текущего субрегиона в буфер обмена
+        copySummaryBtn.addEventListener("click", () => {
+            const list = getSubregionsList(state.scheme);
+            const current = list.find(s => s.id === state.selectedId) || list[0];
+
+            const textToCopy = [
+                `ЗАРУБЕЖНАЯ АЗИЯ — ${current.name.toUpperCase()} (${current.subtitle})`,
+                `Состав: ${current.countries}`,
+                ``,
+                `1. ПРИРОДНЫЕ УСЛОВИЯ И КЛИМАТ:`,
+                `• Рельеф: ${current.p1.relief}`,
+                `• Климат и увлажнение: ${current.p1.climate}`,
+                `• Почвы: ${current.p1.soils}`,
+                ``,
+                `2. РЕСУРСЫ:`,
+                `• Минеральные: ${current.p2.mineral}`,
+                `• Водные и земельные: ${current.p2.waterLand}`,
+                `• Лесные и рекреационные: ${current.p2.forestRec}`,
+                ``,
+                `3. ВЕДУЩИЕ ОТРАСЛИ ХОЗЯЙСТВА:`,
+                `• Промышленность: ${current.p3.industry}`,
+                `• Сельское хозяйство: ${current.p3.agro}`,
+                `• Сфера услуг и транспорт: ${current.p3.services}`
+            ].join("\n");
+
+            const textarea = document.createElement("textarea");
+            textarea.value = textToCopy;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand("copy");
+                showToast(`Конспект «${current.name}» скопирован!`);
+            } catch (err) {
+                showToast("Не удалось скопировать текст");
+            }
+            document.body.removeChild(textarea);
+        });
+
+        // Рендер табов субрегионов
+        function renderTabs() {
+            const list = getSubregionsList(state.scheme);
+            if (state.compareMode || state.searchQuery.length > 0) {
+                subregionTabs.style.display = "none";
+                return;
+            }
+            subregionTabs.style.display = "grid";
+
+            subregionTabs.innerHTML = list.map(sub => {
+                const isActive = sub.id === state.selectedId;
+                return `
+                    <button type="button" class="sub-card-btn ${isActive ? "active" : ""}" data-id="${sub.id}">
+                        <div class="sub-card-top">
+                            <span class="sub-code">${sub.code}</span>
+                            <span class="mono" style="font-size:0.7rem;color:var(--text-muted);">${sub.population}</span>
+                        </div>
+                        <div class="sub-name">${sub.name}</div>
+                        <div class="sub-countries-mini">${sub.countries}</div>
+                    </button>
+                `;
+            }).join("");
+
+            subregionTabs.querySelectorAll(".sub-card-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.selectedId = btn.dataset.id;
+                    renderAll();
+                });
+            });
+        }
+
+        // Рендер одного субрегиона (подробно или сжато для тетради)
+        function renderSingleSubregion(sub, query = "") {
+            const hl = (txt) => highlightText(txt, query);
+
+            if (state.shortMode) {
+                return `
+                    <article class="region-banner">
+                        <div class="region-title-row">
+                            <div>
+                                <div class="sub-code" style="margin-bottom:4px;">${sub.code} • Конспект-шпаргалка</div>
+                                <h1 class="region-title">${hl(sub.name)}</h1>
+                                ${sub.note ? `<div class="region-note">${hl(sub.note)}</div>` : ""}
+                            </div>
+                            <div class="region-metrics">
+                                <span class="metric-pill mono">Площадь: ${sub.area}</span>
+                                <span class="metric-pill mono">Население: ${sub.population}</span>
+                            </div>
+                        </div>
+                        <div class="countries-list">
+                            <strong>Основные страны:</strong> ${hl(sub.countries)}
+                        </div>
+                    </article>
+
+                    <div class="points-grid">
+                        <section class="point-card">
+                            <div class="point-header">
+                                <div class="point-badge step-1">1</div>
+                                <div>
+                                    <h2 class="point-title">Природные условия и климат</h2>
+                                    <div class="point-subtitle">Тезисы для записи в тетрадь</div>
+                                </div>
+                            </div>
+                            <div class="notebook-box">
+                                <ul class="notebook-list">
+                                    ${sub.shortNotes.p1.map(item => `<li>${hl(item)}</li>`).join("")}
+                                </ul>
+                            </div>
+                        </section>
+
+                        <section class="point-card">
+                            <div class="point-header">
+                                <div class="point-badge step-2">2</div>
+                                <div>
+                                    <h2 class="point-title">Ресурсы</h2>
+                                    <div class="point-subtitle">Тезисы для записи в тетрадь</div>
+                                </div>
+                            </div>
+                            <div class="notebook-box">
+                                <ul class="notebook-list">
+                                    ${sub.shortNotes.p2.map(item => `<li>${hl(item)}</li>`).join("")}
+                                </ul>
+                            </div>
+                        </section>
+
+                        <section class="point-card">
+                            <div class="point-header">
+                                <div class="point-badge step-3">3</div>
+                                <div>
+                                    <h2 class="point-title">Ведущие отрасли хозяйства</h2>
+                                    <div class="point-subtitle">Тезисы для записи в тетрадь</div>
+                                </div>
+                            </div>
+                            <div class="notebook-box">
+                                <ul class="notebook-list">
+                                    ${sub.shortNotes.p3.map(item => `<li>${hl(item)}</li>`).join("")}
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+                `;
+            }
+
+            return `
+                <article class="region-banner">
+                    <div class="region-title-row">
+                        <div>
+                            <div class="sub-code" style="margin-bottom:4px;">${sub.code} • ${sub.subtitle}</div>
+                            <h1 class="region-title">${hl(sub.name)}</h1>
+                            ${sub.note ? `<div class="region-note">${hl(sub.note)}</div>` : ""}
+                        </div>
+                        <div class="region-metrics">
+                            <span class="metric-pill mono">Площадь: ${sub.area}</span>
+                            <span class="metric-pill mono">Население: ${sub.population}</span>
+                        </div>
+                    </div>
+                    <div class="countries-list">
+                        <strong>Состав стран:</strong> ${hl(sub.countries)}
+                    </div>
+                </article>
+
+                <div class="points-grid">
+                    <!-- ПУНКТ 1: ПРИРОДНЫЕ УСЛОВИЯ И КЛИМАТ -->
+                    <section class="point-card">
+                        <div class="point-header">
+                            <div class="point-badge step-1">1</div>
+                            <div>
+                                <h2 class="point-title">Природные условия и климат</h2>
+                                <div class="point-subtitle">Рельеф, климатические пояса, увлажнение, почвы и природные риски</div>
+                            </div>
+                        </div>
+                        <div class="sub-blocks">
+                            <div class="info-tile">
+                                <div class="info-tile-label label-cyan">Рельеф и тектоника</div>
+                                <p>${hl(sub.p1.relief)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-cyan">Климат и осадки</div>
+                                <p>${hl(sub.p1.climate)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-amber">Почвенный покров</div>
+                                <p>${hl(sub.p1.soils)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-pink">Стихийные риски</div>
+                                <p>${hl(sub.p1.risks)}</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ПУНКТ 2: РЕСУРСЫ -->
+                    <section class="point-card">
+                        <div class="point-header">
+                            <div class="point-badge step-2">2</div>
+                            <div>
+                                <h2 class="point-title">Ресурсы</h2>
+                                <div class="point-subtitle">Минерально-сырьевая база, водные, земельные, лесные и рекреационные ресурсы</div>
+                            </div>
+                        </div>
+                        <div class="sub-blocks">
+                            <div class="info-tile">
+                                <div class="info-tile-label label-amber">Минеральные ресурсы</div>
+                                <p>${hl(sub.p2.mineral)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-cyan">Водные и земельные</div>
+                                <p>${hl(sub.p2.waterLand)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-emerald">Лесные и рекреационные</div>
+                                <p>${hl(sub.p2.forestRec)}</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ПУНКТ 3: ВЕДУЩИЕ ОТРАСЛИ ХОЗЯЙСТВА -->
+                    <section class="point-card">
+                        <div class="point-header">
+                            <div class="point-badge step-3">3</div>
+                            <div>
+                                <h2 class="point-title">Ведущие отрасли хозяйства</h2>
+                                <div class="point-subtitle">Специализация промышленности, агропромышленного комплекса и сферы услуг</div>
+                            </div>
+                        </div>
+                        <div class="sub-blocks">
+                            <div class="info-tile">
+                                <div class="info-tile-label label-pink">Промышленность</div>
+                                <p>${hl(sub.p3.industry)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-emerald">Сельское хозяйство (АПК)</div>
+                                <p>${hl(sub.p3.agro)}</p>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-label label-cyan">Сфера услуг, транспорт, IT</div>
+                                <p>${hl(sub.p3.services)}</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        // Рендер сводной сравнительной таблицы всех субрегионов
+        function renderComparisonTable() {
+            const list = getSubregionsList(state.scheme);
+            return `
+                <div class="table-wrapper">
+                    <div style="padding:18px 20px;border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                        <div>
+                            <h2 style="font-size:1.15rem;font-weight:800;color:#fff;">Сравнительная таблица субрегионов Зарубежной Азии</h2>
+                            <p style="font-size:0.78rem;color:var(--text-dim);">Сопоставление всех субрегионов по 3 пунктам из тетради (прокручивайте таблицу вправо на смартфоне)</p>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Субрегион и главные страны</th>
+                                    <th>1. Природные условия, климат и почвы</th>
+                                    <th>2. Главные ресурсы</th>
+                                    <th>3. Ведущие отрасли хозяйства</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${list.map(sub => `
+                                    <tr>
+                                        <td class="td-region">
+                                            <div style="font-size:0.95rem;margin-bottom:4px;">${sub.name}</div>
+                                            <div class="mono" style="font-size:0.72rem;color:var(--cyan);margin-bottom:6px;">${sub.area} • ${sub.population}</div>
+                                            <div style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">${sub.countries}</div>
+                                        </td>
+                                        <td>
+                                            <ul class="notebook-list">
+                                                ${sub.shortNotes.p1.map(i => `<li>${i}</li>`).join("")}
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="notebook-list">
+                                                ${sub.shortNotes.p2.map(i => `<li>${i}</li>`).join("")}
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="notebook-list">
+                                                ${sub.shortNotes.p3.map(i => `<li>${i}</li>`).join("")}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Рендер результатов глобального поиска по всем субрегионам
+        function renderSearchResults() {
+            const list = getSubregionsList(state.scheme);
+            const q = state.searchQuery.toLowerCase();
+
+            const matches = list.filter(sub => {
+                const fullBlob = JSON.stringify(sub).toLowerCase();
+                return fullBlob.includes(q);
+            });
+
+            if (matches.length === 0) {
+                return `
+                    <div class="region-banner" style="text-align:center;padding:36px 20px;">
+                        <p style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px;">Ничего не найдено по запросу «${state.searchQuery}»</p>
+                        <p style="font-size:0.84rem;color:var(--text-dim);margin-bottom:14px;">Попробуйте ввести другое слово (например: нефть, регуры, рис, хлопок, Япония, уран).</p>
+                        <button type="button" class="m3-btn" onclick="clearSearch()">Сбросить поиск</button>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="search-results-banner">
+                    <span>Найдено субрегионов по запросу «${state.searchQuery}»: ${matches.length}</span>
+                    <button type="button" class="m3-btn" style="padding:6px 12px;font-size:0.76rem;" onclick="clearSearch()">Закрыть поиск</button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:28px;">
+                    ${matches.map(sub => renderSingleSubregion(sub, state.searchQuery)).join("")}
+                </div>
+            `;
+        }
+
+        window.clearSearch = function() {
+            state.searchQuery = "";
+            searchInput.value = "";
+            renderAll();
+        };
+
+        function renderMainViewport() {
+            if (state.searchQuery.length > 0) {
+                mainViewport.innerHTML = renderSearchResults();
+                return;
+            }
+            if (state.compareMode) {
+                mainViewport.innerHTML = renderComparisonTable();
+                return;
+            }
+            const list = getSubregionsList(state.scheme);
+            const current = list.find(s => s.id === state.selectedId) || list[0];
+            mainViewport.innerHTML = renderSingleSubregion(current);
+        }
+
+        function renderAll() {
+            renderTabs();
+            renderMainViewport();
+        }
+
+        // Инициализация
+        renderAll();
+    </script>
+</body>
+</html>

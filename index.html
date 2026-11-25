@@ -9913,7 +9913,6 @@
 
     const BACKEND_URL = 'https://super-surf-30ae.artemchebotarew.workers.dev';
     const WORKER_BRIDGE_BASE = `${BACKEND_URL}/bridge`;
-    const SHIKI_PROXY_BASE = `${BACKEND_URL}/shiki`;
     const PYTHON_BACKEND_URL = 'https://api.komboko.fun';
     const IS_LOCAL_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const IS_AISTUDIO_PREVIEW = window.location.hostname.includes('run.app') || window.location.hostname.includes('aistudio') || window.location.hostname.includes('googleusercontent');
@@ -9927,19 +9926,6 @@
       if (!path) return '';
       const clean = path.startsWith('/') ? path : '/' + path;
       return `${API_BASE}${clean}`;
-    }
-
-    // Универсальный прокси-запрос к Shikimori через Cloudflare Worker (/shiki/*),
-    // чтобы пользователи без VPN спокойно авторизовывались и синхронизировали списки.
-    async function shikiApiFetch(path, options = {}) {
-      const cleanPath = path.startsWith('/') ? path : '/' + path;
-      try {
-        const wRes = await fetch(`${SHIKI_PROXY_BASE}${cleanPath}`, options);
-        if (wRes && wRes.status !== 404 && wRes.status !== 502 && wRes.status !== 503 && wRes.status !== 522 && wRes.status !== 524) {
-          return wRes;
-        }
-      } catch (_) {}
-      return fetch(`https://shikimori.io${cleanPath}`, options);
     }
 
     // =========================================================================
@@ -12979,16 +12965,27 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
+      const authError = urlParams.get('error');
       const roomParam = urlParams.get('room') || (window.location.hash.startsWith('#room=') ? window.location.hash.replace('#room=', '') : null);
+      const notifyAuthVpnHint = () => {
+        const msg = currentLang === 'en'
+          ? 'Could not sign in via Shikimori. Try enabling a VPN and try again.'
+          : 'Не удалось войти через Shikimori. Попробуйте включить VPN и повторить попытку.';
+        if (typeof showToast === 'function') showToast(msg, 6000);
+      };
 
-      if (code) {
+      if (authError) {
         window.history.replaceState({}, document.title, window.location.pathname);
+        try { sessionStorage.removeItem('komboko_auth_attempt'); } catch (_) {}
+        setTimeout(notifyAuthVpnHint, 350);
+      } else if (code) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        try { sessionStorage.removeItem('komboko_auth_attempt'); } catch (_) {}
         try {
           const redirectUri = window.location.origin + window.location.pathname;
           const authEndpoints = [
-            `${BACKEND_URL}/api/shikimori_auth`,
-            `${WORKER_BRIDGE_BASE}/api/shikimori_auth`,
-            apiUrl('/api/shikimori_auth')
+            apiUrl('/api/shikimori_auth'),
+            `${BACKEND_URL}/api/shikimori_auth`
           ];
           let tokenData = null;
           for (const ep of authEndpoints) {
@@ -13009,16 +13006,30 @@
           }
           if (tokenData && tokenData.access_token) {
             safeSet('shiki_token', tokenData.access_token);
-            await fetchUserProfile(tokenData.access_token);
+            const loaded = await fetchUserProfile(tokenData.access_token);
+            if (!loaded) {
+              setTimeout(notifyAuthVpnHint, 300);
+            }
+          } else {
+            setTimeout(notifyAuthVpnHint, 300);
           }
         } catch (err) {
           console.error('Auth error:', err);
+          setTimeout(notifyAuthVpnHint, 300);
         }
       } else {
         const savedToken = safeGet('shiki_token');
         if (savedToken) {
           safeSet('shiki_token', savedToken);
           await fetchUserProfile(savedToken);
+        } else {
+          try {
+            const attemptTs = Number(sessionStorage.getItem('komboko_auth_attempt') || 0);
+            if (attemptTs && Date.now() - attemptTs < 180000) {
+              sessionStorage.removeItem('komboko_auth_attempt');
+              setTimeout(notifyAuthVpnHint, 450);
+            }
+          } catch (_) {}
         }
       }
 
@@ -14848,7 +14859,8 @@
 
     function redirectToShikimoriLogin() {
       const redirectUri = window.location.origin + window.location.pathname;
-      window.location.href = `${SHIKI_PROXY_BASE}/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+      try { sessionStorage.setItem('komboko_auth_attempt', String(Date.now())); } catch (_) {}
+      window.location.href = `https://shikimori.io/oauth/authorize?client_id=${SHIKI_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
     }
 
     function handleAuthLogoClick() {
@@ -14862,9 +14874,15 @@
 
     async function fetchUserProfile(token) {
       try {
-        const res = await shikiApiFetch('/api/users/whoami', {
+        const res = await fetch('https://shikimori.io/api/users/whoami', {
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
         });
+        if (res.status === 401) {
+          localStorage.removeItem('shiki_token');
+          localStorage.removeItem('shiki_user_id');
+          return false;
+        }
+        if (!res.ok) return false;
         const user = await res.json();
         if (user && user.id) {
           state.currentUser = user;
@@ -14906,10 +14924,12 @@
               joinWatchPartyRoom(pendingRoom);
             }, 400);
           }
+          return true;
         }
-      } catch (_) {
-        localStorage.removeItem('shiki_token');
-        localStorage.removeItem('shiki_user_id');
+        return false;
+      } catch (err) {
+        console.warn('fetchUserProfile network warning:', err);
+        return false;
       }
     }
 
@@ -16096,12 +16116,12 @@
       }
     }
 
-    function showToast(text) {
+    function showToast(text, durationMs = 2500) {
       let toast = document.getElementById('kombokoGlobalToast');
       if (!toast) {
         toast = document.createElement('div');
         toast.id = 'kombokoGlobalToast';
-        toast.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--bg-modal); border:1.5px solid var(--color-primary); color:var(--text-strong); padding:10px 20px; border-radius:999px; font-size:13px; font-weight:700; z-index:999999; box-shadow:0 10px 30px rgba(0,0,0,0.45); pointer-events:none; transition:opacity 0.25s, transform 0.25s; opacity:0;';
+        toast.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 32px); text-align:center; background:var(--bg-modal); border:1.5px solid var(--color-primary); color:var(--text-strong); padding:10px 20px; border-radius:20px; font-size:13px; font-weight:700; line-height:1.4; z-index:999999; box-shadow:0 10px 30px rgba(0,0,0,0.45); pointer-events:none; transition:opacity 0.25s, transform 0.25s; opacity:0;';
         document.body.appendChild(toast);
       }
       toast.textContent = text;
@@ -16111,7 +16131,7 @@
       toast._timer = setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(-50%) translateY(10px)';
-      }, 2500);
+      }, durationMs);
     }
 
     // === КАРТОЧНАЯ СИСТЕМА, 5-СЕКУНДНЫЙ БАННЕР И ТРЕКИНГ ЗАДАНИЙ ===
@@ -16341,7 +16361,7 @@
 
         // Сначала быстрый v1 запрос (отдаёт весь список с метаданными anime за 1 обращение)
         try {
-          const v1Res = await shikiApiFetch(`/api/users/${userId}/anime_rates?limit=5000`, {
+          const v1Res = await fetch(`https://shikimori.io/api/users/${userId}/anime_rates?limit=5000`, {
             headers,
             signal: AbortSignal.timeout(9000)
           }).catch(() => null);
@@ -16356,7 +16376,7 @@
           let page = 1;
           const limit = 100;
           while (page <= 8) {
-            const res = await shikiApiFetch(`/api/v2/user_rates?user_id=${userId}&target_type=Anime&limit=${limit}&page=${page}`, {
+            const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${userId}&target_type=Anime&limit=${limit}&page=${page}`, {
               headers,
               signal: AbortSignal.timeout(6000)
             }).catch(() => null);
@@ -17463,7 +17483,7 @@
       grid.innerHTML = `<div class="loader-box"><div class="spinner"></div></div>`;
 
       try {
-        const res = await shikiApiFetch(`/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
+        const res = await fetch(`https://shikimori.io/api/v2/user_rates?user_id=${state.currentUser.id}&status=${statusFilter}&target_type=Anime`, {
           headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
         });
         const rates = await res.json();
@@ -17610,7 +17630,7 @@
       if (search) variables.search = search;
       if (ids) variables.ids = String(ids);
 
-      const res = await shikiApiFetch('/api/graphql', {
+      const res = await fetch('https://shikimori.io/api/graphql', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ query, variables })
@@ -17645,7 +17665,7 @@
       try {
         if (!status) {
           if (existingRate) {
-            await shikiApiFetch(`/api/v2/user_rates/${existingRate.id}`, {
+            await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
               method: 'DELETE',
               headers: { 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` }
             });
@@ -17656,7 +17676,7 @@
         }
 
         if (existingRate) {
-          const res = await shikiApiFetch(`/api/v2/user_rates/${existingRate.id}`, {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates/${existingRate.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status } })
@@ -17666,7 +17686,7 @@
             triggerQuest('quest_add_shiki_list');
           }
         } else {
-          const res = await shikiApiFetch(`/api/v2/user_rates`, {
+          const res = await fetch(`https://shikimori.io/api/v2/user_rates`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'User-Agent': 'KombokoWatchApp', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ user_rate: { status, target_id: animeId, target_type: 'Anime', user_id: state.currentUser.id } })
@@ -21122,7 +21142,7 @@
       {
         id: 9,
         src: getBokuSpriteUrl(9),
-        quoteRu: '«Оценивай просмотренные тайтлы в Shikimori, мне очень интересно твое мнение... 👉������»',
+        quoteRu: '«Оценивай просмотренные тайтлы в Shikimori, мне очень интересно твое мнение... 👉👈»',
         quoteEn: '“Rate watched titles on Shikimori, I really care about your taste... 👉👈”',
         bubbleRu: '😳 Оценивай в Shikimori',
         bubbleEn: '😳 Rate on Shikimori'
